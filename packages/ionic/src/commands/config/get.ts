@@ -7,6 +7,7 @@ import * as util from 'util';
 
 import { PROJECT_FILE } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { input, strong, weak } from '../../lib/color';
 
 import { BaseConfigCommand, ConfigContext, getConfigValue } from './base';
 
@@ -19,17 +20,17 @@ export class ConfigGetCommand extends BaseConfigCommand {
       type: 'global',
       summary: 'Print config values',
       description: `
-This command reads and prints configuration values from the project's ${chalk.bold(projectFile)} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
+This command reads and prints configuration values from the project's ${strong(projectFile)} file. It can also operate on the global CLI configuration (${strong('~/.ionic/config.json')}) using the ${input('--global')} option.
 
-For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('integrations.cordova')} will look in the ${chalk.bold('integrations')} object for the ${chalk.bold('cordova')} property.
+For nested properties, separate nest levels with dots. For example, the property name ${input('integrations.cordova')} will look in the ${strong('integrations')} object for the ${strong('cordova')} property.
 
-Without a ${chalk.green('property')} argument, this command prints out the entire config.
+Without a ${input('property')} argument, this command prints out the entire config.
 
-For multi-app projects, this command is scoped to the current project by default. To operate at the root of the project configuration file instead, use the ${chalk.green('--root')} option.
+For multi-app projects, this command is scoped to the current project by default. To operate at the root of the project configuration file instead, use the ${input('--root')} option.
 
-If you are using this command programmatically, you can use the ${chalk.green('--json')} option.
+If you are using this command programmatically, you can use the ${input('--json')} option.
 
-This command will sanitize config output for known sensitive fields (disabled when using ${chalk.green('--json')}).
+This command will sanitize config output for known sensitive fields (disabled when using ${input('--json')}).
       `,
       inputs: [
         {
@@ -52,9 +53,9 @@ This command will sanitize config output for known sensitive fields (disabled wh
         },
         {
           name: 'root',
-          summary: `Operate on root of ${chalk.bold(projectFile)}`,
+          summary: `Operate on root of ${strong(projectFile)}`,
           type: Boolean,
-          hint: chalk.dim('[multi-app]'),
+          hint: weak('[multi-app]'),
           groups: [OptionGroup.Advanced],
         },
       ],
@@ -78,7 +79,7 @@ This command will sanitize config output for known sensitive fields (disabled wh
       if (global && v && typeof v === 'object') {
         const columns = lodash.entries(v)
           .map(([k, v]) => [k, this.sanitizeEntry(k, v)])
-          .map(([k, v]) => [chalk.bold(k), util.inspect(v, { colors: chalk.enabled })]);
+          .map(([k, v]) => [strong(k), util.inspect(v, { colors: chalk.enabled })]);
 
         columns.sort((a, b) => strcmp(a[0], b[0]));
 

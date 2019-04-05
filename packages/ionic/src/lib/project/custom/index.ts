@@ -1,6 +1,5 @@
-import chalk from 'chalk';
-
 import { Project } from '../';
+import { strong } from '../../color';
 import { RunnerNotFoundException } from '../../errors';
 
 import * as ζbuild from './build';
@@ -31,7 +30,7 @@ export class CustomProject extends Project {
   async requireGenerateRunner(): Promise<never> {
     throw new RunnerNotFoundException(
       `Cannot perform generate for custom projects.\n` +
-      `Since you're using the ${chalk.bold('custom')} project type, this command won't work. The Ionic CLI doesn't know how to generate framework components for custom projects.`
+      `Since you're using the ${strong('custom')} project type, this command won't work. The Ionic CLI doesn't know how to generate framework components for custom projects.`
     );
   }
 }

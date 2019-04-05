@@ -1,8 +1,8 @@
-import chalk from 'chalk';
 import * as semver from 'semver';
 
 import { ProjectType, TreatableAilment } from '../../../definitions';
 import { BUILD_SCRIPT } from '../../build';
+import { ancillary, input, strong } from '../../color';
 import { Ailment, AilmentDeps } from '../../doctor';
 import { SERVE_SCRIPT } from '../../serve';
 import { pkgFromRegistry, pkgManagerArgs } from '../../utils/npm';
@@ -50,7 +50,7 @@ export class IonicAngularUpdateAvailable extends IonicAngularAilment {
 
     return (
       `Update available for Ionic Framework.\n` +
-      `An update is available for ${chalk.bold('ionic-angular')} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      `An update is available for ${strong('ionic-angular')} (${ancillary(currentVersion)} => ${ancillary(latestVersion)}).\n`
     ).trim();
   }
 
@@ -66,8 +66,8 @@ export class IonicAngularUpdateAvailable extends IonicAngularAilment {
     const args = await pkgManagerArgs(this.config.get('npmClient'), { command: 'install', pkg: `ionic-angular@${latestVersion ? latestVersion : 'latest'}` });
 
     return [
-      { message: `Visit ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
-      { message: `If no instructions, run: ${chalk.green(args.join(' '))}` },
+      { message: `Visit ${strong('https://github.com/ionic-team/ionic/releases')} for each upgrade's instructions` },
+      { message: `If no instructions, run: ${input(args.join(' '))}` },
       { message: `Watch for npm warnings about peer dependencies--they may need manual updating` },
     ];
   }
@@ -98,7 +98,7 @@ export class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
 
     return (
       `Major update available for Ionic Framework.\n` +
-      `A major update is available for ${chalk.bold('ionic-angular')} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      `A major update is available for ${strong('ionic-angular')} (${ancillary(currentVersion)} => ${ancillary(latestVersion)}).\n`
     ).trim();
   }
 
@@ -111,7 +111,7 @@ export class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Visit ${chalk.bold('https://blog.ionicframework.com')} and ${chalk.bold('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
+      { message: `Visit ${strong('https://blog.ionicframework.com')} and ${strong('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
     ];
   }
 }
@@ -141,8 +141,8 @@ export class AppScriptsUpdateAvailable extends IonicAngularAilment implements Tr
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
     return (
-      `Update available for ${chalk.bold('@ionic/app-scripts')}.\n` +
-      `An update is available for ${chalk.bold('@ionic/app-scripts')} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      `Update available for ${strong('@ionic/app-scripts')}.\n` +
+      `An update is available for ${strong('@ionic/app-scripts')} (${ancillary(currentVersion)} => ${ancillary(latestVersion)}).\n`
     ).trim();
   }
 
@@ -159,7 +159,7 @@ export class AppScriptsUpdateAvailable extends IonicAngularAilment implements Tr
 
     return [
       {
-        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+        message: `Run: ${input(manager + ' ' + managerArgs.join(' '))}`,
         treat: async () => {
           await this.shell.run(manager, managerArgs, {});
         },
@@ -192,8 +192,8 @@ export class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
     const [ currentVersion, latestVersion ] = await this.getVersionPair();
 
     return (
-      `Major update available for ${chalk.bold('@ionic/app-scripts')}.\n` +
-      `A major update is available for ${chalk.bold('@ionic/app-scripts')} (${chalk.cyan(currentVersion)} => ${chalk.cyan(latestVersion)}).\n`
+      `Major update available for ${strong('@ionic/app-scripts')}.\n` +
+      `A major update is available for ${strong('@ionic/app-scripts')} (${ancillary(currentVersion)} => ${ancillary(latestVersion)}).\n`
     ).trim();
   }
 
@@ -206,7 +206,7 @@ export class AppScriptsMajorUpdateAvailable extends IonicAngularAilment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Visit ${chalk.bold('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions` },
+      { message: `Visit ${strong('https://github.com/ionic-team/ionic-app-scripts/releases')} for upgrade instructions` },
     ];
   }
 }
@@ -218,8 +218,8 @@ export class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAng
 
   async getMessage() {
     return (
-      `The ${chalk.bold(BUILD_SCRIPT)} npm script is unchanged.\n` +
-      `The Ionic CLI now looks for the ${chalk.bold(BUILD_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom build script to run instead of the default (${chalk.green(DEFAULT_BUILD_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
+      `The ${strong(BUILD_SCRIPT)} npm script is unchanged.\n` +
+      `The Ionic CLI now looks for the ${strong(BUILD_SCRIPT)} npm script in ${strong('package.json')} for a custom build script to run instead of the default (${input(DEFAULT_BUILD_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
     ).trim();
   }
 
@@ -235,8 +235,8 @@ export class IonicAngularPackageJsonHasDefaultIonicBuildCommand extends IonicAng
 
   async getTreatmentSteps() {
     return [
-      { message: `Remove the ${chalk.bold(BUILD_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
-      { message: `Continue using ${chalk.green('ionic build')} normally` },
+      { message: `Remove the ${strong(BUILD_SCRIPT)} npm script from ${strong('package.json')}` },
+      { message: `Continue using ${input('ionic build')} normally` },
     ];
   }
 }
@@ -248,8 +248,8 @@ export class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAng
 
   async getMessage() {
     return (
-      `The ${chalk.bold(SERVE_SCRIPT)} npm script is unchanged.\n` +
-      `The Ionic CLI now looks for the ${chalk.bold(SERVE_SCRIPT)} npm script in ${chalk.bold('package.json')} for a custom serve script to run instead of the default (${chalk.green(DEFAULT_SERVE_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
+      `The ${strong(SERVE_SCRIPT)} npm script is unchanged.\n` +
+      `The Ionic CLI now looks for the ${strong(SERVE_SCRIPT)} npm script in ${strong('package.json')} for a custom serve script to run instead of the default (${input(DEFAULT_SERVE_SCRIPT_VALUE)}). If you don't use it, it's considered quicker and cleaner to just remove it.`
     ).trim();
   }
 
@@ -265,8 +265,8 @@ export class IonicAngularPackageJsonHasDefaultIonicServeCommand extends IonicAng
 
   async getTreatmentSteps() {
     return [
-      { message: `Remove the ${chalk.bold(SERVE_SCRIPT)} npm script from ${chalk.bold('package.json')}` },
-      { message: `Continue using ${chalk.green('ionic serve')} normally` },
+      { message: `Remove the ${strong(SERVE_SCRIPT)} npm script from ${strong('package.json')}` },
+      { message: `Continue using ${input('ionic serve')} normally` },
     ];
   }
 }

@@ -1,10 +1,10 @@
 import { BaseCommand, LOGGER_LEVELS, LogUpdateOutputStrategy, OutputStrategy, StreamHandler, StreamOutputStrategy, TaskChain, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, IProject, IonicEnvironment } from '../definitions';
 import { isCommandPreRun } from '../guards';
 
+import { input } from './color';
 import { createDefaultLoggerHandlers, createFormatter } from './utils/logger';
 
 export abstract class Command extends BaseCommand<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
@@ -54,7 +54,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
       await this.validate(inputs);
     } catch (e) {
       if (!this.env.flags.interactive) {
-        this.env.log.warn(`Command ran non-interactively due to ${chalk.green('--no-interactive')} flag, CI being detected, non-TTY, or a config setting.`);
+        this.env.log.warn(`Command ran non-interactively due to ${input('--no-interactive')} flag, CI being detected, non-TTY, or a config setting.`);
       }
 
       throw e;

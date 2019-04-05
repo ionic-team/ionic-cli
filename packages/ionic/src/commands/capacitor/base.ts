@@ -1,9 +1,9 @@
 import { pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
-import chalk from 'chalk';
 import * as path from 'path';
 
 import { CommandInstanceInfo, ProjectIntegration } from '../../definitions';
+import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
@@ -48,13 +48,13 @@ export abstract class CapacitorCommand extends Command {
           const pkg = '@capacitor/cli';
           const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
           this.env.log.nl();
-          this.env.log.info(`Looks like ${chalk.green(pkg)} isn't installed in this project.\n` + requiredMsg);
+          this.env.log.info(`Looks like ${input(pkg)} isn't installed in this project.\n` + requiredMsg);
           this.env.log.nl();
 
           const installed = await this.promptToInstallCapacitor();
 
           if (!installed) {
-            throw new FatalException(`${chalk.green(pkg)} is required for Capacitor projects.`);
+            throw new FatalException(`${input(pkg)} is required for Capacitor projects.`);
           }
 
           return this.runCapacitor(argList);
@@ -99,12 +99,12 @@ export abstract class CapacitorCommand extends Command {
 
     const confirm = await this.env.prompt({
       name: 'confirm',
-      message: `Install ${chalk.green(pkg)}?`,
+      message: `Install ${input(pkg)}?`,
       type: 'confirm',
     });
 
     if (!confirm) {
-      this.env.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
+      this.env.log.warn(`Not installing--here's how to install manually: ${input(`${manager} ${managerArgs.join(' ')}`)}`);
       return false;
     }
 

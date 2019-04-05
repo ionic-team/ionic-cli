@@ -1,8 +1,8 @@
 import { CommandMetadataOption, Footnote, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { build } from '../../lib/build';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 
@@ -46,18 +46,18 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Build (prepare + compile) an Ionic project for a given platform',
       description: `
-Like running ${chalk.green('cordova build')} directly, but also builds web assets with configuration from ${chalk.green('ionic build')} and provides friendly checks.
+Like running ${input('cordova build')} directly, but also builds web assets with configuration from ${input('ionic build')} and provides friendly checks.
 
-To pass additional options to the Cordova CLI, use the ${chalk.green('--')} separator after the Ionic CLI arguments.
+To pass additional options to the Cordova CLI, use the ${input('--')} separator after the Ionic CLI arguments.
 
-The Cordova CLI requires a separator for platform-specific arguments for Android builds[^cordova-android-using-flags], so an additional separator is required for the Ionic CLI, but it is not required for iOS builds[^cordova-ios-using-flags]. See the example commands for usage with separators. To avoid using flags, consider using ${chalk.green('--buildConfig')} with a ${chalk.bold('build.json')} file.
+The Cordova CLI requires a separator for platform-specific arguments for Android builds[^cordova-android-using-flags], so an additional separator is required for the Ionic CLI, but it is not required for iOS builds[^cordova-ios-using-flags]. See the example commands for usage with separators. To avoid using flags, consider using ${input('--buildConfig')} with a ${strong('build.json')} file.
       `,
       footnotes,
       exampleCommands,
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to build (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to build (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],
@@ -72,7 +72,7 @@ The Cordova CLI requires a separator for platform-specific arguments for Android
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to build (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`,
+        message: `What platform would you like to build (${['android', 'ios'].map(v => input(v)).join(', ')}):`,
       });
 
       inputs[0] = platform.trim();
@@ -85,7 +85,7 @@ The Cordova CLI requires a separator for platform-specific arguments for Android
     const metadata = await this.getMetadata();
 
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova build')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic cordova build')} outside a project directory.`);
     }
 
     if (options.build) {

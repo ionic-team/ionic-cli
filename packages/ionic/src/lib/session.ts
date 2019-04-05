@@ -1,8 +1,7 @@
-import chalk from 'chalk';
-
 import { IClient, IConfig, ISession, IonicEnvironment } from '../definitions';
 import { isLoginResponse, isSuperAgentError } from '../guards';
 
+import { input } from './color';
 import { FatalException, SessionException } from './errors';
 import { formatResponseError } from './http';
 
@@ -31,8 +30,8 @@ export class BaseSession {
 
     if (!userId) {
       throw new SessionException(
-        `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
-        `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
+        `Oops, sorry! You'll need to log in:\n    ${input('ionic login')}\n\n` +
+        `You can create a new account by signing up:\n\n    ${input('ionic signup')}\n`
       );
     }
 
@@ -44,8 +43,8 @@ export class BaseSession {
 
     if (!userToken) {
       throw new SessionException(
-        `Oops, sorry! You'll need to log in:\n    ${chalk.green('ionic login')}\n\n` +
-        `You can create a new account by signing up:\n\n    ${chalk.green('ionic signup')}\n`
+        `Oops, sorry! You'll need to log in:\n    ${input('ionic login')}\n\n` +
+        `You can create a new account by signing up:\n\n    ${input('ionic signup')}\n`
       );
     }
 
@@ -138,7 +137,7 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
 
   env.log.msg(
     `Log into your Ionic Appflow account\n` +
-    `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}\n`
+    `If you don't have one yet, create yours by running: ${input(`ionic signup`)}\n`
   );
 
   const email = await env.prompt({

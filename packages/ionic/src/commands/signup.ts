@@ -1,6 +1,5 @@
-import chalk from 'chalk';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
+import { strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { open } from '../lib/open';
 
@@ -11,7 +10,7 @@ export class SignupCommand extends Command {
       type: 'global',
       summary: 'Create an account for Ionic Appflow',
       description: `
-Learn more about Ionic Appflow: ${chalk.bold('https://ion.link/appflow')}
+Learn more about Ionic Appflow: ${strong('https://ion.link/appflow')}
 
 If you are having issues signing up, please get in touch with our Support[^support-request].
       `,

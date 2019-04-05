@@ -1,8 +1,8 @@
 import { OptionGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { isSuperAgentError } from '../guards';
+import { input } from '../lib/color';
 import { Command } from '../lib/command';
 import { open } from '../lib/open';
 import { BROWSERS } from '../lib/serve';
@@ -17,7 +17,7 @@ export class DocsCommand extends Command {
       options: [
         {
           name: 'browser',
-          summary: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
+          summary: `Specifies the browser to use (${BROWSERS.map(b => input(b)).join(', ')})`,
           aliases: ['w'],
           groups: [OptionGroup.Advanced],
         },

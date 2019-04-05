@@ -1,11 +1,11 @@
 import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists, tmpfilepath, unlink, writeFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
 import { SSLBaseCommand } from './base';
@@ -48,11 +48,11 @@ export class SSLGenerateCommand extends SSLBaseCommand implements CommandPreRun 
       summary: 'Generates an SSL key & certificate',
       // TODO: document how to add trusted certs
       description: `
-Uses OpenSSL to create a self-signed certificate for ${chalk.bold('localhost')} (by default).
+Uses OpenSSL to create a self-signed certificate for ${strong('localhost')} (by default).
 
 After the certificate is generated, you will still need to add it to your system or browser as a trusted certificate.
 
-The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert-path')} is ${chalk.green('.ionic/ssl/')}.
+The default directory for ${input('--key-path')} and ${input('--cert-path')} is ${input('.ionic/ssl/')}.
       `,
       options: [
         {
@@ -120,7 +120,7 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic ssl generate')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic ssl generate')} outside a project directory.`);
     }
 
     const keyPath = path.resolve(options['key-path'] ? String(options['key-path']) : this.getDefaultKeyPath());
@@ -157,8 +157,8 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
     this.env.log.nl();
 
     this.env.log.rawmsg(
-      `Key:  ${chalk.bold(prettyPath(keyPath))}\n` +
-      `Cert: ${chalk.bold(prettyPath(certPath))}\n\n`
+      `Key:  ${strong(prettyPath(keyPath))}\n` +
+      `Cert: ${strong(prettyPath(certPath))}\n\n`
     );
 
     this.env.log.ok('Generated key & certificate!');
@@ -179,7 +179,7 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
   private async ensureDirectory(p: string) {
     if (!(await pathExists(p))) {
       await mkdirp(p, 0o700 as any); // tslint:disable-line
-      this.env.log.msg(`Created ${chalk.bold(prettyPath(p))} directory for you.`);
+      this.env.log.msg(`Created ${strong(prettyPath(p))} directory for you.`);
     }
   }
 
@@ -188,13 +188,13 @@ The default directory for ${chalk.green('--key-path')} and ${chalk.green('--cert
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Key ${chalk.bold(prettyPath(p))} exists. Overwrite?`,
+        message: `Key ${strong(prettyPath(p))} exists. Overwrite?`,
       });
 
       if (confirm) {
         return true;
       } else {
-        throw new FatalException(`Not overwriting ${chalk.bold(prettyPath(p))}.`);
+        throw new FatalException(`Not overwriting ${strong(prettyPath(p))}.`);
       }
     }
   }

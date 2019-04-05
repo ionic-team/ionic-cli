@@ -2,6 +2,7 @@ import { OptionGroup, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
+import { input, strong, success } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { generateUUID } from '../lib/utils/uuid';
@@ -15,11 +16,11 @@ export class LoginCommand extends Command implements CommandPreRun {
       description: `
 Authenticate with Ionic Appflow and retrieve a user token, which is stored in the CLI config.
 
-If the ${chalk.green('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${chalk.green('ionic login')}, then print the token by running the ${chalk.green('ionic config get -g tokens.user')} command.
+If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${input('ionic login')}, then print the token by running the ${input('ionic config get -g tokens.user')} command.
 
-You can also use ${chalk.green('IONIC_EMAIL')} and ${chalk.green('IONIC_PASSWORD')} environment variables for automatic authentication, but it is not recommended to store your password in plain text.
+You can also use ${input('IONIC_EMAIL')} and ${input('IONIC_PASSWORD')} environment variables for automatic authentication, but it is not recommended to store your password in plain text.
 
-If you need to create an Ionic Appflow account, use ${chalk.green('ionic signup')}.
+If you need to create an Ionic Appflow account, use ${input('ionic signup')}.
 
 If you are having issues logging in, please get in touch with our Support[^support-request].
       `,
@@ -61,8 +62,8 @@ If you are having issues logging in, please get in touch with our Support[^suppo
 
     if (options['email'] || options['password']) {
       throw new FatalException(
-        `${chalk.green('email')} and ${chalk.green('password')} are command arguments, not options. Please try this:\n` +
-        `${chalk.green('ionic login <email> <password>')}\n`
+        `${input('email')} and ${input('password')} are command arguments, not options. Please try this:\n` +
+        `${input('ionic login <email> <password>')}\n`
       );
     }
 
@@ -78,13 +79,13 @@ If you are having issues logging in, please get in touch with our Support[^suppo
 
       this.env.log.warn(
         'You will be logged out.\n' +
-        `You are already logged in${email ? ' as ' + chalk.bold(email) : ''}! ${extra}`
+        `You are already logged in${email ? ' as ' + strong(email) : ''}! ${extra}`
       );
       this.env.log.nl();
     } else {
       this.env.log.info(
         `Log into your Ionic Appflow account!\n` +
-        `If you don't have one yet, create yours by running: ${chalk.green(`ionic signup`)}`
+        `If you don't have one yet, create yours by running: ${input(`ionic signup`)}`
       );
       this.env.log.nl();
     }
@@ -127,7 +128,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
     if (sso) {
       this.env.log.info(
         `Ionic Appflow SSO Login\n` +
-        `During this process, a browser window will open to authenticate you with the identity provider for ${chalk.green(email)}. Please leave this process running until authentication is complete.`
+        `During this process, a browser window will open to authenticate you with the identity provider for ${input(email)}. Please leave this process running until authentication is complete.`
       );
       this.env.log.nl();
 
@@ -136,6 +137,6 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       await this.env.session.login(email, password);
     }
 
-    this.env.log.ok(chalk.green.bold('You are logged in!'));
+    this.env.log.ok(success(strong('You are logged in!')));
   }
 }

@@ -1,11 +1,11 @@
 import { CommandGroup, OptionGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { slugify } from '@ionic/cli-framework/utils/string';
-import chalk from 'chalk';
 import * as path from 'path';
 
 import { PROJECT_FILE, PROJECT_TYPES } from '../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IProject, ProjectType } from '../definitions';
+import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { ProjectDetails, createProjectFromDetails, prettyProjectName } from '../lib/project';
@@ -17,9 +17,9 @@ export class InitCommand extends Command {
       type: 'global',
       summary: 'Initialize existing projects with Ionic',
       description: `
-This command will initialize the current directory with an ${chalk.bold(PROJECT_FILE)} file.
+This command will initialize the current directory with an ${strong(PROJECT_FILE)} file.
 
-${chalk.green('ionic init')} will prompt for a project name and then proceed to determine the type of your project. You can specify the ${chalk.green('name')} argument and ${chalk.green('--type')} option to provide these values via command-line.
+${input('ionic init')} will prompt for a project name and then proceed to determine the type of your project. You can specify the ${input('name')} argument and ${input('--type')} option to provide these values via command-line.
       `,
       exampleCommands: [
         '',
@@ -29,14 +29,14 @@ ${chalk.green('ionic init')} will prompt for a project name and then proceed to 
       inputs: [
         {
           name: 'name',
-          summary: `The name of your project (e.g. ${chalk.green('myApp')}, ${chalk.green('"My App"')})`,
+          summary: `The name of your project (e.g. ${input('myApp')}, ${input('"My App"')})`,
           validators: [validators.required],
         },
       ],
       options: [
         {
           name: 'type',
-          summary: `Type of project (e.g. ${PROJECT_TYPES.map(type => chalk.green(type)).join(', ')})`,
+          summary: `Type of project (e.g. ${PROJECT_TYPES.map(type => input(type)).join(', ')})`,
         },
         {
           name: 'force',
@@ -62,8 +62,8 @@ ${chalk.green('ionic init')} will prompt for a project name and then proceed to 
     if (this.project && this.project.details.context === 'app' && !force) {
       // TODO: check for existing project config in multi-app
       throw new FatalException(
-        `Existing Ionic project file found: ${chalk.bold(prettyPath(this.project.filePath))}\n` +
-        `You can re-initialize your project using the ${chalk.green('--force')} option.`
+        `Existing Ionic project file found: ${strong(prettyPath(this.project.filePath))}\n` +
+        `You can re-initialize your project using the ${input('--force')} option.`
       );
     }
 
@@ -97,7 +97,7 @@ ${chalk.green('ionic init')} will prompt for a project name and then proceed to 
         name: 'type',
         message: 'Project type:',
         choices: PROJECT_TYPES.map(t => ({
-          name: `${prettyProjectName(t)} (${chalk.green(t)})`,
+          name: `${prettyProjectName(t)} (${input(t)})`,
           value: t,
         })),
       });
@@ -114,7 +114,7 @@ ${chalk.green('ionic init')} will prompt for a project name and then proceed to 
     if (!type) {
       throw new FatalException(
         `Could not determine project type.\n` +
-        `Please specify ${chalk.green('--type')}. See ${chalk.green('ionic init --help')} for details.`
+        `Please specify ${input('--type')}. See ${input('ionic init --help')} for details.`
       );
     }
 

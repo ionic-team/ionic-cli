@@ -1,9 +1,9 @@
 import { OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
+import { ancillary, weak } from '../../color';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 import { findOpenIonicPorts } from '../common';
 
@@ -33,7 +33,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           type: Boolean,
           groups: ['cordova'],
           aliases: ['c'],
-          hint: chalk.dim('[app-scripts]'),
+          hint: weak('[app-scripts]'),
         },
         {
           name: 'serverlogs',
@@ -41,7 +41,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           type: Boolean,
           aliases: ['s'],
           groups: [OptionGroup.Hidden, 'cordova'],
-          hint: chalk.dim('[app-scripts]'),
+          hint: weak('[app-scripts]'),
         },
         {
           name: 'devapp',
@@ -56,7 +56,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           default: DEFAULT_LIVERELOAD_PORT.toString(),
           aliases: ['r'],
           groups: [OptionGroup.Advanced, 'cordova'],
-          hint: chalk.dim('[app-scripts]'),
+          hint: weak('[app-scripts]'),
           spec: { value: 'port' },
         },
         {
@@ -64,7 +64,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           summary: 'Use specific port for dev server',
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
           groups: [OptionGroup.Advanced, 'cordova'],
-          hint: chalk.dim('[app-scripts]'),
+          hint: weak('[app-scripts]'),
           spec: { value: 'port' },
         },
         {
@@ -73,7 +73,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           type: Boolean,
           default: true,
           groups: [OptionGroup.Advanced, 'cordova'],
-          hint: chalk.dim('[app-scripts]'),
+          hint: weak('[app-scripts]'),
           // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
         {
@@ -81,7 +81,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           summary: 'Output sourcemaps',
           type: Boolean,
           groups: [OptionGroup.Advanced, 'cordova'],
-          hint: chalk.dim('[app-scripts]'),
+          hint: weak('[app-scripts]'),
         },
         ...APP_SCRIPTS_OPTIONS,
       ],
@@ -192,15 +192,15 @@ class IonicAngularServeCLI extends ServeCLI<IonicAngularServeOptions> {
 
   protected async resolveProgram(): Promise<string> {
     if (typeof this.script !== 'undefined') {
-      debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+      debug(`Looking for ${ancillary(this.script)} npm script.`);
 
       const pkg = await this.e.project.requirePackageJson();
 
       if (pkg.scripts && pkg.scripts[this.script]) {
         if (pkg.scripts[this.script] === DEFAULT_SERVE_SCRIPT_VALUE) {
-          debug(`Found ${chalk.cyan(this.script)}, but it is the default. Not running.`);
+          debug(`Found ${ancillary(this.script)}, but it is the default. Not running.`);
         } else {
-          debug(`Using ${chalk.cyan(this.script)} npm script.`);
+          debug(`Using ${ancillary(this.script)} npm script.`);
           return this.e.config.get('npmClient');
         }
       }

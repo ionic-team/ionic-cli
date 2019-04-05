@@ -1,7 +1,7 @@
 import { findClosestOpenPort } from '@ionic/utils-network';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 
+import { input, strong } from '../color';
 import { FatalException } from '../errors';
 
 const debug = Debug('ionic:lib:project:common');
@@ -27,17 +27,17 @@ export async function findOpenIonicPorts(address: string, ports: Ports): Promise
     ]);
 
     if (ports.port !== port) {
-      debug(`Port ${chalk.bold(String(ports.port))} taken, using ${chalk.bold(String(port))}.`);
+      debug(`Port ${strong(String(ports.port))} taken, using ${strong(String(port))}.`);
       ports.port = port;
     }
 
     if (ports.livereloadPort !== livereloadPort) {
-      debug(`Port ${chalk.bold(String(ports.livereloadPort))} taken, using ${chalk.bold(String(livereloadPort))}.`);
+      debug(`Port ${strong(String(ports.livereloadPort))} taken, using ${strong(String(livereloadPort))}.`);
       ports.livereloadPort = livereloadPort;
     }
 
     if (ports.notificationPort !== notificationPort) {
-      debug(`Port ${chalk.bold(String(ports.notificationPort))} taken, using ${chalk.bold(String(notificationPort))}.`);
+      debug(`Port ${strong(String(ports.notificationPort))} taken, using ${strong(String(notificationPort))}.`);
       ports.notificationPort = notificationPort;
     }
 
@@ -47,6 +47,6 @@ export async function findOpenIonicPorts(address: string, ports: Ports): Promise
       throw e;
     }
 
-    throw new FatalException(`${chalk.green(address)} is not available--cannot bind.`);
+    throw new FatalException(`${input(address)} is not available--cannot bind.`);
   }
 }

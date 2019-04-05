@@ -1,9 +1,9 @@
 import { BaseConfig } from '@ionic/cli-framework';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
 import { CommandLineInputs, CommandLineOptions, IConfig, IProject } from '../../definitions';
+import { failure, input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
@@ -39,7 +39,7 @@ export abstract class BaseConfigCommand extends Command {
 
     if (global) {
       if (root) {
-        this.env.log.warn(`${chalk.green('--root')} has no effect with ${chalk.green('--global')}: this command always operates at root for CLI config.`);
+        this.env.log.warn(`${input('--root')} has no effect with ${input('--global')}: this command always operates at root for CLI config.`);
       }
 
       return { global, config: this.env.config, ...base };
@@ -47,7 +47,7 @@ export abstract class BaseConfigCommand extends Command {
       if (!this.project) {
         throw new FatalException(
           `Sorry--this won't work outside an Ionic project directory.\n` +
-          `Did you mean to operate on global config using ${chalk.green('--global')}?`
+          `Did you mean to operate on global config using ${input('--global')}?`
         );
       }
 
@@ -60,12 +60,12 @@ export abstract class BaseConfigCommand extends Command {
       const serialized = JSON.stringify(v);
 
       if (typeof serialized === 'undefined') { // tslint:disable-line:strict-type-predicates
-        throw new FatalException(`Cannot serialize value: ${chalk.bold(v)}`);
+        throw new FatalException(`Cannot serialize value: ${strong(v)}`);
       }
 
       return serialized;
     } catch (e) {
-      throw new FatalException(`Cannot serialize value: ${chalk.bold(v)}`);
+      throw new FatalException(`Cannot serialize value: ${strong(v)}`);
     }
   }
 
@@ -86,7 +86,7 @@ export abstract class BaseConfigCommand extends Command {
       }
 
       if (expectJson) {
-        throw new FatalException(`${chalk.green('--json')}: ${chalk.green(String(v))} is invalid JSON: ${chalk.red(e.toString())}`);
+        throw new FatalException(`${input('--json')}: ${input(String(v))} is invalid JSON: ${failure(e.toString())}`);
       }
     }
 
@@ -121,8 +121,8 @@ export function setConfigValue(ctx: ConfigContext & { property: string; original
 
   if (ctx.originalValue && typeof ctx.originalValue === 'object' && !ctx.force) {
     throw new FatalException(
-      `Sorry--will not override objects or arrays without ${chalk.green('--force')}.\n` +
-      `Value of ${chalk.green(ctx.property)} is: ${chalk.bold(util.inspect(ctx.originalValue, { colors: false }))}`
+      `Sorry--will not override objects or arrays without ${input('--force')}.\n` +
+      `Value of ${input(ctx.property)} is: ${strong(util.inspect(ctx.originalValue, { colors: false }))}`
     );
   }
 

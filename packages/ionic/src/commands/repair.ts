@@ -1,9 +1,9 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { remove, unlink } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, IProject } from '../definitions';
+import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
@@ -24,7 +24,7 @@ For Cordova apps, it removes and recreates the generated native project and the 
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic repair')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic repair')} outside a project directory.`);
     }
 
     const { pkgManagerArgs } = await import('../lib/utils/npm');
@@ -34,12 +34,12 @@ For Cordova apps, it removes and recreates the generated native project and the 
 
     if (this.env.flags.interactive) {
       this.env.log.info(
-        `${chalk.green('ionic repair')} will do the following:\n\n` +
-        `- Remove ${chalk.bold('node_modules/')} and ${chalk.bold('package-lock.json')}\n` +
-        `- Run ${chalk.green([installer, ...installerArgs].join(' '))} to restore dependencies\n` +
+        `${input('ionic repair')} will do the following:\n\n` +
+        `- Remove ${strong('node_modules/')} and ${strong('package-lock.json')}\n` +
+        `- Run ${input([installer, ...installerArgs].join(' '))} to restore dependencies\n` +
         (cordova && cordova.enabled ?
-          `- Remove ${chalk.bold('platforms/')} and ${chalk.bold('plugins/')}\n` +
-          `- Run ${chalk.green('cordova prepare')} to restore platforms and plugins\n` : '')
+          `- Remove ${strong('platforms/')} and ${strong('plugins/')}\n` +
+          `- Run ${input('cordova prepare')} to restore platforms and plugins\n` : '')
       );
     }
 
@@ -51,7 +51,7 @@ For Cordova apps, it removes and recreates the generated native project and the 
     });
 
     if (!confirm) {
-      throw new FatalException(`Not running ${chalk.green('ionic repair')}.`);
+      throw new FatalException(`Not running ${input('ionic repair')}.`);
     }
 
     this.env.log.nl();
@@ -68,10 +68,10 @@ For Cordova apps, it removes and recreates the generated native project and the 
     const packageLockFile = path.resolve(project.directory, 'package-lock.json');
     const nodeModulesDir = path.resolve(project.directory, 'node_modules');
 
-    tasks.next(`Removing ${chalk.bold(prettyPath(packageLockFile))}`);
+    tasks.next(`Removing ${strong(prettyPath(packageLockFile))}`);
     await unlink(packageLockFile);
 
-    tasks.next(`Removing ${chalk.bold(prettyPath(nodeModulesDir))}`);
+    tasks.next(`Removing ${strong(prettyPath(nodeModulesDir))}`);
     await remove(nodeModulesDir);
 
     tasks.end();
@@ -87,10 +87,10 @@ For Cordova apps, it removes and recreates the generated native project and the 
       const platformsDir = path.resolve(cordova.root, 'platforms');
       const pluginsDir = path.resolve(cordova.root, 'plugins');
 
-      tasks.next(`Removing ${chalk.bold(prettyPath(platformsDir))}`);
+      tasks.next(`Removing ${strong(prettyPath(platformsDir))}`);
       await remove(platformsDir);
 
-      tasks.next(`Removing ${chalk.bold(prettyPath(pluginsDir))}`);
+      tasks.next(`Removing ${strong(prettyPath(pluginsDir))}`);
       await remove(pluginsDir);
 
       tasks.end();

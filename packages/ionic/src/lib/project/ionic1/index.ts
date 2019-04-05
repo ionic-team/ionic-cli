@@ -1,12 +1,12 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readJson } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { Project } from '../';
 import { InfoItem } from '../../../definitions';
+import { strong } from '../../color';
 import { FatalException, RunnerNotFoundException } from '../../errors';
 
 import * as ζbuild from './build';
@@ -62,7 +62,7 @@ export class Ionic1Project extends Project {
       const deps = lodash.assign({}, bwr.dependencies, bwr.devDependencies);
 
       if (typeof deps['ionic'] === 'string') {
-        debug(`${chalk.bold('ionic')} detected in ${chalk.bold('bower.json')}`);
+        debug(`${strong('ionic')} detected in ${strong('bower.json')}`);
         return true;
       }
     } catch (e) {
@@ -106,7 +106,7 @@ export class Ionic1Project extends Project {
         }
       }
     } catch (e) {
-      this.e.log.error(`Error with ${chalk.bold(prettyPath(bowerJsonPath))} file: ${e}`);
+      this.e.log.error(`Error with ${strong(prettyPath(bowerJsonPath))} file: ${e}`);
     }
   }
 
@@ -117,9 +117,9 @@ export class Ionic1Project extends Project {
         this.bowerJsonFile = await readBowerJsonFile(bowerJsonPath);
       } catch (e) {
         if (e instanceof SyntaxError) {
-          throw new FatalException(`Could not parse ${chalk.bold('bower.json')}. Is it a valid JSON file?`);
+          throw new FatalException(`Could not parse ${strong('bower.json')}. Is it a valid JSON file?`);
         } else if (e === ERROR_INVALID_BOWER_JSON) {
-          throw new FatalException(`The ${chalk.bold('bower.json')} file seems malformed.`);
+          throw new FatalException(`The ${strong('bower.json')} file seems malformed.`);
         }
 
         throw e; // Probably file not found

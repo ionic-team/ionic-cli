@@ -1,7 +1,7 @@
 import { CommandGroup, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
 
@@ -12,13 +12,13 @@ export class AddCommand extends CapacitorCommand implements CommandPreRun {
       type: 'project',
       summary: 'Add a native platform to your Ionic project',
       description: `
-${chalk.green('ionic capacitor add')} will do the following:
+${input('ionic capacitor add')} will do the following:
 - Add a new platform specific folder to your project (ios, android, or electron)
       `,
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to add (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to add (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],

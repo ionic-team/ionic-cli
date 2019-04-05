@@ -41,6 +41,6 @@ export class GitCloneCommand extends Command {
 
     // await this.env.shell.run('git', ['clone', '-o', 'ionic', remote, destination], { stdio: 'inherit' });
 
-    // this.env.log.ok(`Your app has been cloned to ${chalk.bold(prettyPath(destination))}!`);
+    // this.env.log.ok(`Your app has been cloned to ${strong(prettyPath(destination))}!`);
   }
 }

@@ -1,8 +1,8 @@
 import { CommandMetadataOption, Footnote } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { build } from '../../lib/build';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 
@@ -34,22 +34,22 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Copies assets to Cordova platforms, preparing them for native builds',
       description: `
-${chalk.green('ionic cordova prepare')} will do the following:
+${input('ionic cordova prepare')} will do the following:
 
-- Perform an Ionic build, which compiles web assets to ${chalk.bold('www/')}.
-- Copy the ${chalk.bold('www/')} directory into your Cordova platforms.
-- Transform ${chalk.bold('config.xml')} into platform-specific manifest files.
-- Copy icons and splash screens from ${chalk.bold('resources/')} to into your Cordova platforms.
+- Perform an Ionic build, which compiles web assets to ${strong('www/')}.
+- Copy the ${strong('www/')} directory into your Cordova platforms.
+- Transform ${strong('config.xml')} into platform-specific manifest files.
+- Copy icons and splash screens from ${strong('resources/')} to into your Cordova platforms.
 - Copy plugin files into specified platforms.
 
-You may wish to use ${chalk.green('ionic cordova prepare')} if you run your project with Android Studio or Xcode.
+You may wish to use ${input('ionic cordova prepare')} if you run your project with Android Studio or Xcode.
       `,
       footnotes,
       exampleCommands: ['', 'ios', 'android'],
       inputs: [
         {
           name: 'platform',
-          summary: `The platform you would like to prepare (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform you would like to prepare (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
         },
       ],
       options,
@@ -66,15 +66,15 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
     const [ platform ] = inputs;
 
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova prepare')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic cordova prepare')} outside a project directory.`);
     }
 
     if (platform) {
       await this.checkForPlatformInstallation(platform, {
         promptToInstall: true,
         promptToInstallRefusalMsg: (
-          `Cannot prepare for ${chalk.green(platform)} unless the platform is installed.\n` +
-          `Did you mean just ${chalk.green('ionic cordova prepare')}?\n`
+          `Cannot prepare for ${input(platform)} unless the platform is installed.\n` +
+          `Did you mean just ${input('ionic cordova prepare')}?\n`
         ),
       });
     } else {
@@ -85,7 +85,7 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
       if (engines.length === 0 && platforms.length === 0) {
         this.env.log.warn(
           `No platforms added to this project. Cannot prepare native platforms without any installed.\n` +
-          `Run ${chalk.green('ionic cordova platform add <platform>')} to add native platforms.`
+          `Run ${input('ionic cordova platform add <platform>')} to add native platforms.`
         );
 
         throw new FatalException('', 0);
@@ -102,8 +102,8 @@ You may wish to use ${chalk.green('ionic cordova prepare')} if you run your proj
         await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, buildOptions);
       } else {
         this.env.log.warn(
-          `Cannot perform Ionic build without ${chalk.green('platform')}. Falling back to just ${chalk.green('cordova prepare')}.\n` +
-          `Please supply a ${chalk.green('platform')} (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')}) so the Ionic CLI can build web assets. The ${chalk.green('--no-build')} option will hide this warning.`
+          `Cannot perform Ionic build without ${input('platform')}. Falling back to just ${input('cordova prepare')}.\n` +
+          `Please supply a ${input('platform')} (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')}) so the Ionic CLI can build web assets. The ${input('--no-build')} option will hide this warning.`
         );
 
         this.env.log.nl();

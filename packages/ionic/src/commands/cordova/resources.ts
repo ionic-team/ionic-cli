@@ -2,10 +2,10 @@ import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, copy, pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '../../definitions';
+import { ancillary, failure, input, strong, weak } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { createDefaultLoggerHandlers } from '../../lib/utils/logger';
 import { pkgManagerArgs } from '../../lib/utils/npm';
@@ -23,25 +23,25 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Automatically create icon and splash screen resources',
       description: `
-Ionic can automatically generate perfectly sized icons and splash screens from source images (${chalk.bold('.png')}, ${chalk.bold('.psd')}, or ${chalk.bold('.ai')}) for your Cordova platforms.
+Ionic can automatically generate perfectly sized icons and splash screens from source images (${strong('.png')}, ${strong('.psd')}, or ${strong('.ai')}) for your Cordova platforms.
 
-The source image for icons should ideally be at least ${chalk.bold('1024×1024px')} and located at ${chalk.bold('resources/icon.png')}. The source image for splash screens should ideally be at least ${chalk.bold('2732×2732px')} and located at ${chalk.bold('resources/splash.png')}. If you used ${chalk.green('ionic start')}, there should already be default Ionic resources in the ${chalk.bold('resources/')} directory, which you can overwrite.
+The source image for icons should ideally be at least ${strong('1024×1024px')} and located at ${strong('resources/icon.png')}. The source image for splash screens should ideally be at least ${strong('2732×2732px')} and located at ${strong('resources/splash.png')}. If you used ${input('ionic start')}, there should already be default Ionic resources in the ${strong('resources/')} directory, which you can overwrite.
 
-You can also generate platform-specific icons and splash screens by placing them in the respective ${chalk.bold('resources/<platform>/')} directory. For example, to generate an icon for Android, place your image at ${chalk.bold('resources/android/icon.png')}.
+You can also generate platform-specific icons and splash screens by placing them in the respective ${strong('resources/<platform>/')} directory. For example, to generate an icon for Android, place your image at ${strong('resources/android/icon.png')}.
 
-By default, this command will not regenerate resources whose source image has not changed. To disable this functionality and always overwrite generated images, use ${chalk.green('--force')}.
+By default, this command will not regenerate resources whose source image has not changed. To disable this functionality and always overwrite generated images, use ${input('--force')}.
 
-For best results, the splash screen's artwork should roughly fit within a square (${chalk.bold('1200×1200px')}) at the center of the image. You can use ${chalk.bold('https://code.ionicframework.com/resources/splash.psd')} as a template for your splash screen.
+For best results, the splash screen's artwork should roughly fit within a square (${strong('1200×1200px')}) at the center of the image. You can use ${strong('https://code.ionicframework.com/resources/splash.psd')} as a template for your splash screen.
 
-${chalk.green('ionic cordova resources')} will automatically update your ${chalk.bold('config.xml')} to reflect the changes in the generated images, which Cordova then configures.
+${input('ionic cordova resources')} will automatically update your ${strong('config.xml')} to reflect the changes in the generated images, which Cordova then configures.
 
 Cordova reference documentation:
-- Icons: ${chalk.bold('https://cordova.apache.org/docs/en/latest/config_ref/images.html')}
-- Splash Screens: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-splashscreen/')}
+- Icons: ${strong('https://cordova.apache.org/docs/en/latest/config_ref/images.html')}
+- Splash Screens: ${strong('https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-splashscreen/')}
 
-This command uses Ionic servers and we require you to be logged into your free Ionic account. Use ${chalk.green('ionic login')} to login.
+This command uses Ionic servers and we require you to be logged into your free Ionic account. Use ${input('ionic login')} to login.
 
-With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ionic cordova resources')} will generate resources locally using the ${chalk.green('cordova-res')} utility[^cordova-res-repo].
+With the experimental ${input('--cordova-res')} option, ${input('ionic cordova resources')} will generate resources locally using the ${input('cordova-res')} utility[^cordova-res-repo].
       `,
       footnotes: [
         {
@@ -53,7 +53,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
       inputs: [
         {
           name: 'platform',
-          summary: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => input(v)).join(', ')})`,
         },
       ],
       options: [
@@ -77,7 +77,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
         },
         {
           name: 'cordova-res',
-          summary: `Use ${chalk.green('cordova-res')} instead of Ionic resource server`,
+          summary: `Use ${input('cordova-res')} instead of Ionic resource server`,
           type: Boolean,
           groups: [OptionGroup.Experimental],
         },
@@ -93,7 +93,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
     const isLoggedIn = this.env.session.isLoggedIn();
 
     if (!options['cordova-res'] && !isLoggedIn) {
-      this.env.log.warn(`You need to be logged into your Ionic account in order to run ${chalk.green(`ionic cordova resources`)}.\n`);
+      this.env.log.warn(`You need to be logged into your Ionic account in order to run ${input(`ionic cordova resources`)}.\n`);
       await promptToLogin(this.env);
     }
   }
@@ -105,10 +105,10 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
     debug(`RESOURCES=${Object.keys(RESOURCES).length}`);
 
     const installedPlatforms = await getPlatforms(this.integration.root);
-    debug(`installedPlatforms=${installedPlatforms.map(e => chalk.bold(e)).join(', ')}`);
+    debug(`installedPlatforms=${installedPlatforms.map(e => strong(e)).join(', ')}`);
 
     const buildPlatforms = Object.keys(RESOURCES).filter(p => installedPlatforms.includes(p));
-    debug(`buildPlatforms=${buildPlatforms.map(v => chalk.bold(v)).join(', ')}`);
+    debug(`buildPlatforms=${buildPlatforms.map(v => strong(v)).join(', ')}`);
 
     return buildPlatforms;
   }
@@ -125,11 +125,11 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
 
   async runCordovaRes(platform: string | undefined, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova resources')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic cordova resources')} outside a project directory.`);
     }
 
     const log = this.env.log.clone();
-    log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[cordova-res]`)));
+    log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(weak(`[cordova-res]`)));
     const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
 
     const args: string[] = [];
@@ -154,8 +154,8 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         const installArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova-res', global: true });
         throw new FatalException(
-          `${chalk.green('cordova-res')} was not found on your PATH. Please install it globally:\n` +
-          `${chalk.green(installArgs.join(' '))}\n`
+          `${input('cordova-res')} was not found on your PATH. Please install it globally:\n` +
+          `${input(installArgs.join(' '))}\n`
         );
       }
 
@@ -180,7 +180,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
     const buildPlatforms = platform ? [platform] : await this.getBuildPlatforms();
 
     if (buildPlatforms.length === 0) {
-      throw new FatalException(`No platforms detected. Please run: ${chalk.green('ionic cordova platform add')}`);
+      throw new FatalException(`No platforms detected. Please run: ${input('ionic cordova platform add')}`);
     }
 
     tasks.next(`Collecting resource configuration and source images`);
@@ -203,7 +203,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
 
     // Create the resource directories that are needed for the images we will create
     const buildDirResponses = await createImgDestinationDirectories(imgResources);
-    debug(`${chalk.cyan('createImgDestinationDirectories')} completed: ${buildDirResponses.length}`);
+    debug(`${ancillary('createImgDestinationDirectories')} completed: ${buildDirResponses.length}`);
 
     // Check /resources and /resources/<platform> directories for src files
     // Update imgResources to have their src attributes to equal the most
@@ -212,9 +212,9 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
 
     try {
       srcImagesAvailable = await getSourceImages(this.integration.root, buildPlatforms, resourceTypes);
-      debug(`${chalk.cyan('getSourceImages')} completed: (${srcImagesAvailable.map(v => chalk.bold(prettyPath(v.path))).join(', ')})`);
+      debug(`${ancillary('getSourceImages')} completed: (${srcImagesAvailable.map(v => strong(prettyPath(v.path))).join(', ')})`);
     } catch (e) {
-      this.env.log.error(`Error in ${chalk.green('getSourceImages')}: ${e.stack ? e.stack : e}`);
+      this.env.log.error(`Error in ${input('getSourceImages')}: ${e.stack ? e.stack : e}`);
     }
 
     imgResources = imgResources.map(img => {
@@ -239,12 +239,12 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
           }
           return list;
         }, [] as string[])
-        .map(v => `- ${chalk.bold(v)}`)
+        .map(v => `- ${strong(v)}`)
         .join('\n');
 
       throw new FatalException(
         `Source image files were not found for the following platforms/types:\n${missingImageText}\n\n` +
-        `Please review ${chalk.green('--help')}`
+        `Please review ${input('--help')}`
       );
     }
 
@@ -271,7 +271,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
         this.env.log.info(
           'No need to regenerate images.\n' +
           'This could mean your generated images exist and do not need updating or your source files are unchanged.\n\n' +
-          `You can force image regeneration with the ${chalk.green('--force')} option.`
+          `You can force image regeneration with the ${input('--force')} option.`
         );
 
         throw new FatalException('', 0);
@@ -285,11 +285,11 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
     const imageUploadResponses = await Promise.all(srcImagesAvailable.map(async srcImage => {
       const response = await uploadSourceImage(this.env, srcImage);
       count += 1;
-      uploadTask.msg = `Uploading source images to prepare for transformations: ${chalk.bold(`${count} / ${srcImagesAvailable.length}`)} complete`;
+      uploadTask.msg = `Uploading source images to prepare for transformations: ${strong(`${count} / ${srcImagesAvailable.length}`)} complete`;
       return response;
     }));
 
-    debug(`${chalk.cyan('uploadSourceImages')} completed: responses=%O`, imageUploadResponses);
+    debug(`${ancillary('uploadSourceImages')} completed: responses=%O`, imageUploadResponses);
 
     srcImagesAvailable = srcImagesAvailable.map((img, index) => {
       return {
@@ -334,12 +334,12 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
     const transforms = imgResources.map(async img => {
       const result = await transformResourceImage(this.env, img);
       count += 1;
-      generateTask.msg = `Generating platform resources: ${chalk.bold(`${count} / ${imgResources.length}`)} complete`;
+      generateTask.msg = `Generating platform resources: ${strong(`${count} / ${imgResources.length}`)} complete`;
       return result;
     });
 
     const transformResults = await Promise.all(transforms);
-    generateTask.msg = `Generating platform resources: ${chalk.bold(`${imgResources.length} / ${imgResources.length}`)} complete`;
+    generateTask.msg = `Generating platform resources: ${strong(`${imgResources.length} / ${imgResources.length}`)} complete`;
     debug('transforms completed');
 
     const transformErrors: Error[] = transformResults.map(result => result.error).filter((err): err is Error => typeof err !== 'undefined');
@@ -347,7 +347,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
     if (transformErrors.length > 0) {
       throw new FatalException(
         `Encountered ${transformErrors.length} error(s) during image transforms:\n\n` +
-        transformErrors.map((err, i) => `${i + 1}): ` + chalk.red(err.toString())).join('\n\n')
+        transformErrors.map((err, i) => `${i + 1}): ` + failure(err.toString())).join('\n\n')
       );
     }
 
@@ -398,7 +398,7 @@ With the experimental ${chalk.green('--cordova-res')} option, ${chalk.green('ion
     // All images that were not processed
     if (imagesTooLargeForSource.length > 0) {
       const imagesTooLargeForSourceMsg = imagesTooLargeForSource
-        .map(img => `    ${chalk.bold(img.name)}     ${img.platform}/${img.resType} needed ${img.width}×${img.height}px`)
+        .map(img => `    ${strong(img.name)}     ${img.platform}/${img.resType} needed ${img.width}×${img.height}px`)
         .concat((imagesTooLargeForSource.length > 0) ? `\nThe following images were not created because their source image was too small:` : [])
         .reverse();
 

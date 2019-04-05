@@ -1,9 +1,9 @@
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
-import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { isTreatableAilment } from '../../guards';
+import { input, strong } from '../../lib/color';
 
 import { DoctorCommand } from './base';
 
@@ -15,11 +15,11 @@ export class DoctorListCommand extends DoctorCommand {
       summary: 'List all issues and their identifiers',
       description: `
 Issues can have various tags:
-- ${chalk.bold('treatable')}: ${chalk.green('ionic doctor treat')} can attempt to fix the issue
-- ${chalk.bold('ignored')}: configured not to be detected in ${chalk.green('ionic doctor check')} or ${chalk.green('ionic doctor treat')}
-- ${chalk.bold('explicit-detection')}: issue is only detected explicitly with ${chalk.green('ionic doctor check <issue-id>')}
+- ${strong('treatable')}: ${input('ionic doctor treat')} can attempt to fix the issue
+- ${strong('ignored')}: configured not to be detected in ${input('ionic doctor check')} or ${input('ionic doctor treat')}
+- ${strong('explicit-detection')}: issue is only detected explicitly with ${input('ionic doctor check <issue-id>')}
 
-You can flip whether an issue is ignored or not by using ${chalk.green('ionic config set -g doctor.issues.<issue-id>.ignored true/false')}, where ${chalk.green('<issue-id>')} matches an ID listed with this command.
+You can flip whether an issue is ignored or not by using ${input('ionic config set -g doctor.issues.<issue-id>.ignored true/false')}, where ${input('<issue-id>')} matches an ID listed with this command.
       `,
     };
   }
@@ -44,9 +44,9 @@ You can flip whether an issue is ignored or not by using ${chalk.green('ionic co
       }
 
       return [
-        chalk.green(ailment.id),
-        ailment.projects ? ailment.projects.map(t => chalk.bold(t)).join(', ') : 'all',
-        tags.map(t => chalk.bold(t)).join(', '),
+        input(ailment.id),
+        ailment.projects ? ailment.projects.map(t => strong(t)).join(', ') : 'all',
+        tags.map(t => strong(t)).join(', '),
       ];
     });
 

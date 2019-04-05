@@ -1,6 +1,6 @@
 import { NamespaceGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
+import { strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class DeployNamespace extends Namespace {
@@ -12,7 +12,7 @@ export class DeployNamespace extends Namespace {
 Interface to execute commands about deploy builds on Ionic Appflow.
 
 Appflow deploy documentation:
-- Overview: ${chalk.bold('https://ion.link/appflow-deploy-docs')}
+- Overview: ${strong('https://ion.link/appflow-deploy-docs')}
 `,
       groups: [NamespaceGroup.Paid],
     };

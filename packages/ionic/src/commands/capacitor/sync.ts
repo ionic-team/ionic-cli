@@ -1,7 +1,7 @@
 import { CommandGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
 
@@ -12,7 +12,7 @@ export class SyncCommand extends CapacitorCommand implements CommandPreRun {
       type: 'project',
       summary: 'Sync (copy + update) an Ionic project',
       description: `
-${chalk.green('ionic capacitor sync')} will do the following:
+${input('ionic capacitor sync')} will do the following:
 - Copy web assets to all Capacitor native platforms
 - Update each Capacitor native platforms, such as any dependencies that need updating.
 - Install any discovered Capacitor or Cordova plugins.
@@ -20,7 +20,7 @@ ${chalk.green('ionic capacitor sync')} will do the following:
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to sync (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to sync (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
         },
       ],
       groups: [CommandGroup.Beta],

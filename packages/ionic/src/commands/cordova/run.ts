@@ -1,12 +1,12 @@
 import { Footnote, LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/utils-process';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
-import chalk from 'chalk';
 import * as path from 'path';
 import * as url from 'url';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions } from '../../definitions';
 import { COMMON_BUILD_COMMAND_OPTIONS, build } from '../../lib/build';
+import { input, strong, weak } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { loadConfigXml } from '../../lib/integrations/cordova/config';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
@@ -23,10 +23,10 @@ const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
 const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
     name: 'native-run',
-    summary: `Use ${chalk.green('native-run')} instead of Cordova for running the app`,
+    summary: `Use ${input('native-run')} instead of Cordova for running the app`,
     type: Boolean,
     groups: [OptionGroup.Experimental, 'native-run'],
-    hint: chalk.dim('[native-run]'),
+    hint: weak('[native-run]'),
   },
   {
     name: 'connect',
@@ -34,14 +34,14 @@ const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     type: Boolean,
     default: true,
     groups: [OptionGroup.Experimental, 'native-run'],
-    hint: chalk.dim('[native-run]'),
+    hint: weak('[native-run]'),
   },
   {
     name: 'json',
-    summary: `Output ${chalk.green('--list')} targets in JSON`,
+    summary: `Output ${input('--list')} targets in JSON`,
     type: Boolean,
     groups: [OptionGroup.Experimental, 'native-run'],
-    hint: chalk.dim('[native-run]'),
+    hint: weak('[native-run]'),
   },
 ];
 
@@ -113,7 +113,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       groups = libmetadata.groups || [];
       options.push(...(libmetadata.options || [])
         .filter(o => !existingOpts.includes(o.name) && o.groups && o.groups.includes('cordova'))
-        .map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${chalk.dim('(--livereload)')}` })));
+        .map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` })));
       footnotes.push(...libmetadata.footnotes || []);
     }
 
@@ -128,20 +128,20 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Run an Ionic project on a connected device',
       description: `
-Like running ${chalk.green('cordova run')} or ${chalk.green('cordova emulate')} directly, but performs ${chalk.green('ionic build')} before deploying to the device or emulator. Optionally specify the ${chalk.green('--livereload')} option to use the dev server from ${chalk.green('ionic serve')} for livereload functionality.
+Like running ${input('cordova run')} or ${input('cordova emulate')} directly, but performs ${input('ionic build')} before deploying to the device or emulator. Optionally specify the ${input('--livereload')} option to use the dev server from ${input('ionic serve')} for livereload functionality.
 
 For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs[^remote-debugging-docs].
 
-Just like with ${chalk.green('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${chalk.green('--')} separator. To pass additional options to the dev server, consider using ${chalk.green('ionic serve')} and the ${chalk.green('--livereload-url')} option.
+Just like with ${input('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${input('--')} separator. To pass additional options to the dev server, consider using ${input('ionic serve')} and the ${input('--livereload-url')} option.
 
-With the experimental ${chalk.green('--native-run')} flag, this command will first use Cordova to build your app, and then it will run it on a device using the ${chalk.green('native-run')} utility[^native-run-repo] instead of Cordova.
+With the experimental ${input('--native-run')} flag, this command will first use Cordova to build your app, and then it will run it on a device using the ${input('native-run')} utility[^native-run-repo] instead of Cordova.
       `,
       footnotes,
       exampleCommands,
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to run (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to run (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
         },
       ],
       options,
@@ -155,7 +155,7 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
     const metadata = await this.getMetadata();
 
     if (options['noproxy']) {
-      this.env.log.warn(`The ${chalk.green('--noproxy')} option has been deprecated. Please use ${chalk.green('--no-proxy')}.`);
+      this.env.log.warn(`The ${input('--noproxy')} option has been deprecated. Please use ${input('--no-proxy')}.`);
       options['proxy'] = false;
     }
 
@@ -168,7 +168,7 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
     }
 
     if (!options['build'] && options['livereload']) {
-      this.env.log.warn(`No livereload with ${chalk.green('--no-build')}.`);
+      this.env.log.warn(`No livereload with ${input('--no-build')}.`);
       options['livereload'] = false;
     }
 
@@ -194,7 +194,7 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to run (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`,
+        message: `What platform would you like to run (${['android', 'ios'].map(v => input(v)).join(', ')}):`,
       });
 
       inputs[0] = platform.trim();
@@ -205,7 +205,7 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }
 
     const metadata = await this.getMetadata();
@@ -219,7 +219,7 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
 
         if (details.externallyAccessible === false && !options['native-run']) {
           const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
-          this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
+          this.env.log.warn(`Your device or emulator may not be able to access ${strong(details.externalAddress)}.${extra}\n\n`);
         }
 
         livereloadUrl = `${details.protocol || 'http'}://${options['native-run'] ? details.localAddress : details.externalAddress}:${details.port}`;
@@ -236,7 +236,7 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
       await conf.save();
 
       const cordovalog = this.env.log.clone();
-      cordovalog.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(`${chalk.dim(`[cordova]`)} `));
+      cordovalog.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(`${weak(`[cordova]`)} `));
       const cordovalogws = cordovalog.createWriteStream(LOGGER_LEVELS.INFO);
 
       if (options['native-run']) {
@@ -270,14 +270,14 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
 
   protected async nativeRun(args: ReadonlyArray<string>): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }
 
     let ws: NodeJS.WritableStream | undefined;
 
     if (!args.includes('--list')) {
       const log = this.env.log.clone();
-      log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[native-run]`)));
+      log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(weak(`[native-run]`)));
       ws = log.createWriteStream(LOGGER_LEVELS.INFO);
     }
 
@@ -287,8 +287,8 @@ With the experimental ${chalk.green('--native-run')} flag, this command will fir
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'native-run', global: true });
         throw new FatalException(
-          `${chalk.green('native-run')} was not found on your PATH. Please install it globally:\n` +
-          `${chalk.green(cdvInstallArgs.join(' '))}\n`
+          `${input('native-run')} was not found on your PATH. Please install it globally:\n` +
+          `${input(cdvInstallArgs.join(' '))}\n`
         );
       }
 

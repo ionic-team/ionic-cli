@@ -1,13 +1,13 @@
 import { validators } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { pathAccessible, pathExists } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
@@ -65,13 +65,13 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     } catch (e) {
       if (e.code === 'ENOENT') {
         throw new FatalException(
-          `${chalk.bold(prettyPath(pubkeyPath))} does not appear to exist. Please specify a valid SSH public key.\n` +
-          `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
+          `${strong(prettyPath(pubkeyPath))} does not appear to exist. Please specify a valid SSH public key.\n` +
+          `If you are having issues, try using ${input('ionic ssh setup')}.`
         );
       } else if (e === ERROR_SSH_INVALID_PUBKEY) {
         throw new FatalException(
-          `${chalk.bold(pubkeyName)} does not appear to be a valid SSH public key. (Not in ${chalk.bold('authorized_keys')} file format.)\n` +
-          `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
+          `${strong(pubkeyName)} does not appear to be a valid SSH public key. (Not in ${strong('authorized_keys')} file format.)\n` +
+          `If you are having issues, try using ${input('ionic ssh setup')}.`
         );
       }
 
@@ -84,7 +84,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
 
     try {
       const key = await sshkeyClient.create({ pubkey });
-      this.env.log.ok(`Your public key (${chalk.bold(key.fingerprint)}) has been added to Ionic!`);
+      this.env.log.ok(`Your public key (${strong(key.fingerprint)}) has been added to Ionic!`);
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 409) {
         this.env.log.msg('Pubkey already added to Ionic.');
@@ -112,8 +112,8 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
           await runCommand(runinfo, ['ssh', 'use', prettyPath(keyPath)]);
         } else {
           this.env.log.error(
-            `SSH key does not exist: ${chalk.bold(prettyPath(keyPath))}.\n` +
-            `Please use ${chalk.green('ionic ssh use')} manually to use the corresponding private key.`
+            `SSH key does not exist: ${strong(prettyPath(keyPath))}.\n` +
+            `Please use ${input('ionic ssh use')} manually to use the corresponding private key.`
           );
         }
       }

@@ -1,7 +1,7 @@
 import { CommandGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
 
@@ -12,14 +12,14 @@ export class UpdateCommand extends CapacitorCommand implements CommandPreRun {
       type: 'project',
       summary: 'Update Capacitor native platforms, install Capacitor/Cordova plugins',
       description: `
-${chalk.green('ionic capacitor update')} will do the following:
+${input('ionic capacitor update')} will do the following:
 - Update each Capacitor native project, such as any dependencies that need updating.
 - Install any discovered Capacitor or Cordova plugins.
       `,
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to update (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to update (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
         },
       ],
       groups: [CommandGroup.Beta],

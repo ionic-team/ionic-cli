@@ -1,12 +1,12 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { getFileChecksums, mkdirp, readdirSafe, tmpfilepath } from '@ionic/utils-fs';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { ImageResource, ImageResourceTransformResult, ImageUploadResponse, IonicEnvironment, KnownPlatform, ResourcesConfig, SourceImage } from '../../../definitions';
+import { ancillary, strong } from '../../color';
 import { formatResponseError } from '../../http';
 import { createRequest } from '../../utils/http';
 
@@ -97,7 +97,7 @@ export async function getSourceImages(projectDir: string, buildPlatforms: string
       const [ md5, cachedMd5 ] = await getFileChecksums(img.path);
 
       if (cachedMd5) {
-        debug(`${chalk.cyan('getSourceImages')}: ${chalk.bold(prettyPath(img.path))} cache md5: ${chalk.bold(cachedMd5)}`);
+        debug(`${ancillary('getSourceImages')}: ${strong(prettyPath(img.path))} cache md5: ${strong(cachedMd5)}`);
         img.cachedId = cachedMd5;
       }
 
@@ -202,7 +202,7 @@ export async function transformResourceImage(env: IonicEnvironment, resource: Im
             }
 
             result.error = new Error(
-              `Error while generating ${chalk.bold(resource.name)}: ` +
+              `Error while generating ${strong(resource.name)}: ` +
               `${generalErrorMsg}\n\n` +
               `Server: "${serverMsg}"`
             );

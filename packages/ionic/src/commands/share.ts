@@ -1,7 +1,7 @@
 import { CommandGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandMetadata } from '../definitions';
+import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 
@@ -19,8 +19,8 @@ export class ShareCommand extends Command {
     const dashUrl = this.env.config.getDashUrl();
 
     throw new FatalException(
-      `${chalk.green('ionic share')} has been removed.\n` +
-      `The functionality now exists in the Ionic Dashboard: ${chalk.bold(dashUrl)}`
+      `${input('ionic share')} has been removed.\n` +
+      `The functionality now exists in the Ionic Dashboard: ${strong(dashUrl)}`
     );
   }
 }

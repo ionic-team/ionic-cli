@@ -1,9 +1,9 @@
 import { OptionGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import chalk from 'chalk';
 
 import { PROJECT_FILE } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { input, strong, weak } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
 import { BaseConfigCommand, getConfigValue, setConfigValue } from './base';
@@ -17,15 +17,15 @@ export class ConfigSetCommand extends BaseConfigCommand {
       type: 'global',
       summary: 'Set config values',
       description: `
-This command writes configuration values to the project's ${chalk.bold(prettyPath(projectFile))} file. It can also operate on the global CLI configuration (${chalk.bold('~/.ionic/config.json')}) using the ${chalk.green('--global')} option.
+This command writes configuration values to the project's ${strong(prettyPath(projectFile))} file. It can also operate on the global CLI configuration (${strong('~/.ionic/config.json')}) using the ${input('--global')} option.
 
-For nested properties, separate nest levels with dots. For example, the property name ${chalk.green('integrations.cordova')} will look in the ${chalk.bold('integrations')} object for the ${chalk.bold('cordova')} property.
+For nested properties, separate nest levels with dots. For example, the property name ${input('integrations.cordova')} will look in the ${strong('integrations')} object for the ${strong('cordova')} property.
 
-For multi-app projects, this command is scoped to the current project by default. To operate at the root of the project configuration file instead, use the ${chalk.green('--root')} option.
+For multi-app projects, this command is scoped to the current project by default. To operate at the root of the project configuration file instead, use the ${input('--root')} option.
 
-This command will attempt to coerce ${chalk.green('value')} into a suitable JSON type. If it is JSON-parsable, such as ${chalk.green('123')}, ${chalk.green('true')}, ${chalk.green('[]')}, etc., then it takes the parsed result. Otherwise, the value is interpreted as a string. For stricter input, use ${chalk.green('--json')}, which will error with non-JSON values.
+This command will attempt to coerce ${input('value')} into a suitable JSON type. If it is JSON-parsable, such as ${input('123')}, ${input('true')}, ${input('[]')}, etc., then it takes the parsed result. Otherwise, the value is interpreted as a string. For stricter input, use ${input('--json')}, which will error with non-JSON values.
 
-By default, if ${chalk.green('property')} exists and is an object or an array, the value is not overwritten. To disable this check and always overwrite the property, use ${chalk.green('--force')}.
+By default, if ${input('property')} exists and is an object or an array, the value is not overwritten. To disable this check and always overwrite the property, use ${input('--force')}.
       `,
       inputs: [
         {
@@ -48,7 +48,7 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
         },
         {
           name: 'json',
-          summary: `Always interpret ${chalk.green('value')} as JSON`,
+          summary: `Always interpret ${input('value')} as JSON`,
           type: Boolean,
           groups: [OptionGroup.Advanced],
         },
@@ -60,9 +60,9 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
         },
         {
           name: 'root',
-          summary: `Operate on root of ${chalk.bold(prettyPath(projectFile))}`,
+          summary: `Operate on root of ${strong(prettyPath(projectFile))}`,
           type: Boolean,
-          hint: chalk.dim('[multi-app]'),
+          hint: weak('[multi-app]'),
           groups: [OptionGroup.Advanced],
         },
       ],
@@ -75,16 +75,16 @@ By default, if ${chalk.green('property')} exists and is an object or an array, t
     const { property } = ctx;
 
     if (typeof property === 'undefined') {
-      throw new FatalException(`Cannot set config to ${chalk.green(ctx.value)} without a property.`);
+      throw new FatalException(`Cannot set config to ${input(ctx.value)} without a property.`);
     }
 
     const originalValue = getConfigValue(ctx);
     setConfigValue({ ...ctx, property, originalValue });
 
     if (ctx.value !== originalValue) {
-      this.env.log.ok(`${chalk.green(property)} set to ${chalk.green(JSON.stringify(ctx.value))}!`);
+      this.env.log.ok(`${input(property)} set to ${input(JSON.stringify(ctx.value))}!`);
     } else {
-      this.env.log.info(`${chalk.green(property)} is already set to ${chalk.green(JSON.stringify(ctx.value))}.`);
+      this.env.log.info(`${input(property)} is already set to ${input(JSON.stringify(ctx.value))}.`);
     }
   }
 }

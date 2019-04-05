@@ -1,11 +1,11 @@
 import { OptionGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { PROJECT_FILE } from '../constants';
 import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo } from '../definitions';
 import { isSuperAgentError } from '../guards';
+import { ancillary, input, strong, weak } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
@@ -36,11 +36,11 @@ export class LinkCommand extends Command implements CommandPreRun {
       description: `
 Link apps on Ionic Appflow to local Ionic projects with this command.
 
-If the ${chalk.green('id')} argument is excluded, this command will prompt you to select an app from Ionic Appflow.
+If the ${input('id')} argument is excluded, this command will prompt you to select an app from Ionic Appflow.
 
-Ionic Appflow uses a git-based workflow to manage app updates. During the linking process, select ${chalk.bold('GitHub')} (recommended) or ${chalk.bold('Ionic Appflow')} as a git host. See our documentation[^appflow-git-basics] for more information.
+Ionic Appflow uses a git-based workflow to manage app updates. During the linking process, select ${strong('GitHub')} (recommended) or ${strong('Ionic Appflow')} as a git host. See our documentation[^appflow-git-basics] for more information.
 
-Ultimately, this command sets the ${chalk.bold('id')} property in ${chalk.bold(prettyPath(projectFile))}, which marks this app as linked.
+Ultimately, this command sets the ${strong('id')} property in ${strong(prettyPath(projectFile))}, which marks this app as linked.
 
 If you are having issues linking, please get in touch with our Support[^support-request].
       `,
@@ -59,7 +59,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       inputs: [
         {
           name: 'id',
-          summary: `The Ionic Appflow ID of the app to link (e.g. ${chalk.green('a1b2c3d4')})`,
+          summary: `The Ionic Appflow ID of the app to link (e.g. ${input('a1b2c3d4')})`,
         },
       ],
       options: [
@@ -88,7 +88,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     const { create } = options;
 
     if (inputs[0] && create) {
-      throw new FatalException(`Sorry--cannot use both ${chalk.green('id')} and ${chalk.green('--create')}. You must either link an existing app or create a new one.`);
+      throw new FatalException(`Sorry--cannot use both ${input('id')} and ${input('--create')}. You must either link an existing app or create a new one.`);
     }
 
     const id = options['pro-id'] ? String(options['pro-id']) : undefined;
@@ -102,7 +102,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     const { promptToLogin } = await import('../lib/session');
 
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic link')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic link')} outside a project directory.`);
     }
 
     let id: string | undefined = inputs[0];
@@ -112,18 +112,18 @@ If you are having issues linking, please get in touch with our Support[^support-
 
     if (idFromConfig) {
       if (id && idFromConfig === id) {
-        this.env.log.msg(`Already linked with app ${chalk.green(id)}.`);
+        this.env.log.msg(`Already linked with app ${input(id)}.`);
         return;
       }
 
       const msg = id ?
-        `Are you sure you want to link it to ${chalk.green(id)} instead?` :
+        `Are you sure you want to link it to ${input(id)} instead?` :
         `Would you like to run link again?`;
 
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Appflow ID ${chalk.green(idFromConfig)} is already set up with this app. ${msg}`,
+        message: `Appflow ID ${input(idFromConfig)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {
@@ -150,7 +150,7 @@ If you are having issues linking, please get in touch with our Support[^support-
 
       if (idFromConfig) {
         choices.unshift({
-          name: `Relink ${chalk.green(idFromConfig)}`,
+          name: `Relink ${input(idFromConfig)}`,
           value: CHOICE_RELINK,
         });
       }
@@ -241,7 +241,7 @@ If you are having issues linking, please get in touch with our Support[^support-
 
   async lookUpApp(id: string): Promise<App> {
     const tasks = this.createTaskChain();
-    tasks.next(`Looking up app ${chalk.green(id)}`);
+    tasks.next(`Looking up app ${input(id)}`);
 
     const appClient = await this.getAppClient();
     const app = await appClient.load(id); // Make sure the user has access to the app
@@ -270,8 +270,8 @@ If you are having issues linking, please get in touch with our Support[^support-
 
     this.env.log.info(
       `Ionic Appflow uses a git-based workflow to manage app updates.\n` +
-      `You will be prompted to set up the git host and repository for this new app. See the docs${chalk.cyan('[1]')} for more information.\n\n` +
-      `${chalk.cyan('[1]')}: ${chalk.bold('https://ion.link/appflow-git-basics')}`
+      `You will be prompted to set up the git host and repository for this new app. See the docs${ancillary('[1]')} for more information.\n\n` +
+      `${ancillary('[1]')}: ${strong('https://ion.link/appflow-git-basics')}`
     );
 
     this.env.log.nl();
@@ -309,21 +309,21 @@ If you are having issues linking, please get in touch with our Support[^support-
       await runCommand(runinfo, ['config', 'set', 'id', `"${app.id}"`, '--json']);
     }
 
-    this.env.log.ok(`Project linked with app ${chalk.green(app.id)}!`);
+    this.env.log.ok(`Project linked with app ${input(app.id)}!`);
     if (service === CHOICE_GITHUB) {
       this.env.log.info(
         `Here are some additional links that can help you with you first push to GitHub:\n` +
-        `${chalk.bold('Adding GitHub as a remote')}:\n\t${chalk.bold('https://help.github.com/articles/adding-a-remote/')}\n\n` +
-        `${chalk.bold('Pushing to a remote')}:\n\t${chalk.bold('https://help.github.com/articles/pushing-to-a-remote/')}\n\n` +
-        `${chalk.bold('Working with branches')}:\n\t${chalk.bold('https://guides.github.com/introduction/flow/')}\n\n` +
-        `${chalk.bold('More comfortable with a GUI? Try GitHub Desktop!')}\n\t${chalk.bold('https://desktop.github.com/')}`
+        `${strong('Adding GitHub as a remote')}:\n\t${strong('https://help.github.com/articles/adding-a-remote/')}\n\n` +
+        `${strong('Pushing to a remote')}:\n\t${strong('https://help.github.com/articles/pushing-to-a-remote/')}\n\n` +
+        `${strong('Working with branches')}:\n\t${strong('https://guides.github.com/introduction/flow/')}\n\n` +
+        `${strong('More comfortable with a GUI? Try GitHub Desktop!')}\n\t${strong('https://desktop.github.com/')}`
       );
 
       if (githubUrl) {
         this.env.log.info(
           `You can now push to one of your branches on GitHub to trigger a build in Ionic Appflow!\n` +
           `If you haven't added GitHub as your origin you can do so by running:\n\n` +
-          `${chalk.green('git remote add origin ' + githubUrl)}\n\n` +
+          `${input('git remote add origin ' + githubUrl)}\n\n` +
           `You can find additional links above to help if you're having issues.`
         );
       }
@@ -352,13 +352,13 @@ If you are having issues linking, please get in touch with our Support[^support-
     let confirm = false;
 
     this.env.log.nl();
-    this.env.log.info(chalk.bold(`In order to link to a GitHub repository the repository must already exist on GitHub.`));
+    this.env.log.info(strong(`In order to link to a GitHub repository the repository must already exist on GitHub.`));
     this.env.log.info(
-      `${chalk.bold('If the repository does not exist please create one now before continuing.')}\n` +
+      `${strong('If the repository does not exist please create one now before continuing.')}\n` +
       `If you're not familiar with Git you can learn how to set it up with GitHub here:\n\n` +
-      chalk.bold(`https://help.github.com/articles/set-up-git/ \n\n`) +
+      strong(`https://help.github.com/articles/set-up-git/ \n\n`) +
       `You can find documentation on how to create a repository on GitHub and push to it here:\n\n` +
-      chalk.bold(`https://help.github.com/articles/create-a-repo/`)
+      strong(`https://help.github.com/articles/create-a-repo/`)
     );
 
     confirm = await this.env.prompt({
@@ -368,7 +368,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     });
 
     if (!confirm) {
-      throw new FatalException(`Repo must exist on GitHub in order to link. Please create the repo and run ${chalk.green('ionic link')} again.`);
+      throw new FatalException(`Repo must exist on GitHub in order to link. Please create the repo and run ${input('ionic link')} again.`);
     }
   }
 
@@ -392,7 +392,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     });
 
     if (!confirm) {
-      throw new FatalException(`GitHub OAuth setup is required to link to GitHub repository. Please run ${chalk.green('ionic link')} again when ready.`);
+      throw new FatalException(`GitHub OAuth setup is required to link to GitHub repository. Please run ${input('ionic link')} again when ready.`);
     }
 
     const url = await userClient.oAuthGithubLogin(userId);
@@ -405,7 +405,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     });
 
     if (!confirm) {
-      throw new FatalException(`GitHub OAuth setup is required to link to GitHub repository. Please run ${chalk.green('ionic link')} again when ready.`);
+      throw new FatalException(`GitHub OAuth setup is required to link to GitHub repository. Please run ${input('ionic link')} again when ready.`);
     }
   }
 
@@ -413,7 +413,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     const appClient = await this.getAppClient();
 
     if (app.association && app.association.repository.html_url) {
-      this.env.log.msg(`App ${chalk.green(app.id)} already connected to ${chalk.bold(app.association.repository.html_url)}`);
+      this.env.log.msg(`App ${input(app.id)} already connected to ${strong(app.association.repository.html_url)}`);
 
       const confirm = await this.env.prompt({
         type: 'confirm',
@@ -452,7 +452,7 @@ If you are having issues linking, please get in touch with our Support[^support-
 
     try {
       const association = await appClient.createAssociation(app.id, { repoId, type: 'github', branches });
-      this.env.log.ok(`App ${chalk.green(app.id)} connected to ${chalk.bold(association.repository.html_url)}`);
+      this.env.log.ok(`App ${input(app.id)} connected to ${strong(association.repository.html_url)}`);
       return association.repository.html_url;
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 403) {
@@ -464,14 +464,14 @@ If you are having issues linking, please get in touch with our Support[^support-
   formatRepoName(fullName: string) {
     const [ org, name ] = fullName.split('/');
 
-    return `${chalk.dim(`${org} /`)} ${name}`;
+    return `${weak(`${org} /`)} ${name}`;
   }
 
   async chooseApp(apps: App[]): Promise<string> {
     const { formatName } = await import('../lib/app');
 
     const neverMindChoice = {
-      name: chalk.bold('Nevermind'),
+      name: strong('Nevermind'),
       id: CHOICE_NEVERMIND,
       value: CHOICE_NEVERMIND,
       org: null, // tslint:disable-line
@@ -483,7 +483,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       message: 'Which app would you like to link',
       choices: [
         ...apps.map(app => ({
-          name: `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
+          name: `${formatName(app)} ${weak(`(${app.id})`)}`,
           value: app.id,
         })),
         createPromptChoiceSeparator(),
@@ -510,7 +510,7 @@ If you are having issues linking, please get in touch with our Support[^support-
         const res = await r;
         repos.push(...res.data);
 
-        task.msg = `Looking up your GitHub repositories: ${chalk.bold(String(repos.length))} found`;
+        task.msg = `Looking up your GitHub repositories: ${strong(String(repos.length))} found`;
       }
     } catch (e) {
       tasks.fail();
@@ -540,11 +540,11 @@ If you are having issues linking, please get in touch with our Support[^support-
 
   async selectGithubBranches(repoId: number): Promise<string[]> {
     this.env.log.nl();
-    this.env.log.info(chalk.bold(`By default Ionic Appflow links only to the ${chalk.green('master')} branch.`));
+    this.env.log.info(strong(`By default Ionic Appflow links only to the ${input('master')} branch.`));
     this.env.log.info(
-      `${chalk.bold('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
+      `${strong('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
       `If you're not familiar with on working with branches in GitHub you can read about them here:\n\n` +
-      chalk.bold(`https://guides.github.com/introduction/flow/ \n\n`)
+      strong(`https://guides.github.com/introduction/flow/ \n\n`)
     );
 
     const choice = await this.env.prompt({
@@ -584,7 +584,7 @@ If you are having issues linking, please get in touch with our Support[^support-
         const res = await r;
         availableBranches.push(...res.data);
 
-        task.msg = `Looking up the available branches on your GitHub repository: ${chalk.bold(String(availableBranches.length))} found`;
+        task.msg = `Looking up the available branches on your GitHub repository: ${strong(String(availableBranches.length))} found`;
       }
     } catch (e) {
       tasks.fail();
@@ -599,7 +599,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     }));
 
     if (choices.length === 0) {
-      this.env.log.warn(`No branches found for the repository. Linking to ${chalk.green('master')} branch.`);
+      this.env.log.warn(`No branches found for the repository. Linking to ${input('master')} branch.`);
       return ['master'];
     }
 

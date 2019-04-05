@@ -1,10 +1,10 @@
 import { AbstractExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
 import { isCommand } from '../guards';
 
+import { input, strong } from './color';
 import { GLOBAL_OPTIONS } from './config';
 import { FatalException } from './errors';
 
@@ -64,8 +64,8 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
 
     if (!this.namespace.project && metadata.type === 'project') {
       throw new FatalException(
-        `Sorry! ${chalk.green(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
-        `If this is a project you'd like to integrate with Ionic, create an ${chalk.bold(PROJECT_FILE)} file.`
+        `Sorry! ${input(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
+        `If this is a project you'd like to integrate with Ionic, create an ${strong(PROJECT_FILE)} file.`
       );
     }
 
@@ -77,7 +77,7 @@ export async function runCommand(runinfo: CommandInstanceInfo, argv: string[]) {
   const { env, executor } = runinfo;
 
   const metadata = await executor.namespace.getMetadata();
-  executor.namespace.env.log.msg(`> ${chalk.green([metadata.name, ...argv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
+  executor.namespace.env.log.msg(`> ${input([metadata.name, ...argv].map(a => a.includes(' ') ? `"${a}"` : a).join(' '))}`);
 
   await executor.execute(argv, env);
 }

@@ -1,6 +1,5 @@
 import { BaseConfig, createPromptChoiceSeparator, parseArgs } from '@ionic/cli-framework';
 import { readFile, writeFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
@@ -12,6 +11,7 @@ import {
   IntegrationName
 } from '../../../definitions';
 import { isSuperAgentError } from '../../../guards';
+import { strong, weak } from '../../color';
 import { FatalException } from '../../errors';
 
 interface ProductKey {
@@ -158,7 +158,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     const { formatName } = await import('../../../lib/app');
 
     const newAppChoice = {
-      name: chalk.bold('Create A New App'),
+      name: strong('Create A New App'),
       id: CHOICE_CREATE_NEW_APP,
       value: CHOICE_CREATE_NEW_APP,
       org,
@@ -170,7 +170,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       message: 'This key needs to be registered to an app. Which app would you like to register it to?',
       choices: [
         ...apps.map(app => ({
-          name: `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
+          name: `${formatName(app)} ${weak(`(${app.id})`)}`,
           value: app.id,
         })),
         createPromptChoiceSeparator(),

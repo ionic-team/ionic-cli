@@ -1,12 +1,12 @@
 import { CommandGroup } from '@ionic/cli-framework';
 import { map } from '@ionic/utils-array';
 import { readdirp, stat, writeFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';
 
 import { CommandMetadata } from '../../definitions';
+import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
@@ -28,7 +28,7 @@ export class DeployManifestCommand extends Command {
 
   async run(): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic deploy manifest')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic deploy manifest')} outside a project directory.`);
     }
 
     const buildDir = path.resolve(this.project.directory, 'www'); // TODO: this is hard-coded

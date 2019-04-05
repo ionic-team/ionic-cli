@@ -2,10 +2,11 @@ import { CreateTaggedFormatterOptions, DEFAULT_LOGGER_HANDLERS, Logger as BaseLo
 import chalk from 'chalk';
 
 import { ILogger } from '../../definitions';
+import { weak } from '../color';
 
 export class Logger extends BaseLogger implements ILogger {
   ok(msg: string): void {
-    this.log({ ...this.createRecord(`${chalk.dim('[')}${chalk.bold.green('OK')}${chalk.dim(']')} ${msg}`), format: false });
+    this.log({ ...this.createRecord(`${weak('[')}${chalk.bold.green('OK')}${weak(']')} ${msg}`), format: false });
   }
 
   rawmsg(msg: string): void {
@@ -14,7 +15,7 @@ export class Logger extends BaseLogger implements ILogger {
 }
 
 export function createFormatter(options: CreateTaggedFormatterOptions = {}): LoggerFormatter {
-  const prefix = process.argv.includes('--log-timestamps') ? () => `${chalk.dim('[' + new Date().toISOString() + ']')}` : '';
+  const prefix = process.argv.includes('--log-timestamps') ? () => `${weak('[' + new Date().toISOString() + ']')}` : '';
 
   return createTaggedFormatter({ prefix, titleize: true, wrap: true, ...options });
 }

@@ -1,5 +1,4 @@
 import { BaseConfig } from '@ionic/cli-framework';
-import chalk from 'chalk';
 import * as path from 'path';
 
 import {
@@ -15,6 +14,7 @@ import {
   ProjectPersonalizationDetails
 } from '../../definitions';
 import { isIntegrationName } from '../../guards';
+import { strong } from '../color';
 import { IntegrationNotFoundException } from '../errors';
 
 import * as ζcapacitor from './capacitor';
@@ -61,7 +61,7 @@ export abstract class BaseIntegration<T extends ProjectIntegration> implements I
       return new Integration(deps);
     }
 
-    throw new IntegrationNotFoundException(`Bad integration name: ${chalk.bold(name)}`); // TODO?
+    throw new IntegrationNotFoundException(`Bad integration name: ${strong(name)}`); // TODO?
   }
 
   async getInfo(): Promise<InfoItem[]> {

@@ -1,6 +1,5 @@
-import chalk from 'chalk';
-
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
@@ -29,7 +28,7 @@ export class RegisterCommand extends Command {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic enterprise register')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic enterprise register')} outside a project directory.`);
     }
 
     const appId = options['app-id'] ? String(options['app-id']) : undefined;

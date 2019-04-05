@@ -1,8 +1,9 @@
-import { CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NO_COLORS, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
+import { CommandHelpFormatterDeps as BaseCommandHelpFormatterDeps, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NO_COLORS, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
 import { filter } from '@ionic/utils-array';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace } from '../definitions';
 
+import { COLORS } from './color';
 import { GLOBAL_OPTIONS } from './config';
 
 const IONIC_LOGO = String.raw`
@@ -17,12 +18,14 @@ export interface NamespaceHelpFormatterDeps extends BaseNamespaceHelpFormatterDe
   readonly version: string;
 }
 
+export interface CommandHelpFormatterDeps extends BaseCommandHelpFormatterDeps<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {}
+
 export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   protected readonly inProject: boolean;
   protected readonly version: string;
 
   constructor({ version, inProject, ...rest }: NamespaceHelpFormatterDeps) {
-    super(rest);
+    super({ ...rest, colors: COLORS });
     this.inProject = inProject;
     this.version = version;
   }
@@ -54,6 +57,10 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
 }
 
 export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+  constructor(options: CommandHelpFormatterDeps) {
+    super({ ...options, colors: COLORS });
+  }
+
   async formatOptions(): Promise<string> {
     const metadata = await this.getCommandMetadata();
     const options = metadata.options ? metadata.options : [];

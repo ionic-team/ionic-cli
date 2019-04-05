@@ -1,8 +1,8 @@
 import { OptionGroup, contains, validate, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { filterArgumentsForCordova } from '../../lib/integrations/cordova/utils';
 
@@ -15,23 +15,23 @@ export class PluginCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Manage Cordova plugins',
       description: `
-Like running ${chalk.green('cordova plugin')} directly, but provides friendly checks.
+Like running ${input('cordova plugin')} directly, but provides friendly checks.
       `,
       exampleCommands: ['', 'add cordova-plugin-inappbrowser@latest', 'add phonegap-plugin-push --variable SENDER_ID=XXXXX', 'rm cordova-plugin-camera'],
       inputs: [
         {
           name: 'action',
-          summary: `${chalk.green('add')} or ${chalk.green('remove')} a plugin; ${chalk.green('ls')} or ${chalk.green('save')} all project plugins`,
+          summary: `${input('add')} or ${input('remove')} a plugin; ${input('ls')} or ${input('save')} all project plugins`,
         },
         {
           name: 'plugin',
-          summary: `The name of the plugin (corresponds to ${chalk.green('add')} and ${chalk.green('remove')})`,
+          summary: `The name of the plugin (corresponds to ${input('add')} and ${input('remove')})`,
         },
       ],
       options: [
         {
           name: 'force',
-          summary: `Force overwrite the plugin if it exists (corresponds to ${chalk.green('add')})`,
+          summary: `Force overwrite the plugin if it exists (corresponds to ${input('add')})`,
           type: Boolean,
           groups: [OptionGroup.Advanced, 'cordova', 'cordova-cli'],
         },

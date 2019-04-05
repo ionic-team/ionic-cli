@@ -1,11 +1,11 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readFile, writeFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as et from 'elementtree';
 import * as path from 'path';
 
 import { ProjectIntegration, ResourcesPlatform } from '../../../definitions';
+import { failure, input, strong } from '../../color';
 import { FatalException } from '../../errors';
 import { shortid } from '../../utils/uuid';
 
@@ -298,11 +298,11 @@ export async function loadConfigXml(integration: Required<ProjectIntegration>): 
     return await ConfigXml.load(filePath);
   } catch (e) {
     const msg = e.code === 'ENOENT'
-      ? `Cordova ${chalk.bold('config.xml')} file not found.\n\nYou can re-add the Cordova integration with the following command: ${chalk.green('ionic integrations enable cordova --add')}`
-      : chalk.red(e.stack ? e.stack : e);
+      ? `Cordova ${strong('config.xml')} file not found.\n\nYou can re-add the Cordova integration with the following command: ${input('ionic integrations enable cordova --add')}`
+      : failure(e.stack ? e.stack : e);
 
     throw new FatalException(
-      `Cannot load ${chalk.bold(prettyPath(filePath))}\n` +
+      `Cannot load ${strong(prettyPath(filePath))}\n` +
       `${msg}`
     );
   }

@@ -1,9 +1,9 @@
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { Project } from '../';
 import { IAilmentRegistry, InfoItem } from '../../../definitions';
+import { strong } from '../../color';
 
 import * as ζbuild from './build';
 import * as ζgenerate from './generate';
@@ -53,7 +53,7 @@ export class IonicAngularProject extends Project {
       const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
 
       if (typeof deps['ionic-angular'] === 'string') {
-        debug(`${chalk.bold('ionic-angular')} detected in ${chalk.bold('package.json')}`);
+        debug(`${strong('ionic-angular')} detected in ${strong('package.json')}`);
         return true;
       }
     } catch (e) {

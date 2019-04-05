@@ -1,9 +1,4 @@
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  LOGGER_LEVELS,
-  OptionGroup,
-} from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, OptionGroup } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { sleep } from '@ionic/utils-process';
 import chalk from 'chalk';
@@ -11,6 +6,7 @@ import * as Debug from 'debug';
 
 import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
+import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
@@ -45,9 +41,9 @@ export class BuildCommand extends Command {
 This command creates a deploy build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal.
 
 Customizing the build:
-- The ${chalk.green('--environment')} and ${chalk.green('--channel')} options can be used to customize the groups of values exposed to the build.
+- The ${input('--environment')} and ${input('--channel')} options can be used to customize the groups of values exposed to the build.
 
-Apart from ${chalk.green('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
+Apart from ${input('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
 `,
       footnotes: [
         {
@@ -88,7 +84,7 @@ Apart from ${chalk.green('--commit')}, every option can be specified using the f
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic deploy build')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic deploy build')} outside a project directory.`);
     }
 
     const token = this.env.session.getUserToken();
@@ -96,18 +92,18 @@ Apart from ${chalk.green('--commit')}, every option can be specified using the f
 
     if (!options.commit) {
       options.commit = (await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.project.directory })).trim();
-      debug(`Commit hash: ${chalk.bold(options.commit)}`);
+      debug(`Commit hash: ${strong(options.commit)}`);
     }
 
     let build = await this.createDeployBuild(appflowId, token, options);
     const buildId = build.job_id;
 
     const details = columnar([
-      ['Appflow ID', chalk.bold(appflowId)],
-      ['Build ID', chalk.bold(buildId.toString())],
-      ['Commit', chalk.bold(`${build.commit.sha.substring(0, 6)} ${build.commit.note}`)],
-      ['Environment', build.environment_name ? chalk.bold(build.environment_name) : chalk.dim('not set')],
-      ['Channels', build.pending_channels.length ? build.pending_channels.map(v => chalk.bold(`"${v}"`)).join(', ') : chalk.dim('not set')],
+      ['Appflow ID', strong(appflowId)],
+      ['Build ID', strong(buildId.toString())],
+      ['Commit', strong(`${build.commit.sha.substring(0, 6)} ${build.commit.note}`)],
+      ['Environment', build.environment_name ? strong(build.environment_name) : weak('not set')],
+      ['Channels', build.pending_channels.length ? build.pending_channels.map(v => strong(`"${v}"`)).join(', ') : weak('not set')],
     ], { vsep: ':' });
 
     this.env.log.ok(

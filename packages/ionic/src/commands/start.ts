@@ -2,13 +2,13 @@ import { OptionGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, ProjectType, ResolvedStarterTemplate, StarterManifest, StarterTemplate } from '../definitions';
+import { failure, input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
@@ -52,13 +52,13 @@ export class StartCommand extends Command implements CommandPreRun {
       description: `
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
-Running ${chalk.green('ionic start')} without any arguments will prompt you for information about your new project.
+Running ${input('ionic start')} without any arguments will prompt you for information about your new project.
 
-The first argument is your app's ${chalk.green('name')}. Don't worry--you can always change this later. The ${chalk.green('--project-id')} is generated from ${chalk.green('name')} unless explicitly specified.
+The first argument is your app's ${input('name')}. Don't worry--you can always change this later. The ${input('--project-id')} is generated from ${input('name')} unless explicitly specified.
 
-The second argument is the ${chalk.green('template')} from which to generate your app. You can list all templates with the ${chalk.green('--list')} option. You can also specify a git repository URL for ${chalk.green('template')}, in which case the existing project will be cloned.
+The second argument is the ${input('template')} from which to generate your app. You can list all templates with the ${input('--list')} option. You can also specify a git repository URL for ${input('template')}, in which case the existing project will be cloned.
 
-Use the ${chalk.green('--type')} option to start projects using older versions of Ionic. For example, you can start an Ionic 3 project with ${chalk.green('--type=ionic-angular')}. Use ${chalk.green('--list')} to see all project types and templates.
+Use the ${input('--type')} option to start projects using older versions of Ionic. For example, you can start an Ionic 3 project with ${input('--type=ionic-angular')}. Use ${input('--list')} to see all project types and templates.
       `,
       exampleCommands: [
         '',
@@ -76,12 +76,12 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
       inputs: [
         {
           name: 'name',
-          summary: `The name of your new project (e.g. ${chalk.green('myApp')}, ${chalk.green('"My App"')})`,
+          summary: `The name of your new project (e.g. ${input('myApp')}, ${input('"My App"')})`,
           validators: [validators.required],
         },
         {
           name: 'template',
-          summary: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => chalk.green(t)).join(', ')}; use ${chalk.green('--list')} to see all)`,
+          summary: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => input(t)).join(', ')}; use ${input('--list')} to see all)`,
           validators: [validators.required],
         },
       ],
@@ -94,7 +94,7 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
         },
         {
           name: 'type',
-          summary: `Type of project to start (e.g. ${lodash.uniq(starterTemplates.map(t => t.type)).map(type => chalk.green(type)).join(', ')})`,
+          summary: `Type of project to start (e.g. ${lodash.uniq(starterTemplates.map(t => t.type)).map(type => input(type)).join(', ')})`,
           type: String,
         },
         {
@@ -135,7 +135,7 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
         },
         {
           name: 'pro-id',
-          summary: `Use the ${chalk.green('--id')} option`,
+          summary: `Use the ${input('--id')} option`,
           groups: [OptionGroup.Deprecated],
           spec: { value: 'id' },
         },
@@ -153,7 +153,7 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
         },
         {
           name: 'tag',
-          summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => chalk.green(t)).join(', ')})`,
+          summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => input(t)).join(', ')})`,
           default: 'latest',
           groups: [OptionGroup.Hidden],
         },
@@ -170,34 +170,34 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
     // If the action is list then lets just end here.
     if (options['list']) {
       const headers = ['name', 'project type', 'description'];
-      this.env.log.rawmsg(columnar(starterTemplates.map(({ name, type, description }) => [chalk.green(name), chalk.bold(type), description || '']), { headers }));
+      this.env.log.rawmsg(columnar(starterTemplates.map(({ name, type, description }) => [input(name), strong(type), description || '']), { headers }));
       throw new FatalException('', 0);
     }
 
     if (options['skip-deps']) {
-      this.env.log.warn(`The ${chalk.green('--skip-deps')} option has been deprecated. Please use ${chalk.green('--no-deps')}.`);
+      this.env.log.warn(`The ${input('--skip-deps')} option has been deprecated. Please use ${input('--no-deps')}.`);
       options['deps'] = false;
     }
 
     if (options['skip-link']) {
-      this.env.log.warn(`The ${chalk.green('--skip-link')} option has been deprecated. Please use ${chalk.green('--no-link')}.`);
+      this.env.log.warn(`The ${input('--skip-link')} option has been deprecated. Please use ${input('--no-link')}.`);
       options['link'] = false;
     }
 
     if (options['pro-id']) {
-      this.env.log.warn(`The ${chalk.green('--pro-id')} option has been deprecated. Please use ${chalk.green('--id')}.`);
+      this.env.log.warn(`The ${input('--pro-id')} option has been deprecated. Please use ${input('--id')}.`);
       options['id'] = options['pro-id'];
     }
 
     if (options['id']) {
       if (!options['link']) {
-        this.env.log.warn(`The ${chalk.green('--no-link')} option has no effect with ${chalk.green('--id')}. App must be linked.`);
+        this.env.log.warn(`The ${input('--no-link')} option has no effect with ${input('--id')}. App must be linked.`);
       }
 
       options['link'] = true;
 
       if (!options['git']) {
-        this.env.log.warn(`The ${chalk.green('--no-git')} option has no effect with ${chalk.green('--id')}. Git must be used.`);
+        this.env.log.warn(`The ${input('--no-git')} option has no effect with ${input('--id')}. Git must be used.`);
       }
 
       options['git'] = true;
@@ -205,7 +205,7 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
 
     if (cloned) {
       if (!options['git']) {
-        this.env.log.warn(`The ${chalk.green('--no-git')} option has no effect when cloning apps. Git must be used.`);
+        this.env.log.warn(`The ${input('--no-git')} option has no effect when cloning apps. Git must be used.`);
       }
 
       options['git'] = true;
@@ -232,21 +232,21 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
 
     if (options['v1'] || options['v2']) {
       throw new FatalException(
-        `The ${chalk.green('--v1')} and ${chalk.green('--v2')} flags have been removed.\n` +
-        `Use the ${chalk.green('--type')} option. (see ${chalk.green('ionic start --help')})`
+        `The ${input('--v1')} and ${input('--v2')} flags have been removed.\n` +
+        `Use the ${input('--type')} option. (see ${input('ionic start --help')})`
       );
     }
 
     if (options['app-name']) {
-      this.env.log.warn(`The ${chalk.green('--app-name')} option has been removed. Use the ${chalk.green('name')} argument with double quotes: e.g. ${chalk.green('ionic start "My App"')}`);
+      this.env.log.warn(`The ${input('--app-name')} option has been removed. Use the ${input('name')} argument with double quotes: e.g. ${input('ionic start "My App"')}`);
     }
 
     if (options['display-name']) {
-      this.env.log.warn(`The ${chalk.green('--display-name')} option has been removed. Use the ${chalk.green('name')} argument with double quotes: e.g. ${chalk.green('ionic start "My App"')}`);
+      this.env.log.warn(`The ${input('--display-name')} option has been removed. Use the ${input('name')} argument with double quotes: e.g. ${input('ionic start "My App"')}`);
     }
 
     if (options['bundle-id']) {
-      this.env.log.warn(`The ${chalk.green('--bundle-id')} option has been deprecated. Please use ${chalk.green('--package-id')}.`);
+      this.env.log.warn(`The ${input('--bundle-id')} option has been deprecated. Please use ${input('--package-id')}.`);
       options['package-id'] = options['bundle-id'];
     }
 
@@ -262,19 +262,19 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
         const token = this.env.session.getUserToken();
         const appClient = new AppClient(token, this.env);
         const tasks = this.createTaskChain();
-        tasks.next(`Looking up app ${chalk.green(appflowId)}`);
+        tasks.next(`Looking up app ${input(appflowId)}`);
         const app = await appClient.load(appflowId);
         // TODO: can ask to clone via repo_url
         tasks.end();
-        this.env.log.info(`Using ${chalk.bold(app.name)} for ${chalk.green('name')} and ${chalk.bold(app.slug)} for ${chalk.green('--project-id')}.`);
+        this.env.log.info(`Using ${strong(app.name)} for ${input('name')} and ${strong(app.slug)} for ${input('--project-id')}.`);
         inputs[0] = app.name;
         options['project-id'] = app.slug;
       } else {
         if (this.env.flags.interactive) {
           this.env.log.nl();
           this.env.log.msg(
-            `${chalk.bold(`Every great app needs a name! ${emoji('😍', '')}`)}\n` +
-            `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${chalk.green('name')}, the first argument to ${chalk.green('ionic start')}.\n\n`
+            `${strong(`Every great app needs a name! ${emoji('😍', '')}`)}\n` +
+            `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${input('name')}, the first argument to ${input('ionic start')}.\n\n`
           );
         }
 
@@ -316,8 +316,8 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
         if (this.env.flags.interactive) {
           this.env.log.nl();
           this.env.log.msg(
-            `${chalk.bold(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n` +
-            `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${chalk.green('template')}, the second argument to ${chalk.green('ionic start')}.\n\n`
+            `${strong(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n` +
+            `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${input('template')}, the second argument to ${input('ionic start')}.\n\n`
           );
         }
 
@@ -327,10 +327,10 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
           message: 'Starter template:',
           choices: () => {
             const starterTemplateList = starterTemplates.filter(st => st.type === projectType);
-            const cols = columnar(starterTemplateList.map(({ name, description }) => [chalk.green(name), description || '']), {}).split('\n');
+            const cols = columnar(starterTemplateList.map(({ name, description }) => [input(name), description || '']), {}).split('\n');
 
             if (starterTemplateList.length === 0) {
-              throw new FatalException(`No starter templates found for project type: ${chalk.green(projectType)}.`);
+              throw new FatalException(`No starter templates found for project type: ${input(projectType)}.`);
             }
 
             return starterTemplateList.map((starterTemplate, i) => {
@@ -380,7 +380,7 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
     let gitIntegration = gitDesired && gitInstalled && !gitTopLevel ? true : false;
 
     if (!gitInstalled) {
-      const installationDocs = `See installation docs for git: ${chalk.bold('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`;
+      const installationDocs = `See installation docs for git: ${strong('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`;
 
       if (appflowId) {
         throw new FatalException(
@@ -392,17 +392,17 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
       if (this.schema.cloned) {
         throw new FatalException(
           `Git CLI not found on your PATH.\n` +
-          `Git must be installed to clone apps with ${chalk.green('ionic start')}. ${installationDocs}`
+          `Git must be installed to clone apps with ${input('ionic start')}. ${installationDocs}`
         );
       }
     }
 
     if (gitTopLevel && !this.schema.cloned) {
-      this.env.log.info(`Existing git project found (${chalk.bold(gitTopLevel)}). Git operations are disabled.`);
+      this.env.log.info(`Existing git project found (${strong(gitTopLevel)}). Git operations are disabled.`);
     }
 
     const tasks = this.createTaskChain();
-    tasks.next(`Preparing directory ${chalk.green(prettyPath(projectDir))}`);
+    tasks.next(`Preparing directory ${input(prettyPath(projectDir))}`);
 
     if (this.canRemoveExisting) {
       await remove(projectDir);
@@ -566,12 +566,12 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `${chalk.green(prettyPath(projectDir))} exists. ${chalk.red('Overwrite?')}`,
+        message: `${input(prettyPath(projectDir))} exists. ${failure('Overwrite?')}`,
         default: false,
       });
 
       if (!confirm) {
-        this.env.log.msg(`Not erasing existing project in ${chalk.green(prettyPath(projectDir))}.`);
+        this.env.log.msg(`Not erasing existing project in ${input(prettyPath(projectDir))}.`);
         throw new FatalException();
       }
 
@@ -606,8 +606,8 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
       };
     } else {
       throw new FatalException(
-        `Unable to find starter template for ${chalk.green(template)}\n` +
-        `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${chalk.bold('https://github.com/ionic-team/starters')}`
+        `Unable to find starter template for ${input(template)}\n` +
+        `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${strong('https://github.com/ionic-team/starters')}`
       );
     }
   }
@@ -617,8 +617,8 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
 
     if (!projectTypes.includes(type)) {
       throw new FatalException(
-        `${chalk.green(type)} is not a valid project type.\n` +
-        `Please choose a different ${chalk.green('--type')}. Use ${chalk.green('ionic start --list')} to list all available starter templates.`
+        `${input(type)} is not a valid project type.\n` +
+        `Please choose a different ${input('--type')}. Use ${input('ionic start --list')} to list all available starter templates.`
       );
     }
   }
@@ -626,8 +626,8 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
   async validateProjectId(projectId: string) {
     if (!isValidProjectId(projectId)) {
       throw new FatalException(
-        `${chalk.green(projectId)} is not a valid package or directory name.\n` +
-        `Please choose a different ${chalk.green('--project-id')}. Alphanumeric characters are always safe.`
+        `${input(projectId)} is not a valid package or directory name.\n` +
+        `Please choose a different ${input('--project-id')}. Alphanumeric characters are always safe.`
       );
     }
   }
@@ -638,14 +638,14 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
     try {
       return await readStarterManifest(manifestPath);
     } catch (e) {
-      debug(`Error with manifest file ${chalk.bold(prettyPath(manifestPath))}: ${e}`);
+      debug(`Error with manifest file ${strong(prettyPath(manifestPath))}: ${e}`);
     }
   }
 
   async performManifestOps(manifest: StarterManifest) {
     if (manifest.welcome) {
       this.env.log.nl();
-      this.env.log.msg(`${chalk.bold('Starter Welcome')}:`);
+      this.env.log.msg(`${strong('Starter Welcome')}:`);
       this.env.log.msg(manifest.welcome);
     }
   }
@@ -655,7 +655,7 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
     const { tar } = await import('../lib/utils/archive');
 
     const tasks = this.createTaskChain();
-    const task = tasks.next(`Downloading and extracting ${chalk.green(starterTemplate.name.toString())} starter`);
+    const task = tasks.next(`Downloading and extracting ${input(starterTemplate.name.toString())} starter`);
     debug('Tar extraction created for %s', projectDir);
     const ws = tar.extract({ cwd: projectDir });
 
@@ -667,16 +667,16 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
 
   async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean) {
     const steps = [
-      `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${chalk.green(`cd ${prettyPath(projectDir)}`)}`,
-      `Run ${chalk.green('ionic serve')} within the app directory to see your app`,
-      `Build features and components: ${chalk.bold('https://ion.link/scaffolding-docs')}`,
-      `Get Ionic DevApp for easy device testing: ${chalk.bold('https://ion.link/devapp')}`,
+      `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${input(`cd ${prettyPath(projectDir)}`)}`,
+      `Run ${input('ionic serve')} within the app directory to see your app`,
+      `Build features and components: ${strong('https://ion.link/scaffolding-docs')}`,
+      `Get Ionic DevApp for easy device testing: ${strong('https://ion.link/devapp')}`,
     ];
 
     if (linkConfirmed) {
-      steps.push(`Push your code to Ionic Appflow to perform real-time updates, and more: ${chalk.green('git push ionic master')}`);
+      steps.push(`Push your code to Ionic Appflow to perform real-time updates, and more: ${input('git push ionic master')}`);
     }
 
-    this.env.log.info(`${chalk.bold('Next Steps')}:\n${steps.map(s => `- ${s}`).join('\n')}`);
+    this.env.log.info(`${strong('Next Steps')}:\n${steps.map(s => `- ${s}`).join('\n')}`);
   }
 }

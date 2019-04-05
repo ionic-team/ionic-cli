@@ -1,8 +1,8 @@
 import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
+import { input, weak } from '../../color';
 
 import { AngularProject } from './';
 
@@ -13,7 +13,7 @@ const NG_BUILD_OPTIONS = [
     summary: 'Specify the configuration to use.',
     type: String,
     groups: [OptionGroup.Advanced],
-    hint: chalk.dim('[ng]'),
+    hint: weak('[ng]'),
     spec: { value: 'conf' },
   },
 ];
@@ -31,7 +31,7 @@ export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
     return {
       groups: [CommandGroup.Beta],
       description: `
-${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build --help')} to list all Angular CLI options for building your app. See the ${chalk.green('ng build')} docs[^ng-build-docs] for explanations. Options not listed below are considered advanced and can be passed to the ${chalk.green('ng')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to list all Angular CLI options for building your app. See the ${input('ng build')} docs[^ng-build-docs] for explanations. Options not listed below are considered advanced and can be passed to the ${input('ng')} CLI using the ${input('--')} separator after the Ionic CLI arguments. See the examples.
 `,
       footnotes: [
         {
@@ -42,16 +42,16 @@ ${chalk.green('ionic build')} uses the Angular CLI. Use ${chalk.green('ng build 
       options: [
         {
           name: 'prod',
-          summary: `Flag to use the ${chalk.green('production')} configuration`,
+          summary: `Flag to use the ${input('production')} configuration`,
           type: Boolean,
-          hint: chalk.dim('[ng]'),
+          hint: weak('[ng]'),
         },
         {
           name: 'source-map',
           summary: 'Output source maps',
           type: Boolean,
           groups: [OptionGroup.Advanced],
-          hint: chalk.dim('[ng]'),
+          hint: weak('[ng]'),
         },
         ...NG_BUILD_OPTIONS,
         {

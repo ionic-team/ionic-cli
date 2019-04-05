@@ -1,8 +1,8 @@
 import { contains, validate } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IAilment } from '../../definitions';
 import { isTreatableAilment } from '../../guards';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
 import { DoctorCommand } from './base';
@@ -16,9 +16,9 @@ export class DoctorCheckCommand extends DoctorCommand {
       description: `
 This command detects and prints common issues and suggested steps to fix them.
 
-Some issues can be fixed automatically. See ${chalk.green('ionic doctor treat --help')}.
+Some issues can be fixed automatically. See ${input('ionic doctor treat --help')}.
 
-Optionally supply the ${chalk.green('id')} argument to check a single issue. Use ${chalk.green('ionic doctor list')} to list all known issues.
+Optionally supply the ${input('id')} argument to check a single issue. Use ${input('ionic doctor list')} to list all known issues.
       `,
       exampleCommands: [
         '',
@@ -43,7 +43,7 @@ Optionally supply the ${chalk.green('id')} argument to check a single issue. Use
       const ailment = registry.get(id);
 
       if (!ailment) {
-        throw new FatalException(`Issue not found by ID: ${chalk.green(id)}`);
+        throw new FatalException(`Issue not found by ID: ${input(id)}`);
       }
 
       await this.checkAilment(ailment);
@@ -68,9 +68,9 @@ Optionally supply the ${chalk.green('id')} argument to check a single issue. Use
 
     const msg = (
       'Doctor Summary\n' +
-      `- Detected ${chalk.bold(String(ailments.length))} issue${ailments.length === 1 ? '' : 's'}.` +
+      `- Detected ${strong(String(ailments.length))} issue${ailments.length === 1 ? '' : 's'}.` +
       `${ailments.length === 0 ? ' Aww yeah! 💪' : ''}\n` +
-      `- ${chalk.bold(String(treatableAilments))} issue${treatableAilments === 1 ? '' : 's'} can be fixed automatically${treatableAilments > 0 ? ` by running: ${chalk.green('ionic doctor fix')}` : ''}`
+      `- ${strong(String(treatableAilments))} issue${treatableAilments === 1 ? '' : 's'} can be fixed automatically${treatableAilments > 0 ? ` by running: ${input('ionic doctor fix')}` : ''}`
     );
 
     if (ailments.length > 0) {
@@ -87,7 +87,7 @@ Optionally supply the ${chalk.green('id')} argument to check a single issue. Use
     if (await ailment.detected()) {
       this.env.log.warn(await formatAilmentMessage(ailment));
     } else {
-      this.env.log.ok(`${chalk.green(ailment.id)} was not detected.`);
+      this.env.log.ok(`${input(ailment.id)} was not detected.`);
     }
   }
 }

@@ -1,5 +1,4 @@
-import chalk from 'chalk';
-
+import { input, strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class CordovaNamespace extends Namespace {
@@ -8,11 +7,11 @@ export class CordovaNamespace extends Namespace {
       name: 'cordova',
       summary: 'Cordova functionality',
       description: `
-These commands integrate with Apache Cordova, which brings native functionality to your app. Aside from ${chalk.green('ionic cordova resources')}, these commands all wrap the Cordova CLI.
+These commands integrate with Apache Cordova, which brings native functionality to your app. Aside from ${input('ionic cordova resources')}, these commands all wrap the Cordova CLI.
 
 Cordova Reference documentation:
-- Overview: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/overview/index.html')}
-- CLI documentation: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/')}
+- Overview: ${strong('https://cordova.apache.org/docs/en/latest/guide/overview/index.html')}
+- CLI documentation: ${strong('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/')}
       `,
     };
   }

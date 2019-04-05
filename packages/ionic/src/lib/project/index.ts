@@ -3,7 +3,6 @@ import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
 import { findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
@@ -12,6 +11,7 @@ import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
 import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, PackageJson, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import * as ζbuild from '../build';
+import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
 import * as ζgenerate from '../generate';
 import { BaseIntegration } from '../integrations';
@@ -81,7 +81,7 @@ export class ProjectDetails {
     const id = this.args && this.args['project'] ? String(this.args['project']) : undefined;
 
     if (id) {
-      debug(`Project id from args: ${chalk.bold(id)}`);
+      debug(`Project id from args: ${strong(id)}`);
       return id;
     }
   }
@@ -96,7 +96,7 @@ export class ProjectDetails {
         const projectDir = path.resolve(this.rootDirectory, value.root);
 
         if (ctx.execPath.startsWith(projectDir)) {
-          debug(`Project id from path match: ${chalk.bold(id)}`);
+          debug(`Project id from path match: ${strong(id)}`);
           return id;
         }
       }
@@ -107,7 +107,7 @@ export class ProjectDetails {
     const id = config.defaultProject;
 
     if (id) {
-      debug(`Project id from defaultProject: ${chalk.bold(id)}`);
+      debug(`Project id from defaultProject: ${strong(id)}`);
       return id;
     }
   }
@@ -116,7 +116,7 @@ export class ProjectDetails {
     const { type } = config;
 
     if (type) {
-      debug(`Project type from config: ${chalk.bold(prettyProjectName(type))} ${type ? chalk.bold(`(${type})`) : ''}`);
+      debug(`Project type from config: ${strong(prettyProjectName(type))} ${type ? strong(`(${type})`) : ''}`);
       return type;
     }
   }
@@ -127,7 +127,7 @@ export class ProjectDetails {
       const type = p.type;
 
       if (await p.detected()) {
-        debug(`Project type from detection: ${chalk.bold(prettyProjectName(type))} ${type ? chalk.bold(`(${type})`) : ''}`);
+        debug(`Project type from detection: ${strong(prettyProjectName(type))} ${type ? strong(`(${type})`) : ''}`);
         return type;
       }
     }
@@ -186,9 +186,9 @@ export class ProjectDetails {
 
     if (e1) {
       log.error(
-        `Error while loading config (project config: ${chalk.bold(prettyPath(result.configPath))})\n` +
-        `${e1.error ? `${e1.message}: ${chalk.red(e1.error.toString())}` : chalk.red(e1.message)}. ` +
-        `Run ${chalk.green('ionic init')} to re-initialize your Ionic project. Without a valid project config, the CLI will not have project context.`
+        `Error while loading config (project config: ${strong(prettyPath(result.configPath))})\n` +
+        `${e1.error ? `${e1.message}: ${failure(e1.error.toString())}` : failure(e1.message)}. ` +
+        `Run ${input('ionic init')} to re-initialize your Ionic project. Without a valid project config, the CLI will not have project context.`
       );
 
       log.nl();
@@ -198,8 +198,8 @@ export class ProjectDetails {
       if (errorCodes.includes('ERR_MULTI_MISSING_ID')) {
         log.warn(
           `Multi-app workspace detected, but cannot determine which project to use.\n` +
-          `Please set a ${chalk.green('defaultProject')} in ${chalk.bold(prettyPath(result.configPath))} or specify the project using the global ${chalk.green('--project')} option. Read the documentation${chalk.cyan('[1]')} for more information.\n\n` +
-          `${chalk.cyan('[1]')}: ${chalk.bold('https://beta.ionicframework.com/docs/cli/configuration#multi-app-projects')}`
+          `Please set a ${input('defaultProject')} in ${strong(prettyPath(result.configPath))} or specify the project using the global ${input('--project')} option. Read the documentation${ancillary('[1]')} for more information.\n\n` +
+          `${ancillary('[1]')}: ${strong('https://beta.ionicframework.com/docs/cli/configuration#multi-app-projects')}`
         );
 
         log.nl();
@@ -208,7 +208,7 @@ export class ProjectDetails {
       if (result.id && errorCodes.includes('ERR_MULTI_MISSING_CONFIG')) {
         log.warn(
           `Multi-app workspace detected, but project was not found in configuration.\n` +
-          `Project ${chalk.green(result.id)} could not be found in the workspace. Did you add it to ${chalk.bold(prettyPath(result.configPath))}?`
+          `Project ${input(result.id)} could not be found in the workspace. Did you add it to ${strong(prettyPath(result.configPath))}?`
         );
       }
     }
@@ -217,12 +217,12 @@ export class ProjectDetails {
       const listWrapOptions = { width: TTY_WIDTH - 8 - 3, indentation: 1 };
 
       log.warn(
-        `Could not determine project type (project config: ${chalk.bold(prettyPath(result.configPath))}).\n` +
-        `- ${wordWrap(`For ${chalk.bold(prettyProjectName('angular'))} projects, make sure ${chalk.green('@ionic/angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
-        `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic-angular'))} projects, make sure ${chalk.green('ionic-angular')} is listed as a dependency in ${chalk.bold('package.json')}.`, listWrapOptions)}\n` +
-        `- ${wordWrap(`For ${chalk.bold(prettyProjectName('ionic1'))} projects, make sure ${chalk.green('ionic')} is listed as a dependency in ${chalk.bold('bower.json')}.`, listWrapOptions)}\n\n` +
-        `Alternatively, set ${chalk.bold('type')} attribute in ${chalk.bold(prettyPath(result.configPath))} to one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}.\n\n` +
-        `If the Ionic CLI does not know what type of project this is, ${chalk.green('ionic build')}, ${chalk.green('ionic serve')}, and other commands may not work. You can use the ${chalk.green('custom')} project type if that's okay.`
+        `Could not determine project type (project config: ${strong(prettyPath(result.configPath))}).\n` +
+        `- ${wordWrap(`For ${strong(prettyProjectName('angular'))} projects, make sure ${input('@ionic/angular')} is listed as a dependency in ${strong('package.json')}.`, listWrapOptions)}\n` +
+        `- ${wordWrap(`For ${strong(prettyProjectName('ionic-angular'))} projects, make sure ${input('ionic-angular')} is listed as a dependency in ${strong('package.json')}.`, listWrapOptions)}\n` +
+        `- ${wordWrap(`For ${strong(prettyProjectName('ionic1'))} projects, make sure ${input('ionic')} is listed as a dependency in ${strong('bower.json')}.`, listWrapOptions)}\n\n` +
+        `Alternatively, set ${strong('type')} attribute in ${strong(prettyPath(result.configPath))} to one of: ${PROJECT_TYPES.map(v => input(v)).join(', ')}.\n\n` +
+        `If the Ionic CLI does not know what type of project this is, ${input('ionic build')}, ${input('ionic serve')}, and other commands may not work. You can use the ${input('custom')} project type if that's okay.`
       );
 
       log.nl();
@@ -230,8 +230,8 @@ export class ProjectDetails {
 
     if (e2) {
       log.error(
-        `${e2.message} (project config: ${chalk.bold(prettyPath(result.configPath))}).\n` +
-        `Project type must be one of: ${PROJECT_TYPES.map(v => chalk.green(v)).join(', ')}`
+        `${e2.message} (project config: ${strong(prettyPath(result.configPath))}).\n` +
+        `Project type must be one of: ${PROJECT_TYPES.map(v => input(v)).join(', ')}`
       );
 
       log.nl();
@@ -315,7 +315,7 @@ export async function createProjectFromDetails(details: ProjectDetailsResult, de
     return new BareProject(details, deps);
   }
 
-  throw new FatalException(`Bad project type: ${chalk.bold(String(type))}`); // TODO?
+  throw new FatalException(`Bad project type: ${strong(String(type))}`); // TODO?
 }
 
 export async function findProjectDirectory(cwd: string): Promise<string | undefined> {
@@ -467,8 +467,8 @@ export abstract class Project implements IProject {
 
     if (!appflowId) {
       throw new FatalException(
-        `Your project file (${chalk.bold(prettyPath(this.filePath))}) does not contain '${chalk.bold('id')}'. ` +
-        `Run ${chalk.green('ionic link')}.`
+        `Your project file (${strong(prettyPath(this.filePath))}) does not contain '${strong('id')}'. ` +
+        `Run ${input('ionic link')}.`
       );
     }
 
@@ -487,7 +487,7 @@ export abstract class Project implements IProject {
       pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       pkg = await readPackageJsonFile(pkgPath);
     } catch (e) {
-      this.e.log.error(`Error loading ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')}: ${e}`);
+      this.e.log.error(`Error loading ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}: ${e}`);
     }
 
     return [pkg, pkgPath ? path.dirname(pkgPath) : undefined];
@@ -499,9 +499,9 @@ export abstract class Project implements IProject {
       return await readPackageJsonFile(pkgPath);
     } catch (e) {
       if (e instanceof SyntaxError) {
-        throw new FatalException(`Could not parse ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')}. Is it a valid JSON file?`);
+        throw new FatalException(`Could not parse ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}. Is it a valid JSON file?`);
       } else if (e === ERROR_INVALID_PACKAGE_JSON) {
-        throw new FatalException(`The ${chalk.bold(pkgName ? pkgName : `project's`)} ${chalk.bold('package.json')} file seems malformed.`);
+        throw new FatalException(`The ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')} file seems malformed.`);
       }
 
       throw e; // Probably file not found
@@ -585,11 +585,11 @@ export abstract class Project implements IProject {
     const integration = this.getIntegration(name);
 
     if (!integration) {
-      throw new FatalException(`Could not find ${chalk.bold(name)} integration in the ${chalk.bold(id ? id : 'default')} project.`);
+      throw new FatalException(`Could not find ${strong(name)} integration in the ${strong(id ? id : 'default')} project.`);
     }
 
     if (!integration.enabled) {
-      throw new FatalException(`${chalk.bold(name)} integration is disabled in the ${chalk.bold(id ? id : 'default')} project.`);
+      throw new FatalException(`${strong(name)} integration is disabled in the ${strong(id ? id : 'default')} project.`);
     }
 
     return integration;
