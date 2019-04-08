@@ -157,7 +157,7 @@ describe('@ionic/cli-framework', () => {
 
   Examples:
 
-    $ my foo bar
+    $ my foo bar 
     $ my foo bar input1 input2
     $ my foo bar --opt1 --opt2
 
