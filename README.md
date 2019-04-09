@@ -9,7 +9,7 @@ The Ionic command line interface (CLI) is your go-to tool for developing
 
 ### CLI 4 is here! :tada:
 
-- Full Ionic 4 support. See [the docs](https://ionicframework.com/docs/) to get started!
+- Full Ionic 4 support including React and Angular. See [the docs](https://ionicframework.com/docs/) to get started!
 - Capacitor support is **experimental**.
 - Full Ionic 2/3 support!
 - Full Ionic 1 support! (requires a package install)
@@ -44,7 +44,7 @@ general support questions. The issues on GitHub should be reserved for bug
 reports and feature requests.
 
 :sparkling_heart: **Want to contribute?** Please see
-[CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/develop/CONTRIBUTING.md). 
+[CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/develop/CONTRIBUTING.md).
 
 [ionic-homepage]: https://ionicframework.com
 [ionic-cli-docs]: https://ionicframework.com/docs/cli
