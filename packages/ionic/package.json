@@ -98,6 +98,6 @@
     "source-map": "^0.7.0",
     "ts-jest": "^23.10.1",
     "tslint": "^5.9.1",
-    "typescript": "~3.3.3"
+    "typescript": "~3.4.2"
   }
 }
