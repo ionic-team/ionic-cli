@@ -225,6 +225,8 @@ Use the ${chalk.green('--type')} option to start projects using older versions o
       }
     }
 
+    // TODO: currently defaults to angular as the project type if a type is not provided
+    // we might want to make them select a type instead
     const projectType = options['type'] ? String(options['type']) : 'angular';
     const appflowId = options['id'] ? String(options['id']) : undefined;
 
