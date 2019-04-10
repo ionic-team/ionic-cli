@@ -529,6 +529,18 @@ export interface AngularBuildOptions extends BuildOptions<'angular'> {
   cordovaAssets?: boolean;
 }
 
+export interface ReactBuildOptions extends BuildOptions<'react'> {
+  configuration?: string;
+  sourcemaps?: boolean;
+  cordovaAssets?: boolean;
+}
+
+export interface VueBuildOptions extends BuildOptions<'vue'> {
+  configuration?: string;
+  sourcemaps?: boolean;
+  cordovaAssets?: boolean;
+}
+
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
   prod: boolean;
   sourcemaps?: boolean;
@@ -580,6 +592,18 @@ export interface ServeOptions {
 }
 
 export interface AngularServeOptions extends ServeOptions {
+  ssl?: boolean;
+  configuration?: string;
+  sourcemaps?: boolean;
+}
+
+export interface ReactServeOptions extends ServeOptions {
+  ssl?: boolean;
+  configuration?: string;
+  sourcemaps?: boolean;
+}
+
+export interface VueServeOptions extends ServeOptions {
   ssl?: boolean;
   configuration?: string;
   sourcemaps?: boolean;
