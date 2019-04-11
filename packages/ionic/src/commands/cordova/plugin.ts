@@ -1,4 +1,4 @@
-import { OptionGroup, contains, validate, validators } from '@ionic/cli-framework';
+import { MetadataGroup, contains, validate, validators } from '@ionic/cli-framework';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
@@ -33,7 +33,7 @@ Like running ${input('cordova plugin')} directly, but provides friendly checks.
           name: 'force',
           summary: `Force overwrite the plugin if it exists (corresponds to ${input('add')})`,
           type: Boolean,
-          groups: [OptionGroup.Advanced, 'cordova', 'cordova-cli'],
+          groups: [MetadataGroup.ADVANCED, 'cordova', 'cordova-cli'],
         },
         {
           name: 'variable',

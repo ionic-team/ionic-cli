@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, OptionGroup } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, MetadataGroup } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { sleep } from '@ionic/utils-process';
 import chalk from 'chalk';
@@ -75,7 +75,7 @@ Apart from ${input('--commit')}, every option can be specified using the full na
           name: 'commit',
           summary: 'Commit (defaults to HEAD)',
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'sha1' },
         },
       ],

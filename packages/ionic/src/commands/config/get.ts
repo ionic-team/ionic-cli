@@ -1,4 +1,4 @@
-import { OptionGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import chalk from 'chalk';
@@ -49,14 +49,14 @@ This command will sanitize config output for known sensitive fields (disabled wh
           name: 'json',
           summary: 'Output config values in JSON',
           type: Boolean,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'root',
           summary: `Operate on root of ${strong(projectFile)}`,
           type: Boolean,
           hint: weak('[multi-app]'),
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
       exampleCommands: ['', 'id', '--global user.email', '-g npmClient'],

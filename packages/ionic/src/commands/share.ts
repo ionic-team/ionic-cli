@@ -1,4 +1,4 @@
-import { CommandGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandMetadata } from '../definitions';
 import { input, strong } from '../lib/color';
@@ -11,7 +11,7 @@ export class ShareCommand extends Command {
       name: 'share',
       type: 'global',
       summary: '',
-      groups: [CommandGroup.Hidden],
+      groups: [MetadataGroup.HIDDEN],
     };
   }
 

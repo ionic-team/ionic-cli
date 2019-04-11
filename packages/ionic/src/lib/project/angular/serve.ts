@@ -1,4 +1,4 @@
-import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { findClosestOpenPort } from '@ionic/utils-network';
 import chalk from 'chalk';
@@ -20,7 +20,7 @@ export class AngularServeRunner extends ServeRunner<AngularServeOptions> {
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [CommandGroup.Beta],
+      groups: [MetadataGroup.BETA],
       description: `
 ${input('ionic serve')} uses the Angular CLI. Use ${input('ng serve --help')} to list all Angular CLI options for serving your app. See the ${input('ng serve')} docs[^ng-serve-docs] for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${input('--')} separator after the Ionic CLI arguments. See the examples.
 
@@ -41,7 +41,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           name: 'ssl',
           summary: 'Use HTTPS for the dev server',
           type: Boolean,
-          groups: [OptionGroup.Experimental, 'cordova'],
+          groups: [MetadataGroup.EXPERIMENTAL, 'cordova'],
           hint: weak('[ng]'),
         },
         {
@@ -55,7 +55,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           name: 'configuration',
           summary: 'Specify the configuration to use.',
           type: String,
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[ng]'),
           spec: { value: 'conf' },
         },
@@ -63,7 +63,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           name: 'source-map',
           summary: 'Output sourcemaps',
           type: Boolean,
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[ng]'),
         },
         {
@@ -71,7 +71,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           summary: 'Publish DevApp service',
           type: Boolean,
           default: false,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
       exampleCommands: [

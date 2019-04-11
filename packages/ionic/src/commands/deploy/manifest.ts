@@ -1,4 +1,4 @@
-import { CommandGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 import { map } from '@ionic/utils-array';
 import { readdirp, stat, writeFile } from '@ionic/utils-fs';
 import * as crypto from 'crypto';
@@ -22,7 +22,7 @@ export class DeployManifestCommand extends Command {
       name: 'manifest',
       type: 'project',
       summary: 'Generates a manifest file for the deploy service from a built app directory',
-      groups: [CommandGroup.Hidden],
+      groups: [MetadataGroup.HIDDEN],
     };
   }
 

@@ -1,4 +1,4 @@
-import { CommandGroup, OptionGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists, tmpfilepath, unlink, writeFile } from '@ionic/utils-fs';
 import * as lodash from 'lodash';
@@ -71,35 +71,35 @@ The default directory for ${input('--key-path')} and ${input('--cert-path')} is 
           name: 'country-name',
           summary: 'The country name (C) of the SSL certificate',
           default: DEFAULT_COUNTRY_NAME,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'C' },
         },
         {
           name: 'state-or-province-name',
           summary: 'The state or province name (ST) of the SSL certificate',
           default: DEFAULT_STATE_OR_PROVINCE_NAME,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'ST' },
         },
         {
           name: 'locality-name',
           summary: 'The locality name (L) of the SSL certificate',
           default: DEFAULT_LOCALITY_NAME,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'L' },
         },
         {
           name: 'organization-name',
           summary: 'The organization name (O) of the SSL certificate',
           default: DEFAULT_ORGANIZATION_NAME,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'O' },
         },
         {
           name: 'common-name',
           summary: 'The common name (CN) of the SSL certificate',
           default: DEFAULT_COMMON_NAME,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'CN' },
         },
         {
@@ -107,10 +107,10 @@ The default directory for ${input('--key-path')} and ${input('--cert-path')} is 
           summary: 'Number of bits in the key',
           aliases: ['b'],
           default: DEFAULT_BITS,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
-      groups: [CommandGroup.Experimental],
+      groups: [MetadataGroup.EXPERIMENTAL],
     };
   }
 

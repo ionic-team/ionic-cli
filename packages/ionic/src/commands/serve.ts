@@ -1,4 +1,4 @@
-import { CommandGroup, Footnote, OptionGroup } from '@ionic/cli-framework';
+import { Footnote, MetadataGroup } from '@ionic/cli-framework';
 import { sleepForever } from '@ionic/utils-process';
 import * as lodash from 'lodash';
 
@@ -18,14 +18,14 @@ export class ServeCommand extends Command implements CommandPreRun {
         name: 'lab-host',
         summary: 'Use specific address for Ionic Lab server',
         default: 'localhost',
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
         spec: { value: 'host' },
       },
       {
         name: 'lab-port',
         summary: 'Use specific port for Ionic Lab server',
         default: DEFAULT_LAB_PORT.toString(),
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
         spec: { value: 'port' },
       },
       {
@@ -44,13 +44,13 @@ export class ServeCommand extends Command implements CommandPreRun {
         name: 'browser',
         summary: `Specifies the browser to use (${BROWSERS.map(b => input(b)).join(', ')})`,
         aliases: ['w'],
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
       },
       {
         name: 'browseroption',
         summary: `Specifies a path to open to (${input('/#/tab/dash')})`,
         aliases: ['o'],
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
         spec: { value: 'path' },
       },
       {
@@ -140,7 +140,7 @@ Try the ${input('--lab')} option to see multiple platforms at once.`;
 export class LabCommand extends ServeCommand {
   async getMetadata(): Promise<CommandMetadata> {
     const metadata = await super.getMetadata();
-    const groups = [...metadata.groups || [], CommandGroup.Hidden];
+    const groups = [...metadata.groups || [], MetadataGroup.HIDDEN];
     const exampleCommands = [...metadata.exampleCommands || []].filter(c => !c.includes('--lab'));
 
     return {

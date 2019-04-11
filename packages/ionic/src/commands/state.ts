@@ -1,4 +1,4 @@
-import { CommandGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 import { columnar, indent } from '@ionic/cli-framework/utils/format';
 
 import { CommandMetadata } from '../definitions';
@@ -12,7 +12,7 @@ export class StateCommand extends Command {
       name: 'state',
       type: 'global',
       summary: '',
-      groups: [CommandGroup.Hidden],
+      groups: [MetadataGroup.HIDDEN],
     };
   }
 

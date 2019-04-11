@@ -1,4 +1,4 @@
-import { CommandGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input, strong } from '../../lib/color';
@@ -21,7 +21,7 @@ ${input('ionic capacitor copy')} will do the following:
           summary: `The platform to copy (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
         },
       ],
-      groups: [CommandGroup.Beta],
+      groups: [MetadataGroup.BETA],
     };
   }
 

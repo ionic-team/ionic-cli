@@ -1,4 +1,4 @@
-import { CommandGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { isCommand } from '../guards';
@@ -25,7 +25,7 @@ export class HelpCommand extends Command {
           type: Boolean,
         },
       ],
-      groups: [CommandGroup.Hidden],
+      groups: [MetadataGroup.HIDDEN],
     };
   }
 

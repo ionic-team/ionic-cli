@@ -1,4 +1,4 @@
-import { OptionGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
+import { MetadataGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import * as Debug from 'debug';
 
@@ -66,18 +66,18 @@ If you are having issues linking, please get in touch with our Support[^support-
         {
           name: 'name',
           summary: 'The app name to use during the linking of a new app',
-          groups: [OptionGroup.Hidden],
+          groups: [MetadataGroup.HIDDEN],
         },
         {
           name: 'create',
           summary: 'Create a new app on Ionic Appflow and link it with this local Ionic project',
           type: Boolean,
-          groups: [OptionGroup.Hidden],
+          groups: [MetadataGroup.HIDDEN],
         },
         {
           name: 'pro-id',
           summary: 'Specify an app ID from the Ionic Appflow to link',
-          groups: [OptionGroup.Deprecated, OptionGroup.Hidden],
+          groups: [MetadataGroup.DEPRECATED, MetadataGroup.HIDDEN],
           spec: { value: 'id' },
         },
       ],

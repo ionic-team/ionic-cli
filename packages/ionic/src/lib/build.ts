@@ -1,4 +1,4 @@
-import { BaseError, OptionGroup, PromptModule } from '@ionic/cli-framework';
+import { BaseError, MetadataGroup, PromptModule } from '@ionic/cli-framework';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import * as Debug from 'debug';
 
@@ -16,12 +16,12 @@ export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
   {
     name: 'engine',
     summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => input(e)).join(', ')})`,
-    groups: [OptionGroup.Advanced],
+    groups: [MetadataGroup.ADVANCED],
   },
   {
     name: 'platform',
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => input(e)).join(', ')})`,
-    groups: [OptionGroup.Advanced],
+    groups: [MetadataGroup.ADVANCED],
   },
 ];
 

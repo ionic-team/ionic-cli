@@ -1,4 +1,4 @@
-import { OptionGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, Ionic1ServeOptions, ServeDetails } from '../../../definitions';
@@ -31,21 +31,21 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
           summary: 'Print dev server logs to Ionic CLI',
           type: Boolean,
           aliases: ['s'],
-          groups: [OptionGroup.Hidden, 'cordova'],
+          groups: [MetadataGroup.HIDDEN, 'cordova'],
         },
         {
           name: 'livereload-port',
           summary: 'Use specific port for live-reload',
           default: DEFAULT_LIVERELOAD_PORT.toString(),
           aliases: ['r'],
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           spec: { value: 'port' },
         },
         {
           name: 'dev-logger-port',
           summary: 'Use specific port for dev server communication',
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           spec: { value: 'port' },
         },
         {
@@ -53,14 +53,14 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
           summary: 'Do not publish DevApp service',
           type: Boolean,
           default: true,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'proxy',
           summary: 'Do not add proxies',
           type: Boolean,
           default: true,
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
       ],

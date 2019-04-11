@@ -1,4 +1,4 @@
-import { CommandGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { input } from '../lib/color';
@@ -11,7 +11,7 @@ export class TelemetryCommand extends Command {
       name: 'telemetry',
       type: 'global',
       summary: 'Opt in and out of telemetry',
-      groups: [CommandGroup.Hidden],
+      groups: [MetadataGroup.HIDDEN],
       inputs: [
         {
           name: 'status',

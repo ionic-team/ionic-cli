@@ -1,4 +1,4 @@
-import { CommandHelpFormatterDeps as BaseCommandHelpFormatterDeps, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, NO_COLORS, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, OptionGroup, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
+import { CommandHelpFormatterDeps as BaseCommandHelpFormatterDeps, CommandHelpSchema as BaseCommandHelpSchema, CommandSchemaHelpFormatter as BaseCommandSchemaHelpFormatter, CommandStringHelpFormatter as BaseCommandStringHelpFormatter, MetadataGroup, NO_COLORS, NamespaceHelpFormatterDeps as BaseNamespaceHelpFormatterDeps, NamespaceSchemaHelpFormatter as BaseNamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter as BaseNamespaceStringHelpFormatter, formatOptionName, isOptionVisible } from '@ionic/cli-framework';
 import { filter } from '@ionic/utils-array';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, HydratedCommandMetadata, ICommand, INamespace } from '../definitions';
@@ -35,7 +35,8 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
   }
 
   async formatIonicHeader(): Promise<string> {
-    return IONIC_LOGO + `  CLI ${this.version}\n\n`;
+    const { strong } = this.colors;
+    return `\n${IONIC_LOGO} ${strong(`CLI ${this.version}`)}\n\n`;
   }
 
   async getGlobalOptions(): Promise<string[]> {
@@ -65,8 +66,8 @@ export class CommandStringHelpFormatter extends BaseCommandStringHelpFormatter<I
     const metadata = await this.getCommandMetadata();
     const options = metadata.options ? metadata.options : [];
 
-    const basicOptions = options.filter(o => !o.groups || !o.groups.includes(OptionGroup.Advanced));
-    const advancedOptions = options.filter(o => o.groups && o.groups.includes(OptionGroup.Advanced));
+    const basicOptions = options.filter(o => !o.groups || !o.groups.includes(MetadataGroup.ADVANCED));
+    const advancedOptions = options.filter(o => o.groups && o.groups.includes(MetadataGroup.ADVANCED));
 
     return (
       (await this.formatOptionsGroup('Options', basicOptions)) +

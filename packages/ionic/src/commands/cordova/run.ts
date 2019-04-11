@@ -1,4 +1,4 @@
-import { Footnote, LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
+import { Footnote, LOGGER_LEVELS, MetadataGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { onBeforeExit, processExit, sleepForever } from '@ionic/utils-process';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import * as path from 'path';
@@ -25,7 +25,7 @@ const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     name: 'native-run',
     summary: `Use ${input('native-run')} instead of Cordova for running the app`,
     type: Boolean,
-    groups: [OptionGroup.Experimental, 'native-run'],
+    groups: [MetadataGroup.EXPERIMENTAL, 'native-run'],
     hint: weak('[native-run]'),
   },
   {
@@ -33,14 +33,14 @@ const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     summary: 'Do not tie the running app to the process',
     type: Boolean,
     default: true,
-    groups: [OptionGroup.Experimental, 'native-run'],
+    groups: [MetadataGroup.EXPERIMENTAL, 'native-run'],
     hint: weak('[native-run]'),
   },
   {
     name: 'json',
     summary: `Output ${input('--list')} targets in JSON`,
     type: Boolean,
-    groups: [OptionGroup.Experimental, 'native-run'],
+    groups: [MetadataGroup.EXPERIMENTAL, 'native-run'],
     hint: weak('[native-run]'),
   },
 ];

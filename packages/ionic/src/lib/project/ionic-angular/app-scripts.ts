@@ -1,5 +1,5 @@
-import { OptionGroup } from '@ionic/cli-framework';
-import { compileNodeModulesPaths, resolve } from '@ionic/cli-framework/utils/node';
+import { MetadataGroup } from '@ionic/cli-framework';
+import { compileNodeModulesPaths } from '@ionic/cli-framework/utils/node';
 import * as Debug from 'debug';
 
 import { CommandMetadataOption } from '../../../definitions';
@@ -11,7 +11,7 @@ export async function importAppScripts(projectDir: string): Promise<any> {
   const pkg = '@ionic/app-scripts';
 
   debug('Importing %s', pkg);
-  const p = resolve(pkg, { paths: compileNodeModulesPaths(projectDir) });
+  const p = require.resolve(pkg, { paths: compileNodeModulesPaths(projectDir) });
   const m = require(p);
   debug('fin');
 
@@ -30,34 +30,34 @@ export const APP_SCRIPTS_OPTIONS: CommandMetadataOption[] = [
     name: 'aot',
     summary: 'Perform ahead-of-time compilation for this build',
     type: Boolean,
-    groups: [OptionGroup.Advanced, 'app-scripts'],
+    groups: [MetadataGroup.ADVANCED, 'app-scripts'],
     hint: weak('[app-scripts]'),
   },
   {
     name: 'minifyjs',
     summary: 'Minify JS for this build',
     type: Boolean,
-    groups: [OptionGroup.Advanced, 'app-scripts'],
+    groups: [MetadataGroup.ADVANCED, 'app-scripts'],
     hint: weak('[app-scripts]'),
   },
   {
     name: 'minifycss',
     summary: 'Minify CSS for this build',
     type: Boolean,
-    groups: [OptionGroup.Advanced, 'app-scripts'],
+    groups: [MetadataGroup.ADVANCED, 'app-scripts'],
     hint: weak('[app-scripts]'),
   },
   {
     name: 'optimizejs',
     summary: 'Perform JS optimizations for this build',
     type: Boolean,
-    groups: [OptionGroup.Advanced, 'app-scripts'],
+    groups: [MetadataGroup.ADVANCED, 'app-scripts'],
     hint: weak('[app-scripts]'),
   },
   {
     name: 'env',
     summary: '',
-    groups: [OptionGroup.Hidden, OptionGroup.Advanced, 'app-scripts'],
+    groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED, 'app-scripts'],
     hint: weak('[app-scripts]'),
   },
 ];

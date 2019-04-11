@@ -1,4 +1,4 @@
-import { OptionGroup, validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
 import { PROJECT_FILE } from '../../constants';
@@ -42,7 +42,7 @@ For multi-app projects, this command is scoped to the current project by default
           summary: `Operate on root of ${strong(prettyPath(projectFile))}`,
           type: Boolean,
           hint: weak('[multi-app]'),
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
       exampleCommands: ['', 'type', '--global git.setup', '-g interactive'],

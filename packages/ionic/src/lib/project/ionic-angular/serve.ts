@@ -1,4 +1,4 @@
-import { OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import * as Debug from 'debug';
 
@@ -40,7 +40,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           summary: 'Print dev server logs to Ionic CLI',
           type: Boolean,
           aliases: ['s'],
-          groups: [OptionGroup.Hidden, 'cordova'],
+          groups: [MetadataGroup.HIDDEN, 'cordova'],
           hint: weak('[app-scripts]'),
         },
         {
@@ -48,14 +48,14 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           summary: 'Do not publish DevApp service',
           type: Boolean,
           default: true,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'livereload-port',
           summary: 'Use specific port for live-reload',
           default: DEFAULT_LIVERELOAD_PORT.toString(),
           aliases: ['r'],
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[app-scripts]'),
           spec: { value: 'port' },
         },
@@ -63,7 +63,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           name: 'dev-logger-port',
           summary: 'Use specific port for dev server',
           default: DEFAULT_DEV_LOGGER_PORT.toString(),
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[app-scripts]'),
           spec: { value: 'port' },
         },
@@ -72,7 +72,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           summary: 'Do not add proxies',
           type: Boolean,
           default: true,
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[app-scripts]'),
           // TODO: Adding 'x' to aliases here has some weird behavior with minimist.
         },
@@ -80,7 +80,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           name: 'source-map',
           summary: 'Output sourcemaps',
           type: Boolean,
-          groups: [OptionGroup.Advanced, 'cordova'],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[app-scripts]'),
         },
         ...APP_SCRIPTS_OPTIONS,

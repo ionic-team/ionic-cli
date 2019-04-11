@@ -1,4 +1,4 @@
-import { OptionGroup, validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
@@ -106,28 +106,28 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           name: 'capacitor',
           summary: 'Include Capacitor integration',
           type: Boolean,
-          groups: [OptionGroup.Experimental],
+          groups: [MetadataGroup.EXPERIMENTAL],
         },
         {
           name: 'deps',
           summary: 'Do not install npm/yarn dependencies',
           type: Boolean,
           default: true,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'git',
           summary: 'Do not initialize a git repo',
           type: Boolean,
           default: true,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'link',
           summary: 'Do not ask to connect the app to Ionic Appflow',
           type: Boolean,
           default: true,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'id',
@@ -136,26 +136,26 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         {
           name: 'pro-id',
           summary: `Use the ${input('--id')} option`,
-          groups: [OptionGroup.Deprecated],
+          groups: [MetadataGroup.DEPRECATED],
           spec: { value: 'id' },
         },
         {
           name: 'project-id',
           summary: 'Specify a slug for your app (used for the directory name and npm/yarn package name)',
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'slug' },
         },
         {
           name: 'package-id',
           summary: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'id' },
         },
         {
           name: 'tag',
           summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => input(t)).join(', ')})`,
           default: 'latest',
-          groups: [OptionGroup.Hidden],
+          groups: [MetadataGroup.HIDDEN],
         },
       ],
     };

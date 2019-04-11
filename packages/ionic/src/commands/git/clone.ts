@@ -1,4 +1,4 @@
-import { CommandGroup, validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { Command } from '../../lib/command';
@@ -22,7 +22,7 @@ export class GitCloneCommand extends Command {
           summary: 'The destination directory of the cloned app',
         },
       ],
-      groups: [CommandGroup.Hidden], // TODO: make part of start?
+      groups: [MetadataGroup.HIDDEN], // TODO: make part of start?
     };
   }
 

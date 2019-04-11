@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, OptionGroup, contains, validators } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, MetadataGroup, contains, validators } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { tmpfilepath } from '@ionic/utils-fs';
 import { sleep } from '@ionic/utils-process';
@@ -116,21 +116,21 @@ Customizing the build:
           name: 'commit',
           summary: 'Commit (defaults to HEAD)',
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'sha1' },
         },
         {
           name: 'target-platform',
           summary: `Target platform (${TARGET_PLATFORM.map(v => input(`"${v}"`)).join(', ')})`,
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'name' },
         },
         {
           name: 'build-file-name',
           summary: 'The name for the downloaded build file',
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'name' },
         },
       ],

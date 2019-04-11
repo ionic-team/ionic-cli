@@ -1,4 +1,4 @@
-import { NamespaceGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandMap, Namespace } from '../../lib/namespace';
 
@@ -17,7 +17,7 @@ Commands to help manage Ionic Enterprise[^enterprise-edition] subscriptions.
           shortUrl: 'https://ion.link/enterprise',
         },
       ],
-      groups: [NamespaceGroup.Paid],
+      groups: [MetadataGroup.PAID],
     };
   }
 

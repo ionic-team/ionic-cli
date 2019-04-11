@@ -1,4 +1,4 @@
-import { BaseConfig, BaseConfigOptions, OptionGroup, ParsedArgs, metadataOptionsToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
+import { BaseConfig, BaseConfigOptions, MetadataGroup, ParsedArgs, metadataOptionsToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
 import * as os from 'os';
 import * as path from 'path';
 
@@ -10,7 +10,7 @@ export const GLOBAL_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     summary: 'Display help for commands',
     aliases: ['h'],
     type: Boolean,
-    groups: [OptionGroup.Hidden],
+    groups: [MetadataGroup.HIDDEN],
   },
   {
     name: 'verbose',
@@ -42,13 +42,13 @@ export const GLOBAL_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
     name: 'project',
     summary: 'The project ID to use in a multi-app configuration setup',
-    groups: [OptionGroup.Hidden],
+    groups: [MetadataGroup.HIDDEN],
   },
   {
     name: 'json',
     summary: 'Use JSON when operating with stdout, if possible',
     type: Boolean,
-    groups: [OptionGroup.Hidden],
+    groups: [MetadataGroup.HIDDEN],
   },
 ];
 

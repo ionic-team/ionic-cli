@@ -1,4 +1,4 @@
-import { OptionGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
@@ -42,7 +42,7 @@ export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
   {
     name: 'buildConfig',
     summary: 'Use the specified build configuration',
-    groups: [OptionGroup.Advanced, 'cordova', 'cordova-cli'],
+    groups: [MetadataGroup.ADVANCED, 'cordova', 'cordova-cli'],
     hint: weak('[cordova]'),
     spec: { value: 'file' },
   },
@@ -54,7 +54,7 @@ export const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     name: 'target',
     summary: `Deploy build to a device (use ${input('--list')} to see all)`,
     type: String,
-    groups: [OptionGroup.Advanced, 'cordova', 'cordova-cli', 'native-run'],
+    groups: [MetadataGroup.ADVANCED, 'cordova', 'cordova-cli', 'native-run'],
     hint: weak('[cordova]'),
   },
 ];

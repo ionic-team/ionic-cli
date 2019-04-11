@@ -1,4 +1,4 @@
-import { OptionGroup, validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 
 import { PROJECT_FILE } from '../../constants';
@@ -50,20 +50,20 @@ By default, if ${input('property')} exists and is an object or an array, the val
           name: 'json',
           summary: `Always interpret ${input('value')} as JSON`,
           type: Boolean,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'force',
           summary: 'Always overwrite existing values',
           type: Boolean,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'root',
           summary: `Operate on root of ${strong(prettyPath(projectFile))}`,
           type: Boolean,
           hint: weak('[multi-app]'),
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
       exampleCommands: ['name newAppName', 'name "\\"newAppName\\"" --json', '-g interactive false'],

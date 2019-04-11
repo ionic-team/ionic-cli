@@ -1,4 +1,4 @@
-import { BaseError, LOGGER_LEVELS, OptionGroup, ParsedArgs, PromptModule, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
+import { BaseError, LOGGER_LEVELS, MetadataGroup, ParsedArgs, PromptModule, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { readJson } from '@ionic/utils-fs';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
@@ -45,14 +45,14 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     name: 'address',
     summary: 'Use specific address for the dev server',
     default: BIND_ALL_ADDRESS,
-    groups: [OptionGroup.Advanced],
+    groups: [MetadataGroup.ADVANCED],
   },
   {
     name: 'port',
     summary: 'Use specific port for HTTP',
     default: DEFAULT_SERVER_PORT.toString(),
     aliases: ['p'],
-    groups: [OptionGroup.Advanced],
+    groups: [MetadataGroup.ADVANCED],
   },
   {
     name: 'livereload',
@@ -63,12 +63,12 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
   {
     name: 'engine',
     summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => input(e)).join(', ')})`,
-    groups: [OptionGroup.Hidden, OptionGroup.Advanced],
+    groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
   },
   {
     name: 'platform',
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => input(e)).join(', ')})`,
-    groups: [OptionGroup.Hidden, OptionGroup.Advanced],
+    groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
   },
 ];
 

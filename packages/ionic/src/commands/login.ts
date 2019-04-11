@@ -1,4 +1,4 @@
-import { OptionGroup, validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
@@ -51,7 +51,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
           name: 'sso',
           type: Boolean,
           summary: 'Open a window to log in with the SSO provider associated with your email',
-          groups: [OptionGroup.Hidden],
+          groups: [MetadataGroup.HIDDEN],
         },
       ],
     };

@@ -1,4 +1,4 @@
-import { OptionGroup, contains, validate } from '@ionic/cli-framework';
+import { MetadataGroup, contains, validate } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists, unlink } from '@ionic/utils-fs';
 import * as path from 'path';
@@ -28,20 +28,20 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
           summary: `The type of key to generate: ${SSH_KEY_TYPES.map(v => input(v)).join(', ')}`,
           default: 'rsa',
           aliases: ['t'],
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'bits',
           summary: 'Number of bits in the key',
           aliases: ['b'],
           default: '2048',
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'annotation',
           summary: 'Annotation (comment) in public key. Your Ionic email address will be used',
           aliases: ['C'],
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
     };

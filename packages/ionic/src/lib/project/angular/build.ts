@@ -1,4 +1,4 @@
-import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
 import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
@@ -12,7 +12,7 @@ const NG_BUILD_OPTIONS = [
     aliases: ['c'],
     summary: 'Specify the configuration to use.',
     type: String,
-    groups: [OptionGroup.Advanced],
+    groups: [MetadataGroup.ADVANCED],
     hint: weak('[ng]'),
     spec: { value: 'conf' },
   },
@@ -29,7 +29,7 @@ export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [CommandGroup.Beta],
+      groups: [MetadataGroup.BETA],
       description: `
 ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to list all Angular CLI options for building your app. See the ${input('ng build')} docs[^ng-build-docs] for explanations. Options not listed below are considered advanced and can be passed to the ${input('ng')} CLI using the ${input('--')} separator after the Ionic CLI arguments. See the examples.
 `,
@@ -50,7 +50,7 @@ ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to
           name: 'source-map',
           summary: 'Output source maps',
           type: Boolean,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           hint: weak('[ng]'),
         },
         ...NG_BUILD_OPTIONS,
@@ -58,7 +58,7 @@ ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to
           name: 'cordova-assets',
           summary: 'Do not bundle Cordova assets during Cordova build',
           type: Boolean,
-          groups: [OptionGroup.Hidden],
+          groups: [MetadataGroup.HIDDEN],
           default: true,
         },
       ],

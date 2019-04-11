@@ -1,4 +1,4 @@
-import { CommandGroup, Footnote, validators } from '@ionic/cli-framework';
+import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as path from 'path';
@@ -15,7 +15,7 @@ import { CapacitorCommand } from './base';
 
 export class RunCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
-    let groups: string[] = [CommandGroup.Beta];
+    let groups: string[] = [MetadataGroup.BETA];
     const exampleCommands = [
       '',
       'android',

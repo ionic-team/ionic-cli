@@ -1,4 +1,5 @@
 import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
+import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as os from 'os';
@@ -37,7 +38,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       },
       onFileCreate: f => {
         if (!details.quiet) {
-          details.env.log.msg(`${input('CREATE')} ${f}`);
+          details.env.log.msg(`${chalk.green('CREATE')} ${f}`);
         }
       },
     };

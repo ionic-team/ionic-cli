@@ -1,4 +1,4 @@
-import { LOGGER_LEVELS, OptionGroup, createPrefixedFormatter } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, MetadataGroup, createPrefixedFormatter } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, copy, pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
@@ -79,7 +79,7 @@ With the experimental ${input('--cordova-res')} option, ${input('ionic cordova r
           name: 'cordova-res',
           summary: `Use ${input('cordova-res')} instead of Ionic resource server`,
           type: Boolean,
-          groups: [OptionGroup.Experimental],
+          groups: [MetadataGroup.EXPERIMENTAL],
         },
       ],
     };

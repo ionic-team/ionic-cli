@@ -1,4 +1,4 @@
-import { NamespaceGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
@@ -14,7 +14,7 @@ Interface to execute commands about package builds on Ionic Appflow.
 Appflow package documentation:
 - Overview: ${strong('https://ion.link/appflow-package-docs')}
       `,
-      groups: [NamespaceGroup.Paid],
+      groups: [MetadataGroup.PAID],
     };
   }
 

@@ -1,5 +1,6 @@
 import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap } from '../command';
-import { CommandGroup, NamespaceGroup, OptionGroup, CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
+import { CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
+import { MetadataGroup } from '../../definitions';
 import { stripAnsi } from '../../utils/format';
 
 class MyNamespace extends Namespace {
@@ -30,7 +31,7 @@ class NamespaceWithDefault extends Namespace {
     return {
       name: 'defns',
       summary: 'the defns namespace',
-      groups: [NamespaceGroup.Beta],
+      groups: [MetadataGroup.BETA],
     };
   }
 
@@ -72,7 +73,7 @@ class DefaultCommand extends Command {
     return {
       name: 'def',
       summary: 'the default command',
-      groups: [CommandGroup.Beta],
+      groups: [MetadataGroup.BETA],
     };
   }
 
@@ -98,7 +99,7 @@ class BarCommand extends Command {
       ],
       options: [
         { name: 'opt1', summary: 'opt1 summary', aliases: ['o'], spec: { value: 'optvalue' } },
-        { name: 'opt2', summary: 'opt2 summary', groups: [OptionGroup.Advanced] },
+        { name: 'opt2', summary: 'opt2 summary', groups: [MetadataGroup.ADVANCED] },
         { name: 'opt3', summary: 'opt3 summary', type: Boolean },
       ],
       exampleCommands: ['', 'input1 input2', '--opt1 --opt2'],

@@ -1,4 +1,4 @@
-import { OptionGroup, unparseArgs } from '@ionic/cli-framework';
+import { MetadataGroup, unparseArgs } from '@ionic/cli-framework';
 import * as Debug from 'debug';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
@@ -38,7 +38,7 @@ ${input('ionic build')} uses ${strong('@ionic/app-scripts')}. See the project's 
           name: 'source-map',
           summary: 'Output sourcemaps',
           type: Boolean,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           hint: weak('[app-scripts]'),
         },
         ...APP_SCRIPTS_OPTIONS,

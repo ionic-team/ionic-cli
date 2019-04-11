@@ -1,4 +1,4 @@
-import { OptionGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { isSuperAgentError } from '../guards';
@@ -19,7 +19,7 @@ export class DocsCommand extends Command {
           name: 'browser',
           summary: `Specifies the browser to use (${BROWSERS.map(b => input(b)).join(', ')})`,
           aliases: ['w'],
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
     };

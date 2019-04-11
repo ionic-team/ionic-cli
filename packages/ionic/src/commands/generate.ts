@@ -1,4 +1,4 @@
-import { CommandGroup, Footnote } from '@ionic/cli-framework';
+import { Footnote, MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPreRun } from '../definitions';
 import { failure, input, strong } from '../lib/color';
@@ -13,7 +13,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     const exampleCommands = [''];
     const footnotes: Footnote[] = [];
 
-    let groups: string[] = [CommandGroup.Hidden];
+    let groups: string[] = [MetadataGroup.HIDDEN];
 
     let description = this.project
       ? failure(`Generators are not supported in this project type (${strong(prettyProjectName(this.project.type))}).`)

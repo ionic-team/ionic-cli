@@ -1,9 +1,8 @@
 import { filter, map } from '@ionic/utils-array';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
-import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, Footnote, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, LinkFootnote, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
+import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, Footnote, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, LinkFootnote, MetadataGroup, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 import { isHydratedCommandMetadata, isLinkFootnote } from '../guards';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '../utils/format';
 
@@ -15,70 +14,21 @@ const debug = Debug('ionic:cli-framework:lib:help');
 
 const DEFAULT_DOTS_WIDTH = 32;
 
-export enum CommandGroup {
-  Deprecated = 'deprecated',
-  Hidden = 'hidden',
-  Beta = 'beta',
-  Experimental = 'experimental',
-  Paid = 'paid',
+function formatHelpGroups(groups: string[] = [], colors: Colors = DEFAULT_COLORS): string {
+  const { help: { group: gcolors } } = colors;
+
+  return groups
+    .map(g => g in gcolors ? gcolors[g as keyof typeof gcolors](`(${g})`) + ' ' : '')
+    .join('');
 }
 
-export enum NamespaceGroup {
-  Deprecated = 'deprecated',
-  Hidden = 'hidden',
-  Beta = 'beta',
-  Experimental = 'experimental',
-  Paid = 'paid',
-}
-
-export enum OptionGroup {
-  Deprecated = 'deprecated',
-  Hidden = 'hidden',
-  Beta = 'beta',
-  Experimental = 'experimental',
-  Advanced = 'advanced',
-  Paid = 'paid',
-}
-
-type Decoration<T extends string> = [T, string];
-
-const OPTION_DECORATIONS: Decoration<OptionGroup>[] = [
-  [OptionGroup.Beta, chalk.red.bold('(beta)')],
-  [OptionGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
-  [OptionGroup.Experimental, chalk.red.bold('(experimental)')],
-  [OptionGroup.Paid, chalk.blue.bold('(paid)')],
-];
-
-const COMMAND_DECORATIONS: Decoration<CommandGroup>[] = [
-  [CommandGroup.Beta, chalk.red.bold('(beta)')],
-  [CommandGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
-  [CommandGroup.Experimental, chalk.red.bold('(experimental)')],
-  [CommandGroup.Paid, chalk.blue.bold('(paid)')],
-];
-
-const NAMESPACE_DECORATIONS: Decoration<NamespaceGroup>[] = [
-  [NamespaceGroup.Beta, chalk.red.bold('(beta)')],
-  [NamespaceGroup.Deprecated, chalk.yellow.bold('(deprecated)')],
-  [NamespaceGroup.Experimental, chalk.red.bold('(experimental)')],
-  [NamespaceGroup.Paid, chalk.blue.bold('(paid)')],
-];
-
-function formatGroupDecorations<T extends string>(decorations: Decoration<T>[], groups?: string[]): string {
-  if (!groups) {
-    return '';
-  }
-
-  const prepends = decorations.filter(([g]) => groups.includes(g)).map(([, d]) => d);
-  return prepends.length ? prepends.join(' ') + ' ' : '';
-}
-
-function formatLinkFootnote(footnote: LinkFootnote, colors = DEFAULT_COLORS): string {
+function formatLinkFootnote(footnote: LinkFootnote, colors: Colors = DEFAULT_COLORS): string {
   const { strong } = colors;
 
   return strong(footnote.shortUrl ? footnote.shortUrl : footnote.url);
 }
 
-function formatFootnote(index: number, footnote: Footnote, colors = DEFAULT_COLORS): string {
+function formatFootnote(index: number, footnote: Footnote, colors: Colors = DEFAULT_COLORS): string {
   const { ancillary } = colors;
   const prefix = ancillary(`[${index}]`);
 
@@ -87,7 +37,7 @@ function formatFootnote(index: number, footnote: Footnote, colors = DEFAULT_COLO
   return `${prefix}: ${output}`;
 }
 
-function formatFootnotes(text: string, footnotes?: ReadonlyArray<Footnote>, colors = DEFAULT_COLORS): string {
+function formatFootnotes(text: string, footnotes?: ReadonlyArray<Footnote>, colors: Colors = DEFAULT_COLORS): string {
   if (!footnotes) {
     return text;
   }
@@ -116,12 +66,12 @@ function formatFootnotes(text: string, footnotes?: ReadonlyArray<Footnote>, colo
 }
 
 export async function isOptionVisible<O extends CommandMetadataOption>(opt: O): Promise<boolean> {
-  return !opt.groups || !opt.groups.includes(OptionGroup.Hidden);
+  return !opt.groups || !opt.groups.includes(MetadataGroup.HIDDEN);
 }
 
 export async function isCommandVisible<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(cmd: HydratedCommandMetadata<C, N, M, I, O>): Promise<boolean> {
   const ns = await cmd.namespace.getMetadata();
-  return (!cmd.groups || !cmd.groups.includes(CommandGroup.Hidden)) && (!ns.groups || !ns.groups.includes(NamespaceGroup.Hidden));
+  return (!cmd.groups || !cmd.groups.includes(MetadataGroup.HIDDEN)) && (!ns.groups || !ns.groups.includes(MetadataGroup.HIDDEN));
 }
 
 export abstract class HelpFormatter {
@@ -227,7 +177,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
   }
 
   async formatUsage(): Promise<string> {
-    const { strong, weak, input } = this.colors;
+    const { help: { title }, weak, input } = this.colors;
     const fullName = await this.getNamespaceFullName();
 
     const options = ['--help', ...(await this.getGlobalOptions())];
@@ -236,7 +186,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     ];
 
     return (
-      `\n  ${strong('Usage')}:` +
+      `\n  ${title('Usage')}:` +
       `\n\n    ${usageLines.map(u => `${weak('$')} ${input(fullName + ' ' + u)}`).join('\n    ')}\n`
     );
   }
@@ -247,8 +197,8 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     return this.formatCommandGroup('Commands', commands);
   }
 
-  async formatCommandGroup(title: string, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
-    const { strong } = this.colors;
+  async formatCommandGroup(titleText: string, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
+    const { help: { title } } = this.colors;
 
     const filteredCommands = await filter(commands, async cmd => this.filterCommandCallback(cmd));
 
@@ -266,7 +216,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     details.sort();
 
     return (
-      `\n  ${strong(title)}:` +
+      `\n  ${title(titleText)}:` +
       `\n\n    ${details.join('\n    ')}\n`
     );
   }
@@ -277,7 +227,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     const fillStringArray = generateFillSpaceStringList(fullCmd, this.dotswidth, weak('.'));
 
     const formattedCommands = await Promise.all(commands.map(async (cmd, index) => {
-      const wrapColor: ColorFunction = cmd.groups && cmd.groups.includes(CommandGroup.Deprecated) ? weak : lodash.identity;
+      const wrapColor: ColorFunction = cmd.groups && cmd.groups.includes(MetadataGroup.DEPRECATED) ? weak : lodash.identity;
 
       const summary = (
         (await this.formatBeforeCommandSummary(cmd)) +
@@ -321,7 +271,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
    * @param meta: The metadata of the namespace.
    */
   async formatBeforeSummary(meta: NamespaceMetadata): Promise<string> {
-    return formatGroupDecorations(NAMESPACE_DECORATIONS, meta.groups);
+    return formatHelpGroups(meta.groups, this.colors);
   }
 
   /**
@@ -339,7 +289,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
    * @param meta: The metadata of the command.
    */
   async formatBeforeCommandSummary(meta: HydratedCommandMetadata<C, N, M, I, O>): Promise<string> {
-    return formatGroupDecorations(COMMAND_DECORATIONS, meta.groups);
+    return formatHelpGroups(meta.groups, this.colors);
   }
 
   /**
@@ -363,7 +313,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
    * @param commands An array of the metadata of the namespace's commands.
    */
   async formatBeforeNamespaceSummary(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
-    return formatGroupDecorations(NAMESPACE_DECORATIONS, meta.groups);
+    return formatHelpGroups(meta.groups, this.colors);
   }
 
   /**
@@ -500,7 +450,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   }
 
   async formatUsage(): Promise<string> {
-    const { strong, weak, input } = this.colors;
+    const { help: { title }, weak, input } = this.colors;
     const fullName = await this.getCommandFullName();
     const metadata = await this.getCommandMetadata();
 
@@ -509,13 +459,13 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const formattedInputs = metadata.inputs ? await Promise.all(metadata.inputs.map(async i => this.formatInlineInput(i))) : [];
 
     return (
-      `\n  ${strong('Usage')}:` +
-      `\n\n    ${weak('$')} ${input(fullName + (formattedInputs ? ' ' + formattedInputs.join(' ') : ''))}${filteredOptions.length > 0 ? ' ' + input('[options]') : ''}\n`
+      `\n  ${title('Usage')}:` +
+      `\n\n    ${weak('$')} ${input(fullName + (formattedInputs.length > 0 ? ' ' + formattedInputs.join(' ') : ''))}${filteredOptions.length > 0 ? ' ' + input('[options]') : ''}\n`
     );
   }
 
   async formatInputs(): Promise<string> {
-    const { strong, weak, input } = this.colors;
+    const { help: { title }, weak, input } = this.colors;
     const metadata = await this.getCommandMetadata();
     const inputs = metadata.inputs ? metadata.inputs : [];
 
@@ -533,14 +483,14 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     };
 
     return (
-      `\n  ${strong('Inputs')}:` +
+      `\n  ${title('Inputs')}:` +
       `\n\n    ${inputs.map(inputLineFn).join('\n    ')}\n`
     );
   }
 
   async formatOptionLine(opt: O) {
     const { weak } = this.colors;
-    const wrapColor: ColorFunction = opt.groups && opt.groups.includes(OptionGroup.Deprecated) ? weak : lodash.identity;
+    const wrapColor: ColorFunction = opt.groups && opt.groups.includes(MetadataGroup.DEPRECATED) ? weak : lodash.identity;
     const optionName = formatOptionName(opt, { colors: this.colors });
     const optionNameLength = stringWidth(optionName);
     const fullLength = optionNameLength > this.dotswidth ? optionNameLength + 1 : this.dotswidth;
@@ -562,7 +512,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
    * @param meta The metadata of the command.
    */
   async formatBeforeSummary(meta: M): Promise<string> {
-    return formatGroupDecorations(COMMAND_DECORATIONS, meta.groups);
+    return formatHelpGroups(meta.groups, this.colors);
   }
 
   /**
@@ -580,7 +530,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
    * @param opt The metadata of the option.
    */
   async formatBeforeOptionSummary(opt: O): Promise<string> {
-    return formatGroupDecorations(OPTION_DECORATIONS, opt.groups);
+    return formatHelpGroups(opt.groups, this.colors);
   }
 
   async formatAfterOptionSummary(opt: O): Promise<string> {
@@ -604,8 +554,8 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     return this.formatOptionsGroup('Options', options);
   }
 
-  async formatOptionsGroup(title: string, options: O[]): Promise<string> {
-    const { strong } = this.colors;
+  async formatOptionsGroup(titleText: string, options: O[]): Promise<string> {
+    const { help: { title } } = this.colors;
 
     const filteredOptions = await filter(options, async opt => this.filterOptionCallback(opt));
 
@@ -616,13 +566,13 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     const formattedOptions = await Promise.all(filteredOptions.map(async option => this.formatOptionLine(option)));
 
     return (
-      `\n  ${strong(title)}:` +
+      `\n  ${title(titleText)}:` +
       `\n\n    ${formattedOptions.join('\n    ')}\n`
     );
   }
 
   async formatExamples(): Promise<string> {
-    const { strong, weak, input } = this.colors;
+    const { help: { title }, weak, input } = this.colors;
     const metadata = await this.getCommandMetadata();
     const fullName = await this.getCommandFullName();
 
@@ -639,7 +589,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     });
 
     return (
-      `\n  ${strong('Examples')}:` +
+      `\n  ${title('Examples')}:` +
       `\n\n    ${exampleLines.join('\n    ')}\n`
     );
   }

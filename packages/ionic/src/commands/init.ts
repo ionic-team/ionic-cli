@@ -1,4 +1,4 @@
-import { CommandGroup, OptionGroup, validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { slugify } from '@ionic/cli-framework/utils/string';
 import * as path from 'path';
@@ -48,11 +48,11 @@ ${input('ionic init')} will prompt for a project name and then proceed to determ
         {
           name: 'project-id',
           summary: 'Specify a slug for your app',
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'slug' },
         },
       ],
-      groups: [CommandGroup.Beta],
+      groups: [MetadataGroup.BETA],
     };
   }
 
