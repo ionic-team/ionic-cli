@@ -1,7 +1,7 @@
 import { BaseConfig, BaseConfigOptions, ParsedArgs, PromptModule } from '@ionic/cli-framework';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
-import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
+import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -484,7 +484,7 @@ export abstract class Project implements IProject {
     let pkgPath: string | undefined;
 
     try {
-      pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       pkg = await readPackageJsonFile(pkgPath);
     } catch (e) {
       this.e.log.error(`Error loading ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}: ${e}`);
@@ -495,7 +495,7 @@ export abstract class Project implements IProject {
 
   async requirePackageJson(pkgName?: string): Promise<PackageJson> {
     try {
-      const pkgPath = pkgName ? resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      const pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       return await readPackageJsonFile(pkgPath);
     } catch (e) {
       if (e instanceof SyntaxError) {

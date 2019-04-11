@@ -82,7 +82,7 @@
     "@types/elementtree": "^0.1.0",
     "@types/jest": "^24.0.3",
     "@types/lodash": "^4.14.104",
-    "@types/node": "^6.0.101",
+    "@types/node": "~8.9.4",
     "@types/opn": "~5.1.0",
     "@types/os-name": "^2.0.0",
     "@types/semver": "^5.4.0",

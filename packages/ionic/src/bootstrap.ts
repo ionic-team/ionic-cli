@@ -1,4 +1,4 @@
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
+import { compileNodeModulesPaths, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
@@ -20,7 +20,7 @@ export async function detectLocalCLI(): Promise<string> {
   let pkgPath: string | undefined;
 
   try {
-    pkgPath = resolve('ionic/package', { paths: compileNodeModulesPaths(process.cwd()) });
+    pkgPath = require.resolve('ionic/package', { paths: compileNodeModulesPaths(process.cwd()) });
   } catch (e) {
     // ignore
   }

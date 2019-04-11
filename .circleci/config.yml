@@ -9,8 +9,14 @@ aliases:
         - dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/lab/package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/utils-array/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/utils-fs/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/utils-network/package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/utils-object/package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/utils-process/package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/utils-stream/package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/utils-subprocess/package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/utils-terminal/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/v1-toolkit/package.json" }}
         - dependency-cache-{{ checksum "packages/cli-scripts/package.json" }}
         - dependency-cache-{{ checksum "packages/ionic/package.json" }}
@@ -35,6 +41,11 @@ aliases:
       paths:
         - packages/@ionic/lab/node_modules
 
+  - &save-cache-utils-array
+      key: dependency-cache-{{ checksum "packages/@ionic/utils-array/package.json" }}
+      paths:
+        - packages/@ionic/utils-array/node_modules
+
   - &save-cache-utils-fs
       key: dependency-cache-{{ checksum "packages/@ionic/utils-fs/package.json" }}
       paths:
@@ -44,6 +55,31 @@ aliases:
       key: dependency-cache-{{ checksum "packages/@ionic/utils-network/package.json" }}
       paths:
         - packages/@ionic/utils-network/node_modules
+
+  - &save-cache-utils-object
+      key: dependency-cache-{{ checksum "packages/@ionic/utils-object/package.json" }}
+      paths:
+        - packages/@ionic/utils-object/node_modules
+
+  - &save-cache-utils-process
+      key: dependency-cache-{{ checksum "packages/@ionic/utils-process/package.json" }}
+      paths:
+        - packages/@ionic/utils-process/node_modules
+
+  - &save-cache-utils-stream
+      key: dependency-cache-{{ checksum "packages/@ionic/utils-stream/package.json" }}
+      paths:
+        - packages/@ionic/utils-stream/node_modules
+
+  - &save-cache-utils-subprocess
+      key: dependency-cache-{{ checksum "packages/@ionic/utils-subprocess/package.json" }}
+      paths:
+        - packages/@ionic/utils-subprocess/node_modules
+
+  - &save-cache-utils-terminal
+      key: dependency-cache-{{ checksum "packages/@ionic/utils-terminal/package.json" }}
+      paths:
+        - packages/@ionic/utils-terminal/node_modules
 
   - &save-cache-v1-toolkit
       key: dependency-cache-{{ checksum "packages/@ionic/v1-toolkit/package.json" }}
@@ -90,8 +126,14 @@ jobs:
       - save_cache: *save-cache-cli-framework
       - save_cache: *save-cache-discover
       - save_cache: *save-cache-lab
+      - save_cache: *save-cache-utils-array
       - save_cache: *save-cache-utils-fs
       - save_cache: *save-cache-utils-network
+      - save_cache: *save-cache-utils-object
+      - save_cache: *save-cache-utils-process
+      - save_cache: *save-cache-utils-stream
+      - save_cache: *save-cache-utils-subprocess
+      - save_cache: *save-cache-utils-terminal
       - save_cache: *save-cache-v1-toolkit
       - save_cache: *save-cache-cli-scripts
       - save_cache: *save-cache-ionic
@@ -99,11 +141,6 @@ jobs:
           root: /tmp/workspace
           paths:
             - "*"
-
-  unit-test-node-6:
-    <<: *unit-test-base
-    docker:
-      - image: circleci/node:6
 
   unit-test-node-8:
     <<: *unit-test-base
@@ -141,8 +178,6 @@ workflows:
   build:
     jobs:
       - build
-      - unit-test-node-6:
-          requires: [build]
       - unit-test-node-8:
           requires: [build]
       - unit-test-node-10:
@@ -151,7 +186,6 @@ workflows:
       #     requires: [build]
       - deploy:
           requires:
-            - unit-test-node-6
             - unit-test-node-8
             - unit-test-node-10
             # - unit-test-node-latest

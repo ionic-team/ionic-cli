@@ -45,7 +45,7 @@
     "@types/debug": "^4.1.1",
     "@types/jest": "^24.0.3",
     "@types/netmask": "^1.0.30",
-    "@types/node": "^6.0.101",
+    "@types/node": "~8.9.4",
     "@types/ws": "^6.0.0",
     "jest": "^23.0.1",
     "jest-cli": "^24.1.0",

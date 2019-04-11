@@ -55,7 +55,7 @@
     "@types/jest": "^24.0.3",
     "@types/lodash": "^4.14.104",
     "@types/minimist": "^1.2.0",
-    "@types/node": "^6.0.101",
+    "@types/node": "~8.9.4",
     "@types/rimraf": "^2.0.2",
     "@types/slice-ansi": "^2.0.0",
     "@types/string-width": "^2.0.0",
