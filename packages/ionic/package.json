@@ -83,7 +83,7 @@
     "@types/jest": "^24.0.3",
     "@types/lodash": "^4.14.104",
     "@types/node": "~8.9.4",
-    "@types/opn": "~5.1.0",
+    "@types/opn": "~5.5.0",
     "@types/os-name": "^2.0.0",
     "@types/semver": "^5.4.0",
     "@types/split2": "^2.1.6",
