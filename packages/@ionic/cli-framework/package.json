@@ -58,7 +58,7 @@
     "@types/node": "~8.9.4",
     "@types/rimraf": "^2.0.2",
     "@types/slice-ansi": "^2.0.0",
-    "@types/string-width": "^2.0.0",
+    "@types/string-width": "^4.0.1",
     "@types/untildify": "^3.0.0",
     "@types/wrap-ansi": "^3.0.0",
     "@types/write-file-atomic": "^2.1.1",
