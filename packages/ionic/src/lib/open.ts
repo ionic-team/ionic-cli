@@ -7,11 +7,10 @@ export interface OpenOptions {
 }
 
 export async function open(target: string, options: OpenOptions = {}): Promise<void> {
-  const opn = await import ('opn');
+  const o = await import ('open');
+  const p = await o(target, { ...options, wait: false });
+  const e = (err: Error) => debug('Error during open: %O', err);
+  const n = p.on;
 
-  const p = await opn(target, { ...options, wait: false });
-
-  p.on('error', err => {
-    debug('Error during open: %O', err);
-  });
+  n('error', err => e(err));
 }
