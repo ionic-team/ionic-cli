@@ -1,4 +1,4 @@
-import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ionic/cli-framework';
+import { BaseError, InputValidationError, PackageJson } from '@ionic/cli-framework';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { processExit } from '@ionic/utils-process';
 import * as Debug from 'debug';
@@ -10,7 +10,6 @@ import { isExitCodeException, isSuperAgentError } from './guards';
 import { generateIonicEnvironment } from './lib';
 import { failure, input, strong } from './lib/color';
 import { Executor } from './lib/executor';
-import { mapLegacyCommand } from './lib/init';
 
 export * from './constants';
 export * from './guards';
@@ -112,19 +111,7 @@ export async function run(pargv: string[]): Promise<void> {
         }
       }
 
-      const parsedArgs = stripOptions(pargv, { includeSeparated: false });
-      const foundCommand = mapLegacyCommand(parsedArgs[0]);
-
-      // If an legacy command is being executed inform the user that there is a
-      // new command available
-      if (foundCommand) {
-        ienv.log.msg(
-          `The ${input(parsedArgs[0])} command has been renamed. To find out more, run:\n\n` +
-          `    ${input(`ionic ${foundCommand} --help`)}\n\n`
-        );
-      } else {
-        await executor.execute(pargv, process.env);
-      }
+      await executor.execute(pargv, process.env);
 
       if (ienv.flags.interactive) {
         const updateNotifier = await import('update-notifier');
