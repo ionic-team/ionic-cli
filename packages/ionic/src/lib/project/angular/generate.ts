@@ -1,4 +1,4 @@
-import { MetadataGroup, unparseArgs, validators } from '@ionic/cli-framework';
+import { unparseArgs, validators } from '@ionic/cli-framework';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
@@ -38,7 +38,6 @@ export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [MetadataGroup.BETA],
       description: `
 This command uses the Angular CLI to generate features such as ${['pages', 'components', 'directives', 'services'].map(c => input(c)).join(', ')}, etc.
 

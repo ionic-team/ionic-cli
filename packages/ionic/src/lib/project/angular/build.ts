@@ -29,7 +29,6 @@ export class AngularBuildRunner extends BuildRunner<AngularBuildOptions> {
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [MetadataGroup.BETA],
       description: `
 ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to list all Angular CLI options for building your app. See the ${input('ng build')} docs[^ng-build-docs] for explanations. Options not listed below are considered advanced and can be passed to the ${input('ng')} CLI using the ${input('--')} separator after the Ionic CLI arguments. See the examples.
 `,

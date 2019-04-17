@@ -20,7 +20,6 @@ export class AngularServeRunner extends ServeRunner<AngularServeOptions> {
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [MetadataGroup.BETA],
       description: `
 ${input('ionic serve')} uses the Angular CLI. Use ${input('ng serve --help')} to list all Angular CLI options for serving your app. See the ${input('ng serve')} docs[^ng-serve-docs] for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${input('--')} separator after the Ionic CLI arguments. See the examples.
 
