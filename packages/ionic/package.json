@@ -85,7 +85,7 @@
     "@types/node": "~8.9.4",
     "@types/open": "~6.1.0",
     "@types/os-name": "^2.0.0",
-    "@types/semver": "^5.4.0",
+    "@types/semver": "^6.0.0",
     "@types/split2": "^2.1.6",
     "@types/tar": "^4.0.0",
     "@types/through2": "^2.0.33",
