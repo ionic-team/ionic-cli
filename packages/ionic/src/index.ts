@@ -1,7 +1,6 @@
-import { BaseError, InputValidationError, PackageJson, stripOptions } from '@ionic/cli-framework';
+import { BaseError, InputValidationError, PackageJson } from '@ionic/cli-framework';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { processExit } from '@ionic/utils-process';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
@@ -9,8 +8,8 @@ import { IonicNamespace } from './commands';
 import { IPCMessage, IonicContext } from './definitions';
 import { isExitCodeException, isSuperAgentError } from './guards';
 import { generateIonicEnvironment } from './lib';
+import { failure, input, strong } from './lib/color';
 import { Executor } from './lib/executor';
-import { mapLegacyCommand } from './lib/init';
 
 export * from './constants';
 export * from './guards';
@@ -36,11 +35,11 @@ export async function generateContext(): Promise<IonicContext> {
   const pkg = await loadPackageJson();
 
   if (!pkg.bin || !pkg.bin.ionic) {
-    throw new Error(`Missing "${chalk.bold('bin.ionic')}" in Ionic CLI package.json`);
+    throw new Error(`Missing "${strong('bin.ionic')}" in Ionic CLI package.json`);
   }
 
   if (!pkg.main) {
-    throw new Error(`Missing "${chalk.bold('main')}" in Ionic CLI package.json`);
+    throw new Error(`Missing "${strong('main')}" in Ionic CLI package.json`);
   }
 
   return {
@@ -87,44 +86,32 @@ export async function run(pargv: string[]): Promise<void> {
 
       if (token) {
         const wasLoggedIn = ienv.session.isLoggedIn();
-        debug(`${chalk.bold('IONIC_TOKEN')} environment variable detected`);
+        debug(`${strong('IONIC_TOKEN')} environment variable detected`);
 
         if (ienv.config.get('tokens.user') !== token) {
-          debug(`${chalk.bold('IONIC_TOKEN')} mismatch with current session--attempting login`);
+          debug(`${strong('IONIC_TOKEN')} mismatch with current session--attempting login`);
           await ienv.session.tokenLogin(token);
 
           if (wasLoggedIn) {
-            ienv.log.info(`You have been logged out--using ${chalk.bold('IONIC_TOKEN')} environment variable`);
+            ienv.log.info(`You have been logged out--using ${strong('IONIC_TOKEN')} environment variable`);
           }
         }
       } else if (email && password) {
-        debug(`${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables detected`);
+        debug(`${strong('IONIC_EMAIL')} / ${strong('IONIC_PASSWORD')} environment variables detected`);
 
         if (ienv.config.get('user.email') !== email) {
-          debug(`${chalk.bold('IONIC_EMAIL')} mismatch with current session--attempting login`);
+          debug(`${strong('IONIC_EMAIL')} mismatch with current session--attempting login`);
 
           try {
             await ienv.session.login(email, password);
           } catch (e) {
-            ienv.log.error(`Error occurred during automatic login via ${chalk.bold('IONIC_EMAIL')} / ${chalk.bold('IONIC_PASSWORD')} environment variables.`);
+            ienv.log.error(`Error occurred during automatic login via ${strong('IONIC_EMAIL')} / ${strong('IONIC_PASSWORD')} environment variables.`);
             throw e;
           }
         }
       }
 
-      const parsedArgs = stripOptions(pargv, { includeSeparated: false });
-      const foundCommand = mapLegacyCommand(parsedArgs[0]);
-
-      // If an legacy command is being executed inform the user that there is a
-      // new command available
-      if (foundCommand) {
-        ienv.log.msg(
-          `The ${chalk.green(parsedArgs[0])} command has been renamed. To find out more, run:\n\n` +
-          `    ${chalk.green(`ionic ${foundCommand} --help`)}\n\n`
-        );
-      } else {
-        await executor.execute(pargv, process.env);
-      }
+      await executor.execute(pargv, process.env);
 
       if (ienv.flags.interactive) {
         const updateNotifier = await import('update-notifier');
@@ -142,15 +129,15 @@ export async function run(pargv: string[]): Promise<void> {
       for (const e of err.errors) {
         ienv.log.error(e.message);
       }
-      ienv.log.msg(`Use the ${chalk.green('--help')} flag for more details.`);
+      ienv.log.msg(`Use the ${input('--help')} flag for more details.`);
     } else if (isSuperAgentError(err)) {
       const { formatSuperAgentError } = await import('./lib/http');
       ienv.log.rawmsg(formatSuperAgentError(err));
     } else if (err.code && err.code === 'ENOTFOUND' || err.code === 'ECONNREFUSED') {
       ienv.log.error(
         `Network connectivity error occurred, are you offline?\n` +
-        `If you are behind a firewall and need to configure proxy settings, see: ${chalk.bold('https://ion.link/cli-proxy-docs')}\n\n` +
-        chalk.red(String(err.stack ? err.stack : err))
+        `If you are behind a firewall and need to configure proxy settings, see: ${strong('https://ion.link/cli-proxy-docs')}\n\n` +
+        failure(String(err.stack ? err.stack : err))
       );
     } else if (isExitCodeException(err)) {
       if (err.message) {
@@ -165,10 +152,10 @@ export async function run(pargv: string[]): Promise<void> {
     } else if (err instanceof BaseError) {
       ienv.log.error(err.message);
     } else {
-      ienv.log.msg(chalk.red(String(err.stack ? err.stack : err)));
+      ienv.log.msg(failure(String(err.stack ? err.stack : err)));
 
       if (err.stack) {
-        debug(chalk.red(String(err.stack)));
+        debug(failure(String(err.stack)));
       }
     }
   }

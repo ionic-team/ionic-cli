@@ -1,12 +1,12 @@
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { pathExists, readFile, readdirSafe } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
 import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
 import { build } from '../../lib/build';
+import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
@@ -21,7 +21,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
       type: 'project',
       summary: 'Build & upload sourcemaps to Ionic Appflow Monitoring service',
       description: `
-By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcemap files within ${chalk.bold(SOURCEMAP_DIRECTORY)}. To optionally perform a production build before uploading sourcemaps, specify the ${chalk.green('--build')} flag.
+By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap files within ${strong(SOURCEMAP_DIRECTORY)}. To optionally perform a production build before uploading sourcemaps, specify the ${input('--build')} flag.
       `,
       inputs: [
         {
@@ -43,7 +43,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
 
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic monitoring syncmaps')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic monitoring syncmaps')} outside a project directory.`);
     }
 
     const token = this.env.session.getUserToken();
@@ -58,7 +58,7 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
 
     const appVersion = cordovaInfo.version;
     const commitHash = (await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.project.directory })).trim();
-    debug(`Commit hash: ${chalk.bold(commitHash)}`);
+    debug(`Commit hash: ${strong(commitHash)}`);
 
     const sourcemapsDir = path.resolve(this.project.directory, SOURCEMAP_DIRECTORY);
     let sourcemapsExist = await pathExists(sourcemapsDir);
@@ -71,11 +71,11 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     sourcemapsExist = await pathExists(sourcemapsDir);
 
     if (sourcemapsExist) {
-      this.env.log.msg(`Using existing sourcemaps in ${chalk.bold(prettyPath(sourcemapsDir))}`);
+      this.env.log.msg(`Using existing sourcemaps in ${strong(prettyPath(sourcemapsDir))}`);
     } else { // TODO: this is hard-coded for ionic-angular, make it work for all project types
       throw new FatalException(
-        `Cannot find directory: ${chalk.bold(prettyPath(sourcemapsDir))}.\n` +
-        `Make sure you have the latest ${chalk.bold('@ionic/app-scripts')}. Then, re-run this command.`
+        `Cannot find directory: ${strong(prettyPath(sourcemapsDir))}.\n` +
+        `Make sure you have the latest ${strong('@ionic/app-scripts')}. Then, re-run this command.`
       );
     }
 
@@ -84,28 +84,28 @@ By default, ${chalk.green('ionic monitoring syncmaps')} will upload the sourcema
     const syncTask = tasks.next('Syncing sourcemaps');
 
     const sourcemapFiles = (await readdirSafe(sourcemapsDir)).filter(f => f.endsWith('.js.map'));
-    debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => chalk.bold(f)).join(', ')}`);
+    debug(`Found ${sourcemapFiles.length} sourcemap files: ${sourcemapFiles.map(f => strong(f)).join(', ')}`);
 
     await Promise.all(sourcemapFiles.map(async f => {
       await this.syncSourcemap(path.resolve(sourcemapsDir, f), snapshotId, appVersion, commitHash, appflowId, token);
       count += 1;
-      syncTask.msg = `Syncing sourcemaps: ${chalk.bold(`${count} / ${sourcemapFiles.length}`)}`;
+      syncTask.msg = `Syncing sourcemaps: ${strong(`${count} / ${sourcemapFiles.length}`)}`;
     }));
 
-    syncTask.msg = `Syncing sourcemaps: ${chalk.bold(`${sourcemapFiles.length} / ${sourcemapFiles.length}`)}`;
+    syncTask.msg = `Syncing sourcemaps: ${strong(`${sourcemapFiles.length} / ${sourcemapFiles.length}`)}`;
     tasks.end();
 
     const details = columnar([
-      ['Appflow ID', chalk.bold(appflowId)],
-      ['Version', chalk.bold(appVersion)],
-      ['Package ID', chalk.bold(cordovaInfo.id)],
-      ['Snapshot ID', snapshotId ? chalk.bold(snapshotId) : chalk.dim('not set')],
+      ['Appflow ID', strong(appflowId)],
+      ['Version', strong(appVersion)],
+      ['Package ID', strong(cordovaInfo.id)],
+      ['Snapshot ID', snapshotId ? strong(snapshotId) : weak('not set')],
     ], { vsep: ':' });
 
     this.env.log.ok(
       `Sourcemaps synced!\n` +
       details + '\n\n' +
-      `See the Error Monitoring docs for usage information and next steps: ${chalk.bold('https://ionicframework.com/docs/appflow/monitoring')}`
+      `See the Error Monitoring docs for usage information and next steps: ${strong('https://ionicframework.com/docs/appflow/monitoring')}`
     );
   }
 

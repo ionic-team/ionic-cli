@@ -1,8 +1,8 @@
 import { contains, validate, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
@@ -15,23 +15,23 @@ export class PlatformCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Manage Cordova platform targets',
       description: `
-Like running ${chalk.green('cordova platform')} directly, but adds default Ionic icons and splash screen resources (during ${chalk.green('add')}) and provides friendly checks.
+Like running ${input('cordova platform')} directly, but adds default Ionic icons and splash screen resources (during ${input('add')}) and provides friendly checks.
       `,
       exampleCommands: ['', 'add ios', 'add android', 'rm ios'],
       inputs: [
         {
           name: 'action',
-          summary: `${chalk.green('add')}, ${chalk.green('remove')}, or ${chalk.green('update')} a platform; ${chalk.green('ls')}, ${chalk.green('check')}, or ${chalk.green('save')} all project platforms`,
+          summary: `${input('add')}, ${input('remove')}, or ${input('update')} a platform; ${input('ls')}, ${input('check')}, or ${input('save')} all project platforms`,
         },
         {
           name: 'platform',
-          summary: `The platform that you would like to add (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform that you would like to add (${['android', 'ios'].map(v => input(v)).join(', ')})`,
         },
       ],
       options: [
         {
           name: 'resources',
-          summary: `Do not pregenerate icons and splash screen resources (corresponds to ${chalk.green('add')})`,
+          summary: `Do not pregenerate icons and splash screen resources (corresponds to ${input('add')})`,
           type: Boolean,
           default: true,
         },
@@ -62,7 +62,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to ${inputs[0]} (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`,
+        message: `What platform would you like to ${inputs[0]} (${['android', 'ios'].map(v => input(v)).join(', ')}):`,
       });
 
       inputs[1] = platform.trim();
@@ -76,7 +76,7 @@ Like running ${chalk.green('cordova platform')} directly, but adds default Ionic
     const { filterArgumentsForCordova } = await import('../../lib/integrations/cordova/utils');
 
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova platform')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic cordova platform')} outside a project directory.`);
     }
 
     const [ action, platformName ] = inputs;

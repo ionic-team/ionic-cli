@@ -1,10 +1,10 @@
-import { BaseError, OptionGroup, PromptModule } from '@ionic/cli-framework';
+import { BaseError, MetadataGroup, PromptModule } from '@ionic/cli-framework';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, NpmClient, Runner } from '../definitions';
 
+import { ancillary, input, strong } from './color';
 import { BuildCLIProgramNotFoundException, FatalException, RunnerException } from './errors';
 import { Hook } from './hooks';
 
@@ -15,13 +15,13 @@ export const BUILD_SCRIPT = 'ionic:build';
 export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   {
     name: 'engine',
-    summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
-    groups: [OptionGroup.Advanced],
+    summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => input(e)).join(', ')})`,
+    groups: [MetadataGroup.ADVANCED],
   },
   {
     name: 'platform',
-    summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
-    groups: [OptionGroup.Advanced],
+    summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => input(e)).join(', ')})`,
+    groups: [MetadataGroup.ADVANCED],
   },
 ];
 
@@ -82,7 +82,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
 
   async run(options: T): Promise<void> {
     if (options.engine === 'cordova' && !options.platform) {
-      this.e.log.warn(`Cordova engine chosen without a target platform. This could cause issues. Please use the ${chalk.green('--platform')} option.`);
+      this.e.log.warn(`Cordova engine chosen without a target platform. This could cause issues. Please use the ${input('--platform')} option.`);
     }
 
     await this.beforeBuild(options);
@@ -176,12 +176,12 @@ export abstract class BuildCLI<T extends object> {
 
       if (this.global) {
         this.e.log.nl();
-        throw new FatalException(`${chalk.green(this.pkg)} is required for this command to work properly.`);
+        throw new FatalException(`${input(this.pkg)} is required for this command to work properly.`);
       }
 
       this.e.log.nl();
       this.e.log.info(
-        `Looks like ${chalk.green(this.pkg)} isn't installed in this project.\n` +
+        `Looks like ${input(this.pkg)} isn't installed in this project.\n` +
         `This package is required for this command to work properly.`
       );
 
@@ -189,7 +189,7 @@ export abstract class BuildCLI<T extends object> {
 
       if (!installed) {
         this.e.log.nl();
-        throw new FatalException(`${chalk.green(this.pkg)} is required for this command to work properly.`);
+        throw new FatalException(`${input(this.pkg)} is required for this command to work properly.`);
       }
 
       return this.run(options);
@@ -203,7 +203,7 @@ export abstract class BuildCLI<T extends object> {
       await this.e.shell.run(this.resolvedProgram, args, { stdio: 'inherit', cwd: this.e.project.directory, fatalOnNotFound: false });
     } catch (e) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
-        throw new BuildCLIProgramNotFoundException(`${chalk.bold(this.resolvedProgram)} command not found.`);
+        throw new BuildCLIProgramNotFoundException(`${strong(this.resolvedProgram)} command not found.`);
       }
 
       throw e;
@@ -212,10 +212,10 @@ export abstract class BuildCLI<T extends object> {
 
   protected async resolveProgram(): Promise<string> {
     if (typeof this.script !== 'undefined') {
-      debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+      debug(`Looking for ${ancillary(this.script)} npm script.`);
 
       if (await this.resolveScript()) {
-        debug(`Using ${chalk.cyan(this.script)} npm script.`);
+        debug(`Using ${ancillary(this.script)} npm script.`);
         return this.e.config.get('npmClient');
       }
     }
@@ -231,12 +231,12 @@ export abstract class BuildCLI<T extends object> {
 
     const confirm = await this.e.prompt({
       name: 'confirm',
-      message: `Install ${chalk.green(this.pkg)}?`,
+      message: `Install ${input(this.pkg)}?`,
       type: 'confirm',
     });
 
     if (!confirm) {
-      this.e.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
+      this.e.log.warn(`Not installing--here's how to install manually: ${input(`${manager} ${managerArgs.join(' ')}`)}`);
       return false;
     }
 

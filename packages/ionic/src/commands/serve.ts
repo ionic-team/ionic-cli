@@ -1,9 +1,9 @@
-import { CommandGroup, Footnote, OptionGroup } from '@ionic/cli-framework';
+import { Footnote, MetadataGroup } from '@ionic/cli-framework';
 import { sleepForever } from '@ionic/utils-process';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
+import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, serve } from '../lib/serve';
@@ -18,14 +18,14 @@ export class ServeCommand extends Command implements CommandPreRun {
         name: 'lab-host',
         summary: 'Use specific address for Ionic Lab server',
         default: 'localhost',
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
         spec: { value: 'host' },
       },
       {
         name: 'lab-port',
         summary: 'Use specific port for Ionic Lab server',
         default: DEFAULT_LAB_PORT.toString(),
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
         spec: { value: 'port' },
       },
       {
@@ -42,15 +42,15 @@ export class ServeCommand extends Command implements CommandPreRun {
       },
       {
         name: 'browser',
-        summary: `Specifies the browser to use (${BROWSERS.map(b => chalk.green(b)).join(', ')})`,
+        summary: `Specifies the browser to use (${BROWSERS.map(b => input(b)).join(', ')})`,
         aliases: ['w'],
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
       },
       {
         name: 'browseroption',
-        summary: `Specifies a path to open to (${chalk.green('/#/tab/dash')})`,
+        summary: `Specifies a path to open to (${input('/#/tab/dash')})`,
         aliases: ['o'],
-        groups: [OptionGroup.Advanced],
+        groups: [MetadataGroup.ADVANCED],
         spec: { value: 'path' },
       },
       {
@@ -67,9 +67,9 @@ export class ServeCommand extends Command implements CommandPreRun {
     let description = `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
-By default, ${chalk.green('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. It also broadcasts your app to the Ionic DevApp on your network. To disable the DevApp and bind to ${chalk.green('localhost')}, use ${chalk.green('--local')}.
+By default, ${input('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. It also broadcasts your app to the Ionic DevApp on your network. To disable the DevApp and bind to ${input('localhost')}, use ${input('--local')}.
 
-Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
+Try the ${input('--lab')} option to see multiple platforms at once.`;
 
     const runner = this.project && await this.project.getServeRunner();
 
@@ -103,12 +103,12 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
     }
 
     if (options['nolivereload']) {
-      this.env.log.warn(`The ${chalk.green('--nolivereload')} option has been deprecated. Please use ${chalk.green('--no-livereload')}.`);
+      this.env.log.warn(`The ${input('--nolivereload')} option has been deprecated. Please use ${input('--no-livereload')}.`);
       options['livereload'] = false;
     }
 
     if (options['nobrowser']) {
-      this.env.log.warn(`The ${chalk.green('--nobrowser')} option has been deprecated. Please use ${chalk.green('--no-open')}.`);
+      this.env.log.warn(`The ${input('--nobrowser')} option has been deprecated. Please use ${input('--no-open')}.`);
       options['open'] = false;
     }
 
@@ -117,7 +117,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
     }
 
     if (options['noproxy']) {
-      this.env.log.warn(`The ${chalk.green('--noproxy')} option has been deprecated. Please use ${chalk.green('--no-proxy')}.`);
+      this.env.log.warn(`The ${input('--noproxy')} option has been deprecated. Please use ${input('--no-proxy')}.`);
       options['proxy'] = false;
     }
 
@@ -128,7 +128,7 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic serve')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic serve')} outside a project directory.`);
     }
 
     // TODO: use runner directly
@@ -140,16 +140,16 @@ Try the ${chalk.green('--lab')} option to see multiple platforms at once.`;
 export class LabCommand extends ServeCommand {
   async getMetadata(): Promise<CommandMetadata> {
     const metadata = await super.getMetadata();
-    const groups = [...metadata.groups || [], CommandGroup.Hidden];
+    const groups = [...metadata.groups || [], MetadataGroup.HIDDEN];
     const exampleCommands = [...metadata.exampleCommands || []].filter(c => !c.includes('--lab'));
 
     return {
       ...metadata,
       summary: 'Start Ionic Lab for multi-platform dev/testing',
       description: `
-Start an instance of ${chalk.bold('Ionic Lab')}, a tool for developing Ionic apps for multiple platforms at once side-by-side.
+Start an instance of ${strong('Ionic Lab')}, a tool for developing Ionic apps for multiple platforms at once side-by-side.
 
-${chalk.green('ionic lab')} is just a convenient shortcut for ${chalk.green('ionic serve --lab')}.`,
+${input('ionic lab')} is just a convenient shortcut for ${input('ionic serve --lab')}.`,
       groups,
       exampleCommands,
     };

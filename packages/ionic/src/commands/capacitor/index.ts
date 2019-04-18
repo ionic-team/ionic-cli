@@ -1,6 +1,6 @@
-import { NamespaceGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { MetadataGroup } from '@ionic/cli-framework';
 
+import { strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class CapacitorNamespace extends Namespace {
@@ -12,9 +12,9 @@ export class CapacitorNamespace extends Namespace {
 These commands integrate with Capacitor, Ionic's new native layer project which provides an alternative to Cordova for native functionality in your app.
 
 Learn more about Capacitor:
-- Main documentation: ${chalk.bold('https://ion.link/capacitor')}
+- Main documentation: ${strong('https://ion.link/capacitor')}
       `,
-      groups: [NamespaceGroup.Beta],
+      groups: [MetadataGroup.BETA],
     };
   }
 

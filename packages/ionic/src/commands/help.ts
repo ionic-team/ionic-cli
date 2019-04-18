@@ -1,8 +1,8 @@
-import { CommandGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { isCommand } from '../guards';
+import { input } from '../lib/color';
 import { Command } from '../lib/command';
 
 export class HelpCommand extends Command {
@@ -25,7 +25,7 @@ export class HelpCommand extends Command {
           type: Boolean,
         },
       ],
-      groups: [CommandGroup.Hidden],
+      groups: [MetadataGroup.HIDDEN],
     };
   }
 
@@ -40,7 +40,7 @@ export class HelpCommand extends Command {
     } else {
       if (location.args.length > 0) {
         this.env.log.error(
-          `Unable to find command: ${chalk.green(inputs.join(' '))}` +
+          `Unable to find command: ${input(inputs.join(' '))}` +
           (this.project ? '' : '\nYou may need to be in an Ionic project directory.')
         );
       }

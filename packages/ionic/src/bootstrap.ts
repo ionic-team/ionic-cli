@@ -1,8 +1,10 @@
-import { compileNodeModulesPaths, readPackageJsonFile, resolve } from '@ionic/cli-framework/utils/node';
+import { compileNodeModulesPaths, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 import * as semver from 'semver';
+
+import { strong } from './lib/color';
 
 if (process.argv.includes('--no-color')) {
   chalk.enabled = false;
@@ -18,7 +20,7 @@ export async function detectLocalCLI(): Promise<string> {
   let pkgPath: string | undefined;
 
   try {
-    pkgPath = resolve('ionic/package', { paths: compileNodeModulesPaths(process.cwd()) });
+    pkgPath = require.resolve('ionic/package', { paths: compileNodeModulesPaths(process.cwd()) });
   } catch (e) {
     // ignore
   }
@@ -26,7 +28,7 @@ export async function detectLocalCLI(): Promise<string> {
   if (pkgPath && process.env.IONIC_CLI_LIB !== path.dirname(pkgPath)) {
     const pkg = await readPackageJsonFile(pkgPath);
 
-    debug(`local CLI ${chalk.bold(pkg.version)} found at ${chalk.bold(pkgPath)}`);
+    debug(`local CLI ${strong(pkg.version)} found at ${strong(pkgPath)}`);
 
     if (semver.lt(pkg.version, '4.0.0')) {
       throw ERROR_VERSION_TOO_OLD;

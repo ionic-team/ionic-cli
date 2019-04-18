@@ -1,6 +1,5 @@
-import { BaseConfig, createPromptChoiceSeparator } from '@ionic/cli-framework';
+import { BaseConfig, createPromptChoiceSeparator, parseArgs } from '@ionic/cli-framework';
 import { readFile, writeFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
@@ -12,6 +11,7 @@ import {
   IntegrationName
 } from '../../../definitions';
 import { isSuperAgentError } from '../../../guards';
+import { strong, weak } from '../../color';
 import { FatalException } from '../../errors';
 
 interface ProductKey {
@@ -48,12 +48,12 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
   async add(details: IntegrationAddDetails): Promise<void> {
     let productKey = this.config.get('productKey');
     let appId = this.config.get('appId');
-    if (details.enableArgs && details.enableArgs[0]) {
-      productKey = details.enableArgs[0];
 
-      if (details.enableArgs.length > 1) {
-        appId = details.enableArgs[1];
-      }
+    if (details.enableArgs) {
+      const parsedArgs = parseArgs(details.enableArgs, { string: ['app-id', 'key'] });
+
+      appId = parsedArgs['app-id'];
+      productKey = parsedArgs['key'];
     }
 
     if (!productKey) {
@@ -79,7 +79,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       throw new FatalException('No Organization attached to key. Please contact support@ionic.io');
     }
 
-    if (!key.app) {
+    if (!key.app || appId) {
       if (!appId) {
         appId = await this.chooseAppToLink(details, key.org);
       }
@@ -158,7 +158,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     const { formatName } = await import('../../../lib/app');
 
     const newAppChoice = {
-      name: chalk.bold('Create A New App'),
+      name: strong('Create A New App'),
       id: CHOICE_CREATE_NEW_APP,
       value: CHOICE_CREATE_NEW_APP,
       org,
@@ -170,7 +170,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       message: 'This key needs to be registered to an app. Which app would you like to register it to?',
       choices: [
         ...apps.map(app => ({
-          name: `${formatName(app)} ${chalk.dim(`(${app.id})`)}`,
+          name: `${formatName(app)} ${weak(`(${app.id})`)}`,
           value: app.id,
         })),
         createPromptChoiceSeparator(),

@@ -1,5 +1,6 @@
-import chalk from 'chalk';
+import { MetadataGroup } from '@ionic/cli-framework';
 
+import { strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class PackageNamespace extends Namespace {
@@ -11,8 +12,9 @@ export class PackageNamespace extends Namespace {
 Interface to execute commands about package builds on Ionic Appflow.
 
 Appflow package documentation:
-- Overview: ${chalk.bold('https://ion.link/appflow-package-docs')}
+- Overview: ${strong('https://ion.link/appflow-package-docs')}
       `,
+      groups: [MetadataGroup.PAID],
     };
   }
 

@@ -6,6 +6,7 @@ import * as util from 'util';
 import { APIResponse, APIResponsePageTokenMeta, APIResponseSuccess, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 
+import { failure, strong } from './color';
 import { FatalException } from './errors';
 import { createRequest } from './utils/http';
 
@@ -250,7 +251,7 @@ export function formatSuperAgentError(e: SuperAgentError): string {
     }
   }
 
-  return chalk.red.bold(f);
+  return failure(strong(f));
 }
 
 function formatAPIResponse(req: ζsuperagent.SuperAgentRequest, r: APIResponse): string {
@@ -258,7 +259,7 @@ function formatAPIResponse(req: ζsuperagent.SuperAgentRequest, r: APIResponse):
 }
 
 export function formatResponseError(req: ζsuperagent.SuperAgentRequest, status?: number, body?: object | string): string {
-  return chalk.red(
+  return failure(
     `Request: ${req.method} ${req.url}\n` +
     (status ? `Response: ${status}\n` : '') +
     (body ? `Body: \n${util.inspect(body, { colors: chalk.enabled })}` : '')

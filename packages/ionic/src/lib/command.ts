@@ -1,11 +1,10 @@
 import { BaseCommand, LOGGER_LEVELS, LogUpdateOutputStrategy, OutputStrategy, StreamHandler, StreamOutputStrategy, TaskChain, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
-import chalk from 'chalk';
-import * as LogUpdate from 'log-update';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, IProject, IonicEnvironment } from '../definitions';
 import { isCommandPreRun } from '../guards';
 
+import { input } from './color';
 import { createDefaultLoggerHandlers, createFormatter } from './utils/logger';
 
 export abstract class Command extends BaseCommand<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> implements ICommand {
@@ -29,7 +28,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const formatter = createFormatter();
 
     if (this.env.flags.interactive) {
-      output = new LogUpdateOutputStrategy({ LogUpdate });
+      output = new LogUpdateOutputStrategy();
       this.env.log.handlers = new Set([new StreamHandler({ stream: output.stream, formatter })]);
     } else {
       this.env.log.handlers = createDefaultLoggerHandlers();
@@ -55,7 +54,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
       await this.validate(inputs);
     } catch (e) {
       if (!this.env.flags.interactive) {
-        this.env.log.warn(`Command ran non-interactively due to ${chalk.green('--no-interactive')} flag, CI being detected, non-TTY, or a config setting.`);
+        this.env.log.warn(`Command ran non-interactively due to ${input('--no-interactive')} flag, CI being detected, non-TTY, or a config setting.`);
       }
 
       throw e;
@@ -71,7 +70,13 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
         const metadata = await this.getMetadata();
 
         if (metadata.name === 'login' || metadata.name === 'logout') {
+          // This is a hack to wait until the selected commands complete before
+          // sending telemetry data. These commands update `this.env` in some
+          // way, which is used in the `Telemetry` instance.
           await runPromise;
+        } else if (metadata.name === 'completion') {
+          // Ignore telemetry for these commands.
+          return;
         } else if (metadata.name === 'help') {
           cmdInputs = inputs;
         } else {

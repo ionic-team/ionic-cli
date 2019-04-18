@@ -1,13 +1,13 @@
 import { LOGGER_LEVELS, createPromptModule } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
 import { ERROR_VERSION_TOO_OLD } from '../bootstrap';
 import { IProject, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
+import { input, strong } from './color';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, parseGlobalOptions } from './config';
 import { Environment } from './environment';
 import { Client } from './http';
@@ -89,7 +89,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   }
 
   if (typeof argv['yarn'] === 'boolean') {
-    log.warn(`${chalk.green('--yarn')} / ${chalk.green('--no-yarn')} has been removed. Use ${chalk.green(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
+    log.warn(`${input('--yarn')} / ${input('--no-yarn')} has been removed. Use ${input(`ionic config set -g npmClient ${argv['yarn'] ? 'yarn' : 'npm'}`)}.`);
   }
 
   const project = projectDir ? await createProjectFromDirectory(projectDir, argv, deps, { logErrors: !['start', 'init'].includes(argv._[0]) }) : undefined;
@@ -99,8 +99,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
 
     if (project.config.get('pro_id' as any) && argv._[1] !== 'unset') {
       log.warn(
-        `The ${chalk.green('pro_id')} field in ${chalk.bold(prettyPath(project.filePath))} has been deprecated.\n` +
-        `Ionic Pro has been renamed to Ionic Appflow! We've copied the value in ${chalk.green('pro_id')} to ${chalk.green('id')}, but you may want to unset the deprecated property: ${chalk.green('ionic config unset pro_id')}\n`
+        `The ${input('pro_id')} field in ${strong(prettyPath(project.filePath))} has been deprecated.\n` +
+        `Ionic Pro has been renamed to Ionic Appflow! We've copied the value in ${input('pro_id')} to ${input('id')}, but you may want to unset the deprecated property: ${input('ionic config unset pro_id')}\n`
       );
     }
   }

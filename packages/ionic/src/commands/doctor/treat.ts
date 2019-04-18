@@ -1,8 +1,8 @@
 import { contains, validate } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, TreatableAilment } from '../../definitions';
 import { isExitCodeException, isTreatableAilment } from '../../guards';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
 import { DoctorCommand } from './base';
@@ -19,7 +19,7 @@ export class DoctorTreatCommand extends DoctorCommand {
       description: `
 This command detects and attempts to fix common issues. Before a fix is attempted, the steps are printed and a confirmation prompt is displayed.
 
-Optionally supply the ${chalk.green('id')} argument to attempt to fix a single issue. Use ${chalk.green('ionic doctor list')} to list all known issues.
+Optionally supply the ${input('id')} argument to attempt to fix a single issue. Use ${input('ionic doctor list')} to list all known issues.
       `,
       exampleCommands: [
         '',
@@ -46,13 +46,13 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
       const ailment = registry.get(id);
 
       if (!ailment) {
-        throw new FatalException(`Issue not found by ID: ${chalk.green(id)}`);
+        throw new FatalException(`Issue not found by ID: ${input(id)}`);
       }
 
       const detected = await ailment.detected();
 
       if (!detected) {
-        this.env.log.ok(`${chalk.green(ailment.id)} does not need fixing as it was not detected.`);
+        this.env.log.ok(`${input(ailment.id)} does not need fixing as it was not detected.`);
         return;
       }
 
@@ -60,7 +60,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
         this.env.log.warn(await formatAilmentMessage(ailment));
 
         throw new FatalException(
-          `Issue cannot be fixed automatically: ${chalk.green(ailment.id)}\n` +
+          `Issue cannot be fixed automatically: ${input(ailment.id)}\n` +
           `Unfortunately the CLI can't automatically fix the specified issue at this time. However, please see the steps above for manually fixing the issue.`
         );
       }
@@ -69,7 +69,7 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: `${chalk.green(ailment.id)} is ignored, are you sure you want to continue?`,
+          message: `${input(ailment.id)} is ignored, are you sure you want to continue?`,
         });
 
         if (!confirm) {
@@ -107,8 +107,8 @@ Optionally supply the ${chalk.green('id')} argument to attempt to fix a single i
 
     this.env.log.info(
       'Doctor Summary\n' +
-      `- Detected ${chalk.bold(String(ailments.length))} treatable issue${ailments.length === 1 ? '' : 's'}\n` +
-      (treatedAilments > 0 ? `- ${chalk.bold(String(treatedAilments))} ${treatedAilments === 1 ? 'issue was' : 'issues were'} fixed automatically` : '')
+      `- Detected ${strong(String(ailments.length))} treatable issue${ailments.length === 1 ? '' : 's'}\n` +
+      (treatedAilments > 0 ? `- ${strong(String(treatedAilments))} ${treatedAilments === 1 ? 'issue was' : 'issues were'} fixed automatically` : '')
     );
   }
 

@@ -52,13 +52,16 @@ export class IonicNamespace extends Namespace {
       ['monitoring', async () => { const { MonitoringNamespace } = await import('./monitoring/index'); return new MonitoringNamespace(this); }],
       ['doctor', async () => { const { DoctorNamespace } = await import('./doctor/index'); return new DoctorNamespace(this); }],
       ['integrations', async () => { const { IntegrationsNamespace } = await import('./integrations/index'); return new IntegrationsNamespace(this); }],
+      ['enterprise', async () => { const { EnterpriseNamespace } = await import('./enterprise/index'); return new EnterpriseNamespace(this); }],
       ['cap', 'capacitor'],
+      ['i', 'integrations'],
     ]);
   }
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this); }],
+      ['completion', async () => { const { CompletionCommand } = await import('./completion'); return new CompletionCommand(this); }],
       ['docs', async () => { const { DocsCommand } = await import('./docs'); return new DocsCommand(this); }],
       ['generate', async () => { const { GenerateCommand } = await import('./generate'); return new GenerateCommand(this); }],
       ['help', async () => { const { HelpCommand } = await import('./help'); return new HelpCommand(this); }],

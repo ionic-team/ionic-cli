@@ -1,7 +1,7 @@
 import { validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input } from '../../lib/color';
 import { filterArgumentsForCordova } from '../../lib/integrations/cordova/utils';
 
 import { CORDOVA_COMPILE_OPTIONS, CordovaCommand } from './base';
@@ -13,7 +13,7 @@ export class CompileCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Compile native platform code',
       description: `
-Like running ${chalk.green('cordova compile')} directly, but provides friendly checks.
+Like running ${input('cordova compile')} directly, but provides friendly checks.
       `,
       exampleCommands: [
         'ios',
@@ -23,7 +23,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to compile (${['android', 'ios'].map(v => input(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],
@@ -40,7 +40,7 @@ Like running ${chalk.green('cordova compile')} directly, but provides friendly c
       const platform = await this.env.prompt({
         type: 'input',
         name: 'platform',
-        message: `What platform would you like to compile (${['android', 'ios'].map(v => chalk.green(v)).join(', ')}):`,
+        message: `What platform would you like to compile (${['android', 'ios'].map(v => input(v)).join(', ')}):`,
       });
 
       inputs[0] = platform.trim();

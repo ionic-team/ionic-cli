@@ -1,7 +1,7 @@
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions } from '../../../definitions';
+import { input, strong } from '../../color';
 import { GenerateRunner, GenerateRunnerDeps } from '../../generate';
 
 import { IonicAngularProject } from './';
@@ -25,7 +25,7 @@ export class IonicAngularGenerateRunner extends GenerateRunner<IonicAngularGener
       description: `
 Automatically create components for your Ionic app.
 
-The given ${chalk.green('name')} is normalized into an appropriate naming convention. For example, ${chalk.green('ionic generate page neat')} creates a page by the name of ${chalk.green('NeatPage')} in ${chalk.green('src/pages/neat/')}.
+The given ${input('name')} is normalized into an appropriate naming convention. For example, ${input('ionic generate page neat')} creates a page by the name of ${input('NeatPage')} in ${input('src/pages/neat/')}.
       `,
       exampleCommands: [
         '',
@@ -39,7 +39,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
       inputs: [
         {
           name: 'type',
-          summary: `The type of generator (e.g. ${GENERATOR_TYPES.map(t => chalk.green(t)).join(', ')})`,
+          summary: `The type of generator (e.g. ${GENERATOR_TYPES.map(t => input(t)).join(', ')})`,
           validators: [validators.required, contains(GENERATOR_TYPES, {})],
         },
         {
@@ -134,7 +134,7 @@ The given ${chalk.green('name')} is normalized into an appropriate naming conven
         break;
     }
 
-    this.e.log.ok(`Generated a ${chalk.bold(options.type)}${options.type === 'tabs' ? ' page' : ''} named ${chalk.bold(options.name)}!`);
+    this.e.log.ok(`Generated a ${strong(options.type)}${options.type === 'tabs' ? ' page' : ''} named ${strong(options.name)}!`);
   }
 
   async tabsPrompt() {

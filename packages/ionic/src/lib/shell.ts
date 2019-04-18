@@ -12,6 +12,7 @@ import * as split2 from 'split2';
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
 import { isExitCodeException } from '../guards';
 
+import { input, strong } from './color';
 import { FatalException } from './errors';
 
 const debug = Debug('ionic:lib:shell');
@@ -41,7 +42,7 @@ export class Shell implements IShell {
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
-      this.e.log.rawmsg(`> ${chalk.green(fullCmd)}`);
+      this.e.log.rawmsg(`> ${input(fullCmd)}`);
     }
 
     const ws = stream ? stream : this.e.log.createWriteStream(LOGGER_LEVELS.INFO, false);
@@ -83,7 +84,7 @@ export class Shell implements IShell {
     } catch (e) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
-          throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
+          throw new FatalException(`Command not found: ${input(command)}`, 127);
         } else {
           throw e;
         }
@@ -96,16 +97,16 @@ export class Shell implements IShell {
       let err = e.message || '';
 
       if (truncateErrorOutput && err.length > truncateErrorOutput) {
-        err = `${chalk.bold('(truncated)')} ... ` + err.substring(err.length - truncateErrorOutput);
+        err = `${strong('(truncated)')} ... ` + err.substring(err.length - truncateErrorOutput);
       }
 
       const publicErrorMsg = (
-        `An error occurred while running subprocess ${chalk.green(command)}.\n` +
-        `${chalk.green(truncatedCmd)} exited with exit code ${e.exitCode}.\n\n` +
-        `Re-running this command with the ${chalk.green('--verbose')} flag may provide more information.`
+        `An error occurred while running subprocess ${input(command)}.\n` +
+        `${input(truncatedCmd)} exited with exit code ${e.exitCode}.\n\n` +
+        `Re-running this command with the ${input('--verbose')} flag may provide more information.`
       );
 
-      const privateErrorMsg = `Subprocess (${chalk.green(command)}) encountered an error (exit code ${e.exitCode}).`;
+      const privateErrorMsg = `Subprocess (${input(command)}) encountered an error (exit code ${e.exitCode}).`;
 
       if (fatalOnError) {
         if (showError) {
@@ -131,7 +132,7 @@ export class Shell implements IShell {
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
-      this.e.log.rawmsg(`> ${chalk.green(fullCmd)}`);
+      this.e.log.rawmsg(`> ${input(fullCmd)}`);
     }
 
     try {
@@ -139,7 +140,7 @@ export class Shell implements IShell {
     } catch (e) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
-          throw new FatalException(`Command not found: ${chalk.green(command)}`, 127);
+          throw new FatalException(`Command not found: ${input(command)}`, 127);
         } else {
           throw e;
         }
@@ -149,7 +150,7 @@ export class Shell implements IShell {
         throw e;
       }
 
-      const errorMsg = `An error occurred while running ${chalk.green(truncatedCmd)} (exit code ${e.exitCode})\n`;
+      const errorMsg = `An error occurred while running ${input(truncatedCmd)} (exit code ${e.exitCode})\n`;
 
       if (fatalOnError) {
         throw new FatalException(errorMsg, e.exitCode);
@@ -191,7 +192,7 @@ export class Shell implements IShell {
     const p = cmd.spawn();
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
-      this.e.log.rawmsg(`> ${chalk.green(cmd.bashify())}`);
+      this.e.log.rawmsg(`> ${input(cmd.bashify())}`);
     }
 
     return p;

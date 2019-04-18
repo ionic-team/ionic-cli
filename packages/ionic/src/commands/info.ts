@@ -1,9 +1,9 @@
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
-import chalk from 'chalk';
 import * as lodash from 'lodash';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoItemGroup } from '../definitions';
+import { input, strong, weak } from '../lib/color';
 import { Command } from '../lib/command';
 
 const INFO_GROUPS: ReadonlyArray<InfoItemGroup> = ['ionic', 'capacitor', 'cordova', 'system', 'environment'];
@@ -15,7 +15,7 @@ export class InfoCommand extends Command {
       type: 'global',
       summary: 'Print project, system, and environment information',
       description: `
-This command is an easy way to share information about your setup. If applicable, be sure to run ${chalk.green('ionic info')} within your project directory to display even more information.
+This command is an easy way to share information about your setup. If applicable, be sure to run ${input('ionic info')} within your project directory to display even more information.
       `,
       options: [
         {
@@ -55,7 +55,7 @@ This command is an easy way to share information about your setup. If applicable
 
       const splitInfo = (ary: InfoItem[]) => ary
         .sort(sortInfo)
-        .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + chalk.dim('(' + item.flair + ')') : ''}`, chalk.dim(item.value) + (item.path && projectPath && !item.path.startsWith(projectPath) ? ` ${chalk.dim('(' + item.path + ')')}` : '')]);
+        .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + weak('(' + item.flair + ')') : ''}`, weak(item.value) + (item.path && projectPath && !item.path.startsWith(projectPath) ? ` ${weak('(' + item.path + ')')}` : '')]);
 
       const format = (details: [string, string][]) => columnar(details, { vsep: ':' });
 
@@ -67,7 +67,7 @@ This command is an easy way to share information about your setup. If applicable
 
       for (const [ group, info ] of groupedInfo.entries()) {
         if (info.length > 0) {
-          this.env.log.rawmsg(`${chalk.bold(`${lodash.startCase(group)}:`)}\n\n`);
+          this.env.log.rawmsg(`${strong(`${lodash.startCase(group)}:`)}\n\n`);
           this.env.log.rawmsg(`${format(splitInfo(info))}\n\n`);
         }
       }

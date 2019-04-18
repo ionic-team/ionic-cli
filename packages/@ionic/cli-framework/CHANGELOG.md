@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+<a name="1.7.0"></a>
+# [1.7.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.6.3...@ionic/cli-framework@1.7.0) (2019-03-12)
+
+
+### Features
+
+* **help:** add flair for paid content ([e7978e2](https://github.com/ionic-team/ionic-cli/commit/e7978e2))
+
+
+
+
 <a name="1.6.3"></a>
 ## [1.6.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.6.2...@ionic/cli-framework@1.6.3) (2019-03-06)
 

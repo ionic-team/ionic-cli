@@ -1,6 +1,6 @@
 {
   "name": "@ionic/lab",
-  "version": "1.0.23",
+  "version": "1.0.24",
   "description": "Ionic Lab utility for developing Ionic apps, used by Ionic CLI",
   "bin": {
     "ionic-lab": "./bin/ionic-lab"
@@ -47,7 +47,7 @@
     ]
   },
   "dependencies": {
-    "@ionic/cli-framework": "1.6.3",
+    "@ionic/cli-framework": "1.7.0",
     "@ionic/utils-fs": "1.2.0",
     "chalk": "^2.3.0",
     "express": "^4.16.2",
@@ -56,10 +56,10 @@
   "devDependencies": {
     "@stencil/core": "^0.18.0",
     "@types/express": "^4.11.0",
-    "@types/node": "^6.0.101",
+    "@types/node": "~8.9.4",
     "lint-staged": "^8.0.0",
     "rimraf": "^2.6.2",
     "tslint": "^5.9.1",
-    "typescript": "~3.3.3"
+    "typescript": "~3.4.2"
   }
 }

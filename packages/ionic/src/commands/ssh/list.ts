@@ -1,7 +1,7 @@
 import { columnar } from '@ionic/cli-framework/utils/format';
-import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input, strong } from '../../lib/color';
 
 import { SSHBaseCommand } from './base';
 
@@ -62,7 +62,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
       }
 
       if (res.data.length === 0) {
-        this.env.log.warn(`No SSH keys found. Use ${chalk.green('ionic ssh add')} to add keys to Ionic.`);
+        this.env.log.warn(`No SSH keys found. Use ${input('ionic ssh add')} to add keys to Ionic.`);
         return;
       }
 
@@ -71,7 +71,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
         if (sshkey.fingerprint === activeFingerprint) {
           foundActiveKey = true;
-          return data.map(v => chalk.bold(v));
+          return data.map(v => strong(v));
         }
 
         return data;
@@ -83,13 +83,13 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
 
       if (foundActiveKey) {
         this.env.log.nl();
-        this.env.log.msg(`The row in ${chalk.bold('bold')} is the key that this computer is using. To change, use ${chalk.green('ionic ssh use')}.`);
+        this.env.log.msg(`The row in ${strong('bold')} is the key that this computer is using. To change, use ${input('ionic ssh use')}.`);
       }
 
       this.env.log.nl();
       this.env.log.rawmsg(table);
       this.env.log.nl();
-      this.env.log.ok(`Showing ${chalk.bold(String(res.data.length))} SSH key${res.data.length === 1 ? '' : 's'}.`);
+      this.env.log.ok(`Showing ${strong(String(res.data.length))} SSH key${res.data.length === 1 ? '' : 's'}.`);
       this.env.log.nl();
     }
   }

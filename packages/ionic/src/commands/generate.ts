@@ -1,7 +1,7 @@
-import { CommandGroup, Footnote } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { Footnote, MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, CommandPreRun } from '../definitions';
+import { failure, input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { prettyProjectName } from '../lib/project';
@@ -13,11 +13,11 @@ export class GenerateCommand extends Command implements CommandPreRun {
     const exampleCommands = [''];
     const footnotes: Footnote[] = [];
 
-    let groups: string[] = [CommandGroup.Hidden];
+    let groups: string[] = [MetadataGroup.HIDDEN];
 
     let description = this.project
-      ? chalk.red(`Generators are not supported in this project type (${chalk.bold(prettyProjectName(this.project.type))}).`)
-      : chalk.red('Generators help is available within an Ionic project directory.');
+      ? failure(`Generators are not supported in this project type (${strong(prettyProjectName(this.project.type))}).`)
+      : failure('Generators help is available within an Ionic project directory.');
 
     const runner = this.project && await this.project.getGenerateRunner();
 
@@ -54,7 +54,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic generate')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic generate')} outside a project directory.`);
     }
 
     const runner = await this.project.requireGenerateRunner();

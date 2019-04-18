@@ -1,7 +1,7 @@
 import { findClosestOpenPort } from '@ionic/utils-network';
-import chalk from 'chalk';
 
 import { CommandMetadata, CustomServeOptions, ServeDetails } from '../../../definitions';
+import { input, strong } from '../../color';
 import { RunnerException } from '../../errors';
 import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, ServeRunner, ServeRunnerDeps } from '../../serve';
 
@@ -24,7 +24,7 @@ export class CustomServeRunner extends ServeRunner<CustomServeOptions> {
     if (!await cli.resolveScript()) {
       throw new RunnerException(
         `Cannot perform serve.\n` +
-        `Since you're using the ${chalk.bold('custom')} project type, you must provide the ${chalk.green(cli.script)} npm script so the Ionic CLI can serve your project.`
+        `Since you're using the ${strong('custom')} project type, you must provide the ${input(cli.script)} npm script so the Ionic CLI can serve your project.`
       );
     }
 

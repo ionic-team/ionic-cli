@@ -1,6 +1,6 @@
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
-import chalk from 'chalk';
 
+import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
@@ -15,7 +15,7 @@ export abstract class SSLBaseCommand extends Command {
 
       this.env.log.warn('OpenSSL not found on your computer.'); // TODO: more helpful message
 
-      throw new FatalException(`Command not found: ${chalk.bold('openssl')}`);
+      throw new FatalException(`Command not found: ${input('openssl')}`);
     }
   }
 }

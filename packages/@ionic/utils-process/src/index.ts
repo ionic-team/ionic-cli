@@ -115,9 +115,11 @@ export function offBeforeExit(fn: ExitFn): void {
   exitFns.delete(fn);
 }
 
-const BEFORE_EXIT_SIGNALS = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'];
+export type Signal = 'process.exit' | NodeJS.Signals;
 
-const beforeExitHandlerWrapper = (signal: string) => lodash.once(async () => {
+const BEFORE_EXIT_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'];
+
+const beforeExitHandlerWrapper = (signal: Signal) => lodash.once(async () => {
   debug(`onBeforeExit handler: ${signal} received`);
   debug(`onBeforeExit handler: running ${exitFns.size} functions`);
 

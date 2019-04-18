@@ -1,10 +1,11 @@
-import { CommandGroup, OptionGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { findClosestOpenPort } from '@ionic/utils-network';
 import chalk from 'chalk';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
+import { input, strong, weak } from '../../color';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT as DEFAULT_CONSOLE_LOGS_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 
 import { AngularProject } from './';
@@ -20,11 +21,10 @@ export class AngularServeRunner extends ServeRunner<AngularServeOptions> {
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [CommandGroup.Beta],
       description: `
-${chalk.green('ionic serve')} uses the Angular CLI. Use ${chalk.green('ng serve --help')} to list all Angular CLI options for serving your app. See the ${chalk.green('ng serve')} docs[^ng-serve-docs] for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+${input('ionic serve')} uses the Angular CLI. Use ${input('ng serve --help')} to list all Angular CLI options for serving your app. See the ${input('ng serve')} docs[^ng-serve-docs] for explanations. Options not listed below are considered advanced and can be passed to the Angular CLI using the ${input('--')} separator after the Ionic CLI arguments. See the examples.
 
-The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold.red('(experimental)')}. There are several known issues with HTTPS. See issue #3305[^issue-3305].
+The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('(experimental)')}. There are several known issues with HTTPS. See issue #3305[^issue-3305].
 `,
       footnotes: [
         {
@@ -43,51 +43,51 @@ The dev server can use HTTPS via the ${chalk.green('--ssl')} option ${chalk.bold
           type: Boolean,
           groups: [OptionGroup.Advanced, 'cordova'],
           // aliases: ['c'], Already used by ng cli for --configuration
-          hint: chalk.dim('[ng]'),
+          hint: weak('[ng]'),
         },
         {
           name: 'consolelogs-port',
           summary: 'Use specific port for console logs server',
           type: String,
           groups: [OptionGroup.Advanced, 'cordova'],
-          hint: chalk.dim('[ng]'),
+          hint: weak('[ng]'),
           spec: { value: 'port' },
         },
         {
           name: 'ssl',
           summary: 'Use HTTPS for the dev server',
           type: Boolean,
-          groups: [OptionGroup.Experimental, 'cordova'],
-          hint: chalk.dim('[ng]'),
+          groups: [MetadataGroup.EXPERIMENTAL, 'cordova'],
+          hint: weak('[ng]'),
         },
         {
           name: 'prod',
-          summary: `Flag to use the ${chalk.green('production')} configuration`,
+          summary: `Flag to use the ${input('production')} configuration`,
           type: Boolean,
           groups: ['cordova'],
-          hint: chalk.dim('[ng]'),
+          hint: weak('[ng]'),
         },
         {
           name: 'configuration',
           summary: 'Specify the configuration to use.',
           type: String,
-          groups: [OptionGroup.Advanced, 'cordova'],
-          hint: chalk.dim('[ng]'),
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
+          hint: weak('[ng]'),
           spec: { value: 'conf' },
         },
         {
           name: 'source-map',
           summary: 'Output sourcemaps',
           type: Boolean,
-          groups: [OptionGroup.Advanced, 'cordova'],
-          hint: chalk.dim('[ng]'),
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
+          hint: weak('[ng]'),
         },
         {
           name: 'devapp',
           summary: 'Publish DevApp service',
           type: Boolean,
           default: false,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
       exampleCommands: [
@@ -172,7 +172,7 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
   async serve(options: AngularServeOptions): Promise<void> {
     this.on('compile', chunks => {
       if (chunks > 0) {
-        this.e.log.info(`... and ${chalk.bold(chunks.toString())} additional chunks`);
+        this.e.log.info(`... and ${strong(chunks.toString())} additional chunks`);
       }
     });
 

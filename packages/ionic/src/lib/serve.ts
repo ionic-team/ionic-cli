@@ -1,4 +1,4 @@
-import { BaseError, LOGGER_LEVELS, OptionGroup, ParsedArgs, PromptModule, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
+import { BaseError, LOGGER_LEVELS, MetadataGroup, ParsedArgs, PromptModule, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { readJson } from '@ionic/utils-fs';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
@@ -17,6 +17,7 @@ import { ASSETS_DIRECTORY } from '../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 import { isCordovaPackageJson } from '../guards';
 
+import { ancillary, input, strong, weak } from './color';
 import { FatalException, RunnerException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
@@ -44,14 +45,14 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     name: 'address',
     summary: 'Use specific address for the dev server',
     default: BIND_ALL_ADDRESS,
-    groups: [OptionGroup.Advanced],
+    groups: [MetadataGroup.ADVANCED],
   },
   {
     name: 'port',
     summary: 'Use specific port for HTTP',
     default: DEFAULT_SERVER_PORT.toString(),
     aliases: ['p'],
-    groups: [OptionGroup.Advanced],
+    groups: [MetadataGroup.ADVANCED],
   },
   {
     name: 'livereload',
@@ -61,13 +62,13 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
   },
   {
     name: 'engine',
-    summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => chalk.green(e)).join(', ')})`,
-    groups: [OptionGroup.Hidden, OptionGroup.Advanced],
+    summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => input(e)).join(', ')})`,
+    groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
   },
   {
     name: 'platform',
-    summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => chalk.green(e)).join(', ')})`,
-    groups: [OptionGroup.Hidden, OptionGroup.Advanced],
+    summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => input(e)).join(', ')})`,
+    groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
   },
 ];
 
@@ -151,7 +152,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       if (packageCordovaPluginsDiff.length > 0) {
         this.e.log.warn(
           'Detected unsupported Cordova plugins with Ionic DevApp:\n' +
-          `${packageCordovaPluginsDiff.map(p => `- ${chalk.bold(p)}`).join('\n')}\n\n` +
+          `${packageCordovaPluginsDiff.map(p => `- ${strong(p)}`).join('\n')}\n\n` +
           `App may not function as expected in Ionic DevApp.`
         );
 
@@ -193,10 +194,10 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     this.e.log.nl();
     this.e.log.info(
       `Development server running!` +
-      (labAddress ? `\nLab: ${chalk.bold(labAddress)}` : '') +
-      `\nLocal: ${chalk.bold(localAddress)}` +
-      (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => chalk.bold(fmtExternalAddress(v.address))).join(', ')}` : '') +
-      (devAppDetails && devAppDetails.channel ? `\nDevApp: ${chalk.bold(devAppDetails.channel)} on ${chalk.bold(os.hostname())}` : '') +
+      (labAddress ? `\nLab: ${strong(labAddress)}` : '') +
+      `\nLocal: ${strong(localAddress)}` +
+      (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => strong(fmtExternalAddress(v.address))).join(', ')}` : '') +
+      (devAppDetails && devAppDetails.channel ? `\nDevApp: ${strong(devAppDetails.channel)} on ${strong(os.hostname())}` : '') +
       `\n\n${chalk.yellow('Use Ctrl+C to quit this process')}`
     );
     this.e.log.nl();
@@ -207,7 +208,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
       await open(openURL, { app: options.browser });
 
-      this.e.log.info(`Browser window opened to ${chalk.bold(openURL)}!`);
+      this.e.log.info(`Browser window opened to ${strong(openURL)}!`);
       this.e.log.nl();
     }
 
@@ -271,7 +272,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       });
 
       comm.on('connect', async data => {
-        this.e.log.info(`DevApp connection established from ${chalk.bold(data.device)}`);
+        this.e.log.info(`DevApp connection established from ${strong(data.device)}`);
         this.e.log.nl();
 
         if (!this.devAppConnectionMade) {
@@ -351,7 +352,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
             this.e.log.warn(
               'Multiple network interfaces detected!\n' +
               'You will be prompted to select an external-facing IP for the dev server that your device or emulator has access to.\n\n' +
-              `You may also use the ${chalk.green('--address')} option to skip this prompt.`
+              `You may also use the ${input('--address')} option to skip this prompt.`
             );
 
             const promptedIp = await this.e.prompt({
@@ -359,7 +360,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
               name: 'promptedIp',
               message: 'Please select which IP to use:',
               choices: availableInterfaces.map(i => ({
-                name: `${i.address} ${chalk.dim(`(${i.device})`)}`,
+                name: `${i.address} ${weak(`(${i.device})`)}`,
                 value: i.address,
               })),
             });
@@ -368,7 +369,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
           } else {
             throw new FatalException(
               `Multiple network interfaces detected!\n` +
-              `You must select an external-facing IP for the dev server that your device or emulator has access to with the ${chalk.green('--address')} option.`
+              `You must select an external-facing IP for the dev server that your device or emulator has access to with the ${input('--address')} option.`
             );
           }
         }
@@ -494,7 +495,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
     await this.spawnWrapper(options);
 
     const interval = setInterval(() => {
-      this.e.log.info(`Waiting for connectivity with ${chalk.green(this.resolvedProgram)}...`);
+      this.e.log.info(`Waiting for connectivity with ${input(this.resolvedProgram)}...`);
     }, 5000);
 
     debug('awaiting TCP connection to %s:%d', options.address, options.port);
@@ -512,20 +513,20 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
       if (this.global) {
         this.e.log.nl();
-        throw new FatalException(`${chalk.green(this.pkg)} is required for this command to work properly.`);
+        throw new FatalException(`${input(this.pkg)} is required for this command to work properly.`);
       }
 
       this.e.log.nl();
       this.e.log.info(
-        `Looks like ${chalk.green(this.pkg)} isn't installed in this project.\n` +
-        `This package is required for this command to work properly. The package provides a CLI utility, but the ${chalk.green(this.resolvedProgram)} binary was not found in your PATH.`
+        `Looks like ${input(this.pkg)} isn't installed in this project.\n` +
+        `This package is required for this command to work properly. The package provides a CLI utility, but the ${input(this.resolvedProgram)} binary was not found in your PATH.`
       );
 
       const installed = await this.promptToInstall();
 
       if (!installed) {
         this.e.log.nl();
-        throw new FatalException(`${chalk.green(this.pkg)} is required for this command to work properly.`);
+        throw new FatalException(`${input(this.pkg)} is required for this command to work properly.`);
       }
 
       return this.spawn(options);
@@ -542,7 +543,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
         if (this.resolvedProgram === this.program && err.code === 'ENOENT') {
           p.removeListener('close', closeHandler); // do not exit Ionic CLI, we can gracefully ask to install this CLI
-          reject(new ServeCLIProgramNotFoundException(`${chalk.bold(this.resolvedProgram)} command not found.`));
+          reject(new ServeCLIProgramNotFoundException(`${strong(this.resolvedProgram)} command not found.`));
         } else {
           reject(err);
         }
@@ -554,7 +555,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
           this.e.log.nl();
           this.e.log.error(
-            `${chalk.green(this.resolvedProgram)} has unexpectedly closed (exit code ${code}).\n` +
+            `${input(this.resolvedProgram)} has unexpectedly closed (exit code ${code}).\n` +
             'The Ionic CLI will exit. Please check any output above for error details.'
           );
 
@@ -586,16 +587,16 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
   protected createLoggerStream(): NodeJS.WritableStream {
     const log = this.e.log.clone();
-    log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(chalk.dim(`[${this.resolvedProgram === this.program ? this.prefix : this.resolvedProgram}]`)));
+    log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(weak(`[${this.resolvedProgram === this.program ? this.prefix : this.resolvedProgram}]`)));
     return log.createWriteStream(LOGGER_LEVELS.INFO);
   }
 
   protected async resolveProgram(): Promise<string> {
     if (typeof this.script !== 'undefined') {
-      debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+      debug(`Looking for ${ancillary(this.script)} npm script.`);
 
       if (await this.resolveScript()) {
-        debug(`Using ${chalk.cyan(this.script)} npm script.`);
+        debug(`Using ${ancillary(this.script)} npm script.`);
         return this.e.config.get('npmClient');
       }
     }
@@ -623,12 +624,12 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
     const confirm = await this.e.prompt({
       name: 'confirm',
-      message: `Install ${chalk.green(this.pkg)}?`,
+      message: `Install ${input(this.pkg)}?`,
       type: 'confirm',
     });
 
     if (!confirm) {
-      this.e.log.warn(`Not installing--here's how to install manually: ${chalk.green(`${manager} ${managerArgs.join(' ')}`)}`);
+      this.e.log.warn(`Not installing--here's how to install manually: ${input(`${manager} ${managerArgs.join(' ')}`)}`);
       return false;
     }
 
