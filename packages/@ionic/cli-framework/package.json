@@ -46,7 +46,7 @@
     "strip-ansi": "^5.0.0",
     "tslib": "^1.9.0",
     "untildify": "^3.0.2",
-    "wrap-ansi": "^4.0.0",
+    "wrap-ansi": "^5.1.0",
     "write-file-atomic": "^2.3.0"
   },
   "devDependencies": {

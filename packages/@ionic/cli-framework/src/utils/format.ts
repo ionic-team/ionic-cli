@@ -51,7 +51,7 @@ export interface WordWrapOptions {
 }
 
 export function wordWrap(msg: string, { width = TTY_WIDTH, indentation = 0, append = '' }: WordWrapOptions) {
-  return wrapAnsi(msg, width - indentation - append.length, { trim: false }).split('\n').join(`${append}\n${indent(indentation)}`);
+  return wrapAnsi(msg, width - indentation - append.length, { trim: true }).split('\n').join(`${append}\n${indent(indentation)}`);
 }
 
 export function generateFillSpaceStringList(list: string[], optimalLength = 1, fillCharacter = ' '): string[] {
