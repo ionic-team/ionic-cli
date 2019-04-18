@@ -65,7 +65,7 @@
     "lodash": "^4.17.5",
     "open": "^6.1.0",
     "os-name": "^3.0.0",
-    "semver": "^5.5.0",
+    "semver": "^6.0.0",
     "split2": "^3.0.0",
     "ssh-config": "^1.1.1",
     "superagent": "^4.1.0",
