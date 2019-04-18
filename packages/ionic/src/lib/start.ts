@@ -84,6 +84,24 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'angular-official-tabs',
   },
   {
+    name: 'blank',
+    type: 'react',
+    description: 'A blank starter project',
+    id: 'react-official-blank',
+  },
+  {
+    name: 'sidemenu',
+    type: 'react',
+    description: 'A starting project with a side menu with navigation in the content area',
+    id: 'react-official-sidemenu',
+  },
+  {
+    name: 'tabs',
+    type: 'react',
+    description: 'A starting project with a simple tabbed interface',
+    id: 'react-official-tabs',
+  },
+  {
     name: 'tabs',
     type: 'ionic-angular',
     description: 'A starting project with a simple tabbed interface',
