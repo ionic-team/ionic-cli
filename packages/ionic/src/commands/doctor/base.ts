@@ -1,9 +1,9 @@
 import { concurrentFilter } from '@ionic/utils-array';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 
 import { IAilment, IAilmentRegistry, TreatableAilment } from '../../definitions';
 import { isTreatableAilment } from '../../guards';
+import { failure, input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
@@ -12,7 +12,7 @@ const debug = Debug('ionic:commands:doctor:base');
 export abstract class DoctorCommand extends Command {
   async getRegistry(): Promise<IAilmentRegistry> {
     if (!this.project) {
-      throw new FatalException(`Cannot use ${chalk.green('ionic doctor')} outside a project directory.`);
+      throw new FatalException(`Cannot use ${input('ionic doctor')} outside a project directory.`);
     }
 
     const { AilmentRegistry } = await import('../../lib/doctor');
@@ -31,7 +31,7 @@ export abstract class DoctorCommand extends Command {
     const isLoggedIn = this.env.session.isLoggedIn();
 
     if (!isLoggedIn) {
-      this.env.log.warn(`For best results, please make sure you're logged in to Ionic.\nSome issues can't be detected without authentication. Run:\n\n    ${chalk.green('ionic login')}`);
+      this.env.log.warn(`For best results, please make sure you're logged in to Ionic.\nSome issues can't be detected without authentication. Run:\n\n    ${input('ionic login')}`);
     }
 
     const detectTask = tasks.next('Detecting issues');
@@ -58,18 +58,18 @@ export abstract class DoctorCommand extends Command {
         debug('Detected %s: %s', ailment.id, detected);
       } catch (e) {
         this.env.log.error(
-          `Error while checking ${chalk.bold(ailment.id)}:\n` +
-          `${chalk.red(e.stack ? e.stack : e)}`
+          `Error while checking ${strong(ailment.id)}:\n` +
+          `${failure(e.stack ? e.stack : e)}`
         );
       }
 
       count++;
-      detectTask.msg = `Detecting issues: ${chalk.bold(`${count} / ${ailments.length}`)} complete`;
+      detectTask.msg = `Detecting issues: ${strong(`${count} / ${ailments.length}`)} complete`;
 
       return detected;
     });
 
-    detectTask.msg = `Detecting issues: ${chalk.bold(`${ailments.length} / ${ailments.length}`)} complete`;
+    detectTask.msg = `Detecting issues: ${strong(`${ailments.length} / ${ailments.length}`)} complete`;
     tasks.end();
 
     return detectedAilments;

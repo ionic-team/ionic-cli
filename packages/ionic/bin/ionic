@@ -21,9 +21,12 @@ process.on('message', function(msg) {
 });
 
 var semver = require('semver');
+var version = semver.parse(process.version);
 
-if (semver.lt(process.version, 'v6.4.0')) {
-  process.stderr.write('ERR: Your Node.js version is ' + process.version + '. Please update to the latest Node LTS version.\n');
+if (semver.lt(version, 'v8.9.4')) {
+  var node6msg = version.major === 6 ? ' Node.js 6 reached end-of-life on 2019-04-30 and is no longer supported.' : '';
+
+  process.stderr.write('ERR: Your Node.js version is ' + version.raw + '.' + node6msg + ' Please update to the latest Node LTS version.\n');
   process.exit(1);
 }
 

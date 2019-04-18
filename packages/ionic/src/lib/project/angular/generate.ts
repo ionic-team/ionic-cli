@@ -1,9 +1,9 @@
-import { CommandGroup, unparseArgs, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { unparseArgs, validators } from '@ionic/cli-framework';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
+import { ancillary, input, strong } from '../../color';
 import { GLOBAL_OPTIONS } from '../../config';
 import { FatalException } from '../../errors';
 import { GenerateRunner, GenerateRunnerDeps } from '../../generate';
@@ -38,16 +38,15 @@ export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions
 
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
-      groups: [CommandGroup.Beta],
       description: `
-This command uses the Angular CLI to generate features such as ${['pages', 'components', 'directives', 'services'].map(c => chalk.green(c)).join(', ')}, etc.
+This command uses the Angular CLI to generate features such as ${['pages', 'components', 'directives', 'services'].map(c => input(c)).join(', ')}, etc.
 
- - For a full list of available types, use ${chalk.green('npx ng g --help')}
- - For a list of options for a types, use ${chalk.green('npx ng g <type> --help')}
+ - For a full list of available types, use ${input('npx ng g --help')}
+ - For a list of options for a types, use ${input('npx ng g <type> --help')}
 
-You can specify a path to nest your feature within any number of subdirectories. For example, specify a name of ${chalk.green('"pages/New Page"')} to generate page files at ${chalk.bold('src/app/pages/new-page/')}.
+You can specify a path to nest your feature within any number of subdirectories. For example, specify a name of ${input('"pages/New Page"')} to generate page files at ${strong('src/app/pages/new-page/')}.
 
-To test a generator before file modifications are made, use the ${chalk.green('--dry-run')} option.
+To test a generator before file modifications are made, use the ${input('--dry-run')} option.
       `,
       exampleCommands: [
         'page',
@@ -60,7 +59,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
       inputs: [
         {
           name: 'type',
-          summary: `The type of feature (e.g. ${['page', 'component', 'directive', 'service'].map(c => chalk.green(c)).join(', ')})`,
+          summary: `The type of feature (e.g. ${['page', 'component', 'directive', 'service'].map(c => input(c)).join(', ')})`,
           validators: [validators.required],
         },
         {
@@ -91,7 +90,7 @@ To test a generator before file modifications are made, use the ${chalk.green('-
       const name = await this.e.prompt({
         type: 'input',
         name: 'name',
-        message: `Name/path of ${chalk.green(type)}:`,
+        message: `Name/path of ${input(type)}:`,
         validate: v => validators.required(v),
       });
 
@@ -119,27 +118,27 @@ To test a generator before file modifications are made, use the ${chalk.green('-
       await this.generateComponent(type, name, lodash.omit(options, 'type', 'name'));
     } catch (e) {
       debug(e);
-      throw new FatalException(`Could not generate ${chalk.green(type)}.`);
+      throw new FatalException(`Could not generate ${input(type)}.`);
     }
 
     if (!options['dry-run']) {
-      this.e.log.ok(`Generated ${chalk.green(type)}!`);
+      this.e.log.ok(`Generated ${input(type)}!`);
     }
   }
 
   private validateFeatureType(type: string) {
     if (type === 'provider') {
       throw new FatalException(
-        `Please use ${chalk.green('ionic generate service')} for generating service providers.\n` +
-        `For more information, please see the Angular documentation${chalk.cyan('[1]')} on services.\n\n` +
-        `${chalk.cyan('[1]')}: ${chalk.bold('https://angular.io/guide/architecture-services')}`
+        `Please use ${input('ionic generate service')} for generating service providers.\n` +
+        `For more information, please see the Angular documentation${ancillary('[1]')} on services.\n\n` +
+        `${ancillary('[1]')}: ${strong('https://angular.io/guide/architecture-services')}`
       );
     }
 
     if (!SCHEMATICS.includes(type) && !SCHEMATIC_ALIAS.get(type)) {
       throw new FatalException(
-        `${chalk.green(type)} is not a known feature.\n` +
-        `Use ${chalk.green('npx ng g --help')} to list available types of features.`
+        `${input(type)} is not a known feature.\n` +
+        `Use ${input('npx ng g --help')} to list available types of features.`
       );
     }
   }

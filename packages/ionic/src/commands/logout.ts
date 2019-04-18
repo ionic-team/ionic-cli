@@ -1,6 +1,5 @@
-import chalk from 'chalk';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
+import { input } from '../lib/color';
 import { Command } from '../lib/command';
 
 export class LogoutCommand extends Command {
@@ -12,9 +11,9 @@ export class LogoutCommand extends Command {
       description: `
 Remove the Ionic Appflow user token from the CLI config.
 
-Login again with ${chalk.green('ionic login')}.
+Login again with ${input('ionic login')}.
 
-If you need to create an Ionic Appflow account, use ${chalk.green('ionic signup')}.
+If you need to create an Ionic Appflow account, use ${input('ionic signup')}.
       `,
     };
   }

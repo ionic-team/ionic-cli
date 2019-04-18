@@ -1,12 +1,12 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { conform } from '@ionic/utils-array';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
 
+import { ancillary, failure, strong } from './color';
 import { HookException } from './errors';
 
 const debug = Debug('ionic:lib:hooks');
@@ -37,10 +37,10 @@ export abstract class Hook {
 
     const pkg = await this.e.project.requirePackageJson();
 
-    debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+    debug(`Looking for ${ancillary(this.script)} npm script.`);
 
     if (pkg.scripts && pkg.scripts[this.script]) {
-      debug(`Invoking ${chalk.cyan(this.script)} npm script.`);
+      debug(`Invoking ${ancillary(this.script)} npm script.`);
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
       await this.e.shell.run(pkgManager, pkgArgs, {});
     }
@@ -73,10 +73,10 @@ export abstract class Hook {
         }));
       } catch (e) {
         throw new HookException(
-          `An error occurred while running an Ionic CLI hook defined in ${chalk.bold(prettyPath(this.e.project.filePath))}.\n` +
-          `Hook: ${chalk.bold(this.name)}\n` +
-          `File: ${chalk.bold(p)}\n\n` +
-          `${chalk.red(e.stack ? e.stack : e)}`
+          `An error occurred while running an Ionic CLI hook defined in ${strong(prettyPath(this.e.project.filePath))}.\n` +
+          `Hook: ${strong(this.name)}\n` +
+          `File: ${strong(p)}\n\n` +
+          `${failure(e.stack ? e.stack : e)}`
         );
       }
     }
@@ -91,7 +91,7 @@ export abstract class Hook {
       return module.default;
     }
 
-    debug(`Could not load hook function ${chalk.bold(p)}: %o not a function`, module);
+    debug(`Could not load hook function ${strong(p)}: %o not a function`, module);
   }
 }
 

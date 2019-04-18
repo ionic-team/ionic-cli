@@ -1,50 +1,46 @@
 [![Build Status][circle-badge]][circle-badge-url]
-[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&identifier=14562056)](https://dependabot.com)
+[![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=ionic-team/ionic-cli)](https://dependabot.com)
 [![npm][npm-badge]][npm-badge-url]
 
 # Ionic CLI
 
-The Ionic command line interface (CLI) is your go-to tool for developing
-[Ionic][ionic-homepage] apps.
+The Ionic command line interface (CLI) is your go-to tool for developing [Ionic][ionic-homepage] apps.
 
-### CLI 4 is here! :tada:
+### Installation
 
-- Full Ionic 4 support including React and Angular. See [the docs](https://ionicframework.com/docs/) to get started!
-- Capacitor support is **experimental**.
-- Full Ionic 2/3 support!
-- Full Ionic 1 support! (requires a package install)
+```
+npm install -g ionic
+```
 
-See the CLI's [`CHANGELOG.md`](https://github.com/ionic-team/ionic-cli/blob/develop/packages/ionic/CHANGELOG.md#4.0.0) for a comprehensive list of changes.
+Detailed installation instructions can be found in the [CLI documentation](https://ionicframework.com/docs/installation/cli).
 
----
+### Usage
 
-#### More information
+The Ionic CLI ships with command documentation, accessible in your terminal by using the `--help` flag. These docs are also available [online][ionic-cli-docs].
 
-For further information on the commands and options provided by the Ionic CLI, once globally installed on your computer as described in the [CLI documentation](https://ionicframework.com/docs/installation/cli), execute `--help` commands to get to know more.
-
-* For its usage and list of global commands:
+* For a list of commands:
 
 ```
 ionic --help
+ionic cordova --help
+ionic capacitor --help
 ```
 
-* For the complete list of options available when starting a new project:
+* For command usage and a list of options:
 
 ```
 ionic start --help
+ionic serve --help
+ionic cordova run --help
 ```
 
 ---
 
-:book: **Documentation**:
-[https://ionicframework.com/docs/cli][ionic-cli-docs]
+:book: **Documentation**: [https://ionicframework.com/docs/cli][ionic-cli-docs]
 
-:mega: **Support/Questions?** Please see our [Support Page][ionic-support] for
-general support questions. The issues on GitHub should be reserved for bug
-reports and feature requests.
+:mega: **Support/Questions?** Please see our [Support Page][ionic-support] for general support questions. The issues on GitHub should be reserved for bug reports and feature requests.
 
-:sparkling_heart: **Want to contribute?** Please see
-[CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/develop/CONTRIBUTING.md).
+:sparkling_heart: **Want to contribute?** Please see [CONTRIBUTING.md](https://github.com/ionic-team/ionic-cli/blob/develop/CONTRIBUTING.md). 
 
 [ionic-homepage]: https://ionicframework.com
 [ionic-cli-docs]: https://ionicframework.com/docs/cli

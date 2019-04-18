@@ -6,13 +6,8 @@ import * as os from 'os';
 import * as path from 'path';
 
 import { BaseIntegration, IntegrationConfig } from '../';
-import {
-  InfoItem,
-  IntegrationAddDetails, IntegrationAddHandlers,
-  IntegrationName,
-  ProjectIntegration,
-  ProjectPersonalizationDetails
-} from '../../../definitions';
+import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails } from '../../../definitions';
+import { ancillary, input, strong } from '../../color';
 
 const debug = Debug('ionic:lib:integrations:cordova');
 
@@ -35,7 +30,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         const confirm = await details.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: `The ${chalk.cyan(filename)} ${type} exists in project. Overwrite?`,
+          message: `The ${ancillary(filename)} ${type} exists in project. Overwrite?`,
           default: false,
         });
 
@@ -53,7 +48,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     const { createRequest, download } = await import('../../utils/http');
     const { tar } = await import('../../utils/archive');
 
-    this.e.log.info(`Downloading integration ${chalk.green(this.name)}`);
+    this.e.log.info(`Downloading integration ${input(this.name)}`);
     const tmpdir = path.resolve(os.tmpdir(), `ionic-integration-${this.name}`);
 
     // TODO: etag
@@ -71,7 +66,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     const contents = await readdirSafe(tmpdir);
     const blacklist: string[] = [];
 
-    debug(`Integration files downloaded to ${chalk.bold(tmpdir)} (files: ${contents.map(f => chalk.bold(f)).join(', ')})`);
+    debug(`Integration files downloaded to ${strong(tmpdir)} (files: ${contents.map(f => strong(f)).join(', ')})`);
 
     for (const f of contents) {
       const projectf = path.resolve(this.e.project.directory, f);
@@ -91,7 +86,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     }
 
     this.e.log.info(`Copying integrations files to project`);
-    debug(`Blacklist: ${blacklist.map(f => chalk.bold(f)).join(', ')}`);
+    debug(`Blacklist: ${blacklist.map(f => strong(f)).join(', ')}`);
 
     await mkdirp(details.root);
 

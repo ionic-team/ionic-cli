@@ -4,6 +4,7 @@ import * as path from 'path';
 
 import { TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
+import { ancillary, input, strong } from '../../color';
 import { getIonicRemote, isRepoInitialized } from '../../git';
 import { loadConfigXml } from '../../integrations/cordova/config';
 import { getPlatforms } from '../../integrations/cordova/project';
@@ -20,8 +21,8 @@ export class NpmInstalledLocally extends Ailment implements TreatableAilment {
 
   async getMessage() {
     return (
-      `${chalk.bold('npm')} is installed locally.\n` +
-      `${chalk.bold('npm')} is typically installed globally and may cause some confusion about versions when other CLIs use it.\n`
+      `${strong('npm')} is installed locally.\n` +
+      `${strong('npm')} is typically installed globally and may cause some confusion about versions when other CLIs use it.\n`
     ).trim();
   }
 
@@ -35,7 +36,7 @@ export class NpmInstalledLocally extends Ailment implements TreatableAilment {
 
     return [
       {
-        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+        message: `Run: ${input(manager + ' ' + managerArgs.join(' '))}`,
         treat: async () => {
           await this.shell.run(manager, managerArgs, {});
         },
@@ -65,7 +66,7 @@ export class IonicCLIInstalledLocally extends Ailment implements TreatableAilmen
 
     return [
       {
-        message: `Run: ${chalk.green(manager + ' ' + managerArgs.join(' '))}`,
+        message: `Run: ${input(manager + ' ' + managerArgs.join(' '))}`,
         treat: async () => {
           await this.shell.run(manager, managerArgs, {});
         },
@@ -80,7 +81,7 @@ export class GitNotUsed extends Ailment {
   async getMessage() {
     return (
       `Git doesn't appear to be in use.\n` +
-      `We highly recommend using source control software such as git (${chalk.bold('https://git-scm.com')}) to track changes in your code throughout time.\n`
+      `We highly recommend using source control software such as git (${strong('https://git-scm.com')}) to track changes in your code throughout time.\n`
     ).trim();
   }
 
@@ -114,8 +115,8 @@ export class GitNotUsed extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Download git if you don't have it installed: ${chalk.bold('https://git-scm.com/downloads')}` },
-      { message: `Learn the basics if you're unfamiliar with git: ${chalk.bold('https://try.github.io')}` },
+      { message: `Download git if you don't have it installed: ${strong('https://git-scm.com/downloads')}` },
+      { message: `Learn the basics if you're unfamiliar with git: ${strong('https://try.github.io')}` },
       { message: `Make your first commit and start tracking code changes! 😍` },
     ];
   }
@@ -128,8 +129,8 @@ export class GitConfigInvalid extends Ailment {
     const appflowId = await this.project.requireAppflowId();
 
     return (
-      `App linked to ${chalk.bold(appflowId)} with invalid git configuration.\n` +
-      `This app is linked to an app on Ionic (${chalk.bold(appflowId)}), but the git configuration is not valid.\n`
+      `App linked to ${strong(appflowId)} with invalid git configuration.\n` +
+      `This app is linked to an app on Ionic (${strong(appflowId)}), but the git configuration is not valid.\n`
     ).trim();
   }
 
@@ -169,7 +170,7 @@ export class GitConfigInvalid extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Run: ${chalk.green('ionic git remote')}` },
+      { message: `Run: ${input('ionic git remote')}` },
     ];
   }
 }
@@ -180,7 +181,7 @@ export class IonicNativeOldVersionInstalled extends Ailment {
   async getMessage() {
     return (
       `Old version of Ionic Native installed.\n` +
-      `Ionic Native ${chalk.bold('ionic-native')} has been restructured into individual packages under the ${chalk.bold('@ionic-native/')} namespace to allow for better bundling and faster apps.\n`
+      `Ionic Native ${strong('ionic-native')} has been restructured into individual packages under the ${strong('@ionic-native/')} namespace to allow for better bundling and faster apps.\n`
     ).trim();
   }
 
@@ -193,8 +194,8 @@ export class IonicNativeOldVersionInstalled extends Ailment {
     const args = await pkgManagerArgs(this.config.get('npmClient'), { command: 'uninstall', pkg: 'ionic-native' });
 
     return [
-      { message: `Run ${chalk.green(args.join(' '))}` },
-      { message: `Refer to ${chalk.bold('https://ion.link/native-docs')} for installation & usage instructions` },
+      { message: `Run ${input(args.join(' '))}` },
+      { message: `Refer to ${strong('https://ion.link/native-docs')} for installation & usage instructions` },
     ];
   }
 }
@@ -205,8 +206,8 @@ export class UnsavedCordovaPlatforms extends Ailment {
   async getMessage() {
     return (
       `Cordova platforms unsaved.\n` +
-      `There are Cordova platforms installed that are not saved in ${chalk.bold('config.xml')} or ${chalk.bold('package.json')}. It is good practice to manage Cordova platforms and their versions. See the Cordova docs${chalk.cyan('[1]')} for more information.\n\n` +
-      `${chalk.cyan('[1]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/')}\n`
+      `There are Cordova platforms installed that are not saved in ${strong('config.xml')} or ${strong('package.json')}. It is good practice to manage Cordova platforms and their versions. See the Cordova docs${ancillary('[1]')} for more information.\n\n` +
+      `${ancillary('[1]')}: ${strong('https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/')}\n`
     ).trim();
   }
 
@@ -229,7 +230,7 @@ export class UnsavedCordovaPlatforms extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Run: ${chalk.green('ionic cordova platform save')}` },
+      { message: `Run: ${input('ionic cordova platform save')}` },
     ];
   }
 }
@@ -239,8 +240,8 @@ export class DefaultCordovaBundleIdUsed extends Ailment {
 
   async getMessage() {
     return (
-      `Package ID unchanged in ${chalk.bold('config.xml')}.\n` +
-      `The Package Identifier (AKA "Bundle ID" for iOS and "Application ID" for Android) is a unique ID (usually written in reverse DNS notation, such as ${chalk.bold('com.mycompany.MyApp')}) that Cordova uses when compiling the native build of your app. When your app is submitted to the App Store or Play Store, the Package ID can't be changed. This issue was detected because this app's Package ID is ${chalk.green('"io.ionic.starter"')}, which is the default Package ID provided after running ${chalk.green('ionic start')}.`
+      `Package ID unchanged in ${strong('config.xml')}.\n` +
+      `The Package Identifier (AKA "Bundle ID" for iOS and "Application ID" for Android) is a unique ID (usually written in reverse DNS notation, such as ${strong('com.mycompany.MyApp')}) that Cordova uses when compiling the native build of your app. When your app is submitted to the App Store or Play Store, the Package ID can't be changed. This issue was detected because this app's Package ID is ${input('"io.ionic.starter"')}, which is the default Package ID provided after running ${input('ionic start')}.`
     ).trim();
   }
 
@@ -258,7 +259,7 @@ export class DefaultCordovaBundleIdUsed extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Change the ${chalk.bold('id')} attribute of ${chalk.bold('<widget>')} (root element) to something other than ${chalk.green('"io.ionic.starter"')}` },
+      { message: `Change the ${strong('id')} attribute of ${strong('<widget>')} (root element) to something other than ${input('"io.ionic.starter"')}` },
     ];
   }
 }
@@ -268,20 +269,20 @@ export class ViewportFitNotSet extends Ailment {
 
   async getMessage() {
     return (
-      `${chalk.bold('viewport-fit=cover')} not set in ${chalk.bold('index.html')}\n` +
-      `iOS 11 introduces new "safe regions" for webviews, which can throw off component sizing, squish the header into the status bar, letterbox the app on iPhone X, etc. Fixing this issue will ensure the webview takes up the full size of the screen. See ${chalk.bold('https://blog.ionicframework.com/ios-11-checklist')} for more information.`
+      `${strong('viewport-fit=cover')} not set in ${strong('index.html')}\n` +
+      `iOS 11 introduces new "safe regions" for webviews, which can throw off component sizing, squish the header into the status bar, letterbox the app on iPhone X, etc. Fixing this issue will ensure the webview takes up the full size of the screen. See ${strong('https://blog.ionicframework.com/ios-11-checklist')} for more information.`
     ).trim();
   }
 
   async detected() {
     const indexHtml = await readFile(path.resolve(await this.project.getSourceDir(), 'index.html'), { encoding: 'utf8' });
-    const m = indexHtml.match(/\<meta([\s]*(name="viewport"){1})[\w\d\s\.\-,=]*(content="){1}[\w\d\s\.\-,=]*(viewport-fit=cover){1}[\w\d\s\.\-,="]+\/\>/);
+    const m = indexHtml.match(/\<meta([\s]*(name=['"]viewport['"]){1})[\w\d\s\.\-,=]*(content=['"]){1}[\w\d\s\.\-,=]*(viewport-fit=cover){1}[\w\d\s\.\-,='"]+\/?\>/);
     return !Boolean(m);
   }
 
   async getTreatmentSteps() {
     return [
-      { message: `Add ${chalk.bold('viewport-fit=cover')} to the ${chalk.bold('<meta name="viewport">')} tag in your ${chalk.bold('index.html')} file` },
+      { message: `Add ${strong('viewport-fit=cover')} to the ${strong('<meta name="viewport">')} tag in your ${strong('index.html')} file` },
     ];
   }
 }
@@ -291,13 +292,13 @@ export class CordovaPlatformsCommitted extends Ailment {
 
   async getMessage() {
     return (
-      `Cordova ${chalk.bold('platforms/')} directory is committed to git.\n` +
-      `Cordova considers ${chalk.bold('platforms/')} and ${chalk.bold('plugins/')} build artifacts${chalk.cyan('[1]')}, and routinely overwrites files.\n\n` +
-      `While committing these files might be necessary for some projects${chalk.cyan('[2]')}, generally platforms should be configured using ${chalk.bold('config.xml')} and Cordova hooks${chalk.cyan('[3]')} so that your project is more portable and SDK updates are easier.\n\n` +
-      `${chalk.cyan('[1]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/#version-control')}\n` +
-      `${chalk.cyan('[2]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/#platforms')}\n` +
-      `${chalk.cyan('[3]')}: ${chalk.bold('https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/index.html')}\n\n` +
-      `${chalk.yellow(`${chalk.bold('WARNING')}: Attempting to fix this could be dangerous. Only proceed if you're sure you haven't made manual modifications to these files.`)}\n`
+      `Cordova ${strong('platforms/')} directory is committed to git.\n` +
+      `Cordova considers ${strong('platforms/')} and ${strong('plugins/')} build artifacts${ancillary('[1]')}, and routinely overwrites files.\n\n` +
+      `While committing these files might be necessary for some projects${ancillary('[2]')}, generally platforms should be configured using ${strong('config.xml')} and Cordova hooks${ancillary('[3]')} so that your project is more portable and SDK updates are easier.\n\n` +
+      `${ancillary('[1]')}: ${strong('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/#version-control')}\n` +
+      `${ancillary('[2]')}: ${strong('https://cordova.apache.org/docs/en/latest/reference/cordova-cli/#platforms')}\n` +
+      `${ancillary('[3]')}: ${strong('https://cordova.apache.org/docs/en/latest/guide/appdev/hooks/index.html')}\n\n` +
+      `${chalk.yellow(`${strong('WARNING')}: Attempting to fix this could be dangerous. Only proceed if you're sure you haven't made manual modifications to these files.`)}\n`
     ).trim();
   }
 
@@ -319,9 +320,9 @@ export class CordovaPlatformsCommitted extends Ailment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Remove ${chalk.bold('platforms/')} from source control: ${chalk.green('git rm -rf platforms/')} and ${chalk.green('git commit')}` },
-      { message: `Make sure the ${chalk.bold('platforms/')} directory has been removed: ${chalk.green('rm -rf platforms/')}` },
-      { message: `Allow Cordova to repopulate your platforms: ${chalk.green('ionic cordova prepare')}` },
+      { message: `Remove ${strong('platforms/')} from source control: ${input('git rm -rf platforms/')} and ${input('git commit')}` },
+      { message: `Make sure the ${strong('platforms/')} directory has been removed: ${input('rm -rf platforms/')}` },
+      { message: `Allow Cordova to repopulate your platforms: ${input('ionic cordova prepare')}` },
     ];
   }
 }

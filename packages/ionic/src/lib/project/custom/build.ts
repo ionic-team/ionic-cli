@@ -1,7 +1,6 @@
-import chalk from 'chalk';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CustomBuildOptions } from '../../../definitions';
 import { BuildRunner, BuildRunnerDeps } from '../../build';
+import { input, strong } from '../../color';
 import { RunnerException } from '../../errors';
 
 export class CustomBuildRunner extends BuildRunner<CustomBuildOptions> {
@@ -28,7 +27,7 @@ export class CustomBuildRunner extends BuildRunner<CustomBuildOptions> {
     if (!await cli.resolveScript()) {
       throw new RunnerException(
         `Cannot perform build.\n` +
-        `Since you're using the ${chalk.bold('custom')} project type, you must provide the ${chalk.green(cli.script)} npm script so the Ionic CLI can build your project.`
+        `Since you're using the ${strong('custom')} project type, you must provide the ${input(cli.script)} npm script so the Ionic CLI can build your project.`
       );
     }
 

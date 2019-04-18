@@ -1,13 +1,13 @@
-import { NamespaceGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class MonitoringNamespace extends Namespace {
   async getMetadata() {
-    const groups: NamespaceGroup[] = [];
+    const groups: MetadataGroup[] = [];
 
     if (!this.project || this.project.type !== 'ionic-angular') {
-      groups.push(NamespaceGroup.Hidden);
+      groups.push(MetadataGroup.HIDDEN);
     }
 
     return {

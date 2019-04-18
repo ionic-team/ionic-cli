@@ -1,7 +1,7 @@
-import { CommandGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input, strong } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
 
@@ -12,16 +12,16 @@ export class CopyCommand extends CapacitorCommand implements CommandPreRun {
       type: 'project',
       summary: 'Copy web assets to native platforms',
       description: `
-${chalk.green('ionic capacitor copy')} will do the following:
-- Copy the ${chalk.bold('www/')} directory into your native platforms.
+${input('ionic capacitor copy')} will do the following:
+- Copy the ${strong('www/')} directory into your native platforms.
       `,
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to copy (e.g. ${['android', 'ios', 'electron'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to copy (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
         },
       ],
-      groups: [CommandGroup.Beta],
+      groups: [MetadataGroup.BETA],
     };
   }
 

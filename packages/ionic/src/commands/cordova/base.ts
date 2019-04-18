@@ -1,11 +1,11 @@
-import { OptionGroup } from '@ionic/cli-framework';
+import { MetadataGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
-import chalk from 'chalk';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions, ProjectIntegration } from '../../definitions';
+import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
@@ -16,34 +16,34 @@ export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
     summary: 'Mark as a debug build',
     type: Boolean,
     groups: ['cordova', 'cordova-cli'],
-    hint: chalk.dim('[cordova]'),
+    hint: weak('[cordova]'),
   },
   {
     name: 'release',
     summary: 'Mark as a release build',
     type: Boolean,
     groups: ['cordova', 'cordova-cli'],
-    hint: chalk.dim('[cordova]'),
+    hint: weak('[cordova]'),
   },
   {
     name: 'device',
     summary: 'Deploy build to a device',
     type: Boolean,
     groups: ['cordova', 'cordova-cli', 'native-run'],
-    hint: chalk.dim('[cordova]'),
+    hint: weak('[cordova]'),
   },
   {
     name: 'emulator',
     summary: 'Deploy build to an emulator',
     type: Boolean,
     groups: ['cordova', 'cordova-cli', 'native-run'],
-    hint: chalk.dim('[cordova]'),
+    hint: weak('[cordova]'),
   },
   {
     name: 'buildConfig',
     summary: 'Use the specified build configuration',
-    groups: [OptionGroup.Advanced, 'cordova', 'cordova-cli'],
-    hint: chalk.dim('[cordova]'),
+    groups: [MetadataGroup.ADVANCED, 'cordova', 'cordova-cli'],
+    hint: weak('[cordova]'),
     spec: { value: 'file' },
   },
 ];
@@ -52,10 +52,10 @@ export const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
   ...CORDOVA_COMPILE_OPTIONS,
   {
     name: 'target',
-    summary: `Deploy build to a device (use ${chalk.green('--list')} to see all)`,
+    summary: `Deploy build to a device (use ${input('--list')} to see all)`,
     type: String,
-    groups: [OptionGroup.Advanced, 'cordova', 'cordova-cli', 'native-run'],
-    hint: chalk.dim('[cordova]'),
+    groups: [MetadataGroup.ADVANCED, 'cordova', 'cordova-cli', 'native-run'],
+    hint: weak('[cordova]'),
   },
 ];
 
@@ -118,7 +118,7 @@ export abstract class CordovaCommand extends Command {
       if (!wwwExists) {
         const tasks = this.createTaskChain();
 
-        tasks.next(`Creating ${chalk.bold(prettyPath(wwwPath))} directory for you`);
+        tasks.next(`Creating ${strong(prettyPath(wwwPath))} directory for you`);
         await mkdirp(wwwPath);
         tasks.end();
       }
@@ -144,7 +144,7 @@ export abstract class CordovaCommand extends Command {
           const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova', global: true });
           throw new FatalException(
             `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n` +
-            `${chalk.green(cdvInstallArgs.join(' '))}\n`
+            `${input(cdvInstallArgs.join(' '))}\n`
           );
         }
 
@@ -162,7 +162,7 @@ export abstract class CordovaCommand extends Command {
     }
   }
 
-  async checkForPlatformInstallation(platform: string, { promptToInstall = false, promptToInstallRefusalMsg = `Cannot run this command for the ${chalk.green(platform)} platform unless it is installed.` }: { promptToInstall?: boolean; promptToInstallRefusalMsg?: string; } = {}): Promise<void> {
+  async checkForPlatformInstallation(platform: string, { promptToInstall = false, promptToInstallRefusalMsg = `Cannot run this command for the ${input(platform)} platform unless it is installed.` }: { promptToInstall?: boolean; promptToInstallRefusalMsg?: string; } = {}): Promise<void> {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
@@ -174,7 +174,7 @@ export abstract class CordovaCommand extends Command {
 
       if (!platforms.includes(platform)) {
         const confirm = promptToInstall ? await this.env.prompt({
-          message: `Platform ${chalk.green(platform)} is not installed! Would you like to install it?`,
+          message: `Platform ${input(platform)} is not installed! Would you like to install it?`,
           type: 'confirm',
           name: 'confirm',
         }) : true;

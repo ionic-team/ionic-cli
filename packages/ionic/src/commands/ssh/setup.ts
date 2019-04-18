@@ -1,8 +1,8 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { pathExists } from '@ionic/utils-fs';
-import chalk from 'chalk';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
@@ -17,7 +17,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
       type: 'global',
       summary: 'Setup your Ionic Appflow SSH keys automatically',
       description: `
-This command offers a setup wizard for Ionic Appflow SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${chalk.green('ionic ssh --help')} command. For an entirely manual approach, see ${chalk.bold('Personal Settings')} => ${chalk.bold('SSH Keys')} in the Dashboard[^dashboard-settings-ssh-keys].
+This command offers a setup wizard for Ionic Appflow SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${input('ionic ssh --help')} command. For an entirely manual approach, see ${strong('Personal Settings')} => ${strong('SSH Keys')} in the Dashboard[^dashboard-settings-ssh-keys].
 
 If you are having issues setting up SSH keys, please get in touch with our Support[^support-request].
       `,
@@ -104,7 +104,7 @@ If you are having issues setting up SSH keys, please get in touch with our Suppo
           'The automatic SSH setup will do the following:\n' +
           `1) Generate a new SSH key pair with OpenSSH (will not overwrite any existing keys).\n` +
           `2) Upload the generated SSH public key to our server, registering it on your account.\n` +
-          `3) Modify your SSH config (${chalk.bold(prettyPath(sshconfigPath))}) to use the generated SSH private key for our server(s).`
+          `3) Modify your SSH config (${strong(prettyPath(sshconfigPath))}) to use the generated SSH private key for our server(s).`
         );
 
         const confirm = await this.env.prompt({
@@ -120,7 +120,7 @@ If you are having issues setting up SSH keys, please get in touch with our Suppo
 
       if (pubkeyExists && keyExists) {
         this.env.log.msg(
-          `Using your previously generated key: ${chalk.bold(prettyPath(keyPath))}.\n` +
+          `Using your previously generated key: ${strong(prettyPath(keyPath))}.\n` +
           `You can generate a new one by deleting it.`
         );
       } else {
@@ -133,7 +133,7 @@ If you are having issues setting up SSH keys, please get in touch with our Suppo
     }
 
     if (setupChoice === CHOICE_SKIP) {
-      this.env.log.warn(`Skipping for now. You can configure your SSH settings using ${chalk.green('ionic ssh setup')}.`);
+      this.env.log.warn(`Skipping for now. You can configure your SSH settings using ${input('ionic ssh setup')}.`);
     } else {
       if (setupChoice === CHOICE_IGNORE) {
         this.env.log.ok(`We won't pester you about SSH settings anymore!`);

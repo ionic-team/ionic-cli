@@ -1,10 +1,11 @@
-import { CommandGroup, Footnote, validators } from '@ionic/cli-framework';
+import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { build } from '../../lib/build';
+import { input, strong, weak } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
@@ -14,7 +15,7 @@ import { CapacitorCommand } from './base';
 
 export class RunCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
-    let groups: string[] = [CommandGroup.Beta];
+    let groups: string[] = [MetadataGroup.BETA];
     const exampleCommands = [
       '',
       'android',
@@ -67,7 +68,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       const libmetadata = await serveRunner.getCommandMetadata();
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
-      options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${chalk.dim('(--livereload)')}` })));
+      options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` })));
       footnotes.push(...libmetadata.footnotes || []);
     }
 
@@ -76,8 +77,8 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       type: 'project',
       summary: 'Run an Ionic project on a connected device',
       description: `
-${chalk.green('ionic capacitor run')} will do the following:
-- Perform ${chalk.green('ionic build')} (or run the dev server from ${chalk.green('ionic serve')} with the ${chalk.green('--livereload')} option)
+${input('ionic capacitor run')} will do the following:
+- Perform ${input('ionic build')} (or run the dev server from ${input('ionic serve')} with the ${input('--livereload')} option)
 - Copy web assets into the specified native platform
 - Open the IDE for your native project (Xcode for iOS, Android Studio for Android)
 
@@ -90,7 +91,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to run (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to run (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],
@@ -118,7 +119,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     }
 
     if (!options['build'] && options['livereload']) {
-      this.env.log.warn(`No livereload with ${chalk.green('--no-build')}.`);
+      this.env.log.warn(`No livereload with ${input('--no-build')}.`);
       options['livereload'] = false;
     }
 
@@ -127,7 +128,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic cordova run/emulate')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }
 
     const [ platform ] = inputs;
@@ -141,7 +142,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
         if (details.externallyAccessible === false) {
           const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
-          this.env.log.warn(`Your device or emulator may not be able to access ${chalk.bold(details.externalAddress)}.${extra}\n\n`);
+          this.env.log.warn(`Your device or emulator may not be able to access ${strong(details.externalAddress)}.${extra}\n\n`);
         }
 
         livereloadUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;

@@ -1,7 +1,7 @@
-import { CommandGroup, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
 
@@ -12,17 +12,17 @@ export class OpenCommand extends CapacitorCommand implements CommandPreRun {
       type: 'project',
       summary: 'Open the IDE for a given native platform project',
       description: `
-${chalk.green('ionic capacitor open')} will do the following:
+${input('ionic capacitor open')} will do the following:
 - Open the IDE for your native project (Xcode for iOS, Android Studio for Android)
       `,
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to open (e.g. ${['android', 'ios'].map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to open (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],
-      groups: [CommandGroup.Beta],
+      groups: [MetadataGroup.BETA],
     };
   }
 

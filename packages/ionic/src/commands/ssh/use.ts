@@ -1,9 +1,9 @@
 import { validators } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fileToString, writeFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { input, strong } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
 import { SSHBaseCommand } from './base';
@@ -15,9 +15,9 @@ export class SSHUseCommand extends SSHBaseCommand {
       type: 'global',
       summary: 'Set your active Ionic SSH key',
       description: `
-This command modifies the SSH configuration file (${chalk.bold('~/.ssh/config')}) to set an active private key for the ${chalk.bold('git.ionicjs.com')} host. Read more about SSH configuration by running the ${chalk.green('man ssh_config')} command or by visiting online man pages[^ssh-config-docs].
+This command modifies the SSH configuration file (${strong('~/.ssh/config')}) to set an active private key for the ${strong('git.ionicjs.com')} host. Read more about SSH configuration by running the ${input('man ssh_config')} command or by visiting online man pages[^ssh-config-docs].
 
-Before making changes, ${chalk.green('ionic ssh use')} will print a diff and ask for permission to write the file.
+Before making changes, ${input('ionic ssh use')} will print a diff and ask for permission to write the file.
       `,
       footnotes: [
         {
@@ -46,13 +46,13 @@ Before making changes, ${chalk.green('ionic ssh use')} will print a diff and ask
     } catch (e) {
       if (e === ERROR_SSH_MISSING_PRIVKEY) {
         throw new FatalException(
-          `${chalk.bold(prettyPath(keyPath))} does not appear to exist. Please specify a valid SSH private key.\n` +
-          `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
+          `${strong(prettyPath(keyPath))} does not appear to exist. Please specify a valid SSH private key.\n` +
+          `If you are having issues, try using ${input('ionic ssh setup')}.`
         );
       } else if (e === ERROR_SSH_INVALID_PRIVKEY) {
         throw new FatalException(
-          `${chalk.bold(prettyPath(keyPath))} does not appear to be a valid SSH private key. (Missing '-----BEGIN RSA PRIVATE KEY-----' header.)\n` +
-          `If you are having issues, try using ${chalk.green('ionic ssh setup')}.`
+          `${strong(prettyPath(keyPath))} does not appear to be a valid SSH private key. (Missing '-----BEGIN RSA PRIVATE KEY-----' header.)\n` +
+          `If you are having issues, try using ${input('ionic ssh setup')}.`
         );
       } else {
         throw e;
@@ -67,7 +67,7 @@ Before making changes, ${chalk.green('ionic ssh use')} will print a diff and ask
     const text2 = SSHConfig.stringify(conf);
 
     if (text1 === text2) {
-      this.env.log.msg(`${chalk.bold(prettyPath(keyPath))} is already your active SSH key.`);
+      this.env.log.msg(`${strong(prettyPath(keyPath))} is already your active SSH key.`);
       return;
     } else {
       const { diffPatch } = await import('../../lib/diff');
@@ -89,6 +89,6 @@ Before making changes, ${chalk.green('ionic ssh use')} will print a diff and ask
 
     await writeFile(sshConfigPath, text2, { encoding: 'utf8', mode: 0o600 });
 
-    this.env.log.ok(`Your active Ionic SSH key has been set to ${chalk.bold(keyPath)}!`);
+    this.env.log.ok(`Your active Ionic SSH key has been set to ${strong(keyPath)}!`);
   }
 }

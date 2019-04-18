@@ -95,7 +95,7 @@ export abstract class OAuth2Flow {
             req.socket.destroy();
             server.close();
 
-            resolve(params.code);
+            resolve(Array.isArray(params.code) ? params.code[0] : params.code);
           }
 
           // TODO, timeout, error handling

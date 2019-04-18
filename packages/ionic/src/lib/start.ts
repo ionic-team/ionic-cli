@@ -1,9 +1,9 @@
 import { readJson } from '@ionic/utils-fs';
-import chalk from 'chalk';
 
 import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
 
+import { strong } from './color';
 import { emoji } from './utils/emoji';
 import { createRequest } from './utils/http';
 
@@ -33,11 +33,11 @@ const advertisementSeparator = '─';
 
 export async function getIonicDevAppText() {
   const msg = `
-     ${chalk.bold(`${emoji('✨', '*')}   IONIC  DEVAPP   ${emoji('✨', '*')}`)}\n
- Speed up development with the ${chalk.bold('Ionic DevApp')}, our fast, on-device testing mobile app\n
+     ${strong(`${emoji('✨', '*')}   IONIC  DEVAPP   ${emoji('✨', '*')}`)}\n
+ Speed up development with the ${strong('Ionic DevApp')}, our fast, on-device testing mobile app\n
   -  ${emoji('🔑', '')}   Test on iOS and Android without Native SDKs
   -  ${emoji('🚀', '')}   LiveReload for instant style and JS updates\n
- -->    Install DevApp: ${chalk.bold('https://bit.ly/ionic-dev-app')}    <--
+ -->    Install DevApp: ${strong('https://bit.ly/ionic-dev-app')}    <--
 `;
 
   return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;
@@ -45,10 +45,10 @@ export async function getIonicDevAppText() {
 
 export async function getIonicProText() {
   const msg = `
-     ${chalk.bold(`${emoji('🔥', '*')}   IONIC  APPFLOW   ${emoji('🔥', '*')}`)}\n
- Supercharge your Ionic development with the ${chalk.bold('Ionic Appflow')} SDK\n
+     ${strong(`${emoji('🔥', '*')}   IONIC  APPFLOW   ${emoji('🔥', '*')}`)}\n
+ Supercharge your Ionic development with the ${strong('Ionic Appflow')} SDK\n
   -  ${emoji('📲', '')}  Push remote updates and skip the app store queue\n
- Learn more about Ionic Appflow: ${chalk.bold('https://ion.link/appflow')}
+ Learn more about Ionic Appflow: ${strong('https://ion.link/appflow')}
 `;
 
   return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;

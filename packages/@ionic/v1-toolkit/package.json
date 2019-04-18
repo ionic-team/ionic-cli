@@ -44,7 +44,7 @@
     "@ionic/cli-framework": "1.7.0",
     "@ionic/utils-fs": "1.2.0",
     "chalk": "^2.3.0",
-    "chokidar": "^2.0.0",
+    "chokidar": "^2.1.5",
     "debug": "^4.0.0",
     "express": "^4.16.2",
     "gulp": "^3.9.1",
@@ -54,13 +54,12 @@
     "ws": "^6.0.0"
   },
   "devDependencies": {
-    "@types/chokidar": "^1.7.4",
     "@types/debug": "^4.1.1",
     "@types/express": "^4.11.0",
     "@types/gulp": "^3.8.36",
     "@types/http-proxy-middleware": "^0.19.0",
     "@types/jest": "^24.0.3",
-    "@types/node": "^6.0.101",
+    "@types/node": "~8.9.4",
     "@types/ws": "^6.0.0",
     "jest": "^23.0.1",
     "jest-cli": "^24.1.0",
@@ -68,6 +67,6 @@
     "rimraf": "^2.6.2",
     "ts-jest": "^23.10.1",
     "tslint": "^5.9.1",
-    "typescript": "~3.3.3"
+    "typescript": "~3.4.2"
   }
 }

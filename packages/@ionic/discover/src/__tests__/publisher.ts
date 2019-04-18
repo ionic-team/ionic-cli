@@ -1,4 +1,6 @@
 import { Publisher, prepareInterfaces } from '../publisher';
+import { NetworkInterfaceInfo } from 'os';
+
 const os = require('os');
 
 describe('publisher', () => {
@@ -59,23 +61,17 @@ describe('publisher', () => {
 });
 
 it('prepareInterfaces', () => {
-  const iface1 = {
+  const iface1: NetworkInterfaceInfo = {
     address: '192.168.0.2',
     netmask: '255.255.0.0',
     family: 'IPv4',
     mac: '45:45:45:45:45:45',
     internal: false,
   };
-  const iface2 = Object.assign({}, iface1);
-  iface2.address = '193.168.0.3';
-  iface2.internal = true;
-  const iface3 = Object.assign({}, iface1);
-  iface3.address = '194.168.0.4';
-  iface3.family = 'IPv6';
-  const iface4 = Object.assign({}, iface1);
-  iface4.address = '192.168.0.22';
-  const iface5 = Object.assign({}, iface1);
-  iface5.address = '195.168.0.5';
+  const iface2: NetworkInterfaceInfo = { ...iface1, address: '193.168.0.3', internal: true };
+  const iface3: NetworkInterfaceInfo = { ...iface1, address: '194.168.0.4', family: 'IPv6', scopeid: 0 };
+  const iface4: NetworkInterfaceInfo = { ...iface1, address: '192.168.0.22' };
+  const iface5: NetworkInterfaceInfo = { ...iface1, address: '195.168.0.5' };
 
   const output = prepareInterfaces({
     'en0': [iface1, iface2, iface3],

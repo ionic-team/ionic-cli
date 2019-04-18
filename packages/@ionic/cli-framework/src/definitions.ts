@@ -32,6 +32,15 @@ export interface LinkFootnote {
 
 export type Footnote = TextFootnote | LinkFootnote;
 
+export const enum MetadataGroup {
+  ADVANCED = 'advanced',
+  BETA = 'beta',
+  DEPRECATED = 'deprecated',
+  EXPERIMENTAL = 'experimental',
+  HIDDEN = 'hidden',
+  PAID = 'paid',
+}
+
 export interface Metadata {
   name: string;
   summary: string;

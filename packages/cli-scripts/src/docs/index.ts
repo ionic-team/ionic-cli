@@ -5,7 +5,7 @@ import chalk from 'chalk';
 import { ProjectType, generateContext, loadExecutor } from 'ionic';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from 'ionic/lib/help';
 import * as path from 'path';
-import stripAnsi = require('strip-ansi');
+import stripAnsi from 'strip-ansi';
 
 import { ansi2md, links2md } from './utils';
 

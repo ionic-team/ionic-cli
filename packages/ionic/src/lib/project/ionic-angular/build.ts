@@ -1,9 +1,9 @@
-import { OptionGroup, unparseArgs } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { MetadataGroup, unparseArgs } from '@ionic/cli-framework';
 import * as Debug from 'debug';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
+import { ancillary, input, strong, weak } from '../../color';
 
 import { IonicAngularProject } from './';
 import { APP_SCRIPTS_OPTIONS } from './app-scripts';
@@ -25,7 +25,7 @@ export class IonicAngularBuildRunner extends BuildRunner<IonicAngularBuildOption
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       description: `
-${chalk.green('ionic build')} uses ${chalk.bold('@ionic/app-scripts')}. See the project's ${chalk.bold('README.md')}[^app-scripts-readme] for documentation. Options not listed below are considered advanced and can be passed to the ${chalk.green('ionic-app-scripts')} CLI using the ${chalk.green('--')} separator after the Ionic CLI arguments. See the examples.
+${input('ionic build')} uses ${strong('@ionic/app-scripts')}. See the project's ${strong('README.md')}[^app-scripts-readme] for documentation. Options not listed below are considered advanced and can be passed to the ${input('ionic-app-scripts')} CLI using the ${input('--')} separator after the Ionic CLI arguments. See the examples.
       `,
       footnotes: [
         {
@@ -38,8 +38,8 @@ ${chalk.green('ionic build')} uses ${chalk.bold('@ionic/app-scripts')}. See the 
           name: 'source-map',
           summary: 'Output sourcemaps',
           type: Boolean,
-          groups: [OptionGroup.Advanced],
-          hint: chalk.dim('[app-scripts]'),
+          groups: [MetadataGroup.ADVANCED],
+          hint: weak('[app-scripts]'),
         },
         ...APP_SCRIPTS_OPTIONS,
       ],
@@ -111,15 +111,15 @@ export class IonicAngularBuildCLI extends BuildCLI<IonicAngularBuildOptions> {
 
   protected async resolveProgram(): Promise<string> {
     if (typeof this.script !== 'undefined') {
-      debug(`Looking for ${chalk.cyan(this.script)} npm script.`);
+      debug(`Looking for ${ancillary(this.script)} npm script.`);
 
       const pkg = await this.e.project.requirePackageJson();
 
       if (pkg.scripts && pkg.scripts[this.script]) {
         if (pkg.scripts[this.script] === DEFAULT_BUILD_SCRIPT_VALUE) {
-          debug(`Found ${chalk.cyan(this.script)}, but it is the default. Not running.`);
+          debug(`Found ${ancillary(this.script)}, but it is the default. Not running.`);
         } else {
-          debug(`Using ${chalk.cyan(this.script)} npm script.`);
+          debug(`Using ${ancillary(this.script)} npm script.`);
           return this.e.config.get('npmClient');
         }
       }

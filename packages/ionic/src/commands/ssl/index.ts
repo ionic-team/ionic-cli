@@ -1,6 +1,6 @@
-import { NamespaceGroup } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import { MetadataGroup } from '@ionic/cli-framework';
 
+import { input } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class SSLNamespace extends Namespace {
@@ -8,9 +8,9 @@ export class SSLNamespace extends Namespace {
     return {
       name: 'ssl',
       summary: 'Commands for managing SSL keys & certificates',
-      groups: [NamespaceGroup.Experimental],
+      groups: [MetadataGroup.EXPERIMENTAL],
       description: `
-These commands make it easy to manage SSL certificates for using HTTPS with ${chalk.green('ionic serve')}.
+These commands make it easy to manage SSL certificates for using HTTPS with ${input('ionic serve')}.
       `,
     };
   }

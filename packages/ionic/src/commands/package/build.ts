@@ -1,11 +1,4 @@
-import {
-  CommandLineInputs,
-  CommandLineOptions,
-  LOGGER_LEVELS,
-  OptionGroup,
-  contains,
-  validators
-} from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, MetadataGroup, contains, validators } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { tmpfilepath } from '@ionic/utils-fs';
 import { sleep } from '@ionic/utils-process';
@@ -15,6 +8,7 @@ import * as fs from 'fs';
 
 import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
+import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { fileUtils } from '../../lib/utils/file';
@@ -64,13 +58,13 @@ export class BuildCommand extends Command {
       description: `
 This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory.
 
-Apart from ${chalk.green('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
+Apart from ${input('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
 
-The ${chalk.green('--security-profile')} option is mandatory for any iOS build but not for Android debug builds.
+The ${input('--security-profile')} option is mandatory for any iOS build but not for Android debug builds.
 
 Customizing the build:
-- The ${chalk.green('--environment')} and ${chalk.green('--native-config')} options can be used to customize the groups of values exposed to the build.
-- Override the preferred platform with ${chalk.green('--target-platform')}. This is useful for building older iOS apps.
+- The ${input('--environment')} and ${input('--native-config')} options can be used to customize the groups of values exposed to the build.
+- Override the preferred platform with ${input('--target-platform')}. This is useful for building older iOS apps.
 `,
       footnotes: [
         {
@@ -90,12 +84,12 @@ Customizing the build:
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to package (${PLATFORMS.map(v => chalk.green(v)).join(', ')})`,
+          summary: `The platform to package (${PLATFORMS.map(v => input(v)).join(', ')})`,
           validators: [validators.required, contains(PLATFORMS, {})],
         },
         {
           name: 'type',
-          summary: `The build type (${BUILD_TYPES.map(v => chalk.green(v)).join(', ')})`,
+          summary: `The build type (${BUILD_TYPES.map(v => input(v)).join(', ')})`,
           validators: [validators.required, contains(BUILD_TYPES, {})],
         },
       ],
@@ -122,21 +116,21 @@ Customizing the build:
           name: 'commit',
           summary: 'Commit (defaults to HEAD)',
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'sha1' },
         },
         {
           name: 'target-platform',
-          summary: `Target platform (${TARGET_PLATFORM.map(v => chalk.green(`"${v}"`)).join(', ')})`,
+          summary: `Target platform (${TARGET_PLATFORM.map(v => input(`"${v}"`)).join(', ')})`,
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'name' },
         },
         {
           name: 'build-file-name',
           summary: 'The name for the downloaded build file',
           type: String,
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
           spec: { value: 'name' },
         },
       ],
@@ -163,7 +157,7 @@ Customizing the build:
     if (inputs[1] && !buildTypes.includes(inputs[1])) {
       reenterBuilType = true;
       this.env.log.nl();
-      this.env.log.warn(`Build type ${chalk.bold(inputs[1])} incompatible for ${chalk.bold(inputs[0])}; please choose a correct one`);
+      this.env.log.warn(`Build type ${strong(inputs[1])} incompatible for ${strong(inputs[0])}; please choose a correct one`);
     }
 
     if (!inputs[1] || reenterBuilType) {
@@ -197,7 +191,7 @@ Customizing the build:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic package build')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic package build')} outside a project directory.`);
     }
 
     const token = this.env.session.getUserToken();
@@ -206,7 +200,7 @@ Customizing the build:
 
     if (!options.commit) {
       options.commit = (await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.project.directory })).trim();
-      debug(`Commit hash: ${chalk.bold(options.commit)}`);
+      debug(`Commit hash: ${strong(options.commit)}`);
     }
 
     let build = await this.createPackageBuild(appflowId, token, platform, buildType, options);
@@ -215,20 +209,20 @@ Customizing the build:
     let customBuildFileName = '';
     if (options['build-file-name']) {
       if (typeof (options['build-file-name']) !== 'string' || !fileUtils.isValidFileName(options['build-file-name'])) {
-        throw new FatalException(`${chalk.bold(String(options['build-file-name']))} is not a valid file name`);
+        throw new FatalException(`${strong(String(options['build-file-name']))} is not a valid file name`);
       }
       customBuildFileName = String(options['build-file-name']);
     }
 
     const details = columnar([
-      ['Appflow ID', chalk.bold(appflowId)],
-      ['Build ID', chalk.bold(buildId.toString())],
-      ['Commit', chalk.bold(`${build.commit.sha.substring(0, 6)} ${build.commit.note}`)],
-      ['Target Platform', chalk.bold(build.stack.friendly_name)],
-      ['Build Type', chalk.bold(build.build_type)],
-      ['Security Profile', build.profile_tag ? chalk.bold(build.profile_tag) : chalk.dim('not set')],
-      ['Environment', build.environment_name ? chalk.bold(build.environment_name) : chalk.dim('not set')],
-      ['Native Config', build.native_config_name ? chalk.bold(build.native_config_name) : chalk.dim('not set')],
+      ['Appflow ID', strong(appflowId)],
+      ['Build ID', strong(buildId.toString())],
+      ['Commit', strong(`${build.commit.sha.substring(0, 6)} ${build.commit.note}`)],
+      ['Target Platform', strong(build.stack.friendly_name)],
+      ['Build Type', strong(build.build_type)],
+      ['Security Profile', build.profile_tag ? strong(build.profile_tag) : weak('not set')],
+      ['Environment', build.environment_name ? strong(build.environment_name) : weak('not set')],
+      ['Native Config', build.native_config_name ? strong(build.native_config_name) : weak('not set')],
     ], { vsep: ':' });
 
     this.env.log.ok(

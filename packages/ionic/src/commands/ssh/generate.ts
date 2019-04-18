@@ -1,10 +1,10 @@
-import { OptionGroup, contains, validate } from '@ionic/cli-framework';
+import { MetadataGroup, contains, validate } from '@ionic/cli-framework';
 import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists, unlink } from '@ionic/utils-fs';
-import chalk from 'chalk';
 import * as path from 'path';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
+import { input, strong } from '../../lib/color';
 
 import { SSHBaseCommand } from './base';
 
@@ -25,23 +25,23 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
       options: [
         {
           name: 'type',
-          summary: `The type of key to generate: ${SSH_KEY_TYPES.map(v => chalk.green(v)).join(', ')}`,
+          summary: `The type of key to generate: ${SSH_KEY_TYPES.map(v => input(v)).join(', ')}`,
           default: 'rsa',
           aliases: ['t'],
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'bits',
           summary: 'Number of bits in the key',
           aliases: ['b'],
           default: '2048',
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'annotation',
           summary: 'Annotation (comment) in public key. Your Ionic email address will be used',
           aliases: ['C'],
-          groups: [OptionGroup.Advanced],
+          groups: [MetadataGroup.ADVANCED],
         },
       ],
     };
@@ -70,27 +70,27 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
 
     if (!(await pathExists(keyPathDir))) {
       await mkdirp(keyPathDir, 0o700 as any); // tslint:disable-line
-      this.env.log.msg(`Created ${chalk.bold(prettyPath(keyPathDir))} directory for you.`);
+      this.env.log.msg(`Created ${strong(prettyPath(keyPathDir))} directory for you.`);
     }
 
     if (await pathExists(keyPath)) {
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Key ${chalk.bold(prettyPath(keyPath))} exists. Overwrite?`,
+        message: `Key ${strong(prettyPath(keyPath))} exists. Overwrite?`,
       });
 
       if (confirm) {
         await unlink(keyPath);
       } else {
-        this.env.log.msg(`Not overwriting ${chalk.bold(prettyPath(keyPath))}.`);
+        this.env.log.msg(`Not overwriting ${strong(prettyPath(keyPath))}.`);
         return;
       }
     }
 
     this.env.log.info(
       'Enter a passphrase for your private key.\n' +
-      `You will be prompted to provide a ${chalk.bold('passphrase')}, which is used to protect your private key should you lose it. (If someone has your private key, they can impersonate you!) Passphrases are recommended, but not required.\n`
+      `You will be prompted to provide a ${strong('passphrase')}, which is used to protect your private key should you lose it. (If someone has your private key, they can impersonate you!) Passphrases are recommended, but not required.\n`
     );
 
     const shellOptions = { stdio: 'inherit', showCommand: false, showError: false };
@@ -99,17 +99,17 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     this.env.log.nl();
 
     this.env.log.rawmsg(
-      `Private Key (${chalk.bold(prettyPath(keyPath))}): Keep this safe!\n` +
-      `Public Key (${chalk.bold(prettyPath(pubkeyPath))}): Give this to all your friends!\n\n`
+      `Private Key (${strong(prettyPath(keyPath))}): Keep this safe!\n` +
+      `Public Key (${strong(prettyPath(pubkeyPath))}): Give this to all your friends!\n\n`
     );
 
     this.env.log.ok('A new pair of SSH keys has been generated!');
     this.env.log.nl();
 
     this.env.log.msg(
-      `${chalk.bold('Next steps:')}\n` +
-      ` * Add your public key to Ionic: ${chalk.green('ionic ssh add ' + prettyPath(pubkeyPath))}\n` +
-      ` * Use your private key for secure communication with Ionic: ${chalk.green('ionic ssh use ' + prettyPath(keyPath))}`
+      `${strong('Next steps:')}\n` +
+      ` * Add your public key to Ionic: ${input('ionic ssh add ' + prettyPath(pubkeyPath))}\n` +
+      ` * Use your private key for secure communication with Ionic: ${input('ionic ssh use ' + prettyPath(keyPath))}`
     );
   }
 }

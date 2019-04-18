@@ -1,7 +1,8 @@
 import { PromptQuestion, PromptValue } from '@ionic/cli-framework';
-import chalk from 'chalk';
 
 import { ILogger, IonicEnvironmentFlags } from '../definitions';
+
+import { ancillary, input, weak } from './color';
 
 export interface CreateOnFallbackOptions {
   readonly flags: IonicEnvironmentFlags;
@@ -12,10 +13,10 @@ export function createOnFallback({ flags: { confirm }, log }: CreateOnFallbackOp
   return (question: PromptQuestion): PromptValue | void => {
     if (question.type === 'confirm') {
       if (confirm) {
-        log.msg(`${chalk.green('--confirm')}: ${chalk.dim(question.message)} ${chalk.cyan('Yes')}`);
+        log.msg(`${input('--confirm')}: ${weak(question.message)} ${ancillary('Yes')}`);
         return true;
       } else {
-        log.msg(`${chalk.green('--no-confirm')}: ${chalk.dim(question.message)} ${chalk.cyan('No')}`);
+        log.msg(`${input('--no-confirm')}: ${weak(question.message)} ${ancillary('No')}`);
         return false;
       }
     }

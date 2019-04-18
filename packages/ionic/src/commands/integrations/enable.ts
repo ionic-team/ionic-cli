@@ -1,9 +1,9 @@
 import { BaseError, contains, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
 import * as path from 'path';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { isIntegrationName } from '../../guards';
+import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { INTEGRATION_NAMES } from '../../lib/integrations';
@@ -15,14 +15,14 @@ export class IntegrationsEnableCommand extends Command {
       type: 'project',
       summary: 'Add & enable integrations to your app',
       description: `
-Integrations, such as Cordova, can be enabled with this command. If the integration has never been added to the project, ${chalk.green('ionic integrations enable')} will download and add the integration.
+Integrations, such as Cordova, can be enabled with this command. If the integration has never been added to the project, ${input('ionic integrations enable')} will download and add the integration.
 
-Integrations can be re-added with the ${chalk.green('--add')} option.
+Integrations can be re-added with the ${input('--add')} option.
       `,
       inputs: [
         {
           name: 'name',
-          summary: `The integration to enable (e.g. ${INTEGRATION_NAMES.map(i => chalk.green(i)).join(', ')})`,
+          summary: `The integration to enable (e.g. ${INTEGRATION_NAMES.map(i => input(i)).join(', ')})`,
           validators: [validators.required, contains(INTEGRATION_NAMES, {})],
         },
       ],
@@ -51,13 +51,13 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
     const { add, quiet } = options;
 
     if (!this.project) {
-      throw new FatalException(`Cannot run ${chalk.green('ionic integrations enable')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic integrations enable')} outside a project directory.`);
     }
 
     const root = options['root'] ? path.resolve(this.project.directory, String(options['root'])) : this.project.directory;
 
     if (!isIntegrationName(name)) {
-      throw new FatalException(`Don't know about ${chalk.green(name)} integration!`);
+      throw new FatalException(`Don't know about ${input(name)} integration!`);
     }
 
     const integration = await this.project.createIntegration(name);
@@ -71,7 +71,7 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
           env: this.env,
         });
 
-        this.env.log.ok(`Integration ${chalk.green(integration.name)} added!`);
+        this.env.log.ok(`Integration ${input(integration.name)} added!`);
       } else {
         const wasEnabled = integration.config.get('enabled') !== false;
 
@@ -80,9 +80,9 @@ Integrations can be re-added with the ${chalk.green('--add')} option.
         await integration.enable();
 
         if (wasEnabled) {
-          this.env.log.info(`Integration ${chalk.green(integration.name)} already enabled.`);
+          this.env.log.info(`Integration ${input(integration.name)} already enabled.`);
         } else {
-          this.env.log.ok(`Integration ${chalk.green(integration.name)} enabled!`);
+          this.env.log.ok(`Integration ${input(integration.name)} enabled!`);
         }
       }
     } catch (e) {
