@@ -84,7 +84,7 @@
     "@types/lodash": "^4.14.104",
     "@types/node": "~8.9.4",
     "@types/open": "~6.1.0",
-    "@types/os-name": "^2.0.0",
+    "@types/os-name": "^3.1.0",
     "@types/semver": "^6.0.0",
     "@types/split2": "^2.1.6",
     "@types/tar": "^4.0.0",
