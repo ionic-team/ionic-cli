@@ -547,7 +547,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     this.env.log.nl();
 
-    await this.showNextSteps(projectDir, this.schema.cloned, linkConfirmed);
+    await this.showNextSteps(this.project.details.type, projectDir, this.schema.cloned, linkConfirmed);
   }
 
   async getStarterTemplates(): Promise<StarterTemplate[]> {
@@ -667,10 +667,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     tasks.end();
   }
 
-  async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean) {
+  async showNextSteps(type: ProjectType | undefined, projectDir: string, cloned: boolean, linkConfirmed: boolean) {
+    const startCommand = (type === 'react' || type === 'vue') ? 'npm start' : 'ionic serve';
+
     const steps = [
       `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${input(`cd ${prettyPath(projectDir)}`)}`,
-      `Run ${input('ionic serve')} within the app directory to see your app`,
+      `Run ${input(startCommand)} within the app directory to see your app`,
       `Build features and components: ${strong('https://ion.link/scaffolding-docs')}`,
       `Get Ionic DevApp for easy device testing: ${strong('https://ion.link/devapp')}`,
     ];
