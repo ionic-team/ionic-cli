@@ -7,13 +7,13 @@ export class LogoutCommand extends Command {
     return {
       name: 'logout',
       type: 'global',
-      summary: 'Logout of Ionic Appflow',
+      summary: 'Log out of Ionic',
       description: `
-Remove the Ionic Appflow user token from the CLI config.
+Remove the Ionic user token from the CLI config.
 
-Login again with ${input('ionic login')}.
+Log in again with ${input('ionic login')}.
 
-If you need to create an Ionic Appflow account, use ${input('ionic signup')}.
+If you need to create an Ionic account, use ${input('ionic signup')}.
       `,
     };
   }

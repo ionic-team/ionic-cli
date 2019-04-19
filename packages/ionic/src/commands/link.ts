@@ -123,7 +123,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Appflow ID ${input(idFromConfig)} is already set up with this app. ${msg}`,
+        message: `App ID ${input(idFromConfig)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {

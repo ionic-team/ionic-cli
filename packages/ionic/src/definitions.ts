@@ -390,7 +390,7 @@ export interface ConfigFile {
   'ssl.certfile'?: string | string[];
   'ssl.keyfile'?: string | string[];
 
-  // Ionic Appflow
+  // Ionic API
   'urls.api'?: string;
   'urls.dash'?: string;
   'git.host'?: string;

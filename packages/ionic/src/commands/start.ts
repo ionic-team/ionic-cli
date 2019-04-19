@@ -131,7 +131,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         },
         {
           name: 'id',
-          summary: 'Specify an app ID from the Ionic Appflow to link',
+          summary: 'Specify an app ID from Ionic Appflow to link',
         },
         {
           name: 'pro-id',
