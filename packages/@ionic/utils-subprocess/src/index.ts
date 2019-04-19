@@ -2,6 +2,7 @@ import { filter, reduce } from '@ionic/utils-array';
 import { isExecutableFile } from '@ionic/utils-fs';
 import { createProcessEnv, getPathParts } from '@ionic/utils-process';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
+import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
 import * as crossSpawn from 'cross-spawn';
 import * as os from 'os';
@@ -268,6 +269,10 @@ export async function which(program: string, { PATH = process.env.PATH || '' }: 
     return program;
   }
 
+  if (TERMINAL_INFO.windows && pathlib.extname(program) !== '.exe') {
+    program += '.exe';
+  }
+
   const pathParts = getPathParts(PATH);
 
   const value = await reduce<string, string | null>(pathParts, async (acc, v) => {
@@ -305,6 +310,10 @@ export async function which(program: string, { PATH = process.env.PATH || '' }: 
 export async function findExecutables(program: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string[]> {
   if (program.includes(pathlib.sep)) {
     return [program];
+  }
+
+  if (TERMINAL_INFO.windows && pathlib.extname(program) !== '.exe') {
+    program += '.exe';
   }
 
   return filter(getPathParts(PATH).map(p => pathlib.join(p, program)), async p => isExecutableFile(p));
