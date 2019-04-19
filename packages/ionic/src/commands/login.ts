@@ -22,9 +22,16 @@ You can also use ${input('IONIC_EMAIL')} and ${input('IONIC_PASSWORD')} environm
 
 If you need to create an Ionic Appflow account, use ${input('ionic signup')}.
 
+You can reset your password in the dashboard[^reset-password].
+
 If you are having issues logging in, please get in touch with our Support[^support-request].
       `,
       footnotes: [
+        {
+          id: 'reset-password',
+          url: 'https://dashboard.ionicframework.com/reset-password',
+          shortUrl: 'https://ion.link/reset-password',
+        },
         {
           id: 'support-request',
           url: 'https://ion.link/support-request',
