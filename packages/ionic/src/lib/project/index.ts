@@ -295,6 +295,12 @@ export async function createProjectFromDetails(details: ProjectDetailsResult, de
     case 'angular':
       const { AngularProject } = await import('./angular');
       return new AngularProject(details, deps);
+    case 'react':
+      const { ReactProject } = await import('./react');
+      return new ReactProject(details, deps);
+    case 'vue':
+      const { VueProject } = await import('./vue');
+      return new VueProject(details, deps);
     case 'ionic-angular':
       const { IonicAngularProject } = await import('./ionic-angular');
       return new IonicAngularProject(details, deps);
@@ -627,6 +633,10 @@ export function prettyProjectName(type?: string): string {
 
   if (type === 'angular') {
     return '@ionic/angular';
+  } else if (type === 'react') {
+    return '@ionic/react';
+  } else if (type === 'vue') {
+    return '@ionic/vue';
   } else if (type === 'ionic-angular') {
     return 'Ionic 2/3';
   } else if (type === 'ionic1') {
