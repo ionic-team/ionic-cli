@@ -72,8 +72,6 @@ describe('@ionic/utils-subprocess', () => {
     const mock_os = { homedir: () => '/home/me' };
     jest.mock('cross-spawn', () => mockCrossSpawn);
     jest.mock('os', () => mock_os);
-    const mock_path_posix = path.posix;
-    jest.mock('path', () => mock_path_posix);
     const { Subprocess, SubprocessError } = require('../');
 
     beforeEach(() => {
@@ -116,9 +114,9 @@ describe('@ionic/utils-subprocess', () => {
     });
 
     it('should alter PATH with tildes if provided', async () => {
-      const PATH = '/path/to/bin:~/bin';
+      const PATH = ['/path/to/bin', '~/bin'].join(path.delimiter);
       const cmd = new Subprocess('cmd', [], { env: { PATH } });
-      expect(cmd.options.env.PATH).toEqual('/path/to/bin:/home/me/bin');
+      expect(cmd.options.env.PATH).toEqual(['/path/to/bin', '/home/me/bin'].join(path.delimiter));
     });
 
     it('should bashify command and args', async () => {
