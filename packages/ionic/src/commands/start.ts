@@ -7,44 +7,24 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { PROJECT_FILE } from '../constants';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, ProjectType, ResolvedStarterTemplate, StarterManifest, StarterTemplate } from '../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, ProjectType, ResolvedStarterTemplate, StarterManifest } from '../definitions';
 import { failure, input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
 import { createProjectFromDetails, createProjectFromDirectory, isValidProjectId } from '../lib/project';
 import { prependNodeModulesBinToPath } from '../lib/shell';
+import { AppSchema, STARTER_BASE_URL, STARTER_TEMPLATES, getAdvertisement, getStarterList, getStarterProjectTypes, readStarterManifest, verifyOptions } from '../lib/start';
 import { emoji } from '../lib/utils/emoji';
 
 const debug = Debug('ionic:commands:start');
 
-interface CommonAppSchema {
-  projectId: string;
-  projectDir: string;
-  packageId?: string;
-  appflowId?: string;
-}
-
-interface NewAppSchema extends CommonAppSchema {
-  cloned: false;
-  name: string;
-  type: ProjectType;
-  template: string;
-}
-
-interface ClonedAppSchema extends CommonAppSchema {
-  cloned: true;
-  url: string;
-}
-
 export class StartCommand extends Command implements CommandPreRun {
   private canRemoveExisting = false;
 
-  private schema?: NewAppSchema | ClonedAppSchema;
+  private schema?: AppSchema;
 
   async getMetadata(): Promise<CommandMetadata> {
-    const starterTemplates = await this.getStarterTemplates();
-
     return {
       name: 'start',
       type: 'global',
@@ -94,7 +74,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         },
         {
           name: 'type',
-          summary: `Type of project to start (e.g. ${lodash.uniq(starterTemplates.map(t => t.type)).map(type => input(type)).join(', ')})`,
+          summary: `Type of project to start (e.g. ${lodash.uniq(STARTER_TEMPLATES.map(t => t.type)).map(type => input(type)).join(', ')})`,
           type: String,
         },
         {
@@ -124,24 +104,17 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         },
         {
           name: 'link',
-          summary: 'Do not ask to connect the app to Ionic Appflow',
+          summary: 'Connect your new app to Ionic',
           type: Boolean,
-          default: true,
           groups: [MetadataGroup.ADVANCED],
         },
         {
           name: 'id',
-          summary: 'Specify an app ID from Ionic Appflow to link',
-        },
-        {
-          name: 'pro-id',
-          summary: `Use the ${input('--id')} option`,
-          groups: [MetadataGroup.DEPRECATED],
-          spec: { value: 'id' },
+          summary: 'Specify an Ionic App ID to link',
         },
         {
           name: 'project-id',
-          summary: 'Specify a slug for your app (used for the directory name and npm/yarn package name)',
+          summary: 'Specify a slug for your app (used for the directory name and package name)',
           groups: [MetadataGroup.ADVANCED],
           spec: { value: 'slug' },
         },
@@ -164,44 +137,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('../lib/session');
 
-    const starterTemplates = await this.getStarterTemplates();
     const cloned = isValidURL(inputs[1]);
 
-    // If the action is list then lets just end here.
-    if (options['list']) {
-      const headers = ['name', 'project type', 'description'];
-      this.env.log.rawmsg(columnar(starterTemplates.map(({ name, type, description }) => [input(name), strong(type), description || '']), { headers }));
-      throw new FatalException('', 0);
-    }
-
-    if (options['skip-deps']) {
-      this.env.log.warn(`The ${input('--skip-deps')} option has been deprecated. Please use ${input('--no-deps')}.`);
-      options['deps'] = false;
-    }
-
-    if (options['skip-link']) {
-      this.env.log.warn(`The ${input('--skip-link')} option has been deprecated. Please use ${input('--no-link')}.`);
-      options['link'] = false;
-    }
-
-    if (options['pro-id']) {
-      this.env.log.warn(`The ${input('--pro-id')} option has been deprecated. Please use ${input('--id')}.`);
-      options['id'] = options['pro-id'];
-    }
-
-    if (options['id']) {
-      if (!options['link']) {
-        this.env.log.warn(`The ${input('--no-link')} option has no effect with ${input('--id')}. App must be linked.`);
-      }
-
-      options['link'] = true;
-
-      if (!options['git']) {
-        this.env.log.warn(`The ${input('--no-git')} option has no effect with ${input('--id')}. Git must be used.`);
-      }
-
-      options['git'] = true;
-    }
+    verifyOptions(options, this.env);
 
     if (cloned) {
       if (!options['git']) {
@@ -326,7 +264,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           name: 'template',
           message: 'Starter template:',
           choices: () => {
-            const starterTemplateList = starterTemplates.filter(st => st.type === projectType);
+            const starterTemplateList = STARTER_TEMPLATES.filter(st => st.type === projectType);
             const cols = columnar(starterTemplateList.map(({ name, description }) => [input(name), description || '']), {}).split('\n');
 
             if (starterTemplateList.length === 0) {
@@ -362,7 +300,6 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { pkgManagerArgs } = await import('../lib/utils/npm');
     const { getTopLevel, isGitInstalled } = await import('../lib/git');
-    const { getIonicDevAppText, getIonicProText } = await import('../lib/start');
 
     if (!this.schema) {
       throw new FatalException(`Invalid information: cannot start app.`);
@@ -474,7 +411,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     if (options['deps']) {
       this.env.log.msg('Installing dependencies may take several minutes.');
-      this.env.log.rawmsg(await getIonicDevAppText());
+      this.env.log.rawmsg(getAdvertisement());
 
       const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
@@ -490,26 +427,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         }
       }
 
-      if (options['link'] && !linkConfirmed) {
-        this.env.log.rawmsg(await getIonicProText());
-
-        const confirm = await this.env.prompt({
-          type: 'confirm',
-          name: 'confirm',
-          message: 'Install the free Ionic Appflow SDK and connect your app?',
-          fallback: false,
-          default: true,
-        });
-
-        if (confirm) {
-          linkConfirmed = true;
-        }
-      }
-
-      if (linkConfirmed) {
-        const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: '@ionic/pro' });
-        await this.env.shell.run(installer, installerArgs, shellOptions);
-
+      if (options['link']) {
         const cmdArgs = ['link'];
 
         if (appflowId) {
@@ -519,6 +437,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         cmdArgs.push('--name', this.schema.name);
 
         await runCommand(runinfo, cmdArgs);
+        linkConfirmed = true;
       }
 
       const manifestPath = path.resolve(projectDir, 'ionic.starter.json');
@@ -548,17 +467,6 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     await this.showNextSteps(projectDir, this.schema.cloned, linkConfirmed);
   }
 
-  async getStarterTemplates(): Promise<StarterTemplate[]> {
-    const { STARTER_TEMPLATES } = await import('../lib/start');
-
-    return STARTER_TEMPLATES;
-  }
-
-  async getStarterProjectTypes(): Promise<string[]> {
-    const starterTemplates = await this.getStarterTemplates();
-    return lodash.uniq(starterTemplates.map(t => t.type));
-  }
-
   async checkForExisting(projectDir: string) {
     const projectExists = await pathExists(projectDir);
 
@@ -580,9 +488,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async findStarterTemplate(template: string, type: string, tag: string): Promise<ResolvedStarterTemplate> {
-    const { STARTER_BASE_URL, getStarterList } = await import('../lib/start');
-    const starterTemplates = await this.getStarterTemplates();
-    const starterTemplate = starterTemplates.find(t => t.type === type && t.name === template);
+    const starterTemplate = STARTER_TEMPLATES.find(t => t.type === type && t.name === template);
 
     if (starterTemplate) {
       return {
@@ -613,7 +519,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async validateProjectType(type: string) {
-    const projectTypes = await this.getStarterProjectTypes();
+    const projectTypes = getStarterProjectTypes();
 
     if (!projectTypes.includes(type)) {
       throw new FatalException(
@@ -633,8 +539,6 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {
-    const { readStarterManifest } = await import('../lib/start');
-
     try {
       return await readStarterManifest(manifestPath);
     } catch (e) {
