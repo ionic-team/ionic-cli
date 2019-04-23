@@ -155,7 +155,7 @@ export class RPCProcess {
 export class RPCHost {
   protected rpc: RPCProcess;
 
-  constructor(readonly modulePath: string, readonly args: ReadonlyArray<string>) {
+  constructor(readonly modulePath: string, readonly args: readonly string[]) {
     this.rpc = new RPCProcess({ name: 'host' });
   }
 

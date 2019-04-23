@@ -58,7 +58,7 @@ export class DocsCommand extends Command {
     };
   }
 
-  private async formatFootnotes(description: string, footnotes: ReadonlyArray<CommandHelpSchemaFootnote>): Promise<string> {
+  private async formatFootnotes(description: string, footnotes: readonly CommandHelpSchemaFootnote[]): Promise<string> {
     return description.replace(/(\S+)\[\^([A-z0-9-]+)\]/g, (match, p1, p2) => {
       const m = Number.parseInt(p2, 10);
       const id = !Number.isNaN(m) ? m : p2;

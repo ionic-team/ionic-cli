@@ -91,7 +91,7 @@ export class Subprocess {
   protected readonly path?: string;
   protected _options: SpawnOptions;
 
-  constructor(public name: string, public args: ReadonlyArray<string>, options: SubprocessOptions = {}) {
+  constructor(public name: string, public args: readonly string[], options: SubprocessOptions = {}) {
     const masked = this.maskArg(name);
 
     if (masked !== name) {
@@ -244,11 +244,11 @@ export class Subprocess {
   }
 }
 
-export function spawn(command: string, args: ReadonlyArray<string> = [], options?: SpawnOptions): ChildProcess {
+export function spawn(command: string, args: readonly string[] = [], options?: SpawnOptions): ChildProcess {
   return crossSpawn(command, [...args], options);
 }
 
-export function fork(modulePath: string, args: ReadonlyArray<string> = [], options: ForkOptions & Pick<SpawnOptions, 'stdio'> = {}): ChildProcess {
+export function fork(modulePath: string, args: readonly string[] = [], options: ForkOptions & Pick<SpawnOptions, 'stdio'> = {}): ChildProcess {
   return _fork(modulePath, [...args], options);
 }
 

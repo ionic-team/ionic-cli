@@ -8,7 +8,7 @@ import { FatalException } from './errors';
 import { createPrefixedWriteStream } from './utils/logger';
 import { pkgManagerArgs } from './utils/npm';
 
-export const SUPPORTED_PLATFORMS: ReadonlyArray<string> = ['android', 'ios'];
+export const SUPPORTED_PLATFORMS: readonly string[] = ['android', 'ios'];
 
 export interface NativeRunSchema {
   packagePath: string;
@@ -73,7 +73,7 @@ export interface RunNativeRunDeps {
   shell: IShell;
 }
 
-export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, args: ReadonlyArray<string>, options: IShellRunOptions = {}): Promise<void> {
+export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, args: readonly string[], options: IShellRunOptions = {}): Promise<void> {
   const connect = args.includes('--connect');
   const stream = connect ? createPrefixedWriteStream(log, weak(`[native-run]`)) : undefined;
 

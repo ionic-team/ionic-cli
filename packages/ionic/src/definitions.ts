@@ -380,10 +380,10 @@ export interface IShellRunOptions extends IShellOutputOptions {
 export interface IShell {
   alterPath: (path: string) => string;
 
-  run(command: string, args: ReadonlyArray<string>, options: IShellRunOptions): Promise<void>;
-  output(command: string, args: ReadonlyArray<string>, options: IShellOutputOptions): Promise<string>;
-  spawn(command: string, args: ReadonlyArray<string>, options: IShellSpawnOptions): Promise<ChildProcess>;
-  cmdinfo(cmd: string, args?: ReadonlyArray<string>, options?: SubprocessOptions): Promise<string | undefined>;
+  run(command: string, args: readonly string[], options: IShellRunOptions): Promise<void>;
+  output(command: string, args: readonly string[], options: IShellOutputOptions): Promise<string>;
+  spawn(command: string, args: readonly string[], options: IShellSpawnOptions): Promise<ChildProcess>;
+  cmdinfo(cmd: string, args?: readonly string[], options?: SubprocessOptions): Promise<string | undefined>;
 }
 
 export interface ITelemetry {

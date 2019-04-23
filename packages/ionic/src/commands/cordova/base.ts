@@ -49,7 +49,7 @@ export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
   },
 ];
 
-export const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+export const CORDOVA_RUN_OPTIONS: readonly CommandMetadataOption[] = [
   ...CORDOVA_COMPILE_OPTIONS,
   {
     name: 'target',

@@ -11,7 +11,7 @@ import { GenerateRunner, GenerateRunnerDeps } from '../../generate';
 import { AngularProject } from './';
 
 // https://github.com/ionic-team/angular-toolkit/blob/master/collection.json
-const SCHEMATICS: ReadonlyArray<string> = ['page', 'component', 'service', 'module', 'class', 'directive', 'guard', 'pipe', 'interface', 'enum'];
+const SCHEMATICS: readonly string[] = ['page', 'component', 'service', 'module', 'class', 'directive', 'guard', 'pipe', 'interface', 'enum'];
 const SCHEMATIC_ALIAS = new Map<string, string>([
   ['pg', 'page'],
   ['cl', 'class'],

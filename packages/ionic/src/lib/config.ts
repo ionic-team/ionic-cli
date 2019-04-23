@@ -4,7 +4,7 @@ import * as path from 'path';
 
 import { CommandMetadataOption, ConfigFile, CreateRequestOptions, IConfig } from '../definitions';
 
-export const GLOBAL_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+export const GLOBAL_OPTIONS: readonly CommandMetadataOption[] = [
   {
     name: 'help',
     summary: 'Display help for commands',

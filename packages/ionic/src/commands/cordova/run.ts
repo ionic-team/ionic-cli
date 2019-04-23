@@ -15,7 +15,7 @@ import { createPrefixedWriteStream } from '../../lib/utils/logger';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_RUN_OPTIONS, CordovaCommand } from './base';
 
-const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+const NATIVE_RUN_OPTIONS: readonly CommandMetadataOption[] = [
   {
     name: 'native-run',
     summary: `Do not use ${input('native-run')} to run the app; use Cordova instead`,
@@ -291,7 +291,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
   }
 
-  protected async runNativeRun(args: ReadonlyArray<string>): Promise<void> {
+  protected async runNativeRun(args: readonly string[]): Promise<void> {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }

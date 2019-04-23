@@ -8,7 +8,7 @@ export type SuperAgentRequest = import('superagent').SuperAgentRequest;
 
 const debug = Debug('ionic:lib:utils:http');
 
-export const PROXY_ENVIRONMENT_VARIABLES: ReadonlyArray<string> = ['IONIC_HTTP_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'PROXY', 'https_proxy', 'http_proxy', 'proxy'];
+export const PROXY_ENVIRONMENT_VARIABLES: readonly string[] = ['IONIC_HTTP_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'PROXY', 'https_proxy', 'http_proxy', 'proxy'];
 
 function getGlobalProxy(): { envvar: string; envval: string; } | undefined {
   for (const envvar of PROXY_ENVIRONMENT_VARIABLES) {

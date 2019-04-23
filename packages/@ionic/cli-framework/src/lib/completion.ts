@@ -6,7 +6,7 @@ import { isCommand } from '../guards';
 import { NO_COLORS } from './colors';
 import { formatOptionName } from './options';
 
-export async function getCompletionWords<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(ns: N, argv: ReadonlyArray<string>): Promise<string[]> {
+export async function getCompletionWords<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>(ns: N, argv: readonly string[]): Promise<string[]> {
   const { obj } = await ns.locate(argv, { useAliases: false });
 
   if (isCommand(obj)) {
