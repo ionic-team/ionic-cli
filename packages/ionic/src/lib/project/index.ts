@@ -1,4 +1,4 @@
-import { BaseConfig, BaseConfigOptions, ParsedArgs, PromptModule } from '@ionic/cli-framework';
+import { BaseConfig, BaseConfigOptions, PackageJson, ParsedArgs, PromptModule } from '@ionic/cli-framework';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
@@ -8,14 +8,11 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
-import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, PackageJson, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
-import * as ζbuild from '../build';
 import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
-import * as ζgenerate from '../generate';
 import { BaseIntegration } from '../integrations';
-import * as ζserve from '../serve';
 
 const debug = Debug('ionic:lib:project');
 
@@ -428,11 +425,11 @@ export abstract class Project implements IProject {
 
   abstract detected(): Promise<boolean>;
 
-  abstract requireBuildRunner(): Promise<ζbuild.BuildRunner<any>>;
-  abstract requireServeRunner(): Promise<ζserve.ServeRunner<any>>;
-  abstract requireGenerateRunner(): Promise<ζgenerate.GenerateRunner<any>>;
+  abstract requireBuildRunner(): Promise<import('../build').BuildRunner<any>>;
+  abstract requireServeRunner(): Promise<import('../serve').ServeRunner<any>>;
+  abstract requireGenerateRunner(): Promise<import('../generate').GenerateRunner<any>>;
 
-  async getBuildRunner(): Promise<ζbuild.BuildRunner<any> | undefined> {
+  async getBuildRunner(): Promise<import('../build').BuildRunner<any> | undefined> {
     try {
       return await this.requireBuildRunner();
     } catch (e) {
@@ -442,7 +439,7 @@ export abstract class Project implements IProject {
     }
   }
 
-  async getServeRunner(): Promise<ζserve.ServeRunner<any> | undefined> {
+  async getServeRunner(): Promise<import('../serve').ServeRunner<any> | undefined> {
     try {
       return await this.requireServeRunner();
     } catch (e) {
@@ -452,7 +449,7 @@ export abstract class Project implements IProject {
     }
   }
 
-  async getGenerateRunner(): Promise<ζgenerate.GenerateRunner<any> | undefined> {
+  async getGenerateRunner(): Promise<import('../generate').GenerateRunner<any> | undefined> {
     try {
       return await this.requireGenerateRunner();
     } catch (e) {

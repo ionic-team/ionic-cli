@@ -17,10 +17,6 @@ import { isIntegrationName } from '../../guards';
 import { strong } from '../color';
 import { IntegrationNotFoundException } from '../errors';
 
-import * as ζcapacitor from './capacitor';
-import * as ζcordova from './cordova';
-import * as ζenterprise from './enterprise';
-
 export { INTEGRATION_NAMES } from '../../guards';
 
 export interface IntegrationOptions {
@@ -34,7 +30,7 @@ export interface IntegrationDeps {
   readonly log: ILogger;
 }
 
-export type IntegationUnion = ζcapacitor.Integration | ζcordova.Integration | ζenterprise.Integration;
+export type IntegationUnion = import('./capacitor').Integration | import('./cordova').Integration | import('./enterprise').Integration;
 
 export class IntegrationConfig extends BaseConfig<ProjectIntegration> {
 
@@ -51,9 +47,9 @@ export abstract class BaseIntegration<T extends ProjectIntegration> implements I
 
   constructor(protected readonly e: IntegrationDeps) {}
 
-  static async createFromName(deps: IntegrationDeps, name: 'capacitor'): Promise<ζcapacitor.Integration>;
-  static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<ζcordova.Integration>;
-  static async createFromName(deps: IntegrationDeps, name: 'enterprise'): Promise<ζenterprise.Integration>;
+  static async createFromName(deps: IntegrationDeps, name: 'capacitor'): Promise<import('./capacitor').Integration>;
+  static async createFromName(deps: IntegrationDeps, name: 'cordova'): Promise<import('./cordova').Integration>;
+  static async createFromName(deps: IntegrationDeps, name: 'enterprise'): Promise<import('./enterprise').Integration>;
   static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IIntegration<ProjectIntegration>>;
   static async createFromName(deps: IntegrationDeps, name: IntegrationName): Promise<IntegationUnion> {
     if (isIntegrationName(name)) {

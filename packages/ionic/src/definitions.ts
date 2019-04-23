@@ -1,24 +1,40 @@
-import * as ζframework from '@ionic/cli-framework';
+import {
+  BaseConfig,
+  CommandInstanceInfo as FrameworkCommandInstanceInfo,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata as FrameworkCommandMetadata,
+  CommandMetadataInput,
+  CommandMetadataOption as FrameworkCommandMetadataOption,
+  HydratedCommandMetadata as FrameworkHydratedCommandMetadata,
+  ICommand as FrameworkCommand,
+  INamespace as FrameworkNamespace,
+  Logger,
+  NamespaceLocateResult as FrameworkNamespaceLocateResult,
+  PackageJson,
+  PromptModule,
+} from '@ionic/cli-framework';
 import { NetworkInterface } from '@ionic/utils-network';
 import { SubprocessOptions } from '@ionic/utils-subprocess';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
-import * as ζsuperagent from 'superagent';
 
-import * as ζbuild from './lib/build';
-import * as ζgenerate from './lib/generate';
-import * as ζproject from './lib/project';
-import * as ζserve from './lib/serve';
+export {
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadataInput,
+  NamespaceMetadata,
+} from '@ionic/cli-framework';
 
-export { CommandLineInputs, CommandLineOptions, CommandMetadataInput, NamespaceMetadata, PackageJson } from '@ionic/cli-framework';
+export type SuperAgentRequest = import('superagent').SuperAgentRequest;
 
 export interface SuperAgentError extends Error {
-  response: ζsuperagent.Response;
+  response: import('superagent').Response;
 }
 
 export type LogFn = (msg: string) => void;
 
-export interface ILogger extends ζframework.Logger {
+export interface ILogger extends Logger {
   ok: LogFn;
   rawmsg: LogFn;
 }
@@ -29,7 +45,7 @@ export interface StarterManifest {
   welcome?: string;
 }
 
-export interface CordovaPackageJson extends ζframework.PackageJson {
+export interface CordovaPackageJson extends PackageJson {
   cordova: {
     platforms: string[];
     plugins: {
@@ -222,7 +238,7 @@ export interface SecurityProfile {
   };
 }
 
-export interface IConfig extends ζframework.BaseConfig<ConfigFile> {
+export interface IConfig extends BaseConfig<ConfigFile> {
   getAPIUrl(): string;
   getDashUrl(): string;
   getGitHost(): string;
@@ -262,8 +278,8 @@ export interface IProject {
   readonly directory: string;
   readonly filePath: string;
   readonly type: ProjectType;
-  readonly config: ζframework.BaseConfig<IProjectConfig>;
-  readonly details: ζproject.ProjectDetailsResult;
+  readonly config: BaseConfig<IProjectConfig>;
+  readonly details: import('./lib/project').ProjectDetailsResult;
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
@@ -274,16 +290,16 @@ export interface IProject {
   getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined;
   requireIntegration(name: IntegrationName): Required<ProjectIntegration>;
   requireAppflowId(): Promise<string>;
-  getPackageJson(pkgName?: string): Promise<[ζframework.PackageJson | undefined, string | undefined]>;
-  requirePackageJson(pkgName?: string): Promise<ζframework.PackageJson>;
+  getPackageJson(pkgName?: string): Promise<[PackageJson | undefined, string | undefined]>;
+  requirePackageJson(pkgName?: string): Promise<PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   registerAilments(registry: IAilmentRegistry): Promise<void>;
-  getBuildRunner(): Promise<ζbuild.BuildRunner<any> | undefined>;
-  getServeRunner(): Promise<ζserve.ServeRunner<any> | undefined>;
-  getGenerateRunner(): Promise<ζgenerate.GenerateRunner<any> | undefined>;
-  requireBuildRunner(): Promise<ζbuild.BuildRunner<any>>;
-  requireServeRunner(): Promise<ζserve.ServeRunner<any>>;
-  requireGenerateRunner(): Promise<ζgenerate.GenerateRunner<any>>;
+  getBuildRunner(): Promise<import('./lib/build').BuildRunner<any> | undefined>;
+  getServeRunner(): Promise<import('./lib/serve').ServeRunner<any> | undefined>;
+  getGenerateRunner(): Promise<import('./lib/generate').GenerateRunner<any> | undefined>;
+  requireBuildRunner(): Promise<import('./lib/build').BuildRunner<any>>;
+  requireServeRunner(): Promise<import('./lib/serve').ServeRunner<any>>;
+  requireGenerateRunner(): Promise<import('./lib/generate').GenerateRunner<any>>;
 }
 
 export interface IntegrationAddDetails {
@@ -302,7 +318,7 @@ export interface IIntegration<T extends ProjectIntegration> {
   readonly name: IntegrationName;
   readonly summary: string;
   readonly archiveUrl?: string;
-  readonly config: ζframework.BaseConfig<T>;
+  readonly config: BaseConfig<T>;
 
   add(details: IntegrationAddDetails): Promise<void>;
   isAdded(): boolean;
@@ -317,7 +333,7 @@ export interface PackageVersions {
   [key: string]: string;
 }
 
-export interface CommandMetadataOption extends ζframework.CommandMetadataOption {
+export interface CommandMetadataOption extends FrameworkCommandMetadataOption {
   private?: boolean;
   hint?: string;
 }
@@ -326,13 +342,13 @@ export interface ExitCodeException extends Error {
   exitCode: number;
 }
 
-export interface CommandMetadata extends ζframework.CommandMetadata<ζframework.CommandMetadataInput, CommandMetadataOption> {
+export interface CommandMetadata extends FrameworkCommandMetadata<CommandMetadataInput, CommandMetadataOption> {
   type: 'global' | 'project';
 }
 
-export type HydratedCommandMetadata = CommandMetadata & ζframework.HydratedCommandMetadata<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption>;
-export type CommandInstanceInfo = ζframework.CommandInstanceInfo<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption>;
-export type NamespaceLocateResult = ζframework.NamespaceLocateResult<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption>;
+export type HydratedCommandMetadata = CommandMetadata & FrameworkHydratedCommandMetadata<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption>;
+export type CommandInstanceInfo = FrameworkCommandInstanceInfo<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption>;
+export type NamespaceLocateResult = FrameworkNamespaceLocateResult<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption>;
 
 export interface ISession {
   login(email: string, password: string): Promise<void>;
@@ -460,8 +476,8 @@ export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' |
 export interface IClient {
   config: IConfig;
 
-  make(method: HttpMethod, path: string): Promise<{ req: ζsuperagent.SuperAgentRequest; }>;
-  do(req: ζsuperagent.SuperAgentRequest): Promise<APIResponseSuccess>;
+  make(method: HttpMethod, path: string): Promise<{ req: SuperAgentRequest; }>;
+  do(req: SuperAgentRequest): Promise<APIResponseSuccess>;
   paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T>;
 }
 
@@ -471,7 +487,7 @@ export interface IPaginator<T extends Response<object[]>, S = PaginatorState> ex
   readonly state: S;
 }
 
-export type PaginatorRequestGenerator = () => Promise<{ req: ζsuperagent.SuperAgentRequest; }>;
+export type PaginatorRequestGenerator = () => Promise<{ req: SuperAgentRequest; }>;
 export type PaginatorGuard<T extends Response<object[]>> = (res: APIResponseSuccess) => res is T;
 
 export interface PaginatorState {
@@ -672,7 +688,7 @@ export interface IonicEnvironment {
   readonly client: IClient;
   readonly config: IConfig; // CLI global config (~/.ionic/config.json)
   readonly log: ILogger;
-  readonly prompt: ζframework.PromptModule;
+  readonly prompt: PromptModule;
   readonly ctx: IonicContext;
   readonly session: ISession;
   readonly shell: IShell;
@@ -687,18 +703,18 @@ export interface IonicEnvironmentFlags {
 
 export type DistTag = 'testing' | 'canary' | 'latest';
 
-export interface ICommand extends ζframework.ICommand<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption> {
+export interface ICommand extends FrameworkCommand<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   readonly env: IonicEnvironment;
   readonly project?: IProject;
 
-  execute(inputs: ζframework.CommandLineInputs, options: ζframework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
+  execute(inputs: CommandLineInputs, options: CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
 }
 
 export interface CommandPreRun extends ICommand {
-  preRun(inputs: ζframework.CommandLineInputs, options: ζframework.CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
+  preRun(inputs: CommandLineInputs, options: CommandLineOptions, metadata: CommandInstanceInfo): Promise<void>;
 }
 
-export interface INamespace extends ζframework.INamespace<ICommand, INamespace, CommandMetadata, ζframework.CommandMetadataInput, CommandMetadataOption> {
+export interface INamespace extends FrameworkNamespace<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
   env: IonicEnvironment;
   project?: IProject;
 }
