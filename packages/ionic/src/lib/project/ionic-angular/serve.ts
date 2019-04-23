@@ -44,13 +44,6 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
           hint: weak('[app-scripts]'),
         },
         {
-          name: 'devapp',
-          summary: 'Do not publish DevApp service',
-          type: Boolean,
-          default: true,
-          groups: [MetadataGroup.ADVANCED],
-        },
-        {
           name: 'livereload-port',
           summary: 'Use specific port for live-reload',
           default: DEFAULT_LIVERELOAD_PORT.toString(),

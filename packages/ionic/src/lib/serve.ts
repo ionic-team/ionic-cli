@@ -71,6 +71,13 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => input(e)).join(', ')})`,
     groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
   },
+  {
+    name: 'devapp',
+    summary: 'Publish DevApp service',
+    type: Boolean,
+    default: false,
+    groups: [MetadataGroup.ADVANCED],
+  },
 ];
 
 export interface ServeRunnerDeps {

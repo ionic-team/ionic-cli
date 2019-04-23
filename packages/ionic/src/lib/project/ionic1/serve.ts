@@ -49,13 +49,6 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
           spec: { value: 'port' },
         },
         {
-          name: 'devapp',
-          summary: 'Do not publish DevApp service',
-          type: Boolean,
-          default: true,
-          groups: [MetadataGroup.ADVANCED],
-        },
-        {
           name: 'proxy',
           summary: 'Do not add proxies',
           type: Boolean,
