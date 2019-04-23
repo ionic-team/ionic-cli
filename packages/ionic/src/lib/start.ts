@@ -100,49 +100,49 @@ export function getAdvertisement(): string {
 
 function getAppflowAdvertisement(): string {
   return `
-  ┌────────────────────────────────────────────────────────────┐
-  │                                                            │
-  │     ${title('Ionic Appflow')}, the mobile DevOps solution by Ionic     │
-  │                                                            │
-  │        Continuously build, deploy, and ship apps ${emoji('🚀', ' ')}        │
-  │     Focus on building apps while we automate the rest ${emoji('🎁', ' ')}   │
-  │                                                            │
-  │     ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/appflow')} ${emoji(' 👈', '')}              │
-  │                                                            │
-  └────────────────────────────────────────────────────────────┘
+  ──────────────────────────────────────────────────────────────
+
+        ${title('Ionic Appflow')}, the mobile DevOps solution by Ionic
+
+           Continuously build, deploy, and ship apps ${emoji('🚀', ' ')}
+        Focus on building apps while we automate the rest ${emoji('🎁', ' ')}
+
+        ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/appflow')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────
 `;
 }
 
 function getAdvisoryAdvertisement(): string {
   return `
-  ┌────────────────────────────────────────────────────────────────────────────┐
-  │                                                                            │
-  │      ${title('Ionic Advisory')}, tailored solutions and expert services by Ionic       │
-  │                                                                            │
-  │                          Go to market faster ${emoji('🏆', ' ')}                            │
-  │                 Real-time troubleshooting and guidance ${emoji('💁', ' ')}                  │
-  │     Custom training, best practices, code and architecture reviews ${emoji('🔎', ' ')}      │
-  │   Customized strategies for every phase of the development lifecycle ${emoji('🔮', ' ')}    │
-  │                                                                            │
-  │            ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/advisory')} ${emoji(' 👈', '')}                      │
-  │                                                                            │
-  └────────────────────────────────────────────────────────────────────────────┘
+  ──────────────────────────────────────────────────────────────────────────────
+
+         ${title('Ionic Advisory')}, tailored solutions and expert services by Ionic
+
+                             Go to market faster ${emoji('🏆', ' ')}
+                    Real-time troubleshooting and guidance ${emoji('💁', ' ')}
+        Custom training, best practices, code and architecture reviews ${emoji('🔎', ' ')}
+      Customized strategies for every phase of the development lifecycle ${emoji('🔮', ' ')}
+
+               ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/advisory')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────────────────────
 `;
 }
 
 function getEnterpriseAdvertisement(): string {
   return `
-  ┌────────────────────────────────────────────────────────────────────┐
-  │                                                                    │
-  │    ${title('Ionic Enterprise')}, platform and solutions for teams by Ionic     │
-  │                                                                    │
-  │                Powerful library of native APIs ${emoji('⚡️', '')}                  │
-  │               A supercharged platform for teams ${emoji('💪', '')}                 │
-  │     Bring your company's designs to life with Design Systems ${emoji('🎨', '')}    │
-  │                                                                    │
-  │       ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/enterprise')} ${emoji(' 👈', '')}                 │
-  │                                                                    │
-  └────────────────────────────────────────────────────────────────────┘
+  ──────────────────────────────────────────────────────────────────────
+
+      ${title('Ionic Enterprise')}, platform and solutions for teams by Ionic
+
+                  Powerful library of native APIs ${emoji('⚡️', '')}
+                 A supercharged platform for teams ${emoji('💪', '')}
+       Bring your company's designs to life with Design Systems ${emoji('🎨', '')}
+
+         ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/enterprise')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────────────
 `;
 }
 
