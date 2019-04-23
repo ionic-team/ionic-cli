@@ -1,4 +1,4 @@
-import { filter, reduce } from '@ionic/utils-array';
+import { filter } from '@ionic/utils-array';
 import { isExecutableFile } from '@ionic/utils-fs';
 import { createProcessEnv, getPathParts } from '@ionic/utils-process';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
@@ -269,34 +269,15 @@ export async function which(program: string, { PATH = process.env.PATH || '' }: 
     return program;
   }
 
-  if (TERMINAL_INFO.windows && pathlib.extname(program) !== '.exe') {
-    program += '.exe';
-  }
+  const results = await _findExecutables(program, { PATH });
 
-  const pathParts = getPathParts(PATH);
-
-  const value = await reduce<string, string | null>(pathParts, async (acc, v) => {
-    // acc is no longer null, so we found the first match already
-    if (acc) {
-      return acc;
-    }
-
-    const p = pathlib.join(v, program);
-
-    if (await isExecutableFile(p)) {
-      return p;
-    }
-
-    return null; // tslint:disable-line:no-null-keyword
-  }, null); // tslint:disable-line:no-null-keyword
-
-  if (!value) {
+  if (!results.length) {
     const err: NodeJS.ErrnoException = new Error(`${program} cannot be found within PATH`);
     err.code = 'ENOENT';
     throw err;
   }
 
-  return value;
+  return results[0];
 }
 
 /**
@@ -312,9 +293,26 @@ export async function findExecutables(program: string, { PATH = process.env.PATH
     return [program];
   }
 
-  if (TERMINAL_INFO.windows && pathlib.extname(program) !== '.exe') {
-    program += '.exe';
+  return _findExecutables(program, { PATH });
+}
+
+async function _findExecutables(program: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string[]> {
+  const pathParts = getPathParts(PATH);
+  let programNames;
+
+  // if windows, cycle through all possible executable extensions
+  // ex: node.exe, npm.cmd, etc.
+  if (TERMINAL_INFO.windows && process.env.PATHEXT) {
+    const exts = getPathParts(process.env.PATHEXT).map(ext => ext.toLowerCase());
+    // don't append extensions if one has already been provided
+    programNames = exts.includes(pathlib.extname(program)) ? [program] : exts.map(ext => program + ext);
+  } else {
+    programNames = [program];
   }
 
-  return filter(getPathParts(PATH).map(p => pathlib.join(p, program)), async p => isExecutableFile(p));
+  let result: string[] = [];
+  for (const programName of programNames) {
+    result = result.concat(await filter(pathParts.map(p => pathlib.join(p, programName)), async p => isExecutableFile(p)));
+  }
+  return result;
 }
