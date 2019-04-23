@@ -97,10 +97,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
 
-    if (options['local']) {
-      options['address'] = 'localhost';
-      options['devapp'] = false;
-    }
 
     const engine = this.determineEngineFromCommandLine(options);
     const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;

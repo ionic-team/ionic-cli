@@ -36,11 +36,6 @@ export class ServeCommand extends Command implements CommandPreRun {
         // TODO: Adding 'b' to aliases here has some weird behavior with minimist.
       },
       {
-        name: 'local',
-        summary: 'Disable external network usage',
-        type: Boolean,
-      },
-      {
         name: 'browser',
         summary: `Specifies the browser to use (${BROWSERS.map(b => input(b)).join(', ')})`,
         aliases: ['w'],
