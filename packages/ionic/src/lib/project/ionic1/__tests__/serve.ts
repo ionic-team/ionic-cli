@@ -10,7 +10,7 @@ describe('ionic', () => {
 
         const defaults = {
           '--': [],
-          address: '0.0.0.0',
+          address: 'localhost',
           browser: undefined,
           browserOption: undefined,
           consolelogs: false,
@@ -50,8 +50,8 @@ describe('ionic', () => {
 
         it('should allow overrides of default values', () => {
           const runner = new Ionic1ServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], address: 'localhost', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
-          expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111, livereloadPort: 2222, notificationPort: 3333 });
+          const result = runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
+          expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111, livereloadPort: 2222, notificationPort: 3333 });
         });
 
         it('should respect --local flag', () => {

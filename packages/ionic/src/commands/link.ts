@@ -32,7 +32,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     return {
       name: 'link',
       type: 'project',
-      summary: 'Connect local apps to Ionic Appflow',
+      summary: 'Connect local apps to Ionic',
       description: `
 Link apps on Ionic Appflow to local Ionic projects with this command.
 

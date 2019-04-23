@@ -30,14 +30,14 @@ export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
     summary: 'Deploy build to a device',
     type: Boolean,
     groups: ['cordova', 'cordova-cli', 'native-run'],
-    hint: weak('[cordova]'),
+    hint: weak('[cordova/native-run]'),
   },
   {
     name: 'emulator',
     summary: 'Deploy build to an emulator',
     type: Boolean,
     groups: ['cordova', 'cordova-cli', 'native-run'],
-    hint: weak('[cordova]'),
+    hint: weak('[cordova/native-run]'),
   },
   {
     name: 'buildConfig',

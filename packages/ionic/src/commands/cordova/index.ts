@@ -1,4 +1,4 @@
-import { input, strong } from '../../lib/color';
+import { strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class CordovaNamespace extends Namespace {
@@ -7,7 +7,7 @@ export class CordovaNamespace extends Namespace {
       name: 'cordova',
       summary: 'Cordova functionality',
       description: `
-These commands integrate with Apache Cordova, which brings native functionality to your app. Aside from ${input('ionic cordova resources')}, these commands all wrap the Cordova CLI.
+These commands integrate with Apache Cordova, which brings native functionality to your app.
 
 Cordova Reference documentation:
 - Overview: ${strong('https://cordova.apache.org/docs/en/latest/guide/overview/index.html')}
