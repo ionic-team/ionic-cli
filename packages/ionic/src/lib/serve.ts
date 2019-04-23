@@ -32,6 +32,7 @@ export const DEFAULT_SERVER_PORT = 8100;
 export const DEFAULT_LAB_PORT = 8200;
 export const DEFAULT_DEVAPP_COMM_PORT = 53233;
 
+export const DEFAULT_ADDRESS = 'localhost';
 export const BIND_ALL_ADDRESS = '0.0.0.0';
 export const LOCAL_ADDRESSES = ['localhost', '127.0.0.1'];
 
@@ -44,7 +45,7 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
   {
     name: 'address',
     summary: 'Use specific address for the dev server',
-    default: BIND_ALL_ADDRESS,
+    default: DEFAULT_ADDRESS,
     groups: [MetadataGroup.ADVANCED],
   },
   {
@@ -69,6 +70,13 @@ export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> 
     name: 'platform',
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => input(e)).join(', ')})`,
     groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
+  },
+  {
+    name: 'devapp',
+    summary: 'Publish DevApp service',
+    type: Boolean,
+    default: false,
+    groups: [MetadataGroup.ADVANCED],
   },
 ];
 
@@ -97,13 +105,12 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
 
-    if (options['local']) {
-      options['address'] = 'localhost';
-      options['devapp'] = false;
+    if (options['devapp'] && options['address'] === DEFAULT_ADDRESS) {
+      options['address'] = '0.0.0.0';
     }
 
     const engine = this.determineEngineFromCommandLine(options);
-    const address = options['address'] ? String(options['address']) : BIND_ALL_ADDRESS;
+    const address = options['address'] ? String(options['address']) : DEFAULT_ADDRESS;
     const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
 
@@ -114,12 +121,12 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
       devapp: !!options['devapp'],
       engine,
-      externalAddressRequired: options['externalAddressRequired'] ? true : false,
-      lab: options['lab'] ? true : false,
+      externalAddressRequired: !!options['externalAddressRequired'],
+      lab: !!options['lab'],
       labHost: options['lab-host'] ? String(options['lab-host']) : 'localhost',
       labPort,
       livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
-      open: options['open'] ? true : false,
+      open: !!options['open'],
       platform: options['platform'] ? String(options['platform']) : undefined,
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,

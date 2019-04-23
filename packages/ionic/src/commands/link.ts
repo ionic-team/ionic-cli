@@ -32,7 +32,7 @@ export class LinkCommand extends Command implements CommandPreRun {
     return {
       name: 'link',
       type: 'project',
-      summary: 'Connect local apps to Ionic Appflow',
+      summary: 'Connect local apps to Ionic',
       description: `
 Link apps on Ionic Appflow to local Ionic projects with this command.
 
@@ -123,7 +123,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `Appflow ID ${input(idFromConfig)} is already set up with this app. ${msg}`,
+        message: `App ID ${input(idFromConfig)} is already set up with this app. ${msg}`,
       });
 
       if (!confirm) {

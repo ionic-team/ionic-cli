@@ -1,4 +1,4 @@
-import { LOGGER_LEVELS, MetadataGroup, createPrefixedFormatter } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, copy, pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
@@ -23,25 +23,21 @@ export class ResourcesCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Automatically create icon and splash screen resources',
       description: `
-Ionic can automatically generate perfectly sized icons and splash screens from source images (${strong('.png')}, ${strong('.psd')}, or ${strong('.ai')}) for your Cordova platforms.
+Generate perfectly sized icons and splash screens from PNG source images for your Cordova platforms with this command.
 
 The source image for icons should ideally be at least ${strong('1024×1024px')} and located at ${strong('resources/icon.png')}. The source image for splash screens should ideally be at least ${strong('2732×2732px')} and located at ${strong('resources/splash.png')}. If you used ${input('ionic start')}, there should already be default Ionic resources in the ${strong('resources/')} directory, which you can overwrite.
 
 You can also generate platform-specific icons and splash screens by placing them in the respective ${strong('resources/<platform>/')} directory. For example, to generate an icon for Android, place your image at ${strong('resources/android/icon.png')}.
 
-By default, this command will not regenerate resources whose source image has not changed. To disable this functionality and always overwrite generated images, use ${input('--force')}.
-
 For best results, the splash screen's artwork should roughly fit within a square (${strong('1200×1200px')}) at the center of the image. You can use ${strong('https://code.ionicframework.com/resources/splash.psd')} as a template for your splash screen.
 
 ${input('ionic cordova resources')} will automatically update your ${strong('config.xml')} to reflect the changes in the generated images, which Cordova then configures.
 
+This command uses the ${input('cordova-res')} utility[^cordova-res-repo] to generate resources locally. You can also login to your Ionic account and use Ionic servers to generate icons and splash screens with ${input('--no-cordova-res')}.
+
 Cordova reference documentation:
 - Icons: ${strong('https://cordova.apache.org/docs/en/latest/config_ref/images.html')}
 - Splash Screens: ${strong('https://cordova.apache.org/docs/en/latest/reference/cordova-plugin-splashscreen/')}
-
-This command uses Ionic servers and we require you to be logged into your free Ionic account. Use ${input('ionic login')} to login.
-
-With the experimental ${input('--cordova-res')} option, ${input('ionic cordova resources')} will generate resources locally using the ${input('cordova-res')} utility[^cordova-res-repo].
       `,
       footnotes: [
         {
@@ -58,12 +54,6 @@ With the experimental ${input('--cordova-res')} option, ${input('ionic cordova r
       ],
       options: [
         {
-          name: 'force',
-          summary: 'Force regeneration of resources',
-          type: Boolean,
-          aliases: ['f'],
-        },
-        {
           name: 'icon',
           summary: 'Generate icon resources',
           type: Boolean,
@@ -77,9 +67,16 @@ With the experimental ${input('--cordova-res')} option, ${input('ionic cordova r
         },
         {
           name: 'cordova-res',
-          summary: `Use ${input('cordova-res')} instead of Ionic resource server`,
+          summary: `Do not generate resources locally; use Ionic servers`,
           type: Boolean,
-          groups: [MetadataGroup.EXPERIMENTAL],
+          default: true,
+        },
+        {
+          name: 'force',
+          summary: 'Force regeneration of resources',
+          type: Boolean,
+          aliases: ['f'],
+          hint: weak('(--no-cordova-res)'),
         },
       ],
     };

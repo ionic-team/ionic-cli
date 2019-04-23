@@ -58,7 +58,7 @@ export class BuildCommand extends Command {
       description: `
 This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory.
 
-Apart from ${input('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
+Apart from ${input('--commit')}, every option can be specified using the full name setup within the Dashboard[^dashboard].
 
 The ${input('--security-profile')} option is mandatory for any iOS build but not for Android debug builds.
 
@@ -215,7 +215,7 @@ Customizing the build:
     }
 
     const details = columnar([
-      ['Appflow ID', strong(appflowId)],
+      ['App ID', strong(appflowId)],
       ['Build ID', strong(buildId.toString())],
       ['Commit', strong(`${build.commit.sha.substring(0, 6)} ${build.commit.note}`)],
       ['Target Platform', strong(build.stack.friendly_name)],

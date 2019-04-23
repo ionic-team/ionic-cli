@@ -1,5 +1,4 @@
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
-import { strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { open } from '../lib/open';
 
@@ -8,10 +7,8 @@ export class SignupCommand extends Command {
     return {
       name: 'signup',
       type: 'global',
-      summary: 'Create an account for Ionic Appflow',
+      summary: 'Create an Ionic account',
       description: `
-Learn more about Ionic Appflow: ${strong('https://ion.link/appflow')}
-
 If you are having issues signing up, please get in touch with our Support[^support-request].
       `,
       footnotes: [

@@ -1,5 +1,6 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
+import * as readline from 'readline';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
 import { input, strong, success } from '../lib/color';
@@ -12,19 +13,26 @@ export class LoginCommand extends Command implements CommandPreRun {
     return {
       name: 'login',
       type: 'global',
-      summary: 'Login to Ionic Appflow',
+      summary: 'Log in to Ionic',
       description: `
-Authenticate with Ionic Appflow and retrieve a user token, which is stored in the CLI config.
+Authenticate with Ionic and retrieve a user token, which is stored in the CLI config. The most secure way to log in is running ${input('ionic login')} without arguments, which will prompt you for your credentials.
 
 If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${input('ionic login')}, then print the token by running the ${input('ionic config get -g tokens.user')} command.
 
-You can also use ${input('IONIC_EMAIL')} and ${input('IONIC_PASSWORD')} environment variables for automatic authentication, but it is not recommended to store your password in plain text.
+${input('ionic login')} will also accept ${input('password')} through stdin, e.g.: ${input('echo "<password>" | ionic login <email>')}.
 
-If you need to create an Ionic Appflow account, use ${input('ionic signup')}.
+If you need to create an Ionic account, use ${input('ionic signup')}.
+
+You can reset your password in the Dashboard[^reset-password].
 
 If you are having issues logging in, please get in touch with our Support[^support-request].
       `,
       footnotes: [
+        {
+          id: 'reset-password',
+          url: 'https://dashboard.ionicframework.com/reset-password',
+          shortUrl: 'https://ion.link/reset-password',
+        },
         {
           id: 'support-request',
           url: 'https://ion.link/support-request',
@@ -77,17 +85,23 @@ If you are having issues logging in, please get in touch with our Support[^suppo
         ? (this.env.flags.interactive ? `Prompting for new credentials.\n\nUse ${chalk.yellow('Ctrl+C')} to cancel and remain logged in.` : '')
         : 'You will be logged out beforehand.';
 
-      this.env.log.warn(
-        'You will be logged out.\n' +
-        `You are already logged in${email ? ' as ' + strong(email) : ''}! ${extra}`
-      );
-      this.env.log.nl();
+      if (this.env.flags.interactive) {
+        this.env.log.warn(
+          'You will be logged out.\n' +
+          `You are already logged in${email ? ' as ' + strong(email) : ''}! ${extra}`
+        );
+
+        this.env.log.nl();
+      }
     } else {
-      this.env.log.info(
-        `Log into your Ionic Appflow account!\n` +
-        `If you don't have one yet, create yours by running: ${input(`ionic signup`)}`
-      );
-      this.env.log.nl();
+      if (this.env.flags.interactive) {
+        this.env.log.info(
+          `Log into your Ionic account!\n` +
+          `If you don't have one yet, create yours by running: ${input(`ionic signup`)}`
+        );
+
+        this.env.log.nl();
+      }
     }
 
     // TODO: combine with promptToLogin ?
@@ -104,16 +118,34 @@ If you are having issues logging in, please get in touch with our Support[^suppo
     }
 
     if (askForPassword) {
-      const password = await this.env.prompt({
-        type: 'password',
-        name: 'password',
-        message: 'Password:',
-        mask: '*',
-        validate: v => validators.required(v),
+      if (this.env.flags.interactive) {
+        const password = await this.env.prompt({
+          type: 'password',
+          name: 'password',
+          message: 'Password:',
+          mask: '*',
+          validate: v => validators.required(v),
+        });
+
+        inputs[1] = password;
+      } else {
+        inputs[1] = await this.getPasswordFromStdin();
+      }
+    }
+  }
+
+  getPasswordFromStdin(): Promise<string> {
+    return new Promise<string>(resolve => {
+      const rl = readline.createInterface({
+        input: process.stdin,
+        terminal: false,
       });
 
-      inputs[1] = password;
-    }
+      rl.on('line', line => {
+        resolve(line);
+        rl.close();
+      });
+    });
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -127,7 +159,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
 
     if (sso) {
       this.env.log.info(
-        `Ionic Appflow SSO Login\n` +
+        `Ionic SSO Login\n` +
         `During this process, a browser window will open to authenticate you with the identity provider for ${input(email)}. Please leave this process running until authentication is complete.`
       );
       this.env.log.nl();

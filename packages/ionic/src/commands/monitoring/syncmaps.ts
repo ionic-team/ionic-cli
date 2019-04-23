@@ -96,7 +96,7 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
     tasks.end();
 
     const details = columnar([
-      ['Appflow ID', strong(appflowId)],
+      ['App ID', strong(appflowId)],
       ['Version', strong(appVersion)],
       ['Package ID', strong(cordovaInfo.id)],
       ['Snapshot ID', snapshotId ? strong(snapshotId) : weak('not set')],

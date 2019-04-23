@@ -82,13 +82,6 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[ng]'),
         },
-        {
-          name: 'devapp',
-          summary: 'Publish DevApp service',
-          type: Boolean,
-          default: false,
-          groups: [MetadataGroup.ADVANCED],
-        },
       ],
       exampleCommands: [
         '-- --proxy-config proxy.conf.json',
