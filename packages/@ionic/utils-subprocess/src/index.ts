@@ -1,4 +1,4 @@
-import { filter } from '@ionic/utils-array';
+import { concurrentFilter, map } from '@ionic/utils-array';
 import { isExecutableFile } from '@ionic/utils-fs';
 import { createProcessEnv, getPathParts } from '@ionic/utils-process';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
@@ -255,7 +255,10 @@ export function fork(modulePath: string, args: readonly string[] = [], options: 
 
 export interface WhichOptions {
   PATH?: string;
+  PATHEXT?: string;
 }
+
+const DEFAULT_PATHEXT = TERMINAL_INFO.windows ? '.COM;.EXE;.BAT;.CMD' : undefined;
 
 /**
  * Find the first instance of a program in PATH.
@@ -264,7 +267,7 @@ export interface WhichOptions {
  *
  * @param program A command name, such as `ionic`
  */
-export async function which(program: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string> {
+export async function which(program: string, { PATH = process.env.PATH, PATHEXT = process.env.PATHEXT || DEFAULT_PATHEXT }: WhichOptions = {}): Promise<string> {
   if (program.includes(pathlib.sep)) {
     return program;
   }
@@ -288,7 +291,7 @@ export async function which(program: string, { PATH = process.env.PATH || '' }: 
  *
  * @param program A command name, such as `ionic`
  */
-export async function findExecutables(program: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string[]> {
+export async function findExecutables(program: string, { PATH = process.env.PATH, PATHEXT = process.env.PATHEXT || DEFAULT_PATHEXT }: WhichOptions = {}): Promise<string[]> {
   if (program.includes(pathlib.sep)) {
     return [program];
   }
@@ -296,23 +299,20 @@ export async function findExecutables(program: string, { PATH = process.env.PATH
   return _findExecutables(program, { PATH });
 }
 
-async function _findExecutables(program: string, { PATH = process.env.PATH || '' }: WhichOptions = {}): Promise<string[]> {
+async function _findExecutables(program: string, { PATH = process.env.PATH, PATHEXT = process.env.PATHEXT || DEFAULT_PATHEXT }: WhichOptions = {}): Promise<string[]> {
   const pathParts = getPathParts(PATH);
-  let programNames;
+  let programNames: string[];
 
   // if windows, cycle through all possible executable extensions
   // ex: node.exe, npm.cmd, etc.
-  if (TERMINAL_INFO.windows && process.env.PATHEXT) {
-    const exts = getPathParts(process.env.PATHEXT).map(ext => ext.toLowerCase());
+  if (TERMINAL_INFO.windows) {
+    const exts = getPathParts(PATHEXT).map(ext => ext.toLowerCase());
     // don't append extensions if one has already been provided
-    programNames = exts.includes(pathlib.extname(program)) ? [program] : exts.map(ext => program + ext);
+    programNames = exts.includes(pathlib.extname(program).toLowerCase()) ? [program] : exts.map(ext => program + ext);
   } else {
     programNames = [program];
   }
 
-  let result: string[] = [];
-  for (const programName of programNames) {
-    result = result.concat(await filter(pathParts.map(p => pathlib.join(p, programName)), async p => isExecutableFile(p)));
-  }
-  return result;
+  return ([] as string[]).concat(...await map(programNames, async (programName): Promise<string[]> =>
+    concurrentFilter(pathParts.map(p => pathlib.join(p, programName)), async p => isExecutableFile(p))));
 }

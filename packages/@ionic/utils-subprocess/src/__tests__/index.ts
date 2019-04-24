@@ -402,12 +402,18 @@ describe('@ionic/utils-subprocess', () => {
 
   describe('which/findExecutables', () => {
     describe('windows', () => {
+      const originalPATHEXT = process.env.PATHEXT;
       const mockBinDir1 = 'C:\\path\\to\\nodejs';
       const mockBinDir2 = 'C:\\other\\path\\to\\nodejs';
       const mockBinPath1 = path.win32.join(mockBinDir1, 'node.exe');
       const mockBinPath2 = path.win32.join(mockBinDir2, 'node.cmd');
       const mockPATH = `C:\\my\\home\\dir;C:\\some\\other\\dir;${mockBinDir1};${mockBinDir2}`;
+
       process.env.PATHEXT = '.COM;.EXE;.BAT;.CMD';
+
+      afterAll(() => {
+        process.env.PATHEXT = originalPATHEXT;
+      });
 
       jest.resetModules();
       jest.mock('path', () => path.win32);
@@ -415,11 +421,11 @@ describe('@ionic/utils-subprocess', () => {
       jest.doMock('@ionic/utils-fs', () => ({
         isExecutableFile: async (filePath: string) => filePath === mockBinPath1 || filePath === mockBinPath2
       }));
+
       const { which, findExecutables } = require('../');
 
       it('should find the first executable in PATH', async () => {
         const result = await which('node', { PATH: mockPATH });
-        expect(result).toEqual(mockBinPath1);
         expect(result).toEqual(mockBinPath1);
       });
 
