@@ -4,7 +4,7 @@ import * as os from 'os';
 
 const debug = Debug('ionic:utils-network');
 
-export const DEFAULT_ADDRESSES: ReadonlyArray<string> = getDefaultAddresses();
+export const DEFAULT_ADDRESSES: readonly string[] = getDefaultAddresses();
 
 export type NetworkInterface = { device: string; } & os.NetworkInterfaceInfo;
 

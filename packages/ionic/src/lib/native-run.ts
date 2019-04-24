@@ -1,14 +1,14 @@
 import { processExit } from '@ionic/utils-process';
-import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
+import { ERROR_COMMAND_NOT_FOUND, SubprocessError, which } from '@ionic/utils-subprocess';
 
-import { CommandLineOptions, IConfig, ILogger, IShell, IShellRunOptions } from '../definitions';
+import { CommandLineOptions, IConfig, ILogger, IShell, IShellRunOptions, NpmClient } from '../definitions';
 
 import { input, weak } from './color';
 import { FatalException } from './errors';
 import { createPrefixedWriteStream } from './utils/logger';
 import { pkgManagerArgs } from './utils/npm';
 
-export const SUPPORTED_PLATFORMS: ReadonlyArray<string> = ['android', 'ios'];
+export const SUPPORTED_PLATFORMS: readonly string[] = ['android', 'ios'];
 
 export interface NativeRunSchema {
   packagePath: string;
@@ -68,12 +68,12 @@ export function createNativeRunListArgs(inputs: string[], options: CommandLineOp
 }
 
 export interface RunNativeRunDeps {
-  config: IConfig;
-  log: ILogger;
-  shell: IShell;
+  readonly config: IConfig;
+  readonly log: ILogger;
+  readonly shell: IShell;
 }
 
-export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, args: ReadonlyArray<string>, options: IShellRunOptions = {}): Promise<void> {
+export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, args: readonly string[], options: IShellRunOptions = {}): Promise<void> {
   const connect = args.includes('--connect');
   const stream = connect ? createPrefixedWriteStream(log, weak(`[native-run]`)) : undefined;
 
@@ -81,11 +81,7 @@ export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, arg
     await shell.run('native-run', args, { showCommand: !args.includes('--json'), fatalOnNotFound: false, stream, ...options });
   } catch (e) {
     if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
-      const installArgs = await pkgManagerArgs(config.get('npmClient'), { command: 'install', pkg: 'native-run', global: true });
-      throw new FatalException(
-        `${input('native-run')} was not found on your PATH. Please install it globally:\n` +
-        `${input(installArgs.join(' '))}\n`
-      );
+      throw createNativeRunNotFoundError(config.get('npmClient'));
     }
 
     throw e;
@@ -97,4 +93,29 @@ export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, arg
   if (connect) {
     processExit(0); // tslint:disable-line:no-floating-promises
   }
+}
+
+export interface CheckNativeRunDeps {
+  readonly config: IConfig;
+}
+
+export async function checkNativeRun({ config }: CheckNativeRunDeps): Promise<void> {
+  try {
+    await which('native-run');
+  } catch (e) {
+    if (e.code === 'ENOENT') {
+      throw await createNativeRunNotFoundError(config.get('npmClient'));
+    }
+
+    throw e;
+  }
+}
+
+async function createNativeRunNotFoundError(npmClient: NpmClient): Promise<FatalException> {
+  const installArgs = await pkgManagerArgs(npmClient, { command: 'install', pkg: 'native-run', global: true });
+
+  return new FatalException(
+    `${input('native-run')} was not found on your PATH. Please install it globally:\n` +
+    `${input(installArgs.join(' '))}\n`
+  );
 }

@@ -18,7 +18,7 @@ const debug = Debug('ionic:lib:project');
 
 export interface ProjectDetailsResultBase {
   readonly type?: ProjectType;
-  readonly errors: ReadonlyArray<ProjectDetailsError>;
+  readonly errors: readonly ProjectDetailsError[];
 }
 
 export interface ProjectDetailsSingleAppResult extends ProjectDetailsResultBase {

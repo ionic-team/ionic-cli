@@ -49,7 +49,7 @@ export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
   },
 ];
 
-export const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+export const CORDOVA_RUN_OPTIONS: readonly CommandMetadataOption[] = [
   ...CORDOVA_COMPILE_OPTIONS,
   {
     name: 'target',
@@ -78,7 +78,7 @@ export const CORDOVA_BUILD_EXAMPLE_COMMANDS = [
 export abstract class CordovaCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
 
-  get integration(): Required<ProjectIntegration> {
+  protected get integration(): Required<ProjectIntegration> {
     if (!this.project) {
       throw new FatalException(`Cannot use Cordova outside a project directory.`);
     }
@@ -90,7 +90,7 @@ export abstract class CordovaCommand extends Command {
     return this._integration;
   }
 
-  async checkCordova(runinfo: CommandInstanceInfo) {
+  protected async checkCordova(runinfo: CommandInstanceInfo) {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
@@ -102,7 +102,7 @@ export abstract class CordovaCommand extends Command {
     }
   }
 
-  async preRunChecks(runinfo: CommandInstanceInfo) {
+  protected async preRunChecks(runinfo: CommandInstanceInfo) {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
@@ -130,7 +130,7 @@ export abstract class CordovaCommand extends Command {
     await conf.save();
   }
 
-  async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<void> {
+  protected async runCordova(argList: string[], { fatalOnNotFound = false, truncateErrorOutput = 5000, ...options }: IShellRunOptions = {}): Promise<void> {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
@@ -161,7 +161,7 @@ export abstract class CordovaCommand extends Command {
     }
   }
 
-  async checkForPlatformInstallation(platform: string, { promptToInstall = false, promptToInstallRefusalMsg = `Cannot run this command for the ${input(platform)} platform unless it is installed.` }: { promptToInstall?: boolean; promptToInstallRefusalMsg?: string; } = {}): Promise<void> {
+  protected async checkForPlatformInstallation(platform: string, { promptToInstall = false, promptToInstallRefusalMsg = `Cannot run this command for the ${input(platform)} platform unless it is installed.` }: { promptToInstall?: boolean; promptToInstallRefusalMsg?: string; } = {}): Promise<void> {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }

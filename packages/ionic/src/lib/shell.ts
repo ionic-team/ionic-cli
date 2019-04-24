@@ -1,7 +1,7 @@
 import { LOGGER_LEVELS } from '@ionic/cli-framework';
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/utils-process';
 import { combineStreams } from '@ionic/utils-stream';
-import { ERROR_COMMAND_NOT_FOUND, Subprocess, SubprocessError, which } from '@ionic/utils-subprocess';
+import { ERROR_COMMAND_NOT_FOUND, Subprocess, SubprocessError, WhichOptions, which } from '@ionic/utils-subprocess';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import chalk from 'chalk';
 import { ChildProcess, SpawnOptions } from 'child_process';
@@ -175,13 +175,17 @@ export class Shell implements IShell {
   async resolveCommandPath(command: string, options: SpawnOptions): Promise<string> {
     if (TERMINAL_INFO.windows) {
       try {
-        return await which(command, { PATH: options.env.PATH });
+        return await this.which(command, { PATH: options.env && options.env.PATH ? options.env.PATH : process.env.PATH });
       } catch (e) {
         // ignore
       }
     }
 
     return command;
+  }
+
+  async which(command: string, { PATH = process.env.PATH }: WhichOptions = {}): Promise<string> {
+    return which(command, { PATH: this.alterPath(PATH || '') });
   }
 
   async spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<ChildProcess> {

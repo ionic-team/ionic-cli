@@ -9,13 +9,13 @@ import { FatalException } from '../../lib/errors';
 import { loadConfigXml } from '../../lib/integrations/cordova/config';
 import { getPackagePath } from '../../lib/integrations/cordova/project';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
-import { SUPPORTED_PLATFORMS, createNativeRunArgs, createNativeRunListArgs, runNativeRun } from '../../lib/native-run';
+import { SUPPORTED_PLATFORMS, checkNativeRun, createNativeRunArgs, createNativeRunListArgs, runNativeRun } from '../../lib/native-run';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/serve';
 import { createPrefixedWriteStream } from '../../lib/utils/logger';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_RUN_OPTIONS, CordovaCommand } from './base';
 
-const NATIVE_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+const NATIVE_RUN_OPTIONS: readonly CommandMetadataOption[] = [
   {
     name: 'native-run',
     summary: `Do not use ${input('native-run')} to run the app; use Cordova instead`,
@@ -148,6 +148,10 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    if (options['native-run']) {
+      await this.checkNativeRun();
+    }
+
     await this.preRunChecks(runinfo);
 
     const metadata = await this.getMetadata();
@@ -216,7 +220,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
   }
 
-  async runServeDeploy(inputs: CommandLineInputs, options: CommandLineOptions) {
+  protected async runServeDeploy(inputs: CommandLineInputs, options: CommandLineOptions) {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }
@@ -267,7 +271,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
   }
 
-  async runBuildDeploy(inputs: CommandLineInputs, options: CommandLineOptions) {
+  protected async runBuildDeploy(inputs: CommandLineInputs, options: CommandLineOptions) {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }
@@ -291,7 +295,11 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
   }
 
-  protected async runNativeRun(args: ReadonlyArray<string>): Promise<void> {
+  protected async checkNativeRun(): Promise<void> {
+    await checkNativeRun(this.env);
+  }
+
+  protected async runNativeRun(args: readonly string[]): Promise<void> {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }
