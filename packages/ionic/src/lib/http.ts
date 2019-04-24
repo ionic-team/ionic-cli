@@ -1,6 +1,5 @@
 import chalk from 'chalk';
 import * as lodash from 'lodash';
-import * as ζsuperagent from 'superagent';
 import * as util from 'util';
 
 import { APIResponse, APIResponsePageTokenMeta, APIResponseSuccess, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
@@ -9,6 +8,9 @@ import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 import { failure, strong } from './color';
 import { FatalException } from './errors';
 import { createRequest } from './utils/http';
+
+export type SuperAgentRequest = import('superagent').SuperAgentRequest;
+export type SuperAgentResponse = import('superagent').Response;
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
 export const CONTENT_TYPE_JSON = 'application/json';
@@ -19,7 +21,7 @@ export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 export class Client implements IClient {
   constructor(public config: IConfig) {}
 
-  async make(method: HttpMethod, path: string): Promise<{ req: ζsuperagent.SuperAgentRequest; }> {
+  async make(method: HttpMethod, path: string): Promise<{ req: SuperAgentRequest; }> {
     const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${this.config.getAPIUrl()}${path}`;
     const { req } = await createRequest(method, url, this.config.getHTTPConfig());
 
@@ -30,7 +32,7 @@ export class Client implements IClient {
     return { req };
   }
 
-  async do(req: ζsuperagent.SuperAgentRequest): Promise<APIResponseSuccess> {
+  async do(req: SuperAgentRequest): Promise<APIResponseSuccess> {
     const res = await req;
     const r = transformAPIResponse(res);
 
@@ -190,7 +192,7 @@ export class TokenPaginator<T extends Response<object[]>> implements IPaginator<
 }
 
 export abstract class ResourceClient {
-  protected applyModifiers(req: ζsuperagent.Request, modifiers?: ResourceClientRequestModifiers) {
+  protected applyModifiers(req: import('superagent').Request, modifiers?: ResourceClientRequestModifiers) {
     if (!modifiers) {
       return;
     }
@@ -200,12 +202,12 @@ export abstract class ResourceClient {
     }
   }
 
-  protected applyAuthentication(req: ζsuperagent.Request, token: string) {
+  protected applyAuthentication(req: import('superagent').Request, token: string) {
     req.set('Authorization', `Bearer ${token}`);
   }
 }
 
-export function transformAPIResponse(r: ζsuperagent.Response): APIResponse {
+export function transformAPIResponse(r: SuperAgentResponse): APIResponse {
   if (r.status === 204) {
     r.body = { meta: { status: 204, version: '', request_id: '' } };
   }
@@ -223,7 +225,7 @@ export function transformAPIResponse(r: ζsuperagent.Response): APIResponse {
   return j;
 }
 
-export function createFatalAPIFormat(req: ζsuperagent.SuperAgentRequest, res: APIResponse): FatalException {
+export function createFatalAPIFormat(req: SuperAgentRequest, res: APIResponse): FatalException {
   return new FatalException(
     'API request was successful, but the response format was unrecognized.\n' +
     formatAPIResponse(req, res)
@@ -254,11 +256,11 @@ export function formatSuperAgentError(e: SuperAgentError): string {
   return failure(strong(f));
 }
 
-function formatAPIResponse(req: ζsuperagent.SuperAgentRequest, r: APIResponse): string {
+function formatAPIResponse(req: SuperAgentRequest, r: APIResponse): string {
   return formatResponseError(req, r.meta.status, isAPIResponseSuccess(r) ? r.data : r.error);
 }
 
-export function formatResponseError(req: ζsuperagent.SuperAgentRequest, status?: number, body?: object | string): string {
+export function formatResponseError(req: SuperAgentRequest, status?: number, body?: object | string): string {
   return failure(
     `Request: ${req.method} ${req.url}\n` +
     (status ? `Response: ${status}\n` : '') +

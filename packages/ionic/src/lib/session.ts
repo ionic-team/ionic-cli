@@ -136,7 +136,7 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   const { validators } = await import('@ionic/cli-framework');
 
   env.log.msg(
-    `Log into your Ionic Appflow account\n` +
+    `Log in to your Ionic account\n` +
     `If you don't have one yet, create yours by running: ${input(`ionic signup`)}\n`
   );
 

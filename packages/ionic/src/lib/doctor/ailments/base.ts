@@ -1,6 +1,7 @@
+import { PackageJson } from '@ionic/cli-framework';
 import * as Debug from 'debug';
 
-import { IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PackageJson, PatientTreatmentStep, ProjectType } from '../../../definitions';
+import { IAilment, IAilmentRegistry, IClient, IConfig, ILogger, IProject, ISession, IShell, PatientTreatmentStep, ProjectType } from '../../../definitions';
 
 export interface AilmentDeps {
   client: IClient;

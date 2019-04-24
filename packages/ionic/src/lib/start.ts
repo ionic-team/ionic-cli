@@ -1,13 +1,75 @@
+import { columnar } from '@ionic/cli-framework/utils/format';
 import { readJson } from '@ionic/utils-fs';
+import * as lodash from 'lodash';
 
-import { IConfig, StarterList, StarterManifest, StarterTemplate } from '../definitions';
+import { CommandLineOptions, IConfig, ILogger, ProjectType, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
 
-import { strong } from './color';
+import { input, strong, title } from './color';
+import { FatalException } from './errors';
 import { emoji } from './utils/emoji';
 import { createRequest } from './utils/http';
 
 export const STARTER_BASE_URL = 'https://d2ql0qc7j8u4b2.cloudfront.net';
+
+export interface BaseAppSchema {
+  projectId: string;
+  projectDir: string;
+  packageId?: string;
+  appflowId?: string;
+}
+
+export interface NewAppSchema extends BaseAppSchema {
+  cloned: false;
+  name: string;
+  type: ProjectType;
+  template: string;
+}
+
+export interface ClonedAppSchema extends BaseAppSchema {
+  cloned: true;
+  url: string;
+}
+
+export type AppSchema = NewAppSchema | ClonedAppSchema;
+
+export function verifyOptions(options: CommandLineOptions, { log }: { log: ILogger; }): void {
+  // If the action is list then lets just end here.
+  if (options['list']) {
+    const headers = ['name', 'project type', 'description'];
+    log.rawmsg(columnar(STARTER_TEMPLATES.map(({ name, type, description }) => [input(name), strong(type), description || '']), { headers }));
+    throw new FatalException('', 0);
+  }
+
+  if (options['skip-deps']) {
+    log.warn(`The ${input('--skip-deps')} option has been deprecated. Please use ${input('--no-deps')}.`);
+    options['deps'] = false;
+  }
+
+  if (options['skip-link']) {
+    log.warn(`The ${input('--skip-link')} option has been deprecated. Please use ${input('--no-link')}.`);
+    options['link'] = false;
+  }
+
+  if (options['pro-id']) {
+    log.warn(`The ${input('--pro-id')} option has been deprecated. Please use ${input('--id')}.`);
+    options['id'] = options['pro-id'];
+  }
+
+  if (options['id']) {
+    if (!options['link']) {
+      log.warn(`The ${input('--no-link')} option has no effect with ${input('--id')}. App must be linked.`);
+    }
+
+    options['link'] = true;
+
+    if (!options['git']) {
+      log.warn(`The ${input('--no-git')} option has no effect with ${input('--id')}. Git must be used.`);
+    }
+
+    options['git'] = true;
+  }
+}
 
 export async function readStarterManifest(p: string): Promise<StarterManifest> {
   try {
@@ -29,29 +91,59 @@ export async function readStarterManifest(p: string): Promise<StarterManifest> {
   }
 }
 
-const advertisementSeparator = '─';
+export function getAdvertisement(): string {
+  const choices = [getAppflowAdvertisement, getAdvisoryAdvertisement, getEnterpriseAdvertisement];
+  const idx = Math.floor(Math.random() * choices.length);
 
-export async function getIonicDevAppText() {
-  const msg = `
-     ${strong(`${emoji('✨', '*')}   IONIC  DEVAPP   ${emoji('✨', '*')}`)}\n
- Speed up development with the ${strong('Ionic DevApp')}, our fast, on-device testing mobile app\n
-  -  ${emoji('🔑', '')}   Test on iOS and Android without Native SDKs
-  -  ${emoji('🚀', '')}   LiveReload for instant style and JS updates\n
- -->    Install DevApp: ${strong('https://bit.ly/ionic-dev-app')}    <--
-`;
-
-  return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;
+  return `${choices[idx]()}\n\n`;
 }
 
-export async function getIonicProText() {
-  const msg = `
-     ${strong(`${emoji('🔥', '*')}   IONIC  APPFLOW   ${emoji('🔥', '*')}`)}\n
- Supercharge your Ionic development with the ${strong('Ionic Appflow')} SDK\n
-  -  ${emoji('📲', '')}  Push remote updates and skip the app store queue\n
- Learn more about Ionic Appflow: ${strong('https://ion.link/appflow')}
-`;
+function getAppflowAdvertisement(): string {
+  return `
+  ──────────────────────────────────────────────────────────────
 
-  return `${msg}\n${advertisementSeparator.repeat(60)}\n\n`;
+        ${title('Ionic Appflow')}, the mobile DevOps solution by Ionic
+
+           Continuously build, deploy, and ship apps ${emoji('🚀', ' ')}
+        Focus on building apps while we automate the rest ${emoji('🎁', ' ')}
+
+        ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/appflow')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────
+`;
+}
+
+function getAdvisoryAdvertisement(): string {
+  return `
+  ──────────────────────────────────────────────────────────────────────────────
+
+         ${title('Ionic Advisory')}, tailored solutions and expert services by Ionic
+
+                             Go to market faster ${emoji('🏆', ' ')}
+                    Real-time troubleshooting and guidance ${emoji('💁', ' ')}
+        Custom training, best practices, code and architecture reviews ${emoji('🔎', ' ')}
+      Customized strategies for every phase of the development lifecycle ${emoji('🔮', ' ')}
+
+               ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/advisory')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────────────────────
+`;
+}
+
+function getEnterpriseAdvertisement(): string {
+  return `
+  ──────────────────────────────────────────────────────────────────────
+
+      ${title('Ionic Enterprise')}, platform and solutions for teams by Ionic
+
+                  Powerful library of native APIs ${emoji('⚡️', '')}
+                 A supercharged platform for teams ${emoji('💪', '')}
+       Bring your company's designs to life with Design Systems ${emoji('🎨', '')}
+
+         ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/enterprise')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────────────
+`;
 }
 
 export async function getStarterList(config: IConfig, tag = 'latest'): Promise<StarterList> {
@@ -62,6 +154,10 @@ export async function getStarterList(config: IConfig, tag = 'latest'): Promise<S
   // TODO: typecheck
 
   return res.body;
+}
+
+export function getStarterProjectTypes(): string[] {
+  return lodash.uniq(STARTER_TEMPLATES.map(t => t.type));
 }
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [

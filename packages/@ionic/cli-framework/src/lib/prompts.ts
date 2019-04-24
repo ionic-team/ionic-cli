@@ -1,12 +1,15 @@
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
-import * as ζinquirer from 'inquirer';
 
 const debug = Debug('ionic:cli-framework:lib:prompts');
 
-let _inquirer: ζinquirer.Inquirer | undefined;
+export type Inquirer = import('inquirer').Inquirer;
+export type Question = import('inquirer').Question;
+export type Separator = import('inquirer').objects.Separator;
 
-export interface PromptQuestionBase extends ζinquirer.Question {
+let _inquirer: Inquirer | undefined;
+
+export interface PromptQuestionBase extends Question {
   /**
    * The prompt type for this question.
    *    - 'confirm': Y/n
@@ -64,14 +67,14 @@ export interface PromptQuestionOther extends PromptQuestionBase {
 export type PromptQuestion = PromptQuestionConfirm | PromptQuestionCheckbox | PromptQuestionOther;
 
 export interface PromptModule {
-  readonly _inquirer: ζinquirer.Inquirer;
+  readonly _inquirer: Inquirer;
 
   (question: PromptQuestionConfirm): Promise<PromptValueConfirm>;
   (question: PromptQuestionCheckbox): Promise<PromptValueCheckbox>;
   (question: PromptQuestionOther): Promise<PromptValueOther>;
 }
 
-async function loadInquirer(): Promise<ζinquirer.Inquirer> {
+async function loadInquirer(): Promise<Inquirer> {
   if (!_inquirer) {
     _inquirer = await import('inquirer');
   }
@@ -162,7 +165,7 @@ export async function createPromptModule({ interactive, onFallback }: CreateProm
   return createPrompter as any as PromptModule;
 }
 
-export function createPromptChoiceSeparator(): ζinquirer.objects.Separator {
+export function createPromptChoiceSeparator(): Separator {
   if (!_inquirer) {
     throw new Error(`Prompt module not initialized. Call 'createPromptModule' first.`);
   }

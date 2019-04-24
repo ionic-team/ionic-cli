@@ -99,7 +99,7 @@ Apart from ${input('--commit')}, every option can be specified using the full na
     const buildId = build.job_id;
 
     const details = columnar([
-      ['Appflow ID', strong(appflowId)],
+      ['App ID', strong(appflowId)],
       ['Build ID', strong(buildId.toString())],
       ['Commit', strong(`${build.commit.sha.substring(0, 6)} ${build.commit.note}`)],
       ['Environment', build.environment_name ? strong(build.environment_name) : weak('not set')],

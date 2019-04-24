@@ -9,9 +9,6 @@ import { InfoItem } from '../../../definitions';
 import { strong } from '../../color';
 import { FatalException, RunnerNotFoundException } from '../../errors';
 
-import * as ζbuild from './build';
-import * as ζserve from './serve';
-
 const debug = Debug('ionic:lib:project:angular');
 
 export const ERROR_INVALID_BOWER_JSON = 'INVALID_BOWER_JSON';
@@ -129,13 +126,13 @@ export class Ionic1Project extends Project {
     return this.bowerJsonFile;
   }
 
-  async requireBuildRunner(): Promise<ζbuild.Ionic1BuildRunner> {
+  async requireBuildRunner(): Promise<import('./build').Ionic1BuildRunner> {
     const { Ionic1BuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };
     return new Ionic1BuildRunner(deps);
   }
 
-  async requireServeRunner(): Promise<ζserve.Ionic1ServeRunner> {
+  async requireServeRunner(): Promise<import('./serve').Ionic1ServeRunner> {
     const { Ionic1ServeRunner } = await import('./serve');
     const deps = { ...this.e, project: this };
     return new Ionic1ServeRunner(deps);

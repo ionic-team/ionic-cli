@@ -9,6 +9,7 @@ import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
+import { pkgManagerArgs } from '../../lib/utils/npm';
 
 export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
   {
@@ -30,14 +31,14 @@ export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
     summary: 'Deploy build to a device',
     type: Boolean,
     groups: ['cordova', 'cordova-cli', 'native-run'],
-    hint: weak('[cordova]'),
+    hint: weak('[cordova/native-run]'),
   },
   {
     name: 'emulator',
     summary: 'Deploy build to an emulator',
     type: Boolean,
     groups: ['cordova', 'cordova-cli', 'native-run'],
-    hint: weak('[cordova]'),
+    hint: weak('[cordova/native-run]'),
   },
   {
     name: 'buildConfig',
@@ -55,7 +56,7 @@ export const CORDOVA_RUN_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
     summary: `Deploy build to a device (use ${input('--list')} to see all)`,
     type: String,
     groups: [MetadataGroup.ADVANCED, 'cordova', 'cordova-cli', 'native-run'],
-    hint: weak('[cordova]'),
+    hint: weak('[cordova/native-run]'),
   },
 ];
 
@@ -134,17 +135,15 @@ export abstract class CordovaCommand extends Command {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
 
-    const { pkgManagerArgs } = await import('../../lib/utils/npm');
-
     try {
       await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd: this.integration.root, ...options });
     } catch (e) {
       if (e instanceof SubprocessError) {
         if (e.code === ERROR_COMMAND_NOT_FOUND) {
-          const cdvInstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova', global: true });
+          const installArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova', global: true });
           throw new FatalException(
             `The Cordova CLI was not found on your PATH. Please install Cordova globally:\n` +
-            `${input(cdvInstallArgs.join(' '))}\n`
+            `${input(installArgs.join(' '))}\n`
           );
         }
 

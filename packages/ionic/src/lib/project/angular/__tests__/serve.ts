@@ -11,7 +11,7 @@ describe('ionic', () => {
 
         const defaults = {
           '--': [],
-          address: '0.0.0.0',
+          address: 'localhost',
           browser: undefined,
           browserOption: undefined,
           devapp: false,
@@ -49,8 +49,8 @@ describe('ionic', () => {
 
         it('should allow overrides of default values', () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], address: 'localhost', port: '1111' });
-          expect(result).toEqual({ ...defaults, address: 'localhost', port: 1111 });
+          const result = runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111' });
+          expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111 });
         });
 
         it('should respect --local flag', () => {
