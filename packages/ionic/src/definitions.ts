@@ -15,7 +15,7 @@ import {
   PromptModule,
 } from '@ionic/cli-framework';
 import { NetworkInterface } from '@ionic/utils-network';
-import { SubprocessOptions } from '@ionic/utils-subprocess';
+import { SubprocessOptions, WhichOptions } from '@ionic/utils-subprocess';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
 
@@ -384,6 +384,7 @@ export interface IShell {
   output(command: string, args: readonly string[], options: IShellOutputOptions): Promise<string>;
   spawn(command: string, args: readonly string[], options: IShellSpawnOptions): Promise<ChildProcess>;
   cmdinfo(cmd: string, args?: readonly string[], options?: SubprocessOptions): Promise<string | undefined>;
+  which(command: string, options?: WhichOptions): Promise<string>;
 }
 
 export interface ITelemetry {
