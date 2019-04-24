@@ -162,10 +162,10 @@ export function getStarterProjectTypes(): string[] {
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
-    name: 'blank',
+    name: 'tabs',
     type: 'angular',
-    description: 'A blank starter project',
-    id: 'angular-official-blank',
+    description: 'A starting project with a simple tabbed interface',
+    id: 'angular-official-tabs',
   },
   {
     name: 'sidemenu',
@@ -174,10 +174,10 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'angular-official-sidemenu',
   },
   {
-    name: 'tabs',
+    name: 'blank',
     type: 'angular',
-    description: 'A starting project with a simple tabbed interface',
-    id: 'angular-official-tabs',
+    description: 'A blank starter project',
+    id: 'angular-official-blank',
   },
   {
     name: 'tabs',
@@ -186,16 +186,16 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'ionic-angular-official-tabs',
   },
   {
-    name: 'blank',
-    type: 'ionic-angular',
-    description: 'A blank starter project',
-    id: 'ionic-angular-official-blank',
-  },
-  {
     name: 'sidemenu',
     type: 'ionic-angular',
     description: 'A starting project with a side menu with navigation in the content area',
     id: 'ionic-angular-official-sidemenu',
+  },
+  {
+    name: 'blank',
+    type: 'ionic-angular',
+    description: 'A blank starter project',
+    id: 'ionic-angular-official-blank',
   },
   {
     name: 'super',
@@ -222,16 +222,16 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'ionic1-official-tabs',
   },
   {
-    name: 'blank',
-    type: 'ionic1',
-    description: 'A blank starter project for Ionic',
-    id: 'ionic1-official-blank',
-  },
-  {
     name: 'sidemenu',
     type: 'ionic1',
     description: 'A starting project for Ionic using a side menu with navigation in the content area',
     id: 'ionic1-official-sidemenu',
+  },
+  {
+    name: 'blank',
+    type: 'ionic1',
+    description: 'A blank starter project for Ionic',
+    id: 'ionic1-official-blank',
   },
   {
     name: 'maps',
