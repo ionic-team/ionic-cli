@@ -6,7 +6,7 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoI
 import { input, strong, weak } from '../lib/color';
 import { Command } from '../lib/command';
 
-const INFO_GROUPS: readonly InfoItemGroup[] = ['ionic', 'capacitor', 'cordova', 'system', 'environment'];
+const INFO_GROUPS: readonly InfoItemGroup[] = ['ionic', 'capacitor', 'cordova', 'utility', 'system', 'environment'];
 
 export class InfoCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {

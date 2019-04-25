@@ -53,6 +53,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     const os = osName();
 
     const npm = await shell.cmdinfo('npm', ['-v']);
+    const nativeRun = await shell.cmdinfo('native-run', ['--version']);
+    const cordovaRes = await shell.cmdinfo('cordova-res', ['--version']);
 
     const info: InfoItem[] = [
       {
@@ -65,6 +67,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
       { group: 'system', key: 'NodeJS', value: process.version, path: process.execPath },
       { group: 'system', key: 'npm', value: npm || 'not installed' },
       { group: 'system', key: 'OS', value: os },
+      { group: 'utility', key: 'native-run', value: nativeRun || 'not installed' },
+      { group: 'utility', key: 'cordova-res', value: cordovaRes || 'not installed' },
     ];
 
     info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', key: e, value: v || 'not set' })));

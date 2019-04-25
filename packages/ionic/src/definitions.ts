@@ -513,7 +513,7 @@ export interface PaginatorDeps<T extends Response<object[]>, S = PaginatorState>
   readonly max?: number;
 }
 
-export type InfoItemGroup = 'ionic' | 'capacitor' | 'cordova' | 'system' | 'environment';
+export type InfoItemGroup = 'ionic' | 'capacitor' | 'cordova' | 'utility' | 'system' | 'environment';
 
 export interface InfoItem {
   group: InfoItemGroup;
