@@ -119,3 +119,28 @@ async function createNativeRunNotFoundError(npmClient: NpmClient): Promise<Fatal
     `${input(installArgs.join(' '))}\n`
   );
 }
+
+export interface NativeDeviceTarget {
+  platform: string;
+  id: string;
+  model: string;
+  sdkVersion: string;
+}
+
+export interface NativeVirtualDeviceTarget {
+  platform: string;
+  id: string;
+  name: string;
+  sdkVersion: string;
+}
+
+export interface NativeTargetPlatform {
+  devices: NativeDeviceTarget[];
+  virtualDevices: NativeVirtualDeviceTarget[];
+}
+
+export async function getNativeTargets({ shell }: RunNativeRunDeps, platform: string): Promise<NativeTargetPlatform> {
+  const output = await shell.output('native-run', [platform, '--list', '--json'], { showCommand: false });
+
+  return JSON.parse(output);
+}
