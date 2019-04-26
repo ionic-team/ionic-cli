@@ -1,5 +1,5 @@
 import { processExit } from '@ionic/utils-process';
-import { ERROR_COMMAND_NOT_FOUND, SubprocessError, which } from '@ionic/utils-subprocess';
+import { ERROR_COMMAND_NOT_FOUND, ERROR_NON_ZERO_EXIT, SubprocessError, which } from '@ionic/utils-subprocess';
 
 import { CommandLineOptions, IConfig, ILogger, IShell, IShellRunOptions, NpmClient } from '../definitions';
 
@@ -139,8 +139,32 @@ export interface NativeTargetPlatform {
   virtualDevices: NativeVirtualDeviceTarget[];
 }
 
-export async function getNativeTargets({ shell }: RunNativeRunDeps, platform: string): Promise<NativeTargetPlatform> {
-  const output = await shell.output('native-run', [platform, '--list', '--json'], { showCommand: false });
+export async function getNativeTargets({ log, shell }: RunNativeRunDeps, platform: string): Promise<NativeTargetPlatform> {
+  try {
+    const proc = await shell.createSubprocess('native-run', [platform, '--list', '--json']);
+    const output = await proc.output();
 
-  return JSON.parse(output);
+    return JSON.parse(output);
+  } catch (e) {
+    if (e instanceof SubprocessError && e.code === ERROR_NON_ZERO_EXIT) {
+      const output = e.output ? JSON.parse(e.output) : {};
+
+      throw new FatalException(
+        `Error while getting native targets for ${input(platform)}: ${output.error || output.code}\n` +
+        (
+          platform === 'android' && output.code === 'ERR_UNSUITABLE_API_INSTALLATION' ?
+          (
+            `\n${input('native-run')} needs a fully installed SDK Platform to run your app.\n` +
+            `- Run ${input('native-run android --sdk-info')} to see missing packages for each API level.\n` +
+            `- Install missing packages in Android Studio by opening the SDK manager.\n`
+          ) : ''
+        ) +
+        `\nThis error occurred while using ${input('native-run')}. You can try running this command with ${input('--no-native-run')}, which will revert to using Cordova.\n`
+      );
+    }
+
+    log.warn(`Error while getting native targets for ${input(platform)}:\n${e.stack ? e.stack : e}`);
+  }
+
+  return { devices: [], virtualDevices: [] };
 }
