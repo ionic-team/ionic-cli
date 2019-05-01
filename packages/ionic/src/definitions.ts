@@ -530,9 +530,10 @@ export interface AngularBuildOptions extends BuildOptions<'angular'> {
 }
 
 export interface ReactBuildOptions extends BuildOptions<'react'> {
-  configuration?: string;
-  sourcemaps?: boolean;
-  cordovaAssets?: boolean;
+  publicUrl?: string;
+  ci?: boolean;
+  sourceMap?: boolean;
+  inlineRuntimeChunk?: boolean;
 }
 
 export interface VueBuildOptions extends BuildOptions<'vue'> {
@@ -600,9 +601,9 @@ export interface AngularServeOptions extends ServeOptions {
 }
 
 export interface ReactServeOptions extends ServeOptions {
-  ssl?: boolean;
-  configuration?: string;
-  sourcemaps?: boolean;
+  https?: boolean;
+  ci?: boolean;
+  reactEditor?: string;
 }
 
 export interface VueServeOptions extends ServeOptions {
