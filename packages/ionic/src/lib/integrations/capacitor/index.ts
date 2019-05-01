@@ -36,6 +36,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       if (parsedArgs['web-dir']) {
         options.push('--web-dir', parsedArgs['web-dir']);
       }
+      options.push('--npm-client', this.e.config.get('npmClient'));
     }
 
     await this.installCapacitorCore();
