@@ -126,8 +126,6 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
   protected async buildArgs(options: ReactServeOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    await this.serveOptionsToCRAEnvVars(options);
-
     if (this.resolvedProgram === this.program) {
       return ['start'];
     } else {
@@ -136,21 +134,23 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
     }
   }
 
-  protected async serveOptionsToCRAEnvVars(options: ReactServeOptions) {
+  protected async buildEnvVars(options: ReactServeOptions): Promise<NodeJS.ProcessEnv> {
+    const envVars: NodeJS.ProcessEnv = {};
+
     if (options.browser) {
-      process.env.BROWSER = options.browser;
+      envVars.BROWSER = options.browser;
     }
     if (options.open !== true) {
-      process.env.BROWSER = 'none';
+      envVars.BROWSER = 'none';
     }
-    process.env.HOST = options.address;
-    process.env.PORT = String(options.port);
-    process.env.HTTPS = (options.https === true) ? 'true' : 'false';
-    process.env.CI = (options.ci === true) ? 'true' : 'false';
+    envVars.HOST = options.address;
+    envVars.PORT = String(options.port);
+    envVars.HTTPS = (options.https === true) ? 'true' : 'false';
+    envVars.CI = (options.ci === true) ? 'true' : 'false';
     if (options.reactEditor) {
-      process.env.REACT = options.reactEditor;
+      envVars.REACT = options.reactEditor;
     }
-    this.e.log.ok(JSON.stringify(options, undefined, 2));
-    this.e.log.ok(JSON.stringify(process.env, undefined, 2));
+
+    return envVars;
   }
 }

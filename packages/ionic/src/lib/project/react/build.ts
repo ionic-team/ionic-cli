@@ -82,8 +82,6 @@ export class ReactBuildCLI extends BuildCLI<ReactBuildOptions> {
   protected async buildArgs(options: ReactBuildOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
-    await this.buildOptionsToCRAEnvVars(options);
-
     if (this.resolvedProgram === this.program) {
       return ['build'];
     } else {
@@ -92,15 +90,16 @@ export class ReactBuildCLI extends BuildCLI<ReactBuildOptions> {
     }
   }
 
-  protected async buildOptionsToCRAEnvVars(options: ReactBuildOptions) {
-    if (options.publicUrl) {
-      process.env.PUBLIC_URL = options.publicUrl;
-    }
-    process.env.CI = String(options.ci);
-    process.env.GENERATE_SOURCEMAP = String(options.sourceMap);
-    process.env.INLINE_RUNTIME_CHUNK = String(options.inlineRuntimeChunk);
+  protected async buildEnvVars(options: ReactBuildOptions): Promise<NodeJS.ProcessEnv> {
+    const envVars: NodeJS.ProcessEnv = {};
 
-    this.e.log.ok(JSON.stringify(options, undefined, 2));
-    this.e.log.ok(JSON.stringify(process.env, undefined, 2));
+    if (options.publicUrl) {
+      envVars.PUBLIC_URL = options.publicUrl;
+    }
+    envVars.CI = String(options.ci);
+    envVars.GENERATE_SOURCEMAP = String(options.sourceMap);
+    envVars.INLINE_RUNTIME_CHUNK = String(options.inlineRuntimeChunk);
+
+    return envVars;
   }
 }

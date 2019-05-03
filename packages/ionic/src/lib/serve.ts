@@ -2,7 +2,7 @@ import { BaseError, LOGGER_LEVELS, MetadataGroup, ParsedArgs, PromptModule, crea
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { readJson } from '@ionic/utils-fs';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
-import { killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
+import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
 import chalk from 'chalk';
 import * as Debug from 'debug';
 import { EventEmitter } from 'events';
@@ -462,6 +462,13 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
   protected abstract buildArgs(options: T): Promise<string[]>;
 
   /**
+   * Build the environment variables to be passed to the Serve CLI. Called by `this.start()`;
+   */
+  protected async buildEnvVars(options: T): Promise<NodeJS.ProcessEnv> {
+    return process.env;
+  }
+
+  /**
    * Called whenever a line of stdout is received.
    *
    * If `false` is returned, the line is not emitted to the log.
@@ -542,7 +549,8 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
   protected async spawn(options: T): Promise<void> {
     const args = await this.buildArgs(options);
-    const p = await this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory });
+    const envVars = await this.buildEnvVars(options);
+    const p = await this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory, env: createProcessEnv(envVars) });
 
     return new Promise<void>((resolve, reject) => {
       const errorHandler = (err: NodeJS.ErrnoException) => {
