@@ -6,6 +6,14 @@
 
 The Ionic command line interface (CLI) is your go-to tool for developing [Ionic][ionic-homepage] apps.
 
+#### Want to try CLI 5 (beta)? :hatching_chick:
+
+* Details :point_right: [#3915](https://github.com/ionic-team/ionic-cli/issues/3915#issue-423328190)
+* `npm install -g ionic@beta`
+* Leave feedback by creating issues :blush:
+
+---
+
 ### Installation
 
 ```
