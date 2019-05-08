@@ -115,13 +115,11 @@ export function offBeforeExit(fn: ExitFn): void {
   exitFns.delete(fn);
 }
 
-export type Signal = 'process.exit' | NodeJS.Signals;
+type BeforeExitSignal = 'SIGINT' | 'SIGTERM' | 'SIGHUP' | 'SIGBREAK';
 
-const BEFORE_EXIT_SIGNALS: NodeJS.Signals[] = ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGBREAK'];
-
-const beforeExitHandlerWrapper = (signal: Signal) => lodash.once(async () => {
-  debug(`onBeforeExit handler: ${signal} received`);
-  debug(`onBeforeExit handler: running ${exitFns.size} functions`);
+const beforeExitHandlerWrapper = (signal: 'process.exit' | BeforeExitSignal) => lodash.once(async () => {
+  debug('onBeforeExit handler: %O received', signal);
+  debug('onBeforeExit handler: running %O functions', exitFns.size);
 
   await Promise.all([...exitFns.values()].map(async fn => {
     try {
@@ -131,13 +129,25 @@ const beforeExitHandlerWrapper = (signal: Signal) => lodash.once(async () => {
     }
   }));
 
-  debug(`onBeforeExit handler: exiting (exit code ${process.exitCode ? process.exitCode : 0})`);
-
-  process.exit();
+  if (signal !== 'process.exit') {
+    debug('onBeforeExit handler: killing self (exit code %O, signal %O)', process.exitCode ? process.exitCode : 0, signal);
+    process.removeListener(signal, BEFORE_EXIT_SIGNAL_LISTENERS[signal]);
+    process.kill(process.pid, signal);
+  }
 });
 
-for (const signal of BEFORE_EXIT_SIGNALS) {
-  process.on(signal, beforeExitHandlerWrapper(signal));
+type BeforeExitSignalListener = () => Promise<void>;
+type BeforeExitSignalListeners = { [key in BeforeExitSignal]: BeforeExitSignalListener; };
+
+const BEFORE_EXIT_SIGNAL_LISTENERS: BeforeExitSignalListeners = {
+  SIGINT: beforeExitHandlerWrapper('SIGINT'),
+  SIGTERM: beforeExitHandlerWrapper('SIGTERM'),
+  SIGHUP: beforeExitHandlerWrapper('SIGHUP'),
+  SIGBREAK: beforeExitHandlerWrapper('SIGBREAK'),
+};
+
+for (const [ signal, fn ] of lodash.entries(BEFORE_EXIT_SIGNAL_LISTENERS)) {
+  process.on(signal as BeforeExitSignal, fn);
 }
 
 const processExitHandler = beforeExitHandlerWrapper('process.exit');
@@ -149,4 +159,6 @@ const processExitHandler = beforeExitHandlerWrapper('process.exit');
 export async function processExit(exitCode = 0) {
   process.exitCode = exitCode;
   await processExitHandler();
+  debug('processExit: exiting (exit code: %O)', process.exitCode);
+  process.exit();
 }
