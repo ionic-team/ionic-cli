@@ -1,5 +1,6 @@
 import { Footnote, MetadataGroup } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
+import * as lodash from 'lodash';
 import * as url from 'url';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions } from '../../definitions';
@@ -51,7 +52,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       'ios --livereload-url=http://localhost:8100',
     ].sort();
 
-    const options: CommandMetadataOption[] = [
+    let options: CommandMetadataOption[] = [
       {
         name: 'list',
         summary: 'List all available targets',
@@ -107,9 +108,10 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       const libmetadata = await serveRunner.getCommandMetadata();
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
-      options.push(...(libmetadata.options || [])
+      const runnerOpts = (libmetadata.options || [])
         .filter(o => !existingOpts.includes(o.name) && o.groups && o.groups.includes('cordova'))
-        .map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` })));
+        .map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` }));
+      options = lodash.uniqWith([...runnerOpts, ...options], (optionA, optionB) => optionA.name === optionB.name);
       footnotes.push(...libmetadata.footnotes || []);
     }
 

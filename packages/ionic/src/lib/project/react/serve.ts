@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, MetadataGroup } from '@ionic/cli-framework';
 import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { findClosestOpenPort } from '@ionic/utils-network';
 
@@ -37,6 +37,13 @@ export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
           name: 'ci',
           summary: `Treat all warnings as build failures. Also makes the test runner non-watching.`,
           type: Boolean,
+        },
+        {
+          name: 'livereload',
+          summary: 'Do not spin up dev server--just serve files',
+          type: Boolean,
+          default: true,
+          groups: [MetadataGroup.HIDDEN],
         },
       ],
     };
@@ -105,7 +112,7 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
 
     const strippedLine = stripAnsi(line);
 
-    if (strippedLine.includes('Development Server is listening')) {
+    if (strippedLine.includes('Compiled successfully')) {
       this.emit('ready');
       return false;
     }
