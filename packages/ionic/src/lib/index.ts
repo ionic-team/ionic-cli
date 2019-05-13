@@ -59,8 +59,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     const info: InfoItem[] = [
       {
         group: 'ionic',
-        key: 'ionic',
-        flair: 'Ionic CLI',
+        key: 'Ionic CLI',
         value: ctx.version,
         path: ctx.libPath,
       },

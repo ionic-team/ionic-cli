@@ -78,7 +78,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     ]);
 
     const info: InfoItem[] = [
-      { group: 'capacitor', key: 'capacitor', flair: 'Capacitor CLI', value: capacitorCLIVersion || 'not installed' },
+      { group: 'capacitor', key: 'Capacitor CLI', value: capacitorCLIVersion || 'not installed' },
       { group: 'capacitor', key: '@capacitor/core', value: capacitorCorePkg ? capacitorCorePkg.version : 'not installed', path: capacitorCorePkgPath },
     ];
 

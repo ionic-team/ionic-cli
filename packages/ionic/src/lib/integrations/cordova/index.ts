@@ -138,7 +138,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     ]);
 
     const info: InfoItem[] = [
-      { group: 'cordova', key: 'cordova', flair: 'Cordova CLI', value: cordovaVersion || 'not installed' },
+      { group: 'cordova', key: 'Cordova CLI', value: cordovaVersion || 'not installed' },
       { group: 'cordova', key: 'Cordova Platforms', value: cordovaPlatforms },
       { group: 'cordova', key: 'Cordova Plugins', value: cordovaPlugins },
     ];
