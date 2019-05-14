@@ -12,7 +12,7 @@ export class ServeCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     let groups: string[] = [];
 
-    const options: CommandMetadataOption[] = [
+    let options: CommandMetadataOption[] = [
       ...COMMON_SERVE_COMMAND_OPTIONS,
       {
         name: 'lab-host',
@@ -71,7 +71,7 @@ Try the ${input('--lab')} option to see multiple platforms at once.`;
     if (runner) {
       const libmetadata = await runner.getCommandMetadata();
       groups = libmetadata.groups || [];
-      options.push(...libmetadata.options || []);
+      options = lodash.uniqWith([...libmetadata.options || [], ...options], (optionA, optionB) => optionA.name === optionB.name);
       description += `\n\n${(libmetadata.description || '').trim()}`;
       footnotes.push(...libmetadata.footnotes || []);
       exampleCommands.push(...libmetadata.exampleCommands || []);

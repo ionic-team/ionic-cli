@@ -28,6 +28,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     let packageId = 'io.ionic.starter';
     const options: string[] = [];
 
+    if (this.e.project.type === 'react') {
+      options.push('--web-dir', 'public');
+    }
+
     if (details.enableArgs) {
       const parsedArgs = parseArgs(details.enableArgs);
 

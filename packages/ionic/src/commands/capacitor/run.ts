@@ -1,6 +1,7 @@
 import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import chalk from 'chalk';
+import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
@@ -24,7 +25,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       'ios --livereload-url=http://localhost:8100',
     ].sort();
 
-    const options: CommandMetadataOption[] = [
+    let options: CommandMetadataOption[] = [
       // Build Options
       {
         name: 'build',
@@ -68,7 +69,10 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       const libmetadata = await serveRunner.getCommandMetadata();
       const existingOpts = options.map(o => o.name);
       groups = libmetadata.groups || [];
-      options.push(...(libmetadata.options || []).filter(o => !existingOpts.includes(o.name)).map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` })));
+      const runnerOpts = (libmetadata.options || [])
+        .filter(o => !existingOpts.includes(o.name))
+        .map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` }));
+      options = lodash.uniqWith([...runnerOpts, ...options], (optionA, optionB) => optionA.name === optionB.name);
       footnotes.push(...libmetadata.footnotes || []);
     }
 

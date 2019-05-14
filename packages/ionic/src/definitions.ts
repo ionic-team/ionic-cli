@@ -58,7 +58,7 @@ export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }
 
-export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare';
+export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue';
 export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after';
 
 export interface BaseHookContext {
@@ -547,6 +547,19 @@ export interface AngularBuildOptions extends BuildOptions<'angular'> {
   cordovaAssets?: boolean;
 }
 
+export interface ReactBuildOptions extends BuildOptions<'react'> {
+  publicUrl?: string;
+  ci?: boolean;
+  sourceMap?: boolean;
+  inlineRuntimeChunk?: boolean;
+}
+
+export interface VueBuildOptions extends BuildOptions<'vue'> {
+  configuration?: string;
+  sourcemaps?: boolean;
+  cordovaAssets?: boolean;
+}
+
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
   prod: boolean;
   sourcemaps?: boolean;
@@ -600,6 +613,18 @@ export interface ServeOptions {
 export interface AngularServeOptions extends ServeOptions {
   consolelogs?: boolean;
   consolelogsPort?: number;
+  ssl?: boolean;
+  configuration?: string;
+  sourcemaps?: boolean;
+}
+
+export interface ReactServeOptions extends ServeOptions {
+  https?: boolean;
+  ci?: boolean;
+  reactEditor?: string;
+}
+
+export interface VueServeOptions extends ServeOptions {
   ssl?: boolean;
   configuration?: string;
   sourcemaps?: boolean;
