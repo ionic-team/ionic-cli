@@ -6,9 +6,6 @@ import { Project } from '../';
 import { InfoItem } from '../../../definitions';
 import { RunnerNotFoundException } from '../../errors';
 
-import * as ζbuild from './build';
-import * as ζserve from './serve';
-
 const debug = Debug('ionic:lib:project:React');
 
 export class ReactProject extends Project {
@@ -46,13 +43,13 @@ export class ReactProject extends Project {
     return false;
   }
 
-  async requireBuildRunner(): Promise<ζbuild.ReactBuildRunner> {
+  async requireBuildRunner(): Promise<import('./build').ReactBuildRunner> {
     const { ReactBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };
     return new ReactBuildRunner(deps);
   }
 
-  async requireServeRunner(): Promise<ζserve.ReactServeRunner> {
+  async requireServeRunner(): Promise<import('./serve').ReactServeRunner> {
     const { ReactServeRunner } = await import('./serve');
     const deps = { ...this.e, project: this };
     return new ReactServeRunner(deps);

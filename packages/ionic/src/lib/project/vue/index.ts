@@ -6,9 +6,6 @@ import { Project } from '../';
 import { InfoItem } from '../../../definitions';
 import { RunnerNotFoundException } from '../../errors';
 
-import * as ζbuild from './build';
-import * as ζserve from './serve';
-
 const debug = Debug('ionic:lib:project:vue');
 
 export class VueProject extends Project {
@@ -46,13 +43,13 @@ export class VueProject extends Project {
     return false;
   }
 
-  async requireBuildRunner(): Promise<ζbuild.VueBuildRunner> {
+  async requireBuildRunner(): Promise<import('./build').VueBuildRunner> {
     const { VueBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };
     return new VueBuildRunner(deps);
   }
 
-  async requireServeRunner(): Promise<ζserve.VueServeRunner> {
+  async requireServeRunner(): Promise<import('./serve').VueServeRunner> {
     const { VueServeRunner } = await import('./serve');
     const deps = { ...this.e, project: this };
     return new VueServeRunner(deps);
