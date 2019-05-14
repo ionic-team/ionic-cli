@@ -13,13 +13,12 @@
     "watch": "lerna run watch --parallel",
     "docs": "node packages/cli-scripts/bin/ionic-cli-scripts docs",
     "docs:watch": "chokidar 'packages/cli-scripts/dist/docs/**/*.js' -c 'npm run docs'",
-    "publish:canary": "lerna publish --independent --canary --exact --npm-tag=canary --skip-git",
-    "publish:testing": "lerna publish --independent --canary=testing --exact --npm-tag=testing --skip-git",
-    "publish:ci": "lerna publish --independent -m 'chore(release): publish [skip ci]' --exact --conventional-commits"
+    "publish:testing": "lerna publish prerelease --preid=testing --exact --no-git-tag-version --no-push --dist-tag=testing",
+    "publish:ci": "lerna publish -m 'chore(release): publish [skip ci]' --exact --conventional-commits"
   },
   "devDependencies": {
     "chokidar-cli": "^1.2.0",
-    "husky": "^1.1.0",
+    "husky": "^2.1.0",
     "lerna": "^3.13.3",
     "tslint": "^5.9.1",
     "tslint-ionic-rules": "0.0.21",

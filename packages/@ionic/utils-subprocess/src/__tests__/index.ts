@@ -72,8 +72,6 @@ describe('@ionic/utils-subprocess', () => {
     const mock_os = { homedir: () => '/home/me' };
     jest.mock('cross-spawn', () => mockCrossSpawn);
     jest.mock('os', () => mock_os);
-    const mock_path_posix = path.posix;
-    jest.mock('path', () => mock_path_posix);
     const { Subprocess, SubprocessError } = require('../');
 
     beforeEach(() => {
@@ -116,9 +114,9 @@ describe('@ionic/utils-subprocess', () => {
     });
 
     it('should alter PATH with tildes if provided', async () => {
-      const PATH = '/path/to/bin:~/bin';
+      const PATH = ['/path/to/bin', '~/bin'].join(path.delimiter);
       const cmd = new Subprocess('cmd', [], { env: { PATH } });
-      expect(cmd.options.env.PATH).toEqual('/path/to/bin:/home/me/bin');
+      expect(cmd.options.env.PATH).toEqual(['/path/to/bin', '/home/me/bin'].join(path.delimiter));
     });
 
     it('should bashify command and args', async () => {
@@ -400,6 +398,49 @@ describe('@ionic/utils-subprocess', () => {
       expect(result).toEqual('hello world!');
     });
 
+  });
+
+  describe('which/findExecutables', () => {
+    describe('windows', () => {
+      const originalPATHEXT = process.env.PATHEXT;
+      const mockBinDir1 = 'C:\\path\\to\\nodejs';
+      const mockBinDir2 = 'C:\\other\\path\\to\\nodejs';
+      const mockBinPath1 = path.win32.join(mockBinDir1, 'node.exe');
+      const mockBinPath2 = path.win32.join(mockBinDir2, 'node.cmd');
+      const mockPATH = `C:\\my\\home\\dir;C:\\some\\other\\dir;${mockBinDir1};${mockBinDir2}`;
+
+      process.env.PATHEXT = '.COM;.EXE;.BAT;.CMD';
+
+      afterAll(() => {
+        process.env.PATHEXT = originalPATHEXT;
+      });
+
+      jest.resetModules();
+      jest.mock('path', () => path.win32);
+      jest.mock('@ionic/utils-terminal', () => ({ TERMINAL_INFO: { windows: true } }));
+      jest.doMock('@ionic/utils-fs', () => ({
+        isExecutableFile: async (filePath: string) => filePath === mockBinPath1 || filePath === mockBinPath2
+      }));
+
+      const { which, findExecutables } = require('../');
+
+      it('should find the first executable in PATH', async () => {
+        const result = await which('node', { PATH: mockPATH });
+        expect(result).toEqual(mockBinPath1);
+      });
+
+      it('should not append an extension if already provided', async () => {
+        const result = await which('node.cmd', { PATH: mockPATH });
+        expect(result).toEqual(mockBinPath2);
+      });
+
+      it('should find all executables in PATH', async () => {
+        const result = await findExecutables('node', { PATH: mockPATH });
+        expect(result.length).toEqual(2);
+        expect(result[0]).toEqual(mockBinPath1);
+        expect(result[1]).toEqual(mockBinPath2);
+      });
+    });
   });
 
 });

@@ -2,9 +2,6 @@ import { Project } from '../';
 import { strong } from '../../color';
 import { RunnerNotFoundException } from '../../errors';
 
-import * as ζbuild from './build';
-import * as ζserve from './serve';
-
 export class CustomProject extends Project {
   readonly type: 'custom' = 'custom';
 
@@ -15,13 +12,13 @@ export class CustomProject extends Project {
     return false;
   }
 
-  async requireBuildRunner(): Promise<ζbuild.CustomBuildRunner> {
+  async requireBuildRunner(): Promise<import('./build').CustomBuildRunner> {
     const { CustomBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };
     return new CustomBuildRunner(deps);
   }
 
-  async requireServeRunner(): Promise<ζserve.CustomServeRunner> {
+  async requireServeRunner(): Promise<import('./serve').CustomServeRunner> {
     const { CustomServeRunner } = await import('./serve');
     const deps = { ...this.e, project: this };
     return new CustomServeRunner(deps);

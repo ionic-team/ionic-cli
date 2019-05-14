@@ -19,9 +19,9 @@ export async function concurrentFilter<T>(array: T[], callback: (currentValue: T
     .map(([ v ]) => v);
 }
 
-export async function filter<T>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[]>;
-export async function filter<T>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<ReadonlyArray<T>>;
-export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<boolean>): Promise<T[] | ReadonlyArray<T>> {
+export async function filter<T>(array: T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<boolean>): Promise<T[]>;
+export async function filter<T>(array: readonly T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<boolean>): Promise<readonly T[]>;
+export async function filter<T>(array: T[] | readonly T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<boolean>): Promise<T[] | readonly T[]> {
   const initial: T[] = [];
 
   return reduce(array, async (acc, v, i, arr) => {
@@ -33,11 +33,11 @@ export async function filter<T>(array: T[] | ReadonlyArray<T>, callback: (curren
   }, initial);
 }
 
-export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
-export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<ReadonlyArray<U>>;
-export async function map<T, U>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[]>;
-export async function map<T, U>(array: ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<ReadonlyArray<U>>;
-export async function map<T, U>(array: T[] | ReadonlyArray<T>, callback: (currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>): Promise<U[] | ReadonlyArray<U>> {
+export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<U>): Promise<U[]>;
+export async function map<T, U>(array: T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<U>): Promise<readonly U[]>;
+export async function map<T, U>(array: readonly T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<U>): Promise<U[]>;
+export async function map<T, U>(array: readonly T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<U>): Promise<readonly U[]>;
+export async function map<T, U>(array: T[] | readonly T[], callback: (currentValue: T, currentIndex: number, array: readonly T[]) => Promise<U>): Promise<U[] | readonly U[]> {
   const initial: U[] = [];
 
   return reduce(array, async (acc, v, i, arr) => {
@@ -47,15 +47,15 @@ export async function map<T, U>(array: T[] | ReadonlyArray<T>, callback: (curren
   }, initial);
 }
 
-export async function reduce<T>(array: T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>): Promise<T>;
-export async function reduce<T>(array: T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>, initialValue: T): Promise<T>;
-export async function reduce<T, R>(array: T[], callback: (accumulator: R, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<R>): Promise<R>;
-export async function reduce<T, U>(array: T[], callback: (accumulator: U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>, initialValue: U): Promise<U>;
-export async function reduce<T>(array: ReadonlyArray<T>, callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>): Promise<T>;
-export async function reduce<T>(array: ReadonlyArray<T>, callback: (accumulator: T, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T>, initialValue: T): Promise<T>;
-export async function reduce<T, R>(array: ReadonlyArray<T>, callback: (accumulator: R, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<R>): Promise<R>;
-export async function reduce<T, U>(array: ReadonlyArray<T>, callback: (accumulator: U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<U>, initialValue: U): Promise<U>;
-export async function reduce<T, U>(array: T[] | ReadonlyArray<T>, callback: (accumulator: T | U, currentValue: T, currentIndex: number, array: ReadonlyArray<T>) => Promise<T | U>, initialValue?: T | U): Promise<T | U> {
+export async function reduce<T>(array: T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<T>): Promise<T>;
+export async function reduce<T>(array: T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<T>, initialValue: T): Promise<T>;
+export async function reduce<T, R>(array: T[], callback: (accumulator: R, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<R>): Promise<R>;
+export async function reduce<T, U>(array: T[], callback: (accumulator: U, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<U>, initialValue: U): Promise<U>;
+export async function reduce<T>(array: readonly T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<T>): Promise<T>;
+export async function reduce<T>(array: readonly T[], callback: (accumulator: T, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<T>, initialValue: T): Promise<T>;
+export async function reduce<T, R>(array: readonly T[], callback: (accumulator: R, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<R>): Promise<R>;
+export async function reduce<T, U>(array: readonly T[], callback: (accumulator: U, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<U>, initialValue: U): Promise<U>;
+export async function reduce<T, U>(array: T[] | readonly T[], callback: (accumulator: T | U, currentValue: T, currentIndex: number, array: readonly T[]) => Promise<T | U>, initialValue?: T | U): Promise<T | U> {
   const hadInitialValue = typeof initialValue === 'undefined';
   const startingIndex = hadInitialValue ? 1 : 0;
 

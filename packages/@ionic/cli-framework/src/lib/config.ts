@@ -12,11 +12,11 @@ export interface BaseConfigOptions {
    * For example, to operate on `c` object within `{ a: { b: { c: {} } } }`,
    * use `pathPrefix` of `['a', 'b', 'c']`.
    */
-  pathPrefix?: ReadonlyArray<string>;
+  pathPrefix?: readonly string[];
 }
 
 export abstract class BaseConfig<T extends object> {
-  protected readonly pathPrefix: ReadonlyArray<string>;
+  protected readonly pathPrefix: readonly string[];
 
   constructor(readonly p: string, { pathPrefix = [] }: BaseConfigOptions = {}) {
     this.pathPrefix = pathPrefix;

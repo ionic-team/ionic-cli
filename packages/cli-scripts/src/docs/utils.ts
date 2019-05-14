@@ -9,7 +9,7 @@ interface CodePair {
 }
 
 interface Color {
-  _styles: ReadonlyArray<CodePair>;
+  _styles: readonly CodePair[];
 }
 
 type ColorRegistry = { [K in keyof Colors]: Color };
@@ -29,7 +29,7 @@ export function ansi2md(str: string) {
   return str;
 }
 
-function convertAnsiToMd(str: string, styles: ReadonlyArray<CodePair>, md: CodePair) {
+function convertAnsiToMd(str: string, styles: readonly CodePair[], md: CodePair) {
   const start = styles.map(style => style.open).join('');
   const end = [...styles].reverse().map(style => style.close).join('');
   const re = new RegExp(escapeStringRegexp(start) + '(.*?)' + escapeStringRegexp(end) , 'g');

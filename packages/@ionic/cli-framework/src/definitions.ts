@@ -1,4 +1,3 @@
-import * as ζobject from '@ionic/utils-object';
 import { Opts as ParseArgsOptions, ParsedArgs } from 'minimist';
 
 export type ParsedArg = string | boolean | null | undefined | string[];
@@ -91,8 +90,8 @@ export interface ICommand<C extends ICommand<C, N, M, I, O>, N extends INamespac
 
 export type CommandMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<C>;
 export type NamespaceMapGetter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = () => Promise<N>;
-export type ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = ζobject.AliasedMap<string, CommandMapGetter<C, N, M, I, O>>;
-export type INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = ζobject.AliasedMap<string, NamespaceMapGetter<C, N, M, I, O>>;
+export type ICommandMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = import('@ionic/utils-object').AliasedMap<string, CommandMapGetter<C, N, M, I, O>>;
+export type INamespaceMap<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = import('@ionic/utils-object').AliasedMap<string, NamespaceMapGetter<C, N, M, I, O>>;
 
 export interface NamespaceLocateOptions {
   useAliases?: boolean;
@@ -102,42 +101,42 @@ export interface INamespace<C extends ICommand<C, N, M, I, O>, N extends INamesp
   root: N;
   parent: N | undefined;
 
-  locate(argv: ReadonlyArray<string>, options?: NamespaceLocateOptions): Promise<NamespaceLocateResult<C, N, M, I, O>>;
+  locate(argv: readonly string[], options?: NamespaceLocateOptions): Promise<NamespaceLocateResult<C, N, M, I, O>>;
   getMetadata(): Promise<NamespaceMetadata>;
   getNamespaces(): Promise<INamespaceMap<C, N, M, I, O>>;
 
   getCommands(): Promise<ICommandMap<C, N, M, I, O>>;
-  getCommandMetadataList(): Promise<ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>>;
-  groupCommandsByNamespace(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<ReadonlyArray<HydratedNamespaceMetadata<C, N, M, I, O> & { commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>; }>>;
+  getCommandMetadataList(): Promise<readonly HydratedCommandMetadata<C, N, M, I, O>[]>;
+  groupCommandsByNamespace(commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<readonly (HydratedNamespaceMetadata<C, N, M, I, O> & { commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]; })[]>;
 }
 
 export type CommandPathItem<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = [string, C | N];
 
 export interface NamespaceLocateResult<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   readonly obj: C | N;
-  readonly args: ReadonlyArray<string>;
-  readonly path: ReadonlyArray<CommandPathItem<C, N, M, I, O>>;
+  readonly args: readonly string[];
+  readonly path: readonly CommandPathItem<C, N, M, I, O>[];
 }
 
 export type HydratedCommandMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> = M & {
   readonly command: C;
   readonly namespace: N;
-  readonly path: ReadonlyArray<CommandPathItem<C, N, M, I, O>>;
-  readonly aliases: ReadonlyArray<string>;
+  readonly path: readonly CommandPathItem<C, N, M, I, O>[];
+  readonly aliases: readonly string[];
 };
 
 export interface NamespaceMetadata extends Metadata {}
 
 export interface HydratedNamespaceMetadata<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends Required<Readonly<NamespaceMetadata>> {
   readonly namespace: N;
-  readonly aliases: ReadonlyArray<string>;
+  readonly aliases: readonly string[];
 }
 
 export interface IExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   readonly namespace: N;
 
-  execute(argv: ReadonlyArray<string>, env: NodeJS.ProcessEnv): Promise<void>;
-  run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
+  execute(argv: readonly string[], env: NodeJS.ProcessEnv): Promise<void>;
+  run(command: C, cmdargs: readonly string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
 }
 
 export interface PackageJson {

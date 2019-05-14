@@ -5,10 +5,6 @@ import { Project } from '../';
 import { IAilmentRegistry, InfoItem } from '../../../definitions';
 import { strong } from '../../color';
 
-import * as ζbuild from './build';
-import * as ζgenerate from './generate';
-import * as ζserve from './serve';
-
 const debug = Debug('ionic:lib:project:ionic-angular');
 
 export class IonicAngularProject extends Project {
@@ -63,19 +59,19 @@ export class IonicAngularProject extends Project {
     return false;
   }
 
-  async requireBuildRunner(): Promise<ζbuild.IonicAngularBuildRunner> {
+  async requireBuildRunner(): Promise<import('./build').IonicAngularBuildRunner> {
     const { IonicAngularBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };
     return new IonicAngularBuildRunner(deps);
   }
 
-  async requireServeRunner(): Promise<ζserve.IonicAngularServeRunner> {
+  async requireServeRunner(): Promise<import('./serve').IonicAngularServeRunner> {
     const { IonicAngularServeRunner } = await import('./serve');
     const deps = { ...this.e, project: this };
     return new IonicAngularServeRunner(deps);
   }
 
-  async requireGenerateRunner(): Promise<ζgenerate.IonicAngularGenerateRunner> {
+  async requireGenerateRunner(): Promise<import('./generate').IonicAngularGenerateRunner> {
     const { IonicAngularGenerateRunner } = await import('./generate');
     const deps = { ...this.e, project: this };
     return new IonicAngularGenerateRunner(deps);

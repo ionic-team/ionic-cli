@@ -96,8 +96,8 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
    *
    * @param argv The set of command-line arguments to use to locate.
    */
-  async locate(argv: ReadonlyArray<string>, { useAliases = true }: NamespaceLocateOptions = {}): Promise<NamespaceLocateResult<C, N, M, I, O>> {
-    const _locate = async (inputs: ReadonlyArray<string>, parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<NamespaceLocateResult<C, N, M, I, O>> => {
+  async locate(argv: readonly string[], { useAliases = true }: NamespaceLocateOptions = {}): Promise<NamespaceLocateResult<C, N, M, I, O>> {
+    const _locate = async (inputs: readonly string[], parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<NamespaceLocateResult<C, N, M, I, O>> => {
       const [ key ] = inputs;
       const children = await parent.getNamespaces();
       const nsgetter = useAliases ? children.resolveAlias(key) : children.get(key);
@@ -144,7 +144,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
   /**
    * Get all command metadata in a flat structure.
    */
-  async getCommandMetadataList(): Promise<ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>> {
+  async getCommandMetadataList(): Promise<readonly HydratedCommandMetadata<C, N, M, I, O>[]> {
     const _getCommandMetadataList = async (parent: N, path: CommandPathItem<C, N, M, I, O>[]): Promise<HydratedCommandMetadata<C, N, M, I, O>[]> => {
       const commandsInNamespace = await parent.getCommands();
       const commandAliasesInNamespace = commandsInNamespace.getAliases();
@@ -206,7 +206,7 @@ export abstract class BaseNamespace<C extends ICommand<C, N, M, I, O>, N extends
     return _getCommandMetadataList(this as any, [[metadata.name, this as any]]);
   }
 
-  async groupCommandsByNamespace(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<ReadonlyArray<HydratedNamespaceMetadata<C, N, M, I, O> & { commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>; }>> {
+  async groupCommandsByNamespace(commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<readonly (HydratedNamespaceMetadata<C, N, M, I, O> & { commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]; })[]> {
     const summaries = new Map<string, string>();
     const grouped = new Map<string, HydratedNamespaceMetadata<C, N, M, I, O> & { commands: HydratedCommandMetadata<C, N, M, I, O>[]; }>();
 

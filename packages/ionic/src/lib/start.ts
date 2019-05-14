@@ -100,49 +100,49 @@ export function getAdvertisement(): string {
 
 function getAppflowAdvertisement(): string {
   return `
-  ┌────────────────────────────────────────────────────────────┐
-  │                                                            │
-  │     ${title('Ionic Appflow')}, the mobile DevOps solution by Ionic     │
-  │                                                            │
-  │        Continuously build, deploy, and ship apps ${emoji('🚀', ' ')}        │
-  │     Focus on building apps while we automate the rest ${emoji('🎁', ' ')}   │
-  │                                                            │
-  │     ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/appflow')} ${emoji(' 👈', '')}              │
-  │                                                            │
-  └────────────────────────────────────────────────────────────┘
+  ──────────────────────────────────────────────────────────────
+
+        ${title('Ionic Appflow')}, the mobile DevOps solution by Ionic
+
+           Continuously build, deploy, and ship apps ${emoji('🚀', ' ')}
+        Focus on building apps while we automate the rest ${emoji('🎁', ' ')}
+
+        ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/appflow')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────
 `;
 }
 
 function getAdvisoryAdvertisement(): string {
   return `
-  ┌────────────────────────────────────────────────────────────────────────────┐
-  │                                                                            │
-  │      ${title('Ionic Advisory')}, tailored solutions and expert services by Ionic       │
-  │                                                                            │
-  │                          Go to market faster ${emoji('🏆', ' ')}                            │
-  │                 Real-time troubleshooting and guidance ${emoji('💁', ' ')}                  │
-  │     Custom training, best practices, code and architecture reviews ${emoji('🔎', ' ')}      │
-  │   Customized strategies for every phase of the development lifecycle ${emoji('🔮', ' ')}    │
-  │                                                                            │
-  │            ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/advisory')} ${emoji(' 👈', '')}                      │
-  │                                                                            │
-  └────────────────────────────────────────────────────────────────────────────┘
+  ──────────────────────────────────────────────────────────────────────────────
+
+         ${title('Ionic Advisory')}, tailored solutions and expert services by Ionic
+
+                             Go to market faster ${emoji('🏆', ' ')}
+                    Real-time troubleshooting and guidance ${emoji('💁', ' ')}
+        Custom training, best practices, code and architecture reviews ${emoji('🔎', ' ')}
+      Customized strategies for every phase of the development lifecycle ${emoji('🔮', ' ')}
+
+               ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/advisory')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────────────────────
 `;
 }
 
 function getEnterpriseAdvertisement(): string {
   return `
-  ┌────────────────────────────────────────────────────────────────────┐
-  │                                                                    │
-  │    ${title('Ionic Enterprise')}, platform and solutions for teams by Ionic     │
-  │                                                                    │
-  │                Powerful library of native APIs ${emoji('⚡️', '')}                  │
-  │               A supercharged platform for teams ${emoji('💪', '')}                 │
-  │     Bring your company's designs to life with Design Systems ${emoji('🎨', '')}    │
-  │                                                                    │
-  │       ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/enterprise')} ${emoji(' 👈', '')}                 │
-  │                                                                    │
-  └────────────────────────────────────────────────────────────────────┘
+  ──────────────────────────────────────────────────────────────────────
+
+      ${title('Ionic Enterprise')}, platform and solutions for teams by Ionic
+
+                  Powerful library of native APIs ${emoji('⚡️', '')}
+                 A supercharged platform for teams ${emoji('💪', '')}
+       Bring your company's designs to life with Design Systems ${emoji('🎨', '')}
+
+         ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/enterprise')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────────────
 `;
 }
 
@@ -162,10 +162,10 @@ export function getStarterProjectTypes(): string[] {
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
-    name: 'blank',
+    name: 'tabs',
     type: 'angular',
-    description: 'A blank starter project',
-    id: 'angular-official-blank',
+    description: 'A starting project with a simple tabbed interface',
+    id: 'angular-official-tabs',
   },
   {
     name: 'sidemenu',
@@ -174,10 +174,10 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'angular-official-sidemenu',
   },
   {
-    name: 'tabs',
+    name: 'blank',
     type: 'angular',
-    description: 'A starting project with a simple tabbed interface',
-    id: 'angular-official-tabs',
+    description: 'A blank starter project',
+    id: 'angular-official-blank',
   },
   {
     name: 'blank',
@@ -204,16 +204,16 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'ionic-angular-official-tabs',
   },
   {
-    name: 'blank',
-    type: 'ionic-angular',
-    description: 'A blank starter project',
-    id: 'ionic-angular-official-blank',
-  },
-  {
     name: 'sidemenu',
     type: 'ionic-angular',
     description: 'A starting project with a side menu with navigation in the content area',
     id: 'ionic-angular-official-sidemenu',
+  },
+  {
+    name: 'blank',
+    type: 'ionic-angular',
+    description: 'A blank starter project',
+    id: 'ionic-angular-official-blank',
   },
   {
     name: 'super',
@@ -240,16 +240,16 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'ionic1-official-tabs',
   },
   {
-    name: 'blank',
-    type: 'ionic1',
-    description: 'A blank starter project for Ionic',
-    id: 'ionic1-official-blank',
-  },
-  {
     name: 'sidemenu',
     type: 'ionic1',
     description: 'A starting project for Ionic using a side menu with navigation in the content area',
     id: 'ionic1-official-sidemenu',
+  },
+  {
+    name: 'blank',
+    type: 'ionic1',
+    description: 'A blank starter project for Ionic',
+    id: 'ionic1-official-blank',
   },
   {
     name: 'maps',

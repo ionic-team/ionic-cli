@@ -3,7 +3,7 @@ import * as Debug from 'debug';
 const debug = Debug('ionic:lib:open');
 
 export interface OpenOptions {
-  app?: string | ReadonlyArray<string>;
+  app?: string | readonly string[];
 }
 
 export async function open(target: string, options: OpenOptions = {}): Promise<void> {

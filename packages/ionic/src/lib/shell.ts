@@ -1,7 +1,7 @@
 import { LOGGER_LEVELS } from '@ionic/cli-framework';
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/utils-process';
 import { combineStreams } from '@ionic/utils-stream';
-import { ERROR_COMMAND_NOT_FOUND, Subprocess, SubprocessError, which } from '@ionic/utils-subprocess';
+import { ERROR_COMMAND_NOT_FOUND, Subprocess, SubprocessError, SubprocessOptions, WhichOptions, which } from '@ionic/utils-subprocess';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import chalk from 'chalk';
 import { ChildProcess, SpawnOptions } from 'child_process';
@@ -32,13 +32,12 @@ export class Shell implements IShell {
     this.alterPath = options && options.alterPath ? options.alterPath : (p: string) => p;
   }
 
-  async run(command: string, args: string[], { stream, killOnExit = true, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
+  async run(command: string, args: readonly string[], { stream, killOnExit = true, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
     this.prepareSpawnOptions(crossSpawnOptions);
 
-    const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
-    const cmd = new Subprocess(cmdpath, args, crossSpawnOptions);
+    const proc = await this.createSubprocess(command, args, crossSpawnOptions);
 
-    const fullCmd = cmd.bashify();
+    const fullCmd = proc.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
@@ -48,7 +47,7 @@ export class Shell implements IShell {
     const ws = stream ? stream : this.e.log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
     try {
-      const promise = cmd.run();
+      const promise = proc.run();
 
       if (promise.p.stdout) {
         const s = combineStreams(split2(), ws);
@@ -124,11 +123,9 @@ export class Shell implements IShell {
     }
   }
 
-  async output(command: string, args: string[], { fatalOnNotFound = true, fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
-    const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
-    const cmd = new Subprocess(cmdpath, args, crossSpawnOptions);
-
-    const fullCmd = cmd.bashify();
+  async output(command: string, args: readonly string[], { fatalOnNotFound = true, fatalOnError = true, showError = true, showCommand = false, ...crossSpawnOptions }: IShellOutputOptions): Promise<string> {
+    const proc = await this.createSubprocess(command, args, crossSpawnOptions);
+    const fullCmd = proc.bashify();
     const truncatedCmd = fullCmd.length > 80 ? fullCmd.substring(0, 80) + '...' : fullCmd;
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
@@ -136,7 +133,7 @@ export class Shell implements IShell {
     }
 
     try {
-      return await cmd.output();
+      return await proc.output();
     } catch (e) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
@@ -175,7 +172,7 @@ export class Shell implements IShell {
   async resolveCommandPath(command: string, options: SpawnOptions): Promise<string> {
     if (TERMINAL_INFO.windows) {
       try {
-        return await which(command, { PATH: options.env.PATH });
+        return await this.which(command, { PATH: options.env && options.env.PATH ? options.env.PATH : process.env.PATH });
       } catch (e) {
         // ignore
       }
@@ -184,33 +181,42 @@ export class Shell implements IShell {
     return command;
   }
 
-  async spawn(command: string, args: string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<ChildProcess> {
+  async which(command: string, { PATH = process.env.PATH }: WhichOptions = {}): Promise<string> {
+    return which(command, { PATH: this.alterPath(PATH || '') });
+  }
+
+  async spawn(command: string, args: readonly string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<ChildProcess> {
     this.prepareSpawnOptions(crossSpawnOptions);
 
-    const cmdpath = await this.resolveCommandPath(command, crossSpawnOptions);
-    const cmd = new Subprocess(cmdpath, args, crossSpawnOptions);
-    const p = cmd.spawn();
+    const proc = await this.createSubprocess(command, args, crossSpawnOptions);
+    const p = proc.spawn();
 
     if (showCommand && this.e.log.level >= LOGGER_LEVELS.INFO) {
-      this.e.log.rawmsg(`> ${input(cmd.bashify())}`);
+      this.e.log.rawmsg(`> ${input(proc.bashify())}`);
     }
 
     return p;
   }
 
-  async cmdinfo(command: string, args: string[] = []): Promise<string | undefined> {
+  async cmdinfo(command: string, args: readonly string[] = []): Promise<string | undefined> {
     const opts: IShellSpawnOptions = {};
     this.prepareSpawnOptions(opts);
 
-    const cmdpath = await this.resolveCommandPath(command, opts);
-    const cmd = new Subprocess(cmdpath, args, opts);
+    const proc = await this.createSubprocess(command, args, opts);
 
     try {
-      const out = await cmd.output();
+      const out = await proc.output();
       return out.split('\n').join(' ').trim();
     } catch (e) {
       // no command info at this point
     }
+  }
+
+  async createSubprocess(command: string, args: readonly string[] = [], options: SubprocessOptions = {}): Promise<Subprocess> {
+    const cmdpath = await this.resolveCommandPath(command, options);
+    const proc = new Subprocess(cmdpath, args, options);
+
+    return proc;
   }
 
   protected prepareSpawnOptions(options: IShellSpawnOptions) {

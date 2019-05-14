@@ -12,7 +12,7 @@ const debug = Debug('ionic:lib:build');
 
 export const BUILD_SCRIPT = 'ionic:build';
 
-export const COMMON_BUILD_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+export const COMMON_BUILD_COMMAND_OPTIONS: readonly CommandMetadataOption[] = [
   {
     name: 'engine',
     summary: `Target engine (e.g. ${['browser', 'cordova'].map(e => input(e)).join(', ')})`,

@@ -4,14 +4,13 @@ import * as lodash from 'lodash';
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
 import { BaseError, InputValidationError } from '../errors';
 import { isCommand, isNamespace } from '../guards';
-import * as ζipc from '../utils/ipc';
 
 import { Colors, DEFAULT_COLORS } from './colors';
 import { Command, Namespace } from './command';
 import { CommandHelpSchema, CommandSchemaHelpFormatter, CommandStringHelpFormatter, HelpFormatter, NamespaceHelpSchema, NamespaceSchemaHelpFormatter, NamespaceStringHelpFormatter } from './help';
 import { metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from './options';
 
-export type HelpRPC<S extends CommandHelpSchema | NamespaceHelpSchema> = ζipc.RPC<'help', [ReadonlyArray<string>], S>;
+export type HelpRPC<S extends CommandHelpSchema | NamespaceHelpSchema> = import('../utils/ipc').RPC<'help', [readonly string[]], S>;
 
 export interface ExecutorOperations {
   readonly RPC: string;
@@ -24,8 +23,8 @@ export const EXECUTOR_OPS: ExecutorOperations = Object.freeze({
 export abstract class AbstractExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends EventEmitter implements IExecutor<C, N, M, I, O> {
   abstract readonly namespace: N;
 
-  abstract execute(argv: ReadonlyArray<string>, env: NodeJS.ProcessEnv): Promise<void>;
-  abstract run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
+  abstract execute(argv: readonly string[], env: NodeJS.ProcessEnv): Promise<void>;
+  abstract run(command: C, cmdargs: readonly string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
 }
 
 export interface BaseExecutorFormatHelpOptions {
@@ -40,8 +39,8 @@ export interface BaseExecutorDeps<C extends ICommand<C, N, M, I, O>, N extends I
 }
 
 export interface BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends AbstractExecutor<C, N, M, I, O> {
-  on(event: 'operation-rpc', callback: (rpc: ζipc.RPCProcess) => void): this;
-  emit(event: 'operation-rpc', rpc: ζipc.RPCProcess): boolean;
+  on(event: 'operation-rpc', callback: (rpc: import('../utils/ipc').RPCProcess) => void): this;
+  emit(event: 'operation-rpc', rpc: import('../utils/ipc').RPCProcess): boolean;
 }
 
 export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends AbstractExecutor<C, N, M, I, O> {
@@ -69,7 +68,7 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
    *             executor. Usually, this means `process.argv.slice(2)`.
    * @param env Environment variables for this execution.
    */
-  async execute(argv: ReadonlyArray<string>, env: NodeJS.ProcessEnv): Promise<void> {
+  async execute(argv: readonly string[], env: NodeJS.ProcessEnv): Promise<void> {
     if (argv[0] === EXECUTOR_OPS.RPC) {
       return this.rpc();
     }
@@ -98,7 +97,7 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     }
   }
 
-  async run(command: C, cmdargs: ReadonlyArray<string>, runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void> {
+  async run(command: C, cmdargs: readonly string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void> {
     const { input } = this.colors;
     const metadata = await command.getMetadata();
     const cmdoptions = parseArgs([...cmdargs], metadataOptionsToParseArgsOptions(metadata.options ? metadata.options : []));

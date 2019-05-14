@@ -17,7 +17,7 @@ export { ParsedArgs } from 'minimist';
  * behavior can be disabled by setting the `includeSeparated` option to
  * `false`.
  */
-export function stripOptions(pargv: ReadonlyArray<string>, { includeSeparated = true }: { includeSeparated?: boolean; }): string[] {
+export function stripOptions(pargv: readonly string[], { includeSeparated = true }: { includeSeparated?: boolean; }): string[] {
   const r = /^\-/;
   const [ ownArgs, otherArgs ] = separateArgv(pargv);
   const filteredArgs = ownArgs.filter(arg => !r.test(arg));
@@ -40,7 +40,7 @@ export function stripOptions(pargv: ReadonlyArray<string>, { includeSeparated = 
  * For example, `['cmd', 'arg1', '--', 'arg2']` will be split into
  * `['cmd', 'arg1']` and `['arg2']`.
  */
-export function separateArgv(pargv: ReadonlyArray<string>): [string[], string[]] {
+export function separateArgv(pargv: readonly string[]): [string[], string[]] {
   const ownArgs = [...pargv];
   const otherArgs: string[] = [];
   const sepIndex = pargv.indexOf('--');
@@ -98,7 +98,7 @@ export function formatOptionName<O extends CommandMetadataOption>(opt: O, { show
   );
 }
 
-export function metadataOptionsToParseArgsOptions(commandOptions: ReadonlyArray<CommandMetadataOption>): HydratedParseArgsOptions {
+export function metadataOptionsToParseArgsOptions(commandOptions: readonly CommandMetadataOption[]): HydratedParseArgsOptions {
   const options: HydratedParseArgsOptions = {
     string: ['_'],
     boolean: [],
@@ -147,7 +147,7 @@ export namespace OptionFilters {
  *
  * @param predicate If excluded, `() => true` is used.
  */
-export function filterCommandLineOptions<O extends CommandMetadataOption>(options: ReadonlyArray<O>, parsedArgs: CommandLineOptions, predicate: OptionPredicate<O> = () => true): CommandLineOptions {
+export function filterCommandLineOptions<O extends CommandMetadataOption>(options: readonly O[], parsedArgs: CommandLineOptions, predicate: OptionPredicate<O> = () => true): CommandLineOptions {
   const initial: CommandLineOptions = { _: parsedArgs._ };
 
   if (parsedArgs['--']) {
@@ -176,7 +176,7 @@ export function filterCommandLineOptions<O extends CommandMetadataOption>(option
  *
  * @param groups One or more option groups.
  */
-export function filterCommandLineOptionsByGroup<O extends CommandMetadataOption>(options: ReadonlyArray<O>, parsedArgs: CommandLineOptions, groups: string | string[]): CommandLineOptions {
+export function filterCommandLineOptionsByGroup<O extends CommandMetadataOption>(options: readonly O[], parsedArgs: CommandLineOptions, groups: string | string[]): CommandLineOptions {
   return filterCommandLineOptions(options, parsedArgs, OptionFilters.includesGroups(groups));
 }
 

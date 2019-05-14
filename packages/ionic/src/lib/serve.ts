@@ -41,7 +41,7 @@ export const BROWSERS = ['safari', 'firefox', process.platform === 'win32' ? 'ch
 // npm script name
 export const SERVE_SCRIPT = 'ionic:serve';
 
-export const COMMON_SERVE_COMMAND_OPTIONS: ReadonlyArray<CommandMetadataOption> = [
+export const COMMON_SERVE_COMMAND_OPTIONS: readonly CommandMetadataOption[] = [
   {
     name: 'address',
     summary: 'Use specific address for the dev server',

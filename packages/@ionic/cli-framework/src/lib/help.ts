@@ -37,7 +37,7 @@ function formatFootnote(index: number, footnote: Footnote, colors: Colors = DEFA
   return `${prefix}: ${output}`;
 }
 
-function formatFootnotes(text: string, footnotes?: ReadonlyArray<Footnote>, colors: Colors = DEFAULT_COLORS): string {
+function formatFootnotes(text: string, footnotes?: readonly Footnote[], colors: Colors = DEFAULT_COLORS): string {
   if (!footnotes) {
     return text;
   }
@@ -197,7 +197,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     return this.formatCommandGroup('Commands', commands);
   }
 
-  async formatCommandGroup(titleText: string, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
+  async formatCommandGroup(titleText: string, commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<string> {
     const { help: { title } } = this.colors;
 
     const filteredCommands = await filter(commands, async cmd => this.filterCommandCallback(cmd));
@@ -221,7 +221,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     );
   }
 
-  async getListOfCommandDetails(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
+  async getListOfCommandDetails(commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<string[]> {
     const { weak, input } = this.colors;
     const fullCmd = commands.map(cmd => lodash.tail(cmd.path).map(([p]) => p).join(' '));
     const fillStringArray = generateFillSpaceStringList(fullCmd, this.dotswidth, weak('.'));
@@ -244,7 +244,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     return formattedCommands;
   }
 
-  async getListOfNamespaceDetails(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string[]> {
+  async getListOfNamespaceDetails(commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<string[]> {
     const { weak, input } = this.colors;
 
     const namespaces = await this.namespace.groupCommandsByNamespace(commands);
@@ -312,7 +312,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
    * @param meta The metadata of the namespace.
    * @param commands An array of the metadata of the namespace's commands.
    */
-  async formatBeforeNamespaceSummary(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
+  async formatBeforeNamespaceSummary(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<string> {
     return formatHelpGroups(meta.groups, this.colors);
   }
 
@@ -322,7 +322,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
    * @param meta The metadata of the namespace.
    * @param commands An array of the metadata of the namespace's commands.
    */
-  async formatAfterNamespaceSummary(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<string> {
+  async formatAfterNamespaceSummary(meta: HydratedNamespaceMetadata<C, N, M, I, O>, commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<string> {
     const { weak, input } = this.colors;
 
     const formattedSubcommands = commands.length > 0 ? `${weak('(subcommands:')} ${commands.map(c => input(c.name)).join(', ')}${weak(')')}` : '';
@@ -610,9 +610,9 @@ export interface NamespaceHelpSchema {
   readonly name: string;
   readonly summary: string;
   readonly description: string;
-  readonly groups: ReadonlyArray<string>;
+  readonly groups: readonly string[];
   readonly commands: CommandHelpSchema[];
-  readonly aliases: ReadonlyArray<string>;
+  readonly aliases: readonly string[];
 }
 
 export class NamespaceSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends NamespaceHelpFormatter<C, N, M, I, O> {
@@ -634,7 +634,7 @@ export class NamespaceSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
     };
   }
 
-  async formatCommandGroup(commands: ReadonlyArray<HydratedCommandMetadata<C, N, M, I, O>>): Promise<CommandHelpSchema[]> {
+  async formatCommandGroup(commands: readonly HydratedCommandMetadata<C, N, M, I, O>[]): Promise<CommandHelpSchema[]> {
     const filteredCommands = await filter(commands, async cmd => this.filterCommandCallback(cmd));
 
     return map(filteredCommands, async cmd => this.formatCommand(cmd));
@@ -662,8 +662,8 @@ export interface CommandHelpSchemaInput {
 export interface CommandHelpSchemaOption {
   readonly name: string;
   readonly summary: string;
-  readonly groups: ReadonlyArray<string>;
-  readonly aliases: ReadonlyArray<string>;
+  readonly groups: readonly string[];
+  readonly aliases: readonly string[];
   readonly type: string;
   readonly default?: string | boolean;
   readonly spec: {
@@ -688,15 +688,15 @@ export type CommandHelpSchemaFootnote = CommandHelpSchemaFootnoteText | CommandH
 
 export interface CommandHelpSchema {
   readonly name: string;
-  readonly namespace: ReadonlyArray<string>;
+  readonly namespace: readonly string[];
   readonly summary: string;
   readonly description: string;
-  readonly footnotes: ReadonlyArray<CommandHelpSchemaFootnote>;
-  readonly groups: ReadonlyArray<string>;
-  readonly exampleCommands: ReadonlyArray<string>;
-  readonly aliases: ReadonlyArray<string>;
-  readonly inputs: ReadonlyArray<CommandHelpSchemaInput>;
-  readonly options: ReadonlyArray<CommandHelpSchemaOption>;
+  readonly footnotes: readonly CommandHelpSchemaFootnote[];
+  readonly groups: readonly string[];
+  readonly exampleCommands: readonly string[];
+  readonly aliases: readonly string[];
+  readonly inputs: readonly CommandHelpSchemaInput[];
+  readonly options: readonly CommandHelpSchemaOption[];
 }
 
 export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends CommandHelpFormatter<C, N, M, I, O> {
@@ -710,7 +710,7 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     return this.formatCommand(metadata);
   }
 
-  async formatInputs(inputs: ReadonlyArray<I>): Promise<ReadonlyArray<CommandHelpSchemaInput>> {
+  async formatInputs(inputs: readonly I[]): Promise<readonly CommandHelpSchemaInput[]> {
     return Promise.all(inputs.map(async input => this.formatInput(input)));
   }
 
@@ -722,7 +722,7 @@ export class CommandSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     return { name, summary, required };
   }
 
-  async formatOptions(options: ReadonlyArray<O>): Promise<ReadonlyArray<CommandHelpSchemaOption>> {
+  async formatOptions(options: readonly O[]): Promise<readonly CommandHelpSchemaOption[]> {
     const filteredOptions = await filter(options, async opt => this.filterOptionCallback(opt));
 
     return Promise.all(filteredOptions.map(async opt => this.formatOption(opt)));
