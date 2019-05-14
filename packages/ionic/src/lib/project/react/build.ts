@@ -1,3 +1,5 @@
+import { MetadataGroup } from '@ionic/cli-framework';
+
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, ReactBuildOptions } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 import { input } from '../../color';
@@ -46,6 +48,7 @@ export class ReactBuildRunner extends BuildRunner<ReactBuildOptions> {
           type: Boolean,
         },
       ],
+      groups: [MetadataGroup.BETA],
     };
   }
 

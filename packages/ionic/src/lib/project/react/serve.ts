@@ -46,6 +46,7 @@ export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
           groups: [MetadataGroup.HIDDEN],
         },
       ],
+      groups: [MetadataGroup.BETA],
     };
   }
 
