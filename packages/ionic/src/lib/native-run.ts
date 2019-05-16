@@ -14,9 +14,10 @@ export interface NativeRunSchema {
   packagePath: string;
   platform: string;
   portForward?: string | number;
+  consolelogsPortForward?: string | number;
 }
 
-export function createNativeRunArgs({ packagePath, platform, portForward }: NativeRunSchema, options: CommandLineOptions): string[] {
+export function createNativeRunArgs({ packagePath, platform, portForward, consolelogsPortForward }: NativeRunSchema, options: CommandLineOptions): string[] {
   const opts = [platform, '--app', packagePath];
   const target = options['target'] ? String(options['target']) : undefined;
 
@@ -32,6 +33,9 @@ export function createNativeRunArgs({ packagePath, platform, portForward }: Nati
 
   if (!options['livereload-url'] && portForward) {
     opts.push('--forward', `${portForward}:${portForward}`);
+  }
+  if (options['consolelogs'] && consolelogsPortForward) {
+    opts.push('--forward', `${consolelogsPortForward}:${consolelogsPortForward}`)
   }
 
   if (options['json']) {

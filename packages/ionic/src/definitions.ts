@@ -672,6 +672,7 @@ export interface ServeDetails {
   port: number;
   externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
+  consolelogsPort?: number;
 }
 
 export interface IAilment {

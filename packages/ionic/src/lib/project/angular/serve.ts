@@ -138,10 +138,13 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
 
     const port = options.port = await findClosestOpenPort(options.port);
+    let consolelogsPort;
 
+    if (options.consolelogs && options.consolelogsPort) {
+      consolelogsPort = options.consolelogsPort = await findClosestOpenPort(options.consolelogsPort);
+    }
     const ng = new AngularServeCLI(this.e);
     await ng.serve(options);
-
     return {
       custom: ng.resolvedProgram !== ng.program,
       protocol: options.ssl ? 'https' : 'http',
@@ -149,6 +152,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
       externalAddress: externalIP,
       externalNetworkInterfaces: availableInterfaces,
       port,
+      consolelogsPort,
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
   }

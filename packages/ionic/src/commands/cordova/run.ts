@@ -99,7 +99,6 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
 
     const serveRunner = this.project && await this.project.getServeRunner();
     const buildRunner = this.project && await this.project.getBuildRunner();
-
     if (buildRunner) {
       const libmetadata = await buildRunner.getCommandMetadata();
       groups = libmetadata.groups || [];
@@ -241,6 +240,8 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
   }
 
   protected async runServeDeploy(inputs: CommandLineInputs, options: CommandLineOptions) {
+
+
     const conf = await loadConfigXml(this.integration);
     const metadata = await this.getMetadata();
 
@@ -275,7 +276,9 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     if (options['native-run']) {
       const [ platform ] = inputs;
       const packagePath = await getPackagePath(conf.getProjectInfo().name, platform, !options['device']);
+
       const { port: portForward } = url.parse(livereloadUrl);
+      const consolelogsPortForward = options["consolelogs-port"] as string
 
       const buildOpts: IShellRunOptions = { stream: cordovalogws };
       // ignore very verbose compiler output unless --verbose (still pipe stderr)
@@ -284,7 +287,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       }
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), buildOpts);
-      await this.runNativeRun(createNativeRunArgs({ packagePath, platform, portForward }, options));
+      await this.runNativeRun(createNativeRunArgs({ packagePath, platform, portForward, consolelogsPortForward }, options));
     } else {
       await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
       await sleepForever();

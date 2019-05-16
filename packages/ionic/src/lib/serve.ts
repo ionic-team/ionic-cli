@@ -78,6 +78,13 @@ export const COMMON_SERVE_COMMAND_OPTIONS: readonly CommandMetadataOption[] = [
     default: false,
     groups: [MetadataGroup.ADVANCED],
   },
+  {
+    name: 'consolelogs-port',
+    summary: 'Port to use for console logs',
+    default: DEFAULT_DEV_LOGGER_PORT.toString(),
+    groups: [MetadataGroup.ADVANCED],
+
+  }
 ];
 
 export interface ServeRunnerDeps {
@@ -102,7 +109,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     return this.e.config.get('npmClient') === 'npm' ? new NpmServeCLI(this.e) : new YarnServeCLI(this.e);
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
+  createOptionsFromCommandLine(_inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
 
     if (options['devapp'] && options['address'] === DEFAULT_ADDRESS) {
@@ -748,8 +755,8 @@ export async function serve(deps: ServeRunnerDeps, inputs: CommandLineInputs, op
     }
 
     const opts = runner.createOptionsFromCommandLine(inputs, options);
-    const details = await runner.run(opts);
 
+    const details = await runner.run(opts);
     return details;
   } catch (e) {
     if (e instanceof RunnerException) {
