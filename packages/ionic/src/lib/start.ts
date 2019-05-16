@@ -238,6 +238,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'react-official-tabs',
   },
   {
+    name: 'conference',
+    projectType: 'react',
+    type: 'repo',
+    description: 'A kitchen-sink application that shows off all Ionic has to offer',
+    repo: 'https://github.com/ionic-team/ionic-react-conference-app',
+  },
+  {
     name: 'tabs',
     projectType: 'ionic-angular',
     type: 'managed',
