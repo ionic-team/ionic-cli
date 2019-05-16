@@ -2,11 +2,13 @@ import { columnar } from '@ionic/cli-framework/utils/format';
 import { readJson } from '@ionic/utils-fs';
 import * as lodash from 'lodash';
 
+import { PROJECT_TYPES } from '../constants';
 import { CommandLineOptions, IConfig, ILogger, ProjectType, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
 
 import { input, strong, title } from './color';
 import { FatalException } from './errors';
+import { prettyProjectName } from './project';
 import { emoji } from './utils/emoji';
 import { createRequest } from './utils/http';
 
@@ -36,8 +38,26 @@ export type AppSchema = NewAppSchema | ClonedAppSchema;
 export function verifyOptions(options: CommandLineOptions, { log }: { log: ILogger; }): void {
   // If the action is list then lets just end here.
   if (options['list']) {
-    const headers = ['name', 'project type', 'description'];
-    log.rawmsg(columnar(STARTER_TEMPLATES.map(({ name, type, description }) => [input(name), strong(type), description || '']), { headers }));
+    const headers = ['name', 'description'];
+    const typeOption = options['type'] ? String(options['type']) : undefined;
+
+    if (typeOption && !PROJECT_TYPES.includes(typeOption as ProjectType)) {
+      throw new FatalException(
+        `${input(typeOption)} is not a valid project type.\n` +
+        `Valid project types are: ${getStarterProjectTypes().map(type => input(type)).join(', ')}`
+      );
+    }
+
+    const starterTypes = typeOption ? [typeOption] : getStarterProjectTypes();
+
+    for (const starterType of starterTypes) {
+      const starters = STARTER_TEMPLATES.filter(template => template.type === starterType);
+
+      log.rawmsg(`\n${strong(`Starters for ${prettyProjectName(starterType)}`)} (${input(`--type=${starterType}`)})\n\n`);
+      log.rawmsg(columnar(starters.map(({ name, description }) => [input(name), description || '']), { headers }));
+      log.rawmsg('\n');
+    }
+
     throw new FatalException('', 0);
   }
 

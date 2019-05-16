@@ -3,7 +3,6 @@ import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
 import * as Debug from 'debug';
-import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { PROJECT_FILE } from '../constants';
@@ -74,7 +73,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         },
         {
           name: 'type',
-          summary: `Type of project to start (e.g. ${lodash.uniq(STARTER_TEMPLATES.map(t => t.type)).map(type => input(type)).join(', ')})`,
+          summary: `Type of project to start (e.g. ${getStarterProjectTypes().map(type => input(type)).join(', ')})`,
           type: String,
         },
         {
