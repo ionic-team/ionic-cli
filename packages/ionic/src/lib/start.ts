@@ -51,7 +51,7 @@ export function verifyOptions(options: CommandLineOptions, { log }: { log: ILogg
     const starterTypes = typeOption ? [typeOption] : getStarterProjectTypes();
 
     for (const starterType of starterTypes) {
-      const starters = STARTER_TEMPLATES.filter(template => template.type === starterType);
+      const starters = STARTER_TEMPLATES.filter(template => template.projectType === starterType);
 
       log.rawmsg(`\n${strong(`Starters for ${prettyProjectName(starterType)}`)} (${input(`--type=${starterType}`)})\n\n`);
       log.rawmsg(columnar(starters.map(({ name, description }) => [input(name), description || '']), { headers }));
@@ -177,103 +177,133 @@ export async function getStarterList(config: IConfig, tag = 'latest'): Promise<S
 }
 
 export function getStarterProjectTypes(): string[] {
-  return lodash.uniq(STARTER_TEMPLATES.map(t => t.type));
+  return lodash.uniq(STARTER_TEMPLATES.map(t => t.projectType));
 }
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'tabs',
-    type: 'angular',
+    projectType: 'angular',
+    type: 'managed',
     description: 'A starting project with a simple tabbed interface',
     id: 'angular-official-tabs',
   },
   {
     name: 'sidemenu',
-    type: 'angular',
+    projectType: 'angular',
+    type: 'managed',
     description: 'A starting project with a side menu with navigation in the content area',
     id: 'angular-official-sidemenu',
   },
   {
     name: 'blank',
-    type: 'angular',
+    projectType: 'angular',
+    type: 'managed',
     description: 'A blank starter project',
     id: 'angular-official-blank',
   },
   {
+    name: 'my-first-app',
+    projectType: 'angular',
+    type: 'repo',
+    description: 'An example application that builds a camera with gallery',
+    repo: 'https://github.com/ionic-team/photo-gallery-tutorial-ionic4',
+  },
+  {
+    name: 'conference',
+    projectType: 'angular',
+    type: 'repo',
+    description: 'A kitchen-sink application that shows off all Ionic has to offer',
+    repo: 'https://github.com/ionic-team/ionic-conference-app',
+  },
+  {
     name: 'blank',
-    type: 'react',
+    projectType: 'react',
+    type: 'managed',
     description: 'A blank starter project',
     id: 'react-official-blank',
   },
   {
     name: 'sidemenu',
-    type: 'react',
+    projectType: 'react',
+    type: 'managed',
     description: 'A starting project with a side menu with navigation in the content area',
     id: 'react-official-sidemenu',
   },
   {
     name: 'tabs',
-    type: 'react',
+    projectType: 'react',
+    type: 'managed',
     description: 'A starting project with a simple tabbed interface',
     id: 'react-official-tabs',
   },
   {
     name: 'tabs',
-    type: 'ionic-angular',
+    projectType: 'ionic-angular',
+    type: 'managed',
     description: 'A starting project with a simple tabbed interface',
     id: 'ionic-angular-official-tabs',
   },
   {
     name: 'sidemenu',
-    type: 'ionic-angular',
+    projectType: 'ionic-angular',
+    type: 'managed',
     description: 'A starting project with a side menu with navigation in the content area',
     id: 'ionic-angular-official-sidemenu',
   },
   {
     name: 'blank',
-    type: 'ionic-angular',
+    projectType: 'ionic-angular',
+    type: 'managed',
     description: 'A blank starter project',
     id: 'ionic-angular-official-blank',
   },
   {
     name: 'super',
-    type: 'ionic-angular',
+    projectType: 'ionic-angular',
+    type: 'managed',
     description: 'A starting project complete with pre-built pages, providers and best practices for Ionic development.',
     id: 'ionic-angular-official-super',
   },
   {
     name: 'tutorial',
-    type: 'ionic-angular',
+    projectType: 'ionic-angular',
+    type: 'managed',
     description: 'A tutorial based project that goes along with the Ionic documentation',
     id: 'ionic-angular-official-tutorial',
   },
   {
     name: 'aws',
-    type: 'ionic-angular',
+    projectType: 'ionic-angular',
+    type: 'managed',
     description: 'AWS Mobile Hub Starter',
     id: 'ionic-angular-official-aws',
   },
   {
     name: 'tabs',
-    type: 'ionic1',
+    projectType: 'ionic1',
+    type: 'managed',
     description: 'A starting project for Ionic using a simple tabbed interface',
     id: 'ionic1-official-tabs',
   },
   {
     name: 'sidemenu',
-    type: 'ionic1',
+    projectType: 'ionic1',
+    type: 'managed',
     description: 'A starting project for Ionic using a side menu with navigation in the content area',
     id: 'ionic1-official-sidemenu',
   },
   {
     name: 'blank',
-    type: 'ionic1',
+    projectType: 'ionic1',
+    type: 'managed',
     description: 'A blank starter project for Ionic',
     id: 'ionic1-official-blank',
   },
   {
     name: 'maps',
-    type: 'ionic1',
+    projectType: 'ionic1',
+    type: 'managed',
     description: 'An Ionic starter project using Google Maps and a side menu',
     id: 'ionic1-official-maps',
   },

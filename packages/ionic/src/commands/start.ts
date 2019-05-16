@@ -136,17 +136,16 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('../lib/session');
 
+    if (inputs[1]) {
+      const checkRepoTemplate = STARTER_TEMPLATES.find(t => t.name === inputs[1]);
+      if (checkRepoTemplate && checkRepoTemplate.type === 'repo') {
+        inputs[1] = checkRepoTemplate.repo;
+      }
+    }
+
     const cloned = isValidURL(inputs[1]);
 
     verifyOptions(options, this.env);
-
-    if (cloned) {
-      if (!options['git']) {
-        this.env.log.warn(`The ${input('--no-git')} option has no effect when cloning apps. Git must be used.`);
-      }
-
-      options['git'] = true;
-    }
 
     if (this.project && this.project.details.context === 'app') {
       const confirm = await this.env.prompt({
@@ -168,6 +167,14 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     const appflowId = options['id'] ? String(options['id']) : undefined;
 
     await this.validateProjectType(projectType);
+
+    if (cloned) {
+      if (!options['git']) {
+        this.env.log.warn(`The ${input('--no-git')} option has no effect when cloning apps. Git must be used.`);
+      }
+
+      options['git'] = true;
+    }
 
     if (options['v1'] || options['v2']) {
       throw new FatalException(
@@ -265,7 +272,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           name: 'template',
           message: 'Starter template:',
           choices: () => {
-            const starterTemplateList = STARTER_TEMPLATES.filter(st => st.type === projectType);
+            const starterTemplateList = STARTER_TEMPLATES.filter(st => st.projectType === projectType);
             const cols = columnar(starterTemplateList.map(({ name, description }) => [input(name), description || '']), {}).split('\n');
 
             if (starterTemplateList.length === 0) {
@@ -283,6 +290,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         });
 
         inputs[1] = template;
+
+        const checkRepoTemplate = STARTER_TEMPLATES.find(t => t.name === inputs[1]);
+        if (checkRepoTemplate && checkRepoTemplate.type === 'repo') {
+          return this.preRun(inputs, options);
+        }
+
       }
 
       this.schema = {
@@ -489,9 +502,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async findStarterTemplate(template: string, type: string, tag: string): Promise<ResolvedStarterTemplate> {
-    const starterTemplate = STARTER_TEMPLATES.find(t => t.type === type && t.name === template);
+    const starterTemplate = STARTER_TEMPLATES.find(t => t.projectType === type && t.name === template);
 
-    if (starterTemplate) {
+    if (starterTemplate && starterTemplate.type === 'managed') {
       return {
         ...starterTemplate,
         archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starterTemplate.id}.tar.gz`,
@@ -508,7 +521,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       tasks.end();
 
       return {
-        ...starter,
+        name: starter.name,
+        projectType: starter.type,
         archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starter.id}.tar.gz`,
       };
     } else {

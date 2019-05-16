@@ -821,14 +821,25 @@ export interface StarterList {
   }[];
 }
 
-export interface StarterTemplate {
+export interface BaseStarterTemplate {
   name: string;
-  type: ProjectType;
-  id: string;
+  projectType: ProjectType;
   description?: string;
 }
 
-export interface ResolvedStarterTemplate extends StarterTemplate {
+export interface RepoStarterTemplate extends BaseStarterTemplate {
+  type: 'repo';
+  repo: string;
+}
+
+export interface ManagedStarterTemplate extends BaseStarterTemplate {
+  type: 'managed';
+  id: string;
+}
+
+export type StarterTemplate = RepoStarterTemplate | ManagedStarterTemplate;
+
+export interface ResolvedStarterTemplate extends BaseStarterTemplate {
   archive: string;
 }
 
