@@ -98,7 +98,7 @@ aliases:
 
 defaults: &defaults
   docker:
-    - image: circleci/node:latest
+    - image: circleci/node:12
   working_directory: /tmp/workspace
 
 
@@ -152,8 +152,8 @@ jobs:
     docker:
       - image: circleci/node:10
 
-  # unit-test-node-latest:
-  #   <<: *unit-test-base
+  unit-test-node-12:
+    <<: *unit-test-base
 
   deploy:
     <<: *defaults
@@ -182,13 +182,13 @@ workflows:
           requires: [build]
       - unit-test-node-10:
           requires: [build]
-      # - unit-test-node-latest:
-      #     requires: [build]
+      - unit-test-node-12:
+          requires: [build]
       - deploy:
           requires:
             - unit-test-node-8
             - unit-test-node-10
-            # - unit-test-node-latest
+            - unit-test-node-12
           filters:
             branches:
               only: master
