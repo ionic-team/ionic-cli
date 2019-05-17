@@ -77,7 +77,7 @@ export function verifyOptions(options: CommandLineOptions, { log }: { log: ILogg
   }
 
   if (options['id']) {
-    if (!options['link']) {
+    if (options['link'] === false) {
       log.warn(`The ${input('--no-link')} option has no effect with ${input('--id')}. App must be linked.`);
     }
 
