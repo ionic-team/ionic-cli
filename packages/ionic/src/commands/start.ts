@@ -216,7 +216,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       inputs[1] = template;
     }
 
-    const starterTemplate = STARTER_TEMPLATES.find(t => t.name === inputs[1]);
+    const starterTemplate = STARTER_TEMPLATES.find(t => t.name === inputs[1] && t.projectType === projectType);
 
     if (starterTemplate && starterTemplate.type === 'repo') {
       inputs[1] = starterTemplate.repo;
