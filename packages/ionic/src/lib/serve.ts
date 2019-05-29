@@ -183,6 +183,8 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   }
 
   async run(options: T): Promise<ServeDetails> {
+    debug('serve options: %O', options);
+
     await this.beforeServe(options);
 
     const details = await this.serveProject(options);
@@ -220,6 +222,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     }
 
     emit('serve:ready', details);
+    debug('serve details: %O', details);
 
     this.scheduleAfterServe(options, details);
 
@@ -381,6 +384,12 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
           }
         }
       }
+    } else if (options.externalAddressRequired && LOCAL_ADDRESSES.includes(options.address)) {
+      this.e.log.warn(
+        'An external host may be required to serve for this target device/platform.\n' +
+        'If you get connection issues on your device or emulator, try connecting the device to the same Wi-Fi network and selecting an accessible IP address for your computer on that network.\n\n' +
+        `You can use ${input('--address=0.0.0.0')} to run the dev server on all network interfaces, in which case an external address will be selected.\n`
+      );
     }
 
     return [ chosenIP, availableInterfaces ];

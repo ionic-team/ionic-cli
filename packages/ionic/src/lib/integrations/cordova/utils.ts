@@ -42,16 +42,21 @@ export function filterArgumentsForCordova(metadata: CommandMetadata, options: Co
 }
 
 export function generateOptionsForCordovaBuild(metadata: CommandMetadata, inputs: CommandLineInputs, options: CommandLineOptions): CommandLineOptions {
-  const [ platform ] = inputs;
+  const platform = inputs[0] ? inputs[0] : (options['platform'] ? String(options['platform']) : undefined);
+
+  // iOS does not support port forwarding out-of-the-box like Android does.
+  // See https://github.com/ionic-team/native-run/issues/20
+  const externalAddressRequired = platform === 'ios' || !options['native-run'];
+
   const includesAppScriptsGroup = OptionFilters.includesGroups('app-scripts');
   const excludesCordovaGroup = OptionFilters.excludesGroups('cordova-cli');
   const results = filterCommandLineOptions(metadata.options ? metadata.options : [], options, o => excludesCordovaGroup(o) || includesAppScriptsGroup(o));
 
   return {
     ...results,
-    externalAddressRequired: options['native-run'] ? false : true,
+    externalAddressRequired,
     nobrowser: true,
     engine: 'cordova',
-    platform: platform ? platform : (options['platform'] ? String(options['platform']) : undefined),
+    platform,
   };
 }

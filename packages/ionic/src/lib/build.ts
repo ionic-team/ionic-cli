@@ -81,6 +81,8 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
   }
 
   async run(options: T): Promise<void> {
+    debug('build options: %O', options);
+
     if (options.engine === 'cordova' && !options.platform) {
       this.e.log.warn(`Cordova engine chosen without a target platform. This could cause issues. Please use the ${input('--platform')} option.`);
     }
