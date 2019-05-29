@@ -5,6 +5,34 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 # [5.0.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.12.0...ionic@5.0.0) (2019-05-29)
 
+At a glance, this is what was changed or added in this major release of the Ionic CLI:
+
+* Support for **Ionic React** (beta) :rocket: (`ionic start --type=react`)
+* [`native-run`](https://github.com/ionic-team/native-run) is used to deploy app binaries to devices for `ionic cordova run`
+* [`cordova-res`](https://github.com/ionic-team/cordova-res) is used to generate Cordova resources locally for `ionic cordova resources`
+* `localhost` is now the default host for `ionic serve`, `ionic cordova run -l`, and `ionic capacitor run -l`
+    * Port forwarding via `native-run` is used for connected Android devices
+    * For iOS hardware devices, you may need to serve your app externally with `--address=0.0.0.0`
+* `--devapp` is now a required flag if you want to use DevApp with `ionic serve`
+* `--consolelogs` for Angular projects is now available for `ionic cordova run -l`
+* Command completion is available for ZSH users (`ionic completion --help`) (see [#2482](https://github.com/ionic-team/ionic-cli/issues/2482) for bash)
+* CLI source code targets modern JS, resulting in noticable speed improvements
+
+#### :lollipop: Upgrading from CLI 4
+
+Make sure you have NodeJS 8+ installed. We recommend [the latest LTS version](https://nodejs.org/).
+
+Install the [`cordova-res`](https://github.com/ionic-team/cordova-res) and [`native-run`](https://github.com/ionic-team/native-run) utilities.
+
+```
+npm i -g cordova-res native-run
+```
+
+For Angular projects, make sure you have the latest `@ionic/angular-toolkit` installed.
+
+```
+npm i @ionic/angular-toolkit@latest
+```
 
 ### Bug Fixes
 
