@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.24...@ionic/lab@2.0.0) (2019-05-29)
+
+
+### chore
+
+* require Node 8 ([5670e68](https://github.com/ionic-team/ionic-cli/commit/5670e68))
+
+
+### BREAKING CHANGES
+
+* A minimum of Node.js 8.9.4 is required.
+
+
+
+
+
 <a name="1.0.24"></a>
 ## [1.0.24](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@1.0.23...@ionic/lab@1.0.24) (2019-03-12)
 

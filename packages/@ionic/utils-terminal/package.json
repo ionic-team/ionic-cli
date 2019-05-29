@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-terminal",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Terminal utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

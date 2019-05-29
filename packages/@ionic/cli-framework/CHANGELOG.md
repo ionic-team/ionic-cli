@@ -3,6 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.7.0...@ionic/cli-framework@2.0.0) (2019-05-29)
+
+
+### chore
+
+* **output:** remove unused BottomBar stuff ([e2023d1](https://github.com/ionic-team/ionic-cli/commit/e2023d1))
+* require Node 8 ([5670e68](https://github.com/ionic-team/ionic-cli/commit/5670e68))
+
+
+### Features
+
+* Command-Line Completions ([9f66512](https://github.com/ionic-team/ionic-cli/commit/9f66512))
+* **help:** color refactor ([5938429](https://github.com/ionic-team/ionic-cli/commit/5938429))
+
+
+### BREAKING CHANGES
+
+* **output:** Remove `BottomBarOutputStrategy`
+* A minimum of Node.js 8.9.4 is required.
+* **help:** option/command/namespace groups are now `MetadataGroup`
+
+
+
+
+
 <a name="1.7.0"></a>
 # [1.7.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@1.6.3...@ionic/cli-framework@1.7.0) (2019-03-12)
 

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@1.0.22...@ionic/v1-toolkit@2.0.0) (2019-05-29)
+
+
+### chore
+
+* require Node 8 ([5670e68](https://github.com/ionic-team/ionic-cli/commit/5670e68))
+
+
+### BREAKING CHANGES
+
+* A minimum of Node.js 8.9.4 is required.
+
+
+
+
+
 <a name="1.0.22"></a>
 ## [1.0.22](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@1.0.21...@ionic/v1-toolkit@1.0.22) (2019-03-12)
 

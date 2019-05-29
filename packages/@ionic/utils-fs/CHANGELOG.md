@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@1.2.0...@ionic/utils-fs@2.0.0) (2019-05-29)
+
+
+### chore
+
+* require Node 8 ([5670e68](https://github.com/ionic-team/ionic-cli/commit/5670e68))
+
+
+### BREAKING CHANGES
+
+* A minimum of Node.js 8.9.4 is required.
+
+
+
+
+
 <a name="1.2.0"></a>
 # [1.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@1.1.1...@ionic/utils-fs@1.2.0) (2019-03-06)
 

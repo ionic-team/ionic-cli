@@ -3,6 +3,77 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.0.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.12.0...ionic@5.0.0) (2019-05-29)
+
+
+### Bug Fixes
+
+* **capacitor:** send --npm-client param to capacitor init ([#3963](https://github.com/ionic-team/ionic-cli/issues/3963)) ([44b0918](https://github.com/ionic-team/ionic-cli/commit/44b0918))
+* **cordova:** prefer plugged-in devices, be explicit with Cordova ([ef8296b](https://github.com/ionic-team/ionic-cli/commit/ef8296b))
+* **doctor:** relax the viewport regex ([d0bc021](https://github.com/ionic-team/ionic-cli/commit/d0bc021))
+* **open:** fix unbound listener ([e63b74a](https://github.com/ionic-team/ionic-cli/commit/e63b74a))
+* **prepare:** check config and platforms dir for platform state ([d9e1ced](https://github.com/ionic-team/ionic-cli/commit/d9e1ced))
+* **react:** support react git repo ([#3982](https://github.com/ionic-team/ionic-cli/issues/3982)) ([c06857f](https://github.com/ionic-team/ionic-cli/commit/c06857f))
+
+
+### chore
+
+* **serve:** `--devapp` required for DevApp ([5ad11ef](https://github.com/ionic-team/ionic-cli/commit/5ad11ef))
+* **serve:** remove `--local` option ([806eaaa](https://github.com/ionic-team/ionic-cli/commit/806eaaa))
+* **serve:** switch default host to `localhost` ([d2a32de](https://github.com/ionic-team/ionic-cli/commit/d2a32de))
+* require Node 8 ([5670e68](https://github.com/ionic-team/ionic-cli/commit/5670e68))
+
+
+### Features
+
+* **cordova:** handle lack of port forwarding in ios ([d68faf1](https://github.com/ionic-team/ionic-cli/commit/d68faf1))
+* add -v as shortcut for --version ([d917e8e](https://github.com/ionic-team/ionic-cli/commit/d917e8e))
+* **start:** add conference and my-first-app starter templates for angular ([#3978](https://github.com/ionic-team/ionic-cli/issues/3978)) ([ea26181](https://github.com/ionic-team/ionic-cli/commit/ea26181))
+* Add React project type ([#3936](https://github.com/ionic-team/ionic-cli/issues/3936)) ([ef852fa](https://github.com/ionic-team/ionic-cli/commit/ef852fa))
+* **angular:** Ionic 4 commands no longer beta ([16be793](https://github.com/ionic-team/ionic-cli/commit/16be793))
+* **cordova:** check for `native-run` before running ([89ffd21](https://github.com/ionic-team/ionic-cli/commit/89ffd21))
+* **cordova:** instructions on how to fix faulty Android SDKs ([ce87944](https://github.com/ionic-team/ionic-cli/commit/ce87944))
+* **cordova:** use `cordova-res` by default ([83e48cf](https://github.com/ionic-team/ionic-cli/commit/83e48cf))
+* **cordova:** use `native-run` by default ([eadcba0](https://github.com/ionic-team/ionic-cli/commit/eadcba0))
+* **help:** color refactor ([5938429](https://github.com/ionic-team/ionic-cli/commit/5938429))
+* **info:** native-run and cordova-res versions ([d6af864](https://github.com/ionic-team/ionic-cli/commit/d6af864))
+* **login:** authenticate using stdin ([d88529f](https://github.com/ionic-team/ionic-cli/commit/d88529f))
+* **serve:** support `--consolelogs` for cordova serve in angular projects ([#3900](https://github.com/ionic-team/ionic-cli/issues/3900)) ([17f1438](https://github.com/ionic-team/ionic-cli/commit/17f1438))
+* Command-Line Completions ([9f66512](https://github.com/ionic-team/ionic-cli/commit/9f66512))
+
+
+### BREAKING CHANGES
+
+* **cordova:** `ionic cordova resources` no longer generates resources
+using Ionic servers by default. Instead, `cordova-res` is used to
+generate resources locally. PSD and AI file formats are no longer
+supported in this new flow. The old behavior is available by specifying
+`--no-cordova-res`.
+* **cordova:** `ionic cordova run/emulate` no longer use Cordova to
+deploy apps by default. `cordova run`, which builds and deploys the app,
+is no longer used. Instead, `cordova build` is used to build the app and
+then it is deployed to devices using `native-run`. The old behavior is
+available by specifying `--no-native-run`. When using Cordova to run,
+unless you manually forward ports, you will need to also specify
+`--address=0.0.0.0` (or any host accessible externally).
+* **serve:** For DevApp usage, the `--devapp` flag is now required
+for all project types, instead of being automatic. This change was made
+in conjunction with changing the default host from `0.0.0.0` to
+`localhost`. By explicitly specifying `--devapp`, however, `0.0.0.0` is
+used if `--address` is not specified.
+* **serve:** `ionic serve` and other commands using the dev server
+will no longer be hosted on the BIND ALL address (0.0.0.0) by default.
+`localhost` is the new default. The old behavior is available by passing
+`--address=0.0.0.0`.
+* **serve:** This option is now irrelevant. The default address is
+changing to `localhost`.
+* A minimum of Node.js 8.9.4 is required.
+* **help:** option/command/namespace groups are now `MetadataGroup`
+
+
+
+
+
 <a name="4.12.0"></a>
 # [4.12.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.11.0...ionic@4.12.0) (2019-03-12)
 
