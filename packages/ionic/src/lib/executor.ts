@@ -25,7 +25,7 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
 
     const location = await this.namespace.locate(pargs);
 
-    if (argv.includes('--version')) {
+    if (argv.find(arg => arg === '--version' || arg === '-v')) {
       return this.execute(['version', ...pargs], env);
     } else if (argv.find(arg => arg === '--help' || arg === '-?' || arg === '-h') || !isCommand(location.obj)) {
       return this.execute(['help', ...pargs], env);
