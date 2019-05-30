@@ -3,7 +3,7 @@ import stripAnsi from 'strip-ansi';
 
 import { wordWrap } from '../../utils/format';
 
-import { LOGGER_LEVELS, Logger, StreamHandler, createPrefixedFormatter, createTaggedFormatter } from '../logger';
+import { LOGGER_LEVELS, Logger, LoggerHandler, StreamHandler, createPrefixedFormatter, createTaggedFormatter } from '../logger';
 
 describe('@ionic/cli-framework', () => {
 
@@ -28,7 +28,7 @@ describe('@ionic/cli-framework', () => {
         it('should clone the set of option overrides', () => {
           const logger1 = new Logger();
           const level = 15;
-          const handlers = new Set();
+          const handlers: Set<LoggerHandler> = new Set();
           const logger2 = logger1.clone({ level, handlers });
           expect(logger2.level).not.toEqual(logger1.level);
           expect(logger2.level).toEqual(level);
