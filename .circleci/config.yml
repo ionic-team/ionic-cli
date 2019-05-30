@@ -109,7 +109,6 @@ unit-test-base: &unit-test-base
     - attach_workspace:
         at: /tmp/workspace
     - run: npm rebuild # We need to rebuild/recompile for specific Node versions.
-    - run: npm run lint
     - run: npm run test
 
 # JOBS
@@ -123,6 +122,7 @@ jobs:
       - run: npm install
       - save_cache: *save-cache
       - run: npm run bootstrap
+      - run: npm run lint
       - save_cache: *save-cache-cli-framework
       - save_cache: *save-cache-discover
       - save_cache: *save-cache-lab
