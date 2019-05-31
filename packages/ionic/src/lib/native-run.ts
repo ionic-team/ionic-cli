@@ -24,6 +24,8 @@ export function createNativeRunArgs({ packagePath, platform, portForward }: Nati
     opts.push('--target', target);
   } else if (options['emulator']) {
     opts.push('--virtual');
+  } else if (options['device']) {
+    opts.push('--device');
   }
 
   if (options['connect']) {
