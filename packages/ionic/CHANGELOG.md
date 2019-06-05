@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.1](https://github.com/ionic-team/ionic-cli/compare/ionic@5.0.0...ionic@5.0.1) (2019-06-05)
+
+
+### Bug Fixes
+
+* **cordova:** add port forwarding for --consolelogs ([d2e0c81](https://github.com/ionic-team/ionic-cli/commit/d2e0c81))
+* **cordova:** pass --device to native-run if specified ([5db46d5](https://github.com/ionic-team/ionic-cli/commit/5db46d5))
+
+
+
+
+
 # [5.0.0](https://github.com/ionic-team/ionic-cli/compare/ionic@4.12.0...ionic@5.0.0) (2019-05-29)
 
 At a glance, this is what was changed or added in this major release of the Ionic CLI:
