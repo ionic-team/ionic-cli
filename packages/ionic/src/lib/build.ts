@@ -5,7 +5,7 @@ import * as Debug from 'debug';
 import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, NpmClient, Runner } from '../definitions';
 
 import { ancillary, input, strong } from './color';
-import { BuildCLIProgramNotFoundException, FatalException, RunnerException } from './errors';
+import { BuildCLIProgramNotFoundException, FatalException } from './errors';
 import { Hook } from './hooks';
 
 const debug = Debug('ionic:lib:build');
@@ -283,23 +283,4 @@ class BuildBeforeHook extends Hook {
 
 class BuildAfterHook extends Hook {
   readonly name = 'build:after';
-}
-
-export async function build(deps: BuildRunnerDeps, inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-  try {
-    const runner = await deps.project.requireBuildRunner();
-
-    if (deps.project.details.context === 'multiapp') {
-      options['project'] = deps.project.details.id;
-    }
-
-    const opts = runner.createOptionsFromCommandLine(inputs, options);
-    await runner.run(opts);
-  } catch (e) {
-    if (e instanceof RunnerException) {
-      throw new FatalException(e.message);
-    }
-
-    throw e;
-  }
 }

@@ -1,10 +1,9 @@
 import { AbstractExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
 
-import { PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
 import { isCommand } from '../guards';
 
-import { input, strong } from './color';
+import { input } from './color';
 import { GLOBAL_OPTIONS } from './config';
 import { FatalException } from './errors';
 
@@ -62,11 +61,19 @@ export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMeta
     const cmdoptions = parseArgs(cmdargs, minimistOpts);
     const cmdinputs = cmdoptions._;
 
-    if (!this.namespace.project && metadata.type === 'project') {
-      throw new FatalException(
-        `Sorry! ${input(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
-        `If this is a project you'd like to integrate with Ionic, create an ${strong(PROJECT_FILE)} file.`
-      );
+    const { project } = this.namespace;
+
+    if (project) {
+      if (project.details.context === 'multiapp') {
+        cmdoptions['project'] = project.details.id;
+      }
+    } else {
+      if (metadata.type === 'project') {
+        throw new FatalException(
+          `Sorry! ${input(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
+          `If this is a project you'd like to integrate with Ionic, run ${input('ionic init')}.`
+        );
+      }
     }
 
     await command.execute(cmdinputs, cmdoptions, { location, env, executor });

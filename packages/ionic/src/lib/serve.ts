@@ -18,7 +18,7 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadata
 import { isCordovaPackageJson } from '../guards';
 
 import { ancillary, input, strong, weak } from './color';
-import { FatalException, RunnerException, ServeCLIProgramNotFoundException } from './errors';
+import { FatalException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
 import { open } from './open';
@@ -245,6 +245,10 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
   scheduleAfterServe(options: T, details: ServeDetails) {
     onBeforeExit(async () => this.afterServe(options, details));
+  }
+
+  getUsedPorts(options: T, details: ServeDetails): number[] {
+    return [details.port];
   }
 
   async gatherDevAppDetails(options: T, details: ServeDetails): Promise<DevAppDetails | undefined> {
@@ -736,26 +740,5 @@ class IonicLabServeCLI extends ServeCLI<IonicLabServeCLIOptions> {
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 
     return [...labArgs, ...nameArgs, ...versionArgs];
-  }
-}
-
-export async function serve(deps: ServeRunnerDeps, inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeDetails> {
-  try {
-    const runner = await deps.project.requireServeRunner();
-
-    if (deps.project.details.context === 'multiapp') {
-      options['project'] = deps.project.details.id;
-    }
-
-    const opts = runner.createOptionsFromCommandLine(inputs, options);
-    const details = await runner.run(opts);
-
-    return details;
-  } catch (e) {
-    if (e instanceof RunnerException) {
-      throw new FatalException(e.message);
-    }
-
-    throw e;
   }
 }

@@ -1,9 +1,8 @@
 import { CommandMetadataOption, Footnote } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
-import { build } from '../../lib/build';
 import { input, strong } from '../../lib/color';
-import { FatalException } from '../../lib/errors';
+import { FatalException, RunnerException } from '../../lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 
 import { CordovaCommand } from './base';
@@ -98,8 +97,17 @@ You may wish to use ${input('ionic cordova prepare')} if you run your project wi
       const buildOptions = generateOptionsForCordovaBuild(metadata, inputs, options);
 
       if (buildOptions['platform']) {
-        // TODO: use runner directly
-        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, buildOptions);
+        try {
+          const runner = await this.project.requireBuildRunner();
+          const runnerOpts = runner.createOptionsFromCommandLine(inputs, buildOptions);
+          await runner.run(runnerOpts);
+        } catch (e) {
+          if (e instanceof RunnerException) {
+            throw new FatalException(e.message);
+          }
+
+          throw e;
+        }
       } else {
         this.env.log.warn(
           `Cannot perform Ionic build without ${input('platform')}. Falling back to just ${input('cordova prepare')}.\n` +

@@ -13,10 +13,10 @@ export const SUPPORTED_PLATFORMS: readonly string[] = ['android', 'ios'];
 export interface NativeRunSchema {
   packagePath: string;
   platform: string;
-  portForward?: string | number;
+  forwardedPorts?: (string | number)[];
 }
 
-export function createNativeRunArgs({ packagePath, platform, portForward }: NativeRunSchema, options: CommandLineOptions): string[] {
+export function createNativeRunArgs({ packagePath, platform, forwardedPorts = [] }: NativeRunSchema, options: CommandLineOptions): string[] {
   const opts = [platform, '--app', packagePath];
   const target = options['target'] ? String(options['target']) : undefined;
 
@@ -32,8 +32,8 @@ export function createNativeRunArgs({ packagePath, platform, portForward }: Nati
     opts.push('--connect');
   }
 
-  if (!options['livereload-url'] && portForward) {
-    opts.push('--forward', `${portForward}:${portForward}`);
+  for (const port of forwardedPorts) {
+    opts.push('--forward', `${port}:${port}`);
   }
 
   if (options['json']) {

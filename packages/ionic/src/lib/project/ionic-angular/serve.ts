@@ -126,6 +126,14 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
   }
+
+  getUsedPorts(options: IonicAngularServeOptions, details: ServeDetails): number[] {
+    return [
+      ...super.getUsedPorts(options, details),
+      ...options.livereloadPort ? [options.livereloadPort] : [],
+      ...options.notificationPort ? [options.notificationPort] : [],
+    ];
+  }
 }
 
 class IonicAngularServeCLI extends ServeCLI<IonicAngularServeOptions> {

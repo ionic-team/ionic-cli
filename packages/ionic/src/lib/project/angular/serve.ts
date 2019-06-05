@@ -152,6 +152,13 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
   }
+
+  getUsedPorts(options: AngularServeOptions, details: ServeDetails): number[] {
+    return [
+      ...super.getUsedPorts(options, details),
+      ...options.consolelogsPort ? [options.consolelogsPort] : [],
+    ];
+  }
 }
 
 export class AngularServeCLI extends ServeCLI<AngularServeOptions> {

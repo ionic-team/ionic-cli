@@ -2,17 +2,16 @@ import { Footnote, MetadataGroup } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
-import * as url from 'url';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions } from '../../definitions';
-import { COMMON_BUILD_COMMAND_OPTIONS, build } from '../../lib/build';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions, ServeDetails } from '../../definitions';
+import { COMMON_BUILD_COMMAND_OPTIONS } from '../../lib/build';
 import { input, strong, weak } from '../../lib/color';
-import { FatalException } from '../../lib/errors';
+import { FatalException, RunnerException } from '../../lib/errors';
 import { loadConfigXml } from '../../lib/integrations/cordova/config';
 import { getPackagePath } from '../../lib/integrations/cordova/project';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 import { SUPPORTED_PLATFORMS, checkNativeRun, createNativeRunArgs, createNativeRunListArgs, getNativeTargets, runNativeRun } from '../../lib/native-run';
-import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/serve';
+import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 import { createPrefixedWriteStream } from '../../lib/utils/logger';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_RUN_OPTIONS, CordovaCommand } from './base';
@@ -233,14 +232,22 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    if (options['livereload']) {
-      await this.runServeDeploy(inputs, options);
-    } else {
-      await this.runBuildDeploy(inputs, options);
+    try {
+      if (options['livereload']) {
+        await this.runServeDeploy(inputs, options);
+      } else {
+        await this.runBuildDeploy(inputs, options);
+      }
+    } catch (e) {
+      if (e instanceof RunnerException) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
     }
   }
 
-  protected async runServeDeploy(inputs: CommandLineInputs, options: CommandLineOptions) {
+  protected async runServeDeploy(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const conf = await loadConfigXml(this.integration);
     const metadata = await this.getMetadata();
 
@@ -248,18 +255,25 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       throw new FatalException(`Cannot run ${input(`ionic cordova ${metadata.name}`)} outside a project directory.`);
     }
 
-    let livereloadUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
+    const runner = await this.project.requireServeRunner();
+    const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
 
-    if (!livereloadUrl) {
-      // TODO: use runner directly
-      const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+    /**
+     * With the --livereload-url option, this command won't perform a serve. If
+     * this is the case, details will be undefined.
+     */
+    let details: ServeDetails | undefined;
+    let serverUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
+
+    if (!serverUrl) {
+      details = await runner.run(runnerOpts);
 
       if (details.externallyAccessible === false && !options['native-run']) {
         const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
         this.env.log.warn(`Your device or emulator may not be able to access ${strong(details.externalAddress)}.${extra}\n\n`);
       }
 
-      livereloadUrl = `${details.protocol || 'http'}://${options['native-run'] ? details.localAddress : details.externalAddress}:${details.port}`;
+      serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
     }
 
     onBeforeExit(async () => {
@@ -267,7 +281,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       await conf.save();
     });
 
-    conf.writeContentSrc(livereloadUrl);
+    conf.writeContentSrc(serverUrl);
     await conf.save();
 
     const cordovalogws = createPrefixedWriteStream(this.env.log, weak(`[cordova]`));
@@ -275,7 +289,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     if (options['native-run']) {
       const [ platform ] = inputs;
       const packagePath = await getPackagePath(conf.getProjectInfo().name, platform, !options['device']);
-      const { port: portForward } = url.parse(livereloadUrl);
+      const forwardedPorts = details ? runner.getUsedPorts(runnerOpts, details) : [];
 
       const buildOpts: IShellRunOptions = { stream: cordovalogws };
       // ignore very verbose compiler output unless --verbose (still pipe stderr)
@@ -284,14 +298,14 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       }
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), buildOpts);
-      await this.runNativeRun(createNativeRunArgs({ packagePath, platform, portForward }, options));
+      await this.runNativeRun(createNativeRunArgs({ packagePath, platform, forwardedPorts }, options));
     } else {
       await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
       await sleepForever();
     }
   }
 
-  protected async runBuildDeploy(inputs: CommandLineInputs, options: CommandLineOptions) {
+  protected async runBuildDeploy(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const conf = await loadConfigXml(this.integration);
     const metadata = await this.getMetadata();
 
@@ -300,8 +314,17 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
 
     if (options.build) {
-      // TODO: use runner directly
-      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+      try {
+        const runner = await this.project.requireBuildRunner();
+        const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+        await runner.run(runnerOpts);
+      } catch (e) {
+        if (e instanceof RunnerException) {
+          throw new FatalException(e.message);
+        }
+
+        throw e;
+      }
     }
 
     if (options['native-run']) {

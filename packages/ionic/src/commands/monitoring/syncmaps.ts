@@ -5,7 +5,6 @@ import * as path from 'path';
 
 import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
-import { build } from '../../lib/build';
 import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
@@ -64,8 +63,9 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
     let sourcemapsExist = await pathExists(sourcemapsDir);
 
     if (doBuild || !sourcemapsExist) {
-      // TODO: use runner directly
-      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, [], { _: [], prod: true });
+      const runner = await this.project.requireBuildRunner();
+      const runnerOpts = runner.createOptionsFromCommandLine([], { _: [], prod: true });
+      await runner.run(runnerOpts);
     }
 
     sourcemapsExist = await pathExists(sourcemapsDir);

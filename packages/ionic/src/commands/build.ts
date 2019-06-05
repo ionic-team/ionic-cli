@@ -1,10 +1,10 @@
 import { Footnote } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
-import { COMMON_BUILD_COMMAND_OPTIONS, build } from '../lib/build';
+import { COMMON_BUILD_COMMAND_OPTIONS } from '../lib/build';
 import { input } from '../lib/color';
 import { Command } from '../lib/command';
-import { FatalException } from '../lib/errors';
+import { FatalException, RunnerException } from '../lib/errors';
 
 export class BuildCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -55,7 +55,17 @@ export class BuildCommand extends Command implements CommandPreRun {
       throw new FatalException(`Cannot run ${input('ionic build')} outside a project directory.`);
     }
 
-    // TODO: use runner directly
-    await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, options);
+    try {
+      const runner = await this.project.requireBuildRunner();
+      const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
+
+      await runner.run(runnerOpts);
+    } catch (e) {
+      if (e instanceof RunnerException) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
   }
 }

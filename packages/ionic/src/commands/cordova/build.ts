@@ -1,9 +1,8 @@
 import { CommandMetadataOption, Footnote, validators } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
-import { build } from '../../lib/build';
 import { input, strong } from '../../lib/color';
-import { FatalException } from '../../lib/errors';
+import { FatalException, RunnerException } from '../../lib/errors';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 
 import { CORDOVA_BUILD_EXAMPLE_COMMANDS, CORDOVA_COMPILE_OPTIONS, CordovaCommand } from './base';
@@ -89,8 +88,17 @@ The Cordova CLI requires a separator for platform-specific arguments for Android
     }
 
     if (options.build) {
-      // TODO: use runner directly
-      await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+      try {
+        const runner = await this.project.requireBuildRunner();
+        const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+        await runner.run(runnerOpts);
+      } catch (e) {
+        if (e instanceof RunnerException) {
+          throw new FatalException(e.message);
+        }
+
+        throw e;
+      }
     }
 
     const cordovaArgs = filterArgumentsForCordova(metadata, options);

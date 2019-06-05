@@ -5,12 +5,11 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
-import { build } from '../../lib/build';
 import { input, strong, weak } from '../../lib/color';
-import { FatalException } from '../../lib/errors';
+import { FatalException, RunnerException } from '../../lib/errors';
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
-import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES, serve } from '../../lib/serve';
+import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 
 import { CapacitorCommand } from './base';
 
@@ -132,39 +131,23 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     if (!this.project) {
-      throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic capacitor run/emulate')} outside a project directory.`);
     }
 
     const [ platform ] = inputs;
 
-    if (options['livereload']) {
-      let livereloadUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
-
-      if (!livereloadUrl) {
-        // TODO: use runner directly
-        const details = await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, generateOptionsForCapacitorBuild(inputs, options));
-
-        if (details.externallyAccessible === false) {
-          const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
-          this.env.log.warn(`Your device or emulator may not be able to access ${strong(details.externalAddress)}.${extra}\n\n`);
-        }
-
-        livereloadUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
+    try {
+      if (options['livereload']) {
+        await this.runServe(inputs, options);
+      } else {
+        await this.runBuild(inputs, options);
+      }
+    } catch (e) {
+      if (e instanceof RunnerException) {
+        throw new FatalException(e.message);
       }
 
-      const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
-
-      onBeforeExit(async () => {
-        conf.resetServerUrl();
-      });
-
-      conf.setServerUrl(livereloadUrl);
-
-    } else {
-      if (options['build']) {
-        // TODO: use runner directly
-        await build({ config: this.env.config, log: this.env.log, shell: this.env.shell, prompt: this.env.prompt, project: this.project }, inputs, generateOptionsForCapacitorBuild(inputs, options));
-      }
+      throw e;
     }
 
     // copy assets and capacitor.config.json into place
@@ -189,6 +172,56 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
         chalk.yellow('Use Ctrl+C to quit this process')
       );
       await sleepForever();
+    }
+  }
+
+  async runServe(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${input('ionic capacitor run/emulate')} outside a project directory.`);
+    }
+
+    const runner = await this.project.requireServeRunner();
+    const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
+
+    let serverUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
+
+    if (!serverUrl) {
+      const details = await runner.run(runnerOpts);
+
+      if (details.externallyAccessible === false) {
+        const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
+        this.env.log.warn(`Your device or emulator may not be able to access ${strong(details.externalAddress)}.${extra}\n\n`);
+      }
+
+      serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
+    }
+
+    const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+
+    onBeforeExit(async () => {
+      conf.resetServerUrl();
+    });
+
+    conf.setServerUrl(serverUrl);
+  }
+
+  async runBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${input('ionic capacitor run/emulate')} outside a project directory.`);
+    }
+
+    if (options['build']) {
+      try {
+        const runner = await this.project.requireBuildRunner();
+        const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
+        await runner.run(runnerOpts);
+      } catch (e) {
+        if (e instanceof RunnerException) {
+          throw new FatalException(e.message);
+        }
+
+        throw e;
+      }
     }
   }
 }

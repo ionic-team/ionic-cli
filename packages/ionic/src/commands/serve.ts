@@ -5,8 +5,8 @@ import * as lodash from 'lodash';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
 import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
-import { FatalException } from '../lib/errors';
-import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT, serve } from '../lib/serve';
+import { FatalException, RunnerException } from '../lib/errors';
+import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT } from '../lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -126,8 +126,19 @@ Try the ${input('--lab')} option to see multiple platforms at once.`;
       throw new FatalException(`Cannot run ${input('ionic serve')} outside a project directory.`);
     }
 
-    // TODO: use runner directly
-    await serve({ flags: this.env.flags, config: this.env.config, log: this.env.log, prompt: this.env.prompt, shell: this.env.shell, project: this.project }, inputs, options);
+    try {
+      const runner = await this.project.requireServeRunner();
+      const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
+
+      await runner.run(runnerOpts);
+    } catch (e) {
+      if (e instanceof RunnerException) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+
     await sleepForever();
   }
 }

@@ -102,6 +102,14 @@ export class Ionic1ServeRunner extends ServeRunner<Ionic1ServeOptions> {
       externallyAccessible: ![BIND_ALL_ADDRESS, ...LOCAL_ADDRESSES].includes(externalIP),
     };
   }
+
+  getUsedPorts(options: Ionic1ServeOptions, details: ServeDetails): number[] {
+    return [
+      ...super.getUsedPorts(options, details),
+      ...options.livereloadPort ? [options.livereloadPort] : [],
+      ...options.notificationPort ? [options.notificationPort] : [],
+    ];
+  }
 }
 
 class Ionic1ServeCLI extends ServeCLI<Ionic1ServeOptions> {
