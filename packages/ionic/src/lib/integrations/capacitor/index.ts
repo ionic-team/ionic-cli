@@ -30,6 +30,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
     if (this.e.project.type === 'react') {
       options.push('--web-dir', 'public');
+    } else if (this.e.project.type === 'vue') {
+      options.push('--web-dir', 'dist');
     }
 
     if (details.enableArgs) {
