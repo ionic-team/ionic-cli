@@ -347,6 +347,6 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       throw new FatalException(`Cannot run ${input('ionic cordova run/emulate')} outside a project directory.`);
     }
 
-    await runNativeRun(this.env, args, { cwd: this.project.directory });
+    await runNativeRun(this.env, args, { cwd: this.integration.root });
   }
 }
