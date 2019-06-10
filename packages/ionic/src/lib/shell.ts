@@ -1,6 +1,5 @@
 import { LOGGER_LEVELS } from '@ionic/cli-framework';
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/utils-process';
-import { combineStreams } from '@ionic/utils-stream';
 import { ERROR_COMMAND_NOT_FOUND, Subprocess, SubprocessError, SubprocessOptions, WhichOptions, which } from '@ionic/utils-subprocess';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import chalk from 'chalk';
@@ -8,6 +7,7 @@ import { ChildProcess, SpawnOptions } from 'child_process';
 import * as Debug from 'debug';
 import * as path from 'path';
 import * as split2 from 'split2';
+import * as combineStreams from 'stream-combiner2';
 
 import { ILogger, IShell, IShellOutputOptions, IShellRunOptions, IShellSpawnOptions } from '../definitions';
 import { isExitCodeException } from '../guards';
