@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-stream@1.0.1...@ionic/utils-stream@2.0.0) (2019-06-10)
+
+
+### Code Refactoring
+
+* remove combineStreams ([93f4ff2](https://github.com/ionic-team/ionic-cli/commit/93f4ff2))
+
+
+### BREAKING CHANGES
+
+* `combineStreams` has been removed. Use
+`stream-combiner2` directly.
+
+
+
+
+
 ## [1.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-stream@1.0.0...@ionic/utils-stream@1.0.1) (2019-06-05)
 
 **Note:** Version bump only for package @ionic/utils-stream

@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.2](https://github.com/ionic-team/ionic-cli/compare/ionic@5.0.1...ionic@5.0.2) (2019-06-10)
+
+
+### Bug Fixes
+
+* **capacitor:** use dist for --web-dir for vue/capacitor ([#4012](https://github.com/ionic-team/ionic-cli/issues/4012)) ([0979715](https://github.com/ionic-team/ionic-cli/commit/0979715))
+* **cordova:** fix --project flag for cordova commands ([fb9ff0f](https://github.com/ionic-team/ionic-cli/commit/fb9ff0f))
+* **cordova:** invoke native-run in integration root ([526eda3](https://github.com/ionic-team/ionic-cli/commit/526eda3))
+
+
+
+
+
 ## [5.0.1](https://github.com/ionic-team/ionic-cli/compare/ionic@5.0.0...ionic@5.0.1) (2019-06-05)
 
 
