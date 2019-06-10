@@ -1,5 +1,4 @@
 import { Readable, ReadableOptions, Writable, WritableOptions } from 'stream';
-import * as combineStreams from 'stream-combiner2';
 
 const DEFAULT_CHUNK_SIZE = 4;
 const DEFAULT_ALLOC_SIZE = 32;
@@ -141,5 +140,3 @@ export function growBufferForAppendedData(buf: Buffer, actualsize: number, appen
   buf.copy(newbuffer, 0, 0, actualsize);
   return newbuffer;
 }
-
-export { combineStreams };
