@@ -22,7 +22,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
-    if (this.e.project.type === 'vue' || this.e.project.type === 'angular') {
+    if (this.e.project.type === 'vue' || this.e.project.type === 'react') {
       throw new FatalException(`Cordova is not supported for ${this.e.project.type} projects`);
     }
     const handlers: IntegrationAddHandlers = {
