@@ -106,7 +106,9 @@ export abstract class CordovaCommand extends Command {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
-
+    if (this.project.type === 'vue' || this.project.type === 'react') {
+      throw new FatalException(`Cordova is not supported for ${this.project.type} projects`);
+    }
     const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
 
     await this.checkCordova(runinfo);
