@@ -7,6 +7,7 @@ import * as path from 'path';
 
 import { BaseIntegration, IntegrationConfig } from '../';
 import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails } from '../../../definitions';
+import { FatalException } from '../../../lib/errors';
 import { ancillary, input, strong } from '../../color';
 
 const debug = Debug('ionic:lib:integrations:cordova');
@@ -21,6 +22,12 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
+    if (this.e.project.type === 'vue' || this.e.project.type === 'react') {
+      throw new FatalException(
+        `Cordova is not supported for ${this.e.project.type} projects\n\n` +
+        `See ${strong(`https://ionicframework.com/docs/${this.e.project.type}/overview`)} for detailed information.\n`
+      );
+    }
     const handlers: IntegrationAddHandlers = {
       conflictHandler: async (f, stats) => {
         const isDirectory = stats.isDirectory();
