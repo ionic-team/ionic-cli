@@ -39,7 +39,7 @@
     "debug": "^4.0.0",
     "netmask": "^1.0.6",
     "tslib": "^1.9.0",
-    "ws": "^6.0.0"
+    "ws": "^7.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",
