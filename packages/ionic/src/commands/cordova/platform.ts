@@ -101,9 +101,7 @@ Like running ${input('cordova platform')} directly, but adds default Ionic icons
 
     await this.runCordova(cordovaArgs, {});
 
-    const isLoggedIn = this.env.session.isLoggedIn();
-
-    if (isLoggedIn && action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
+    if (action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
       await runCommand(runinfo, ['cordova', 'resources', platformName, '--force']);
     }
   }
