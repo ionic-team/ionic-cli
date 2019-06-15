@@ -1,14 +1,11 @@
-import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { cacheFileChecksum, copy, pathExists } from '@ionic/utils-fs';
-import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import * as Debug from 'debug';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, KnownPlatform, ResourcesConfig, ResourcesImageConfig, SourceImage } from '../../definitions';
 import { ancillary, failure, input, strong, weak } from '../../lib/color';
+import { SUPPORTED_PLATFORMS, createCordovaResArgs, runCordovaRes } from '../../lib/cordova-res';
 import { FatalException } from '../../lib/errors';
-import { createDefaultLoggerHandlers } from '../../lib/utils/logger';
-import { pkgManagerArgs } from '../../lib/utils/npm';
 
 import { CordovaCommand } from './base';
 
@@ -45,11 +42,11 @@ Cordova reference documentation:
           url: 'https://github.com/ionic-team/cordova-res',
         },
       ],
-      exampleCommands: ['', 'ios', 'android'],
+      exampleCommands: ['', ...SUPPORTED_PLATFORMS],
       inputs: [
         {
           name: 'platform',
-          summary: `The platform for which you would like to generate resources (${['android', 'ios'].map(v => input(v)).join(', ')})`,
+          summary: `The platform for which you would like to generate resources (${SUPPORTED_PLATFORMS.map(v => input(v)).join(', ')})`,
         },
       ],
       options: [
@@ -125,39 +122,7 @@ Cordova reference documentation:
       throw new FatalException(`Cannot run ${input('ionic cordova resources')} outside a project directory.`);
     }
 
-    const log = this.env.log.clone();
-    log.handlers = createDefaultLoggerHandlers(createPrefixedFormatter(weak(`[cordova-res]`)));
-    const ws = log.createWriteStream(LOGGER_LEVELS.INFO);
-
-    const args: string[] = [];
-
-    if (platform) {
-      args.push(platform);
-    }
-
-    if (options['icon']) {
-      args.push('--type', 'icon');
-    } else if (options['splash']) {
-      args.push('--type', 'splash');
-    }
-
-    if (options['verbose']) {
-      args.push('--verbose');
-    }
-
-    try {
-      await this.env.shell.run('cordova-res', args, { showCommand: true, fatalOnNotFound: false, cwd: this.project.directory, stream: ws });
-    } catch (e) {
-      if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
-        const installArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova-res', global: true });
-        throw new FatalException(
-          `${input('cordova-res')} was not found on your PATH. Please install it globally:\n` +
-          `${input(installArgs.join(' '))}\n`
-        );
-      }
-
-      throw e;
-    }
+    await runCordovaRes(this.env, createCordovaResArgs({ platform }, options), { cwd: this.project.directory });
   }
 
   async runResourceServer(platform: string | undefined, options: CommandLineOptions): Promise<void> {

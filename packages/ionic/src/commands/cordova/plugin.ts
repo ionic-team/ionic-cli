@@ -1,5 +1,4 @@
 import { MetadataGroup, contains, validate, validators } from '@ionic/cli-framework';
-import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
@@ -74,17 +73,8 @@ Like running ${input('cordova plugin')} directly, but provides friendly checks.
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ action ] = inputs;
     const metadata = await this.getMetadata();
     const cordovaArgs = filterArgumentsForCordova(metadata, options);
-
-    if (
-      (action === 'add' || action === 'remove') &&
-      (options['save'] !== false && !options['nosave']) &&
-      lodash.intersection(options['--'] || [], ['--save', '--nosave', '--no-save']).length === 0
-    ) {
-      cordovaArgs.push('--save');
-    }
 
     await this.runCordova(cordovaArgs, {});
   }
