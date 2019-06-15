@@ -3,6 +3,7 @@ import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
+import { SUPPORTED_PLATFORMS } from '../../lib/cordova-res';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
@@ -101,8 +102,9 @@ Like running ${input('cordova platform')} directly, but adds default Ionic icons
 
     await this.runCordova(cordovaArgs, {});
 
-    if (action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
-      await runCommand(runinfo, ['cordova', 'resources', platformName, '--force']);
+    if (action === 'add' && options['resources'] && SUPPORTED_PLATFORMS.includes(platformName)) {
+      const args = ['cordova', 'resources', platformName, '--force'];
+      await runCommand(runinfo, args);
     }
   }
 }

@@ -8,7 +8,7 @@ import { FatalException } from './errors';
 import { createPrefixedWriteStream } from './utils/logger';
 import { pkgManagerArgs } from './utils/npm';
 
-export const SUPPORTED_PLATFORMS: readonly string[] = ['android', 'ios'];
+export const SUPPORTED_PLATFORMS: readonly string[] = ['ios', 'android'];
 
 export interface NativeRunSchema {
   packagePath: string;
@@ -102,14 +102,20 @@ export interface CheckNativeRunDeps {
 }
 
 export async function checkNativeRun({ config }: CheckNativeRunDeps): Promise<void> {
-  try {
-    await which('native-run');
-  } catch (e) {
-    if (e.code === 'ENOENT') {
-      throw await createNativeRunNotFoundError(config.get('npmClient'));
-    }
+  const p = await findNativeRun();
 
-    throw e;
+  if (!p) {
+    throw await createNativeRunNotFoundError(config.get('npmClient'));
+  }
+}
+
+export async function findNativeRun(): Promise<string | undefined> {
+  try {
+    return await which('native-run');
+  } catch (e) {
+    if (e.code !== 'ENOENT') {
+      throw e;
+    }
   }
 }
 
