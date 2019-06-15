@@ -2,6 +2,7 @@ import { contains, validate, validators } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
+import { SUPPORTED_PLATFORMS, createCordovaResNotFoundMessage, findCordovaRes } from '../../lib/cordova-res';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
@@ -92,10 +93,20 @@ Like running ${input('cordova platform')} directly, but adds default Ionic icons
 
     await this.runCordova(cordovaArgs, {});
 
-    const isLoggedIn = this.env.session.isLoggedIn();
+    if (action === 'add' && options['resources'] && SUPPORTED_PLATFORMS.includes(platformName)) {
+      const args = ['cordova', 'resources', platformName, '--force'];
+      const p = await findCordovaRes();
 
-    if (isLoggedIn && action === 'add' && options['resources'] && ['ios', 'android'].includes(platformName)) {
-      await runCommand(runinfo, ['cordova', 'resources', platformName, '--force']);
+      if (p) {
+        await runCommand(runinfo, args);
+      } else {
+        this.env.log.warn(await createCordovaResNotFoundMessage(this.env.config.get('npmClient')));
+        this.env.log.warn(
+          `Cannot generate resources without ${input('cordova-res')} installed.\n` +
+          `Once installed, you can generate resources with the following command:\n\n` +
+          input(['ionic', ...args].join(' '))
+        );
+      }
     }
   }
 }
