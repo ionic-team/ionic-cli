@@ -3,6 +3,20 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.3](https://github.com/ionic-team/ionic-cli/compare/ionic@5.0.2...ionic@5.0.3) (2019-06-18)
+
+
+### Bug Fixes
+
+* **capacitor:** use correct web-dir path for react and capacitor ([#4029](https://github.com/ionic-team/ionic-cli/issues/4029)) ([cdf2579](https://github.com/ionic-team/ionic-cli/commit/cdf2579))
+* **cordova:** always generate resources when adding platforms ([3220b2f](https://github.com/ionic-team/ionic-cli/commit/3220b2f))
+* **cordova:** don't append --save to platform/plugin management commands ([#4028](https://github.com/ionic-team/ionic-cli/issues/4028)) ([0356d00](https://github.com/ionic-team/ionic-cli/commit/0356d00))
+* **cordova:** warn about missing cordova-res when adding platforms ([77fa904](https://github.com/ionic-team/ionic-cli/commit/77fa904))
+
+
+
+
+
 ## [5.0.2](https://github.com/ionic-team/ionic-cli/compare/ionic@5.0.1...ionic@5.0.2) (2019-06-10)
 
 
