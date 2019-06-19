@@ -6,7 +6,6 @@ import { DeployConfCommand } from './core';
 
 export class AddCommand extends DeployConfCommand {
   async getMetadata(): Promise<CommandMetadata> {
-    const dashUrl = this.env.config.getDashUrl();
 
     return {
       name: 'add',
@@ -15,17 +14,11 @@ export class AddCommand extends DeployConfCommand {
       description: `
 This command adds the Deploy plugin (cordova-plugin-ionic) for both Cordova and Capacitor projects.
 
-For a Condova project it just takes care of running the proper cordova cli command with the submitted parameters.
+For a Cordova project it just takes care of running the proper Cordova CLI command with the submitted parameters.
 
 For a Capacitor project it runs all the steps necessary to install the plugin, sync with the native projects and
 add the configuration to the proper iOS and Android configuration files.
       `,
-      footnotes: [
-        {
-          id: 'dashboard',
-          url: dashUrl,
-        },
-      ],
       exampleCommands: [
         '',
         '--app-id="abcd1234" --channel-name="Master" --update-method="background"',
@@ -69,7 +62,7 @@ add the configuration to the proper iOS and Android configuration files.
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const integration = await this.getAppIntegration();
     if (integration === 'cordova') {
-      let deployCommand = ['cordova', 'plugin', 'add', 'cordova-plugin-ionic', '--save'];
+      let deployCommand = ['cordova', 'plugin', 'add', 'cordova-plugin-ionic'];
       const userOptions = this.buildCordovaDeployOptions(options);
       if (userOptions) {
         deployCommand = deployCommand.concat(userOptions);
@@ -91,7 +84,7 @@ add the configuration to the proper iOS and Android configuration files.
       // generate the manifest
       await runCommand(runinfo, ['deploy', 'manifest']);
       // run capacitor sync
-      await this.env.shell.run('npx', ['cap', 'sync'], { stdio: 'inherit' });
+      await runCommand(runinfo, ['capacitor', 'sync']);
       // update the ios project if present
       await this.addConfToIosPlist(options);
       // update the android project if present

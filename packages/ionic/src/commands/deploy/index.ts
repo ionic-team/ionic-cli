@@ -9,7 +9,7 @@ export class DeployNamespace extends Namespace {
       name: 'deploy',
       summary: 'Appflow Deploy functionality',
       description: `
-Interface to execute commands about deploy plugin in a project and deploy builds on Ionic Appflow.
+These commands integrate with Ionic Appflow to configure the deploy plugin in your project and run remote builds.
 
 Appflow deploy documentation:
 - Overview: ${strong('https://ion.link/appflow-deploy-docs')}

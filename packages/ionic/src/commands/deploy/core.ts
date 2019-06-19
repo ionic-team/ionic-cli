@@ -1,15 +1,16 @@
 import { CommandLineOptions, MetadataGroup, contains, validators } from '@ionic/cli-framework';
+import { pathWritable, readFile, writeFile } from '@ionic/utils-fs';
 import * as et from 'elementtree';
-import * as fs from 'fs';
 import * as path from 'path';
 
-import { input, strong } from '../../lib/color';
+import { CommandMetadataOption } from '../../definitions';
+import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
 export abstract class DeployConfCommand extends Command {
 
-  protected readonly commandOptions = [
+  protected readonly commandOptions: CommandMetadataOption[] = [
     {
       name: 'app-id',
       summary: 'Your Appflow app ID',
@@ -119,8 +120,12 @@ export abstract class DeployConfCommand extends Command {
     if (!this.project) {
       return '';
     }
-    const assumedPlistPath = path.join(this.project.rootDirectory, 'ios', 'App', 'App', 'Info.plist');
-    if (!fs.existsSync(assumedPlistPath)) {
+    const capIntegration = this.project.getIntegration('capacitor');
+    if (!capIntegration) {
+      return '';
+    }
+    const assumedPlistPath = path.join(capIntegration.root, 'ios', 'App', 'App', 'Info.plist');
+    if (!await pathWritable(assumedPlistPath)) {
       return '';
     }
     return assumedPlistPath;
@@ -130,8 +135,12 @@ export abstract class DeployConfCommand extends Command {
     if (!this.project) {
       return '';
     }
-    const assumedStringXmlPath = path.join(this.project.rootDirectory, 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml');
-    if (!fs.existsSync(assumedStringXmlPath)) {
+    const capIntegration = this.project.getIntegration('capacitor');
+    if (!capIntegration) {
+      return '';
+    }
+    const assumedStringXmlPath = path.join(capIntegration.root, 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml');
+    if (!await pathWritable(assumedStringXmlPath)) {
       return '';
     }
     return assumedStringXmlPath;
@@ -147,7 +156,7 @@ export abstract class DeployConfCommand extends Command {
     // try to load the plist file first
     let plistData;
     try {
-      const plistFile = fs.readFileSync(plistPath);
+      const plistFile = await readFile(plistPath);
       plistData = plistFile.toString();
     } catch (e) {
       this.env.log.error(`The iOS Info.plist could not be read.`);
@@ -215,7 +224,7 @@ export abstract class DeployConfCommand extends Command {
       `<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">\n` +
       newXML;
     try {
-      fs.writeFileSync(plistPath, xmlToWrite, { encoding: 'utf-8' });
+      await writeFile(plistPath, xmlToWrite, { encoding: 'utf-8' });
     } catch (e) {
       this.env.log.error(`Changes to Info.plist could not be written.`);
       this.printPlistInstructions(options);
@@ -233,10 +242,10 @@ export abstract class DeployConfCommand extends Command {
     // try to load the plist file first
     let stringData;
     try {
-      const stringFile = fs.readFileSync(stringXmlPath);
+      const stringFile = await readFile(stringXmlPath);
       stringData = stringFile.toString();
     } catch (e) {
-      this.env.log.error(`The Androind string.xml could not be read.`);
+      this.env.log.error(`The Android string.xml could not be read.`);
       this.printStringXmlInstructions(options);
       return;
     }
@@ -274,7 +283,7 @@ export abstract class DeployConfCommand extends Command {
       indent: 2,
     });
     try {
-      fs.writeFileSync(stringXmlPath, newXML, { encoding: 'utf-8' });
+      await writeFile(stringXmlPath, newXML, { encoding: 'utf-8' });
     } catch (e) {
       this.env.log.error(`Changes to string.xml could not be written.`);
       this.printStringXmlInstructions(options);
@@ -290,7 +299,7 @@ export abstract class DeployConfCommand extends Command {
       const appId = await this.getAppId();
       if (!appId) {
         this.env.log.warn(
-          `No app id found on the project: consider running ${input('ionic link')} to Connect local apps to Ionic`
+          `No app ID found on the project: consider running ${input('ionic link')} to Connect local apps to Ionic`
         );
       }
       const appIdOption = await this.env.prompt({
@@ -316,7 +325,7 @@ export abstract class DeployConfCommand extends Command {
     if (options['update-method'] && !updateMethodList.includes(options['update-method'] as string)) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`${strong(options['update-method'] as string)} is not a valid update method; choose a valid one`);
+        this.env.log.warn(`--${input(options['update-method'] as string)} is not a valid update method; choose a valid one`);
       }
       overrideUpdateMethodChoice = true;
     }
@@ -335,7 +344,7 @@ export abstract class DeployConfCommand extends Command {
     if (options['max-store'] && validators.numeric(options['max-store'] as string) !== true) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`${strong(options['max-store'] as string)} is not a valid Max Store value; please specify an integer`);
+        this.env.log.warn(`--${input(options['max-store'] as string)} is not a valid Max Store value; please specify an integer`);
       }
       options['max-store'] = await this.env.prompt({
         type: 'input',
@@ -348,7 +357,7 @@ export abstract class DeployConfCommand extends Command {
     if (options['min-background-duration'] && validators.numeric(options['min-background-duration'] as string) !== true) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`${strong(options['min-background-duration'] as string)} is not a valid Min Background Duration value; please specify an integer`);
+        this.env.log.warn(`--${input(options['min-background-duration'] as string)} is not a valid Min Background Duration value; please specify an integer`);
       }
       options['min-background-duration'] = await this.env.prompt({
         type: 'input',
@@ -360,7 +369,7 @@ export abstract class DeployConfCommand extends Command {
     if (options['update-api'] && validators.url(options['update-api'] as string) !== true) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`${strong(options['update-api'] as string)} is not a valid Update Api value; please specify a url`);
+        this.env.log.warn(`--${input(options['update-api'] as string)} is not a valid Update Api value; please specify a url`);
       }
       options['update-api'] = await this.env.prompt({
         type: 'input',
