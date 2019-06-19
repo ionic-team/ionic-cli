@@ -46,7 +46,13 @@ closeAndLock:
       message: >
         Thanks for the issue! We use this issue tracker exclusively for bug
         reports and feature requests for the Ionic CLI. It appears that this
-        issue is associated with Cordova. Please see Cordova's [Reporting
+        issue is associated with Cordova.
+
+
+        If you need Cordova support, please try asking in the [Ionic
+        Forum](https://forum.ionicframework.com/). You can visit our [Support
+        Page](https://ionicframework.com/support) for all options. If you believe
+        this is an issue with Cordova, please see Cordova's [Reporting
         Issues](https://cordova.apache.org/contribute/issues.html) page.
 
 
