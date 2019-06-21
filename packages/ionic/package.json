@@ -8,7 +8,7 @@
     "ionic": "./bin/ionic"
   },
   "engines": {
-    "node": ">=6.4.0"
+    "node": ">=8.9.4"
   },
   "main": "./index.js",
   "types": "./index.d.ts",

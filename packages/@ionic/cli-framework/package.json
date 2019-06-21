@@ -7,7 +7,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "engines": {
-    "node": ">=6.4.0"
+    "node": ">=8.9.4"
   },
   "scripts": {
     "clean": "rimraf index.* definitions.* errors.* guards.* lib utils",
