@@ -4,7 +4,7 @@ import { ValidationError, Validator, Validators } from '../definitions';
 import { InputValidationError } from '../errors';
 import { isValidEmail, isValidURL, slugify } from '../utils/string';
 
-export function validate(input: string, key: string, validatorsToUse: Validator[]) {
+export function validate(input: string, key: string, validatorsToUse: Validator[]): void {
   const errors: ValidationError[] = [];
 
   for (const validator of validatorsToUse) {
@@ -77,6 +77,20 @@ export const validators: Validators = {
     return true;
   },
 };
+
+export function combine(...validators: Validator[]): Validator {
+  return (input?: string, key?: string) => {
+    for (const validator of validators) {
+      const message = validator(input, key);
+
+      if (message !== true) {
+        return message;
+      }
+    }
+
+    return true;
+  };
+}
 
 export function contains(values: (string | undefined)[], { caseSensitive = true }: { caseSensitive?: boolean }): Validator {
   if (!caseSensitive) {

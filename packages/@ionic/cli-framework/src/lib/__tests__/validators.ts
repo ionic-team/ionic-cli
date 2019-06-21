@@ -160,6 +160,8 @@ describe('@ionic/cli-framework', () => {
 
     });
 
+    // TODO: combine
+
   });
 
 });
