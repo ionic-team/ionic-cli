@@ -9,7 +9,7 @@ export class DeployNamespace extends Namespace {
       name: 'deploy',
       summary: 'Appflow Deploy functionality',
       description: `
-Interface to execute commands about deploy builds on Ionic Appflow.
+These commands integrate with Ionic Appflow to configure the deploy plugin in your project and run remote builds.
 
 Appflow deploy documentation:
 - Overview: ${strong('https://ion.link/appflow-deploy-docs')}
@@ -20,6 +20,8 @@ Appflow deploy documentation:
 
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
+      ['add', async () => { const { AddCommand } = await import('./add'); return new AddCommand(this); }],
+      ['configure', async () => { const { ConfigureCommand } = await import('./configure'); return new ConfigureCommand(this); }],
       ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this); }],
       ['manifest', async () => { const { DeployManifestCommand } = await import('./manifest'); return new DeployManifestCommand(this); }],
     ]);
