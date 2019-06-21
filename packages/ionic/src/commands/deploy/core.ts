@@ -85,6 +85,13 @@ export abstract class DeployConfCommand extends Command {
     return undefined;
   }
 
+  protected async requireNativeIntegration(): Promise<void> {
+    const integration = await this.getAppIntegration();
+    if (!integration) {
+      throw new FatalException(`An integration (Cordova or Capacitor) is needed before adding the Deploy (cordova-plugin-ionic) plugin`);
+    }
+  }
+
   protected async getAppId(): Promise<string | undefined> {
     if (this.project) {
       return this.project.config.get('id');

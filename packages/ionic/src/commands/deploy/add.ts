@@ -56,6 +56,8 @@ add the configuration to the proper iOS and Android configuration files.
         `Deploy (cordova-plugin-ionic) already installed`
       );
     }
+    // check if there are native integration installed
+    await this.requireNativeIntegration();
     await this.preRunCheckInputs(options);
   }
 

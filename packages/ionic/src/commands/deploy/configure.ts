@@ -41,6 +41,8 @@ parameters and let Cordova deal with the changes.
         `Please run ${input('ionic deploy add')}`
       );
     }
+    // check if there are native integration installed
+    await this.requireNativeIntegration();
     await this.preRunCheckInputs(options);
   }
 
