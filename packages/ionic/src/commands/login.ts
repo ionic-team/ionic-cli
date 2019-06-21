@@ -1,4 +1,4 @@
-import { MetadataGroup, validators } from '@ionic/cli-framework';
+import { MetadataGroup, combine, validators } from '@ionic/cli-framework';
 import chalk from 'chalk';
 import * as readline from 'readline';
 
@@ -111,7 +111,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
         type: 'input',
         name: 'email',
         message: 'Email:',
-        validate: v => validators.required(v) && validators.email(v),
+        validate: v => combine(validators.required, validators.email)(v),
       });
 
       inputs[0] = email;

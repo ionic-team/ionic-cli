@@ -1,3 +1,5 @@
+import { combine } from '@ionic/cli-framework';
+
 import { IClient, IConfig, ISession, IonicEnvironment } from '../definitions';
 import { isLoginResponse, isSuperAgentError } from '../guards';
 
@@ -144,7 +146,7 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
     type: 'input',
     name: 'email',
     message: 'Email:',
-    validate: v => validators.required(v) && validators.email(v),
+    validate: v => combine(validators.required, validators.email)(v),
   });
 
   const password = await env.prompt({

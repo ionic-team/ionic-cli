@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, MetadataGroup, contains, validators } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { tmpfilepath } from '@ionic/utils-fs';
 import { sleep } from '@ionic/utils-process';
@@ -144,7 +144,7 @@ Customizing the build:
         name: 'platform',
         choices: PLATFORMS,
         message: `Platform to package:`,
-        validate: v => validators.required(v) && contains(PLATFORMS, {})(v),
+        validate: v => combine(validators.required, contains(PLATFORMS, {}))(v),
       });
 
       inputs[0] = platformInput;
@@ -166,7 +166,7 @@ Customizing the build:
         name: 'type',
         choices: buildTypes,
         message: `Build type:`,
-        validate: v => validators.required(v) && contains(buildTypes, {})(v),
+        validate: v => combine(validators.required, contains(buildTypes, {}))(v),
       });
 
       inputs[1] = typeInput;
