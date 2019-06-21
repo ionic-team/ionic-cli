@@ -114,8 +114,8 @@ export async function run(pargv: string[]): Promise<void> {
       await executor.execute(pargv, process.env);
 
       if (ienv.flags.interactive) {
-        const updateNotifier = await import('update-notifier');
-        updateNotifier({ pkg: await loadPackageJson() }).notify({ isGlobal: true });
+        const { runUpdateNotify } = await import('./lib/updates');
+        await runUpdateNotify(ienv, await loadPackageJson());
       }
     } catch (e) {
       err = e;
@@ -179,5 +179,8 @@ export async function receive(msg: IPCMessage) {
       project,
       session: env.session,
     }, msg.data.command, msg.data.args);
+  } else if (msg.type === 'update-check') {
+    const { runUpdateCheck } = await import('./lib/updates');
+    await runUpdateCheck(env);
   }
 }

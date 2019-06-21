@@ -74,7 +74,6 @@
     "tar": "^4.3.0",
     "through2": "^3.0.0",
     "tslib": "^1.9.0",
-    "update-notifier": "^3.0.0",
     "uuid": "^3.2.1"
   },
   "devDependencies": {
@@ -90,7 +89,6 @@
     "@types/split2": "^2.1.6",
     "@types/tar": "^4.0.0",
     "@types/through2": "^2.0.33",
-    "@types/update-notifier": "^2.0.0",
     "@types/uuid": "^3.4.3",
     "jest": "^23.0.1",
     "jest-cli": "^24.1.0",

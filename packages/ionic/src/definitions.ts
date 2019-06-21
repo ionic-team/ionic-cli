@@ -843,7 +843,13 @@ export interface ResolvedStarterTemplate extends BaseStarterTemplate {
   archive: string;
 }
 
-export interface IPCMessage {
+export interface TelemetryIPCMessage {
   type: 'telemetry';
   data: { command: string; args: string[]; };
 }
+
+export interface UpdateCheckIPCMessage {
+  type: 'update-check';
+}
+
+export type IPCMessage = TelemetryIPCMessage | UpdateCheckIPCMessage;
