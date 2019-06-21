@@ -7,7 +7,7 @@ import * as path from 'path';
 import { ERROR_VERSION_TOO_OLD } from '../bootstrap';
 import { IProject, InfoItem, IonicContext, IonicEnvironment, IonicEnvironmentFlags } from '../definitions';
 
-import { input, strong } from './color';
+import { input, strong, success } from './color';
 import { CONFIG_FILE, Config, DEFAULT_CONFIG_DIRECTORY, parseGlobalOptions } from './config';
 import { Environment } from './environment';
 import { Client } from './http';
@@ -50,11 +50,22 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
 
   const getInfo = async () => {
     const osName = await import('os-name');
+    const semver = await import('semver');
+    const { getUpdateConfig } = await import('./updates');
+
     const os = osName();
 
-    const npm = await shell.cmdinfo('npm', ['-v']);
-    const nativeRun = await shell.cmdinfo('native-run', ['--version']);
-    const cordovaRes = await shell.cmdinfo('cordova-res', ['--version']);
+    const [ npm, nativeRun, cordovaRes ] = await Promise.all([
+      shell.cmdinfo('npm', ['-v']),
+      shell.cmdinfo('native-run', ['--version']),
+      shell.cmdinfo('cordova-res', ['--version']),
+    ]);
+
+    const { packages: latestVersions } = await getUpdateConfig({ config });
+    const latestNativeRun = latestVersions.find(pkg => pkg.name === 'native-run');
+    const latestCordovaRes = latestVersions.find(pkg => pkg.name === 'cordova-res');
+    const nativeRunUpdate = latestNativeRun && nativeRun ? semver.gt(latestNativeRun.version, nativeRun) : false;
+    const cordovaResUpdate = latestCordovaRes && cordovaRes ? semver.gt(latestCordovaRes.version, cordovaRes) : false;
 
     const info: InfoItem[] = [
       {
@@ -66,8 +77,16 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
       { group: 'system', key: 'NodeJS', value: process.version, path: process.execPath },
       { group: 'system', key: 'npm', value: npm || 'not installed' },
       { group: 'system', key: 'OS', value: os },
-      { group: 'utility', key: 'native-run', value: nativeRun || 'not installed' },
-      { group: 'utility', key: 'cordova-res', value: cordovaRes || 'not installed' },
+      {
+        group: 'utility',
+        key: 'native-run',
+        value: nativeRun ? (`${nativeRun} ${nativeRunUpdate ? `(update available: ${latestNativeRun ? success(latestNativeRun.version) : '???'})` : ''}`) : 'not installed',
+      },
+      {
+        group: 'utility',
+        key: 'cordova-res',
+        value: cordovaRes ? (`${cordovaRes} ${cordovaResUpdate ? `(update available: ${latestCordovaRes ? success(latestCordovaRes.version) : '???'})` : ''}`) : 'not installed',
+      },
     ];
 
     info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', key: e, value: v || 'not set' })));
