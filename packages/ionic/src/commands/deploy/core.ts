@@ -1,5 +1,5 @@
 import { CommandLineOptions, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
-import { pathWritable, readFile, writeFile } from '@ionic/utils-fs';
+import { pathExists, pathWritable, readFile, writeFile } from '@ionic/utils-fs';
 import * as et from 'elementtree';
 import * as path from 'path';
 
@@ -137,9 +137,13 @@ export abstract class DeployConfCommand extends Command {
     if (!capIntegration) {
       return '';
     }
+    // check first if iOS exists
+    if (!await pathExists(path.join(capIntegration.root, 'ios'))) {
+      return '';
+    }
     const assumedPlistPath = path.join(capIntegration.root, 'ios', 'App', 'App', 'Info.plist');
     if (!await pathWritable(assumedPlistPath)) {
-      return '';
+      throw new Error('The iOS Info.plist could not be found.');
     }
     return assumedPlistPath;
   }
@@ -152,18 +156,28 @@ export abstract class DeployConfCommand extends Command {
     if (!capIntegration) {
       return '';
     }
+    // check first if iOS exists
+    if (!await pathExists(path.join(capIntegration.root, 'android'))) {
+      return '';
+    }
     const assumedStringXmlPath = path.join(capIntegration.root, 'android', 'app', 'src', 'main', 'res', 'values', 'strings.xml');
     if (!await pathWritable(assumedStringXmlPath)) {
-      return '';
+      throw new Error('The Android string.xml could not be found.');
     }
     return assumedStringXmlPath;
   }
 
   protected async addConfToIosPlist(options: CommandLineOptions): Promise<void> {
-    const plistPath = await this.getIosCapPlist();
-    if (!plistPath) {
-      this.env.log.warn(`The iOS Info.plist could not be found.`);
+    let plistPath;
+    try {
+      plistPath = await this.getIosCapPlist();
+    } catch (e) {
+      this.env.log.warn(e.message);
       this.printPlistInstructions(options);
+      return;
+    }
+    if (!plistPath) {
+      this.env.log.info(`No Capacitor iOS project found.`);
       return;
     }
     // try to load the plist file first
@@ -246,10 +260,16 @@ export abstract class DeployConfCommand extends Command {
   }
 
   protected async addConfToAndroidString(options: CommandLineOptions) {
-    const stringXmlPath = await this.getAndroidCapString();
+    let stringXmlPath;
+    try {
+      stringXmlPath = await this.getAndroidCapString();
+    } catch (e) {
+      this.env.log.warn(e.message);
+      this.printPlistInstructions(options);
+      return;
+    }
     if (!stringXmlPath) {
-      this.env.log.warn(`The Android string.xml could not be found.`);
-      this.printStringXmlInstructions(options);
+      this.env.log.info(`No Capacitor Android project found.`);
       return;
     }
     // try to load the plist file first
