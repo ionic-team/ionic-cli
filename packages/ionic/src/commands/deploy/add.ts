@@ -1,4 +1,5 @@
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
+import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
@@ -10,14 +11,13 @@ export class AddCommand extends DeployConfCommand {
     return {
       name: 'add',
       type: 'project',
-      summary: 'Adds the Deploy plugin (cordova-plugin-ionic) to the project',
+      summary: 'Adds Appflow Deploy to the project',
       description: `
-This command adds the Deploy plugin (cordova-plugin-ionic) for both Cordova and Capacitor projects.
+This command adds the Appflow Deploy plugin (${input('cordova-plugin-ionic')}) for both Capacitor and Cordova projects.
 
-For a Cordova project it just takes care of running the proper Cordova CLI command with the submitted parameters.
+For Capacitor projects it runs all the steps necessary to install the plugin, sync with the native projects and add the configuration to the proper iOS and Android configuration files.
 
-For a Capacitor project it runs all the steps necessary to install the plugin, sync with the native projects and
-add the configuration to the proper iOS and Android configuration files.
+For Cordova projects it just takes care of running the proper Cordova CLI command with the submitted parameters.
       `,
       exampleCommands: [
         '',
@@ -53,7 +53,7 @@ add the configuration to the proper iOS and Android configuration files.
     const alreadyAdded = await this.checkDeployInstalled();
     if (alreadyAdded) {
       throw new FatalException(
-        `Deploy (cordova-plugin-ionic) already installed`
+        `Appflow Deploy plugin is already installed.`
       );
     }
     // check if there are native integration installed
@@ -93,7 +93,7 @@ add the configuration to the proper iOS and Android configuration files.
       await this.addConfToAndroidString(options);
     }
 
-    this.env.log.ok(`Deploy (cordova-plugin-ionic) added to the project\n`);
+    this.env.log.ok(`Appflow Deploy plugin added to the project!\n`);
   }
 
 }

@@ -1,10 +1,10 @@
-import { CommandLineOptions, MetadataGroup, contains, validators } from '@ionic/cli-framework';
+import { CommandLineOptions, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
 import { pathWritable, readFile, writeFile } from '@ionic/utils-fs';
 import * as et from 'elementtree';
 import * as path from 'path';
 
 import { CommandMetadataOption } from '../../definitions';
-import { input } from '../../lib/color';
+import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
@@ -31,7 +31,7 @@ export abstract class DeployConfCommand extends Command {
     },
     {
       name: 'max-store',
-      summary: 'The maximum number of downloaded versions to store on the device for quick loading (default is 2 if not specified)',
+      summary: 'The maximum number of downloaded versions to store on the device',
       type: String,
       groups: [MetadataGroup.ADVANCED],
       spec: { value: 'quantity' },
@@ -39,17 +39,17 @@ export abstract class DeployConfCommand extends Command {
     },
     {
       name: 'min-background-duration',
-      summary: 'The minimum duration in seconds after which the app in background checks for an update (default is 30 if not specified)',
+      summary: 'The minimum duration after which the app checks for an update in the background',
       type: String,
       groups: [MetadataGroup.ADVANCED],
-      spec: { value: 'quantity' },
+      spec: { value: 'seconds' },
       default: '30',
     },
     {
       name: 'update-api',
-      summary: 'The location of the Appflow API (only use this for development)',
+      summary: 'The location of the Appflow API',
       type: String,
-      groups: [MetadataGroup.ADVANCED],
+      groups: [MetadataGroup.HIDDEN],
       spec: { value: 'url' },
       default: 'https://api.ionicjs.com',
     },
@@ -87,8 +87,14 @@ export abstract class DeployConfCommand extends Command {
 
   protected async requireNativeIntegration(): Promise<void> {
     const integration = await this.getAppIntegration();
+
     if (!integration) {
-      throw new FatalException(`An integration (Cordova or Capacitor) is needed before adding the Deploy (cordova-plugin-ionic) plugin`);
+      throw new FatalException(
+        `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
+        `In order to add the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
+        `iOS: ${strong('https://ionicframework.com/docs/building/ios')}\n` +
+        `Android: ${strong('https://ionicframework.com/docs/building/android')}\n`
+      );
     }
   }
 
@@ -306,13 +312,14 @@ export abstract class DeployConfCommand extends Command {
       const appId = await this.getAppId();
       if (!appId) {
         this.env.log.warn(
-          `No app ID found on the project: consider running ${input('ionic link')} to Connect local apps to Ionic`
+          `No app ID found in the project.\n` +
+          `Consider running ${input('ionic link')} to connect local apps to Ionic.\n`
         );
       }
       const appIdOption = await this.env.prompt({
         type: 'input',
         name: 'app-id',
-        message: `Appflow app ID:`,
+        message: `Appflow App ID:`,
         default: appId,
       });
       options['app-id'] = appIdOption;
@@ -332,7 +339,10 @@ export abstract class DeployConfCommand extends Command {
     if (options['update-method'] && !updateMethodList.includes(options['update-method'] as string)) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`--${input(options['update-method'] as string)} is not a valid update method; choose a valid one`);
+        this.env.log.warn(
+          `${input(options['update-method'] as string)} is not a valid update method.\n` +
+          `Please choose a different value for ${input('--update-method')}. Valid update methods are: ${updateMethodList.map(m => input(m)).join(', ')}\n`
+        );
       }
       overrideUpdateMethodChoice = true;
     }
@@ -343,7 +353,7 @@ export abstract class DeployConfCommand extends Command {
         choices: updateMethodList,
         message: `Update Method:`,
         default: defaultUpdateMethod,
-        validate: v => validators.required(v) && contains(updateMethodList, {})(v),
+        validate: v => combine(validators.required, contains(updateMethodList, {}))(v),
       });
     }
 
@@ -351,38 +361,47 @@ export abstract class DeployConfCommand extends Command {
     if (options['max-store'] && validators.numeric(options['max-store'] as string) !== true) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`--${input(options['max-store'] as string)} is not a valid Max Store value; please specify an integer`);
+        this.env.log.warn(
+          `${input(options['max-store'] as string)} is not a valid value for the maximum number of versions to store.\n` +
+          `Please specify an integer for ${input('--max-store')}.\n`
+        );
       }
       options['max-store'] = await this.env.prompt({
         type: 'input',
         name: 'max-store',
         message: `Max Store:`,
-        validate: v => validators.required(v) && validators.numeric(v),
+        validate: v => combine(validators.required, validators.numeric)(v),
       });
     }
 
     if (options['min-background-duration'] && validators.numeric(options['min-background-duration'] as string) !== true) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`--${input(options['min-background-duration'] as string)} is not a valid Min Background Duration value; please specify an integer`);
+        this.env.log.warn(
+          `${input(options['min-background-duration'] as string)} is not a valid value for the number of seconds to wait before checking for updates in the background.\n` +
+          `Please specify an integer for ${input('--min-background-duration')}.\n`
+        );
       }
       options['min-background-duration'] = await this.env.prompt({
         type: 'input',
         name: 'min-background-duration',
         message: `Min Background Duration:`,
-        validate: v => validators.required(v) && validators.numeric(v),
+        validate: v => combine(validators.required, validators.numeric)(v),
       });
     }
     if (options['update-api'] && validators.url(options['update-api'] as string) !== true) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`--${input(options['update-api'] as string)} is not a valid Update Api value; please specify a url`);
+        this.env.log.warn(
+          `${input(options['update-api'] as string)} is not a valid value for the URL of the API to use.\n` +
+          `Please specify a valid URL for ${input('--update-api')}.\n`
+        );
       }
       options['update-api'] = await this.env.prompt({
         type: 'input',
         name: 'update-api',
         message: `Update Url:`,
-        validate: v => validators.required(v) && validators.url(v),
+        validate: v => combine(validators.required, validators.url)(v),
       });
     }
   }

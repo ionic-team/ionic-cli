@@ -8,19 +8,17 @@ import { DeployConfCommand } from './core';
 
 export class ConfigureCommand extends DeployConfCommand {
   async getMetadata(): Promise<CommandMetadata> {
-
     return {
       name: 'configure',
       type: 'project',
       groups: [MetadataGroup.HIDDEN],
-      summary: 'Overrides the Deploy plugin (cordova-plugin-ionic) configuration in the project',
+      summary: 'Overrides Appflow Deploy configuration',
       description: `
-This command overrides the Deploy plugin (cordova-plugin-ionic) configuration in Capacitor projects.
+This command overrides configuration for the Appflow Deploy plugin (${input('cordova-plugin-ionic')}) in Capacitor projects.
 
-In a Capacitor project, if the plugin is already installed, it overrides the configuration variables in the native projects.
+For Capacitor projects, if the plugin is already installed, it overrides the configuration variables in the native projects.
 
-For a Cordova project this is not implemented because it is better to reinstall the plugin with the different
-parameters and let Cordova deal with the changes.
+For Cordova projects this is not implemented because it is better to reinstall the plugin with the different parameters and let Cordova deal with the changes.
       `,
       exampleCommands: [
         '',
