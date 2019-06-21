@@ -541,7 +541,7 @@ export abstract class Project implements IProject {
     pkg.version = version ? version : '0.0.1';
     pkg.description = description ? description : 'An Ionic project';
 
-    await writeJson(this.packageJsonPath, pkg);
+    await writeJson(this.packageJsonPath, pkg, { spaces: 2 });
 
     const integrations = await this.getIntegrations();
 
