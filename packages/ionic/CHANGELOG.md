@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.0.3...ionic@5.1.0) (2019-06-21)
+
+
+### Bug Fixes
+
+* **start:** fix glitch with writing package.json without spaces ([389c398](https://github.com/ionic-team/ionic-cli/commit/389c398))
+* subsequent validation for various prompts ([1b92f8a](https://github.com/ionic-team/ionic-cli/commit/1b92f8a))
+
+
+### Features
+
+* **info:** show available updates for utilities ([a9f4b54](https://github.com/ionic-team/ionic-cli/commit/a9f4b54))
+* replace update-notifier ([a232c07](https://github.com/ionic-team/ionic-cli/commit/a232c07))
+* **deploy:** command to interactively add deploy plugin ([#4039](https://github.com/ionic-team/ionic-cli/issues/4039)) ([c75e66f](https://github.com/ionic-team/ionic-cli/commit/c75e66f))
+
+
+
+
+
 ## [5.0.3](https://github.com/ionic-team/ionic-cli/compare/ionic@5.0.2...ionic@5.0.3) (2019-06-18)
 
 

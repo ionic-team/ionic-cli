@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@2.0.3...@ionic/cli-framework@2.1.0) (2019-06-21)
+
+
+### Features
+
+* **validators:** `combine` for combining validators into one ([bcef698](https://github.com/ionic-team/ionic-cli/commit/bcef698))
+
+
+
+
+
 ## [2.0.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@2.0.2...@ionic/cli-framework@2.0.3) (2019-06-18)
 
 **Note:** Version bump only for package @ionic/cli-framework
