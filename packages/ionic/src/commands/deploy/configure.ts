@@ -22,9 +22,9 @@ For Cordova projects this is not implemented because it is better to reinstall t
       `,
       exampleCommands: [
         '',
-        '--app-id=abcd1234 --channel-name=Master --update-method=background',
+        '--app-id=abcd1234 --channel-name="Master" --update-method=background',
         '--max-store=2 --min-background-duration=30',
-        '--app-id=abcd1234 --channel-name=Master --update-method=background --max-store=2 --min-background-duration=30',
+        '--app-id=abcd1234 --channel-name="Master" --update-method=background --max-store=2 --min-background-duration=30',
         'android',
         'ios',
       ],
@@ -32,7 +32,7 @@ For Cordova projects this is not implemented because it is better to reinstall t
       inputs: [
         {
           name: 'platform',
-          summary: `The native platform (e.g. ${input('ios | android')})`,
+          summary: `The native platform (e.g. ${['ios', 'android'].map(v => input(v)).join(', ')})`,
         },
       ],
     };
@@ -51,7 +51,7 @@ For Cordova projects this is not implemented because it is better to reinstall t
     await this.requireNativeIntegration();
     // check that if an input is provided, it is valid
     if (inputs[0] && !['ios', 'android'].includes(inputs[0])) {
-      throw new FatalException('Only `ios` or `android` can be used.');
+      throw new FatalException(`Only ${input('ios')} or ${input('android')} can be used.`);
     }
     await this.preRunCheckInputs(options);
   }
