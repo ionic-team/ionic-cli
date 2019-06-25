@@ -21,9 +21,9 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
       `,
       exampleCommands: [
         '',
-        '--app-id="abcd1234" --channel-name="Master" --update-method="background"',
+        '--app-id=abcd1234 --channel-name=Master --update-method=background',
         '--max-store=2 --min-background-duration=30',
-        '--app-id="abcd1234" --channel-name="Master" --update-method="background" --max-store=2 --min-background-duration=30',
+        '--app-id=abcd1234 --channel-name=Master --update-method=background --max-store=2 --min-background-duration=30',
       ],
       options: this.commandOptions,
     };

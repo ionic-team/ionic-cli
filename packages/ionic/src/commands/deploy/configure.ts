@@ -22,11 +22,19 @@ For Cordova projects this is not implemented because it is better to reinstall t
       `,
       exampleCommands: [
         '',
-        '--app-id="abcd1234" --channel-name="Master" --update-method="background"',
+        '--app-id=abcd1234 --channel-name=Master --update-method=background',
         '--max-store=2 --min-background-duration=30',
-        '--app-id="abcd1234" --channel-name="Master" --update-method="background" --max-store=2 --min-background-duration=30',
+        '--app-id=abcd1234 --channel-name=Master --update-method=background --max-store=2 --min-background-duration=30',
+        'android',
+        'ios',
       ],
       options: this.commandOptions,
+      inputs: [
+        {
+          name: 'platform',
+          summary: `The native platform (e.g. ${input('ios | android')})`,
+        },
+      ],
     };
   }
 
@@ -41,6 +49,10 @@ For Cordova projects this is not implemented because it is better to reinstall t
     }
     // check if there are native integration installed
     await this.requireNativeIntegration();
+    // check that if an input is provided, it is valid
+    if (inputs[0] && !['ios', 'android'].includes(inputs[0])) {
+      throw new FatalException('Only `ios` or `android` can be used.');
+    }
     await this.preRunCheckInputs(options);
   }
 
@@ -53,10 +65,18 @@ For Cordova projects this is not implemented because it is better to reinstall t
       );
     }
     if (integration === 'capacitor') {
+      // check if there is an input that matches only one
+      const updateIos = !inputs[0] || (inputs[0] === 'ios');
+      const updateAndroid = !inputs[0] || (inputs[0] === 'android');
+
       // update the ios project if present
-      await this.addConfToIosPlist(options);
+      if (updateIos) {
+        await this.addConfToIosPlist(options);
+      }
       // update the android project if present
-      await this.addConfToAndroidString(options);
+      if (updateAndroid) {
+        await this.addConfToAndroidString(options);
+      }
       this.env.log.ok(`Deploy (cordova-plugin-ionic) configs successfully overridden for the project\n`);
     }
   }
