@@ -6,7 +6,7 @@ import { TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
 import { ancillary, input, strong } from '../../color';
 import { getIonicRemote, isRepoInitialized } from '../../git';
-import { loadConfigXml } from '../../integrations/cordova/config';
+import { loadCordovaConfig } from '../../integrations/cordova/config';
 import { getPlatforms } from '../../integrations/cordova/project';
 import { pkgManagerArgs } from '../../utils/npm';
 
@@ -219,11 +219,10 @@ export class UnsavedCordovaPlatforms extends Ailment {
     }
 
     const platforms = await getPlatforms(cordova.root);
-    const conf = await loadConfigXml(cordova);
-    const engines = conf.getPlatformEngines();
-    const engineNames = new Set([...engines.map(e => e.name)]);
+    const conf = await loadCordovaConfig(cordova);
+    const configuredPlatforms = new Set([...conf.getConfiguredPlatforms().map(e => e.name)]);
 
-    const configXmlDiff = platforms.filter(p => !engineNames.has(p));
+    const configXmlDiff = platforms.filter(p => !configuredPlatforms.has(p));
 
     return configXmlDiff.length > 0;
   }
@@ -252,7 +251,7 @@ export class DefaultCordovaBundleIdUsed extends Ailment {
       return false;
     }
 
-    const conf = await loadConfigXml(cordova);
+    const conf = await loadCordovaConfig(cordova);
 
     return conf.getBundleId() === 'io.ionic.starter';
   }

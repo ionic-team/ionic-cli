@@ -10,7 +10,7 @@ import { ancillary, strong } from '../../color';
 import { formatResponseError } from '../../http';
 import { createRequest } from '../../utils/http';
 
-import { ConfigXml } from './config';
+import { ConfigConfig } from './config';
 
 const debug = Debug('ionic:lib:integrations:cordova:resources');
 
@@ -221,12 +221,12 @@ export async function transformResourceImage(env: IonicEnvironment, resource: Im
 /**
  * Add image resource references for the provided platforms to the project's config.xml file.
  */
-export async function addResourcesToConfigXml(conf: ConfigXml, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<void> {
+export async function addResourcesToConfigXml(conf: ConfigConfig, platformList: KnownPlatform[], resourceJson: ResourcesConfig): Promise<void> {
   for (const platform of platformList) {
-    await conf.ensurePlatformImages(platform, resourceJson[platform]);
+    conf.ensurePlatformImages(platform, resourceJson[platform]);
   }
 
-  await conf.ensureSplashScreenPreferences();
+  conf.ensureSplashScreenPreferences();
 }
 
 export const RESOURCES: ResourcesConfig = {

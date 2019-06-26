@@ -39,7 +39,7 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
+    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic monitoring syncmaps')} outside a project directory.`);
@@ -52,7 +52,7 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
     const doBuild = options.build ? true : false;
 
     const cordova = this.project.requireIntegration('cordova');
-    const conf = await loadConfigXml(cordova);
+    const conf = await loadCordovaConfig(cordova);
     const cordovaInfo = conf.getProjectInfo();
 
     const appVersion = cordovaInfo.version;

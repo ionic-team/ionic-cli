@@ -1,30 +1,32 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { readFile, writeFile } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as et from 'elementtree';
 import * as path from 'path';
 
-import { ProjectIntegration, ResourcesPlatform } from '../../../definitions';
+import { CordovaPackageJson, ProjectIntegration, ResourcesPlatform } from '../../../definitions';
+import { isCordovaPackageJson } from '../../../guards';
 import { failure, input, strong } from '../../color';
 import { FatalException } from '../../errors';
 import { shortid } from '../../utils/uuid';
 
 const debug = Debug('ionic:lib:integrations:cordova:config');
 
-export interface PlatformEngine {
+export interface ConfiguredPlatform {
   name: string;
-  spec: string;
-  [key: string]: string;
+  spec?: string;
 }
 
-export class ConfigXml {
+export class ConfigConfig {
   protected _doc?: et.ElementTree;
+  protected _pkg?: CordovaPackageJson;
   protected _sessionid?: string;
   protected saving = false;
 
-  constructor(readonly filePath: string) {}
+  constructor(readonly configXmlPath: string, readonly packageJsonPath: string) {}
 
-  get doc() {
+  get doc(): et.ElementTree {
     if (!this._doc) {
       throw new Error('No doc loaded.');
     }
@@ -32,7 +34,15 @@ export class ConfigXml {
     return this._doc;
   }
 
-  get sessionid() {
+  get pkg(): CordovaPackageJson {
+    if (!this._pkg) {
+      throw new Error('No package.json loaded.');
+    }
+
+    return this._pkg;
+  }
+
+  get sessionid(): string {
     if (!this._sessionid) {
       throw new Error('No doc loaded.');
     }
@@ -40,41 +50,50 @@ export class ConfigXml {
     return this._sessionid;
   }
 
-  static async load(filePath: string): Promise<ConfigXml> {
-    if (!filePath) {
-      throw new Error('Must supply file path.');
+  static async load(configXmlPath: string, packageJsonPath: string): Promise<ConfigConfig> {
+    if (!configXmlPath || !packageJsonPath) {
+      throw new Error('Must supply file paths for config.xml and package.json.');
     }
 
-    const conf = new ConfigXml(filePath);
+    const conf = new ConfigConfig(configXmlPath, packageJsonPath);
     await conf.reload();
 
     return conf;
   }
 
-  async reload(): Promise<void> {
-    const configFileContents = await readFile(this.filePath, { encoding: 'utf8' });
+  protected async reload(): Promise<void> {
+    const configXml = await readFile(this.configXmlPath, { encoding: 'utf8' });
 
-    if (!configFileContents) {
+    if (!configXml) {
       throw new Error(`Cannot load empty config.xml file.`);
     }
 
     try {
-      this._doc = et.parse(configFileContents);
+      this._doc = et.parse(configXml);
       this._sessionid = shortid();
     } catch (e) {
       throw new Error(`Cannot parse config.xml file: ${e.stack ? e.stack : e}`);
+    }
+
+    const packageJson = await readPackageJsonFile(this.packageJsonPath);
+
+    if (isCordovaPackageJson(packageJson)) {
+      this._pkg = packageJson;
+    } else {
+      this._pkg = { ...packageJson, cordova: { platforms: [], plugins: {} } };
+      debug('Invalid package.json for Cordova. Missing or invalid Cordova entries in %O', this.packageJsonPath);
     }
   }
 
   async save(): Promise<void> {
     if (!this.saving) {
       this.saving = true;
-      await writeFile(this.filePath, this.write(), { encoding: 'utf8' });
+      await writeFile(this.configXmlPath, this.write(), { encoding: 'utf8' });
       this.saving = false;
     }
   }
 
-  setName(name: string) {
+  setName(name: string): void {
     const root = this.doc.getroot();
     let nameNode = root.find('name');
 
@@ -85,12 +104,12 @@ export class ConfigXml {
     nameNode.text = name;
   }
 
-  setBundleId(bundleId: string) {
+  setBundleId(bundleId: string): void {
     const root = this.doc.getroot();
     root.set('id', bundleId);
   }
 
-  getBundleId() {
+  getBundleId(): string | undefined {
     const root = this.doc.getroot();
     return root.get('id');
   }
@@ -99,7 +118,7 @@ export class ConfigXml {
    * Update config.xml content src to be a dev server url. As part of this
    * backup the original content src for a reset to occur at a later time.
    */
-  writeContentSrc(newSrc: string) {
+  writeContentSrc(newSrc: string): void {
     const root = this.doc.getroot();
     let contentElement = root.find('content');
 
@@ -190,25 +209,16 @@ export class ConfigXml {
     return { id, name, version };
   }
 
-  getPlatformEngines(): PlatformEngine[] {
-    const root = this.doc.getroot();
-    const engines = root.findall('engine');
+  getConfiguredPlatforms(): ConfiguredPlatform[] {
+    const deps: { [key: string]: string | undefined; } = { ...this.pkg.devDependencies, ...this.pkg.dependencies };
 
-    return engines.map(engine => this.engineElementToPlatformEngine(engine));
+    return this.pkg.cordova.platforms.map(platform => ({
+      name: platform,
+      spec: deps[`cordova-${platform}`],
+    }));
   }
 
-  getPlatformEngine(platform: string): PlatformEngine | undefined {
-    const root = this.doc.getroot();
-    const engine = root.find(`engine[@name='${platform}']`);
-
-    if (!engine) {
-      return undefined;
-    }
-
-    return this.engineElementToPlatformEngine(engine);
-  }
-
-  async ensurePlatformImages(platform: string, resourcesPlatform: ResourcesPlatform) {
+  ensurePlatformImages(platform: string, resourcesPlatform: ResourcesPlatform): void {
     const root = this.doc.getroot();
     const orientation = this.getPreference('Orientation') || 'default';
 
@@ -253,7 +263,7 @@ export class ConfigXml {
     }
   }
 
-  async ensureSplashScreenPreferences() {
+  ensureSplashScreenPreferences(): void {
     const root = this.doc.getroot();
 
     let splashScreenPrefElement = root.find(`preference[@name='SplashScreen']`);
@@ -281,28 +291,28 @@ export class ConfigXml {
 
     return contents;
   }
-
-  protected engineElementToPlatformEngine(engine: et.Element): PlatformEngine {
-    const name = engine.get('name');
-    const spec = engine.get('spec');
-
-    return { name: name ? name : '', spec: spec ? spec : '', ...engine.attrib };
-  }
 }
 
-export async function loadConfigXml(integration: Required<ProjectIntegration>): Promise<ConfigXml> {
-  const filePath = path.resolve(integration.root, 'config.xml');
-  debug(`Using config.xml: ${filePath}`);
+export async function loadCordovaConfig(integration: Required<ProjectIntegration>): Promise<ConfigConfig> {
+  const configXmlPath = path.resolve(integration.root, 'config.xml');
+  const packageJsonPath = path.resolve(integration.root, 'package.json');
+
+  debug('Loading Cordova Config (config.xml: %O, package.json: %O)', configXmlPath, packageJsonPath);
 
   try {
-    return await ConfigXml.load(filePath);
+    return await ConfigConfig.load(configXmlPath, packageJsonPath);
   } catch (e) {
     const msg = e.code === 'ENOENT'
-      ? `Cordova ${strong('config.xml')} file not found.\n\nYou can re-add the Cordova integration with the following command: ${input('ionic integrations enable cordova --add')}`
+      ? (
+          `Could not find necessary file(s): ${strong('config.xml')}, ${strong('package.json')}.\n\n` +
+          ` - ${strong(prettyPath(configXmlPath))}\n` +
+          ` - ${strong(prettyPath(packageJsonPath))}\n\n` +
+          `You can re-add the Cordova integration with the following command: ${input('ionic integrations enable cordova --add')}`
+        )
       : failure(e.stack ? e.stack : e);
 
     throw new FatalException(
-      `Cannot load ${strong(prettyPath(filePath))}\n` +
+      `Cannot load Cordova config.\n` +
       `${msg}`
     );
   }

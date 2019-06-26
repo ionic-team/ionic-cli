@@ -7,7 +7,6 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { COMMON_BUILD_COMMAND_OPTIONS } from '../../lib/build';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
-import { loadConfigXml } from '../../lib/integrations/cordova/config';
 import { getPackagePath } from '../../lib/integrations/cordova/project';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 import { SUPPORTED_PLATFORMS, checkNativeRun, createNativeRunArgs, createNativeRunListArgs, getNativeTargets, runNativeRun } from '../../lib/native-run';
@@ -248,7 +247,8 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
   }
 
   protected async runServeDeploy(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const conf = await loadConfigXml(this.integration);
+    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
+    const conf = await loadCordovaConfig(this.integration);
     const metadata = await this.getMetadata();
 
     if (!this.project) {
@@ -306,7 +306,8 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
   }
 
   protected async runBuildDeploy(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const conf = await loadConfigXml(this.integration);
+    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
+    const conf = await loadCordovaConfig(this.integration);
     const metadata = await this.getMetadata();
 
     if (!this.project) {

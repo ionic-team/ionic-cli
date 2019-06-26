@@ -112,7 +112,7 @@ export abstract class CordovaCommand extends Command {
         `See ${strong(`https://ionicframework.com/docs/${this.project.type}/overview`)} for detailed information.\n`
       );
     }
-    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
+    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
 
     await this.checkCordova(runinfo);
 
@@ -130,7 +130,7 @@ export abstract class CordovaCommand extends Command {
       }
     }
 
-    const conf = await loadConfigXml(this.integration);
+    const conf = await loadCordovaConfig(this.integration);
     conf.resetContentSrc();
     await conf.save();
   }

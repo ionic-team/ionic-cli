@@ -60,7 +60,7 @@ You may wish to use ${input('ionic cordova prepare')} if you run your project wi
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
+    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
     const { getPlatforms } = await import('../../lib/integrations/cordova/project');
     const [ platform ] = inputs;
 
@@ -77,11 +77,11 @@ You may wish to use ${input('ionic cordova prepare')} if you run your project wi
         ),
       });
     } else {
-      const conf = await loadConfigXml(this.integration);
+      const conf = await loadCordovaConfig(this.integration);
       const platforms = await getPlatforms(this.integration.root);
-      const engines = conf.getPlatformEngines();
+      const configuredPlatforms = conf.getConfiguredPlatforms();
 
-      if (engines.length === 0 && platforms.length === 0) {
+      if (configuredPlatforms.length === 0 && platforms.length === 0) {
         this.env.log.warn(
           `No platforms added to this project. Cannot prepare native platforms without any installed.\n` +
           `Run ${input('ionic cordova platform add <platform>')} to add native platforms.`

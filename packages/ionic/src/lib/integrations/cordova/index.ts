@@ -170,10 +170,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
-    const { loadConfigXml } = await import('./config');
+    const { loadCordovaConfig } = await import('./config');
 
     const integration = this.e.project.requireIntegration('cordova');
-    const conf = await loadConfigXml(integration);
+    const conf = await loadCordovaConfig(integration);
 
     conf.setName(name);
 

@@ -21,7 +21,7 @@ export function isCordovaPackageJson(obj: any): obj is CordovaPackageJson {
   return obj &&
     typeof obj.name === 'string' &&
     typeof obj.cordova === 'object' &&
-    typeof obj.cordova.platforms === 'object' &&
+    Array.isArray(obj.cordova.platforms) &&
     typeof obj.cordova.plugins === 'object';
 }
 

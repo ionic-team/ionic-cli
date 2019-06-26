@@ -126,7 +126,7 @@ Cordova reference documentation:
   }
 
   async runResourceServer(platform: string | undefined, options: CommandLineOptions): Promise<void> {
-    const { loadConfigXml } = await import('../../lib/integrations/cordova/config');
+    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
     const { addResourcesToConfigXml, createImgDestinationDirectories, findMostSpecificSourceImage, getImageResources, getSourceImages, transformResourceImage, uploadSourceImage } = await import('../../lib/integrations/cordova/resources');
 
     const { force } = options;
@@ -138,7 +138,7 @@ Cordova reference documentation:
 
     // await this.checkForPlatformInstallation(platform, { promptToInstall: true });
 
-    const conf = await loadConfigXml(this.integration);
+    const conf = await loadCordovaConfig(this.integration);
     const buildPlatforms = platform ? [platform] : await this.getBuildPlatforms();
 
     if (buildPlatforms.length === 0) {

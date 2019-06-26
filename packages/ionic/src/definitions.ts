@@ -49,7 +49,7 @@ export interface CordovaPackageJson extends PackageJson {
   cordova: {
     platforms: string[];
     plugins: {
-      [key: string]: {};
+      [key: string]: unknown;
     };
   };
 }
