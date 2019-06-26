@@ -528,6 +528,7 @@ export interface BaseBuildOptions {
   engine: string; // browser, cordova, etc.
   platform?: string; // android, ios, etc.
   project?: string;
+  verbose?: boolean;
   '--': string[];
 }
 

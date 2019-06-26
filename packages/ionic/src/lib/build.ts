@@ -50,8 +50,9 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
     const platform = options['platform'] ? String(options['platform']) : undefined;
     const engine = this.determineEngineFromCommandLine(options);
     const project = options['project'] ? String(options['project']) : undefined;
+    const verbose = !!options['verbose'];
 
-    return { '--': separatedArgs ? separatedArgs : [], engine, platform, project };
+    return { '--': separatedArgs ? separatedArgs : [], engine, platform, project, verbose };
   }
 
   determineEngineFromCommandLine(options: CommandLineOptions): string {

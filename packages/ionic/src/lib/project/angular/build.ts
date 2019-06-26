@@ -140,6 +140,10 @@ export class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
       }
     }
 
+    if (options.verbose) {
+      projectArgs.push('--verbose');
+    }
+
     return [...unparseArgs(args), ...projectArgs, ...separatedArgs];
   }
 
