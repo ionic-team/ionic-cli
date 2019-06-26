@@ -2,7 +2,7 @@ import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { remove, unlink } from '@ionic/utils-fs';
 import * as path from 'path';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, IProject } from '../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, IProject, ProjectIntegration } from '../definitions';
 import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
@@ -19,6 +19,13 @@ This command may be useful when obscure errors or issues are encountered. It rem
 
 For Cordova apps, it removes and recreates the generated native project and the native dependencies of your project.
 `,
+      options: [
+        {
+          name: 'cordova',
+          summary: 'Only perform the repair steps for Cordova platforms and plugins.',
+          type: Boolean,
+        },
+      ],
     };
   }
 
@@ -30,17 +37,40 @@ For Cordova apps, it removes and recreates the generated native project and the 
     const { pkgManagerArgs } = await import('../lib/utils/npm');
     const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
 
+    const cordovaOnly = !!options['cordova'];
     const cordova = this.project.getIntegration('cordova');
 
+    if (cordovaOnly && !cordova) {
+      throw new FatalException(`${input('--cordova')} was specified, but Cordova has not been added to this project.`);
+    }
+
+    if (cordova && !cordova.enabled) {
+      this.env.log.warn(`Cordova integration found, but is disabled--not running repair for Cordova.`);
+    }
+
     if (this.env.flags.interactive) {
-      this.env.log.info(
-        `${input('ionic repair')} will do the following:\n\n` +
-        `- Remove ${strong('node_modules/')} and ${strong('package-lock.json')}\n` +
-        `- Run ${input([installer, ...installerArgs].join(' '))} to restore dependencies\n` +
-        (cordova && cordova.enabled ?
+      const steps: string[] = [];
+
+      if (!cordovaOnly) {
+        steps.push(
+          `- Remove ${strong('node_modules/')} and ${strong('package-lock.json')}\n` +
+          `- Run ${input([installer, ...installerArgs].join(' '))} to restore dependencies\n`
+        );
+      }
+
+      if (cordova && cordova.enabled) {
+        steps.push(
           `- Remove ${strong('platforms/')} and ${strong('plugins/')}\n` +
-          `- Run ${input('cordova prepare')} to restore platforms and plugins\n` : '')
-      );
+          `- Run ${input('cordova prepare')} to restore platforms and plugins\n`
+        );
+      }
+
+      if (steps.length === 0) {
+        this.env.log.ok(`${input('ionic repair')} has nothing to do.`);
+        throw new FatalException('', 0);
+      }
+
+      this.env.log.info(`${input('ionic repair')} will do the following:\n\n` + steps.join(''));
     }
 
     const confirm = await this.env.prompt({
@@ -56,8 +86,13 @@ For Cordova apps, it removes and recreates the generated native project and the 
 
     this.env.log.nl();
 
-    await this.npmRepair(this.project);
-    await this.cordovaRepair(this.project, runinfo);
+    if (!cordovaOnly) {
+      await this.npmRepair(this.project);
+    }
+
+    if (cordova && cordova.enabled) {
+      await this.cordovaRepair(cordova, runinfo);
+    }
   }
 
   async npmRepair(project: IProject) {
@@ -79,23 +114,20 @@ For Cordova apps, it removes and recreates the generated native project and the 
     await this.env.shell.run(installer, installerArgs, { cwd: project.directory, stdio: 'inherit' });
   }
 
-  async cordovaRepair(project: IProject, runinfo: CommandInstanceInfo) {
+  async cordovaRepair(cordova: Required<ProjectIntegration>, runinfo: CommandInstanceInfo) {
     const tasks = this.createTaskChain();
-    const cordova = project.getIntegration('cordova');
 
-    if (cordova && cordova.enabled) {
-      const platformsDir = path.resolve(cordova.root, 'platforms');
-      const pluginsDir = path.resolve(cordova.root, 'plugins');
+    const platformsDir = path.resolve(cordova.root, 'platforms');
+    const pluginsDir = path.resolve(cordova.root, 'plugins');
 
-      tasks.next(`Removing ${strong(prettyPath(platformsDir))}`);
-      await remove(platformsDir);
+    tasks.next(`Removing ${strong(prettyPath(platformsDir))}`);
+    await remove(platformsDir);
 
-      tasks.next(`Removing ${strong(prettyPath(pluginsDir))}`);
-      await remove(pluginsDir);
+    tasks.next(`Removing ${strong(prettyPath(pluginsDir))}`);
+    await remove(pluginsDir);
 
-      tasks.end();
+    tasks.end();
 
-      await runCommand(runinfo, ['cordova', 'prepare', '--no-build']);
-    }
+    await runCommand(runinfo, ['cordova', 'prepare', '--no-build']);
   }
 }
