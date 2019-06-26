@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.2.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.1.1...ionic@5.2.0) (2019-06-26)
+
+
+### Bug Fixes
+
+* **capacitor:** save Capacitor CLI in dev deps ([dd2fd86](https://github.com/ionic-team/ionic-cli/commit/dd2fd86))
+* **cordova:** rely on package.json for plugins/platforms ([286917f](https://github.com/ionic-team/ionic-cli/commit/286917f))
+
+
+### Features
+
+* **angular:** pass `--verbose` to Angular CLI ([cf611ed](https://github.com/ionic-team/ionic-cli/commit/cf611ed))
+* **angular:** pass `--verbose` to Angular CLI for serve ([3f9e859](https://github.com/ionic-team/ionic-cli/commit/3f9e859))
+* **repair:** add `--cordova` flag for only repairing Cordova ([1055b49](https://github.com/ionic-team/ionic-cli/commit/1055b49))
+
+
+
+
+
 ## [5.1.1](https://github.com/ionic-team/ionic-cli/compare/ionic@5.1.0...ionic@5.1.1) (2019-06-26)
 
 **Note:** Version bump only for package ionic
