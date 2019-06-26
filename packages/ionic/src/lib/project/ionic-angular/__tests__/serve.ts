@@ -29,6 +29,7 @@ describe('ionic', () => {
           proxy: true,
           serverlogs: false,
           project: undefined,
+          verbose: false,
         };
 
         it('should provide defaults with no options', () => {

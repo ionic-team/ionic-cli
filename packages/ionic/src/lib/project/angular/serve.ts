@@ -256,6 +256,10 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       }
     }
 
+    if (options.verbose) {
+      projectArgs.push('--verbose');
+    }
+
     return [...unparseArgs(args), ...projectArgs, ...separatedArgs];
   }
 

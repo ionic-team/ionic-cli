@@ -27,6 +27,7 @@ describe('ionic', () => {
           project: undefined,
           prod: undefined,
           platform: undefined,
+          verbose: false,
         };
 
         it('should provide defaults with no options', () => {
@@ -101,6 +102,18 @@ describe('ionic', () => {
             `--source-map`,
             `--ssl`,
           ]);
+        });
+
+        it('should pass verbose flag', async () => {
+          const project = {};
+          const cli = new AngularServeCLI({ project } as any);
+          const options = {
+            ...defaults,
+            verbose: true,
+          };
+
+          const result = await (cli as any).serveOptionsToNgArgs(options);
+          expect(result).toEqual(['--verbose']);
         });
 
         it('should pass cordova options', async () => {

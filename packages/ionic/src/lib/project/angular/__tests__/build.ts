@@ -43,6 +43,18 @@ describe('ionic', () => {
           ]);
         });
 
+        it('should pass verbose flag', async () => {
+          const project = {};
+          const cli = new AngularBuildCLI({ project } as any);
+          const options = {
+            ...defaults,
+            verbose: true,
+          };
+
+          const result = await (cli as any).buildOptionsToNgArgs(options);
+          expect(result).toEqual(['--verbose']);
+        });
+
         it('should pass separated options', async () => {
           const project = {};
           const cli = new AngularBuildCLI({ project } as any);

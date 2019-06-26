@@ -34,6 +34,7 @@ describe('ionic', () => {
           port: 8100,
           proxy: true,
           project: undefined,
+          verbose: false,
         };
 
         it('should provide defaults with no options', () => {

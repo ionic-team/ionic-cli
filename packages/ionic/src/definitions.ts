@@ -604,6 +604,7 @@ export interface ServeOptions {
   devapp: boolean;
   platform?: string; // android, ios, etc.
   project?: string;
+  verbose?: boolean;
   '--': string[];
 
   // Additional Options

@@ -131,6 +131,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       project: options['project'] ? String(options['project']) : undefined,
+      verbose: !!options['verbose'],
     };
   }
 
