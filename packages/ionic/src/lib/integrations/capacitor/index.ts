@@ -60,7 +60,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async installCapacitorCLI() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli', saveDev: true });
     await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
   }
 
