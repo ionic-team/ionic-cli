@@ -1,3 +1,5 @@
+import { MetadataGroup } from '@ionic/cli-framework';
+
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
@@ -25,7 +27,50 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
         '--max-store=2 --min-background-duration=30',
         '--app-id=abcd1234 --channel-name="Master" --update-method=background --max-store=2 --min-background-duration=30',
       ],
-      options: this.commandOptions,
+      options: [
+        {
+          name: 'app-id',
+          summary: 'Your Appflow app ID',
+          type: String,
+          spec: { value: 'id' },
+        },
+        {
+          name: 'channel-name',
+          summary: 'The channel to check for updates from',
+          type: String,
+          spec: { value: 'name' },
+        },
+        {
+          name: 'update-method',
+          summary: 'The update method that dictates the behavior of the plugin',
+          type: String,
+          spec: { value: 'name' },
+        },
+        {
+          name: 'max-store',
+          summary: 'The maximum number of downloaded versions to store on the device',
+          type: String,
+          groups: [MetadataGroup.ADVANCED],
+          spec: { value: 'quantity' },
+          default: '2',
+        },
+        {
+          name: 'min-background-duration',
+          summary: 'The minimum duration after which the app checks for an update in the background',
+          type: String,
+          groups: [MetadataGroup.ADVANCED],
+          spec: { value: 'seconds' },
+          default: '30',
+        },
+        {
+          name: 'update-api',
+          summary: 'The location of the Appflow API',
+          type: String,
+          groups: [MetadataGroup.HIDDEN],
+          spec: { value: 'url' },
+          default: 'https://api.ionicjs.com',
+        },
+      ],
     };
   }
 
