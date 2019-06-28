@@ -1,59 +1,13 @@
-import { CommandLineOptions, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
+import { CommandLineOptions, combine, contains, validators } from '@ionic/cli-framework';
 import { pathExists, pathWritable, readFile, writeFile } from '@ionic/utils-fs';
 import * as et from 'elementtree';
 import * as path from 'path';
 
-import { CommandMetadataOption } from '../../definitions';
 import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
 export abstract class DeployConfCommand extends Command {
-
-  protected readonly commandOptions: CommandMetadataOption[] = [
-    {
-      name: 'app-id',
-      summary: 'Your Appflow app ID',
-      type: String,
-      spec: { value: 'id' },
-    },
-    {
-      name: 'channel-name',
-      summary: 'The channel to check for updates from',
-      type: String,
-      spec: { value: 'name' },
-    },
-    {
-      name: 'update-method',
-      summary: 'The update method that dictates the behavior of the plugin',
-      type: String,
-      spec: { value: 'name' },
-    },
-    {
-      name: 'max-store',
-      summary: 'The maximum number of downloaded versions to store on the device',
-      type: String,
-      groups: [MetadataGroup.ADVANCED],
-      spec: { value: 'quantity' },
-      default: '2',
-    },
-    {
-      name: 'min-background-duration',
-      summary: 'The minimum duration after which the app checks for an update in the background',
-      type: String,
-      groups: [MetadataGroup.ADVANCED],
-      spec: { value: 'seconds' },
-      default: '30',
-    },
-    {
-      name: 'update-api',
-      summary: 'The location of the Appflow API',
-      type: String,
-      groups: [MetadataGroup.HIDDEN],
-      spec: { value: 'url' },
-      default: 'https://api.ionicjs.com',
-    },
-  ];
 
   protected readonly optionsToPlistKeys = {
     'app-id': 'IonAppId',
@@ -71,7 +25,6 @@ export abstract class DeployConfCommand extends Command {
     'min-background-duration': 'ionic_min_background_duration',
     'update-api': 'ionic_update_api',
   };
-  protected readonly optionsToPlistKeysValues = Object.values(this.optionsToPlistKeys);
 
   protected async getAppIntegration(): Promise<string | undefined> {
     if (this.project) {
@@ -167,18 +120,18 @@ export abstract class DeployConfCommand extends Command {
     return assumedStringXmlPath;
   }
 
-  protected async addConfToIosPlist(options: CommandLineOptions): Promise<void> {
+  protected async addConfToIosPlist(options: CommandLineOptions): Promise<boolean> {
     let plistPath;
     try {
       plistPath = await this.getIosCapPlist();
     } catch (e) {
       this.env.log.warn(e.message);
       this.printPlistInstructions(options);
-      return;
+      return false;
     }
     if (!plistPath) {
       this.env.log.info(`No Capacitor iOS project found.`);
-      return;
+      return false;
     }
     // try to load the plist file first
     let plistData;
@@ -188,7 +141,7 @@ export abstract class DeployConfCommand extends Command {
     } catch (e) {
       this.env.log.error(`The iOS Info.plist could not be read.`);
       this.printPlistInstructions(options);
-      return;
+      return false;
     }
     // parse it with elementtree
     let etree;
@@ -197,28 +150,40 @@ export abstract class DeployConfCommand extends Command {
     } catch (e) {
       this.env.log.error(`Impossible to parse the XML in the Info.plist`);
       this.printPlistInstructions(options);
-      return;
+      return false;
     }
     // check that it is an actual plist file (root tag plist and first child dict)
     const root = etree.getroot();
     if (root.tag !== 'plist') {
       this.env.log.error(`Info.plist is not a valid plist file because the root is not a <plist> tag`);
       this.printPlistInstructions(options);
-      return;
+      return false;
     }
     const pdict = root.find('./dict');
     if (!pdict) {
       this.env.log.error(`Info.plist is not a valid plist file because the first child is not a <dict> tag`);
       this.printPlistInstructions(options);
-      return;
+      return false;
     }
+    // check which options are set (configure might not have all of them set)
+    const setOptions: { [key: string]: string } = {};
+    for (const [optionKey, plistKey] of Object.entries(this.optionsToPlistKeys)) {
+      if (options[optionKey]) {
+        setOptions[optionKey] = plistKey;
+      }
+    }
+    if (Object.entries(setOptions).length === 0) {
+      this.env.log.warn(`No new options detected for Info.plist`);
+      return false;
+    }
+
     // because elementtree has limited XPath support we cannot just run a smart selection, so we need to loop over all the elements
     const pdictChildren = pdict.getchildren();
     // there is no way to refer to a first right sibling in elementtree, so we use flags
     let removeNextStringTag = false;
     for (const element of pdictChildren) {
       // we remove all the existing element if there
-      if ((element.tag === 'key') && (element.text) && this.optionsToPlistKeysValues.includes(element.text as string)) {
+      if ((element.tag === 'key') && (element.text) && Object.values(setOptions).includes(element.text as string)) {
         pdict.remove(element);
         removeNextStringTag = true;
         continue;
@@ -230,7 +195,7 @@ export abstract class DeployConfCommand extends Command {
       }
     }
     // add again the new settings
-    for (const [optionKey, plistKey] of Object.entries(this.optionsToPlistKeys)) {
+    for (const [optionKey, plistKey] of Object.entries(setOptions)) {
       const plistValue = options[optionKey];
       if (!plistValue) {
         throw new FatalException(`This should never have happened: a parameter is missing so we cannot write the Info.plist`);
@@ -257,20 +222,21 @@ export abstract class DeployConfCommand extends Command {
       this.printPlistInstructions(options);
     }
     this.env.log.ok(`cordova-plugin-ionic variables correctly added to the iOS project`);
+    return true;
   }
 
-  protected async addConfToAndroidString(options: CommandLineOptions) {
+  protected async addConfToAndroidString(options: CommandLineOptions): Promise<boolean> {
     let stringXmlPath;
     try {
       stringXmlPath = await this.getAndroidCapString();
     } catch (e) {
       this.env.log.warn(e.message);
       this.printPlistInstructions(options);
-      return;
+      return false;
     }
     if (!stringXmlPath) {
       this.env.log.info(`No Capacitor Android project found.`);
-      return;
+      return false;
     }
     // try to load the plist file first
     let stringData;
@@ -280,7 +246,7 @@ export abstract class DeployConfCommand extends Command {
     } catch (e) {
       this.env.log.error(`The Android string.xml could not be read.`);
       this.printStringXmlInstructions(options);
-      return;
+      return false;
     }
     // parse it with elementtree
     let etree;
@@ -289,16 +255,27 @@ export abstract class DeployConfCommand extends Command {
     } catch (e) {
       this.env.log.error(`Impossible to parse the XML in the string.xml`);
       this.printStringXmlInstructions(options);
-      return;
+      return false;
     }
     // check that it is an actual string.xml file (root tag is resources)
     const root = etree.getroot();
     if (root.tag !== 'resources') {
       this.env.log.error(`string.xml is not a valid android string.xml file because the root is not a <resources> tag`);
       this.printStringXmlInstructions(options);
-      return;
+      return false;
     }
-    for (const [optionKey, stringKey] of Object.entries(this.optionsToStringXmlKeys)) {
+    // check which options are set (configure might not have all of them set)
+    const setOptions: { [key: string]: string } = {};
+    for (const [optionKey, plistKey] of Object.entries(this.optionsToStringXmlKeys)) {
+      if (options[optionKey]) {
+        setOptions[optionKey] = plistKey;
+      }
+    }
+    if (Object.entries(setOptions).length === 0) {
+      this.env.log.warn(`No new options detected for string.xml`);
+      return false;
+    }
+    for (const [optionKey, stringKey] of Object.entries(setOptions)) {
       let element = root.find(`./string[@name="${stringKey}"]`);
       // if the tag already exists, just update the content
       if (element) {
@@ -322,13 +299,14 @@ export abstract class DeployConfCommand extends Command {
       this.printStringXmlInstructions(options);
     }
     this.env.log.ok(`cordova-plugin-ionic variables correctly added to the Android project`);
+    return true;
   }
 
   protected async preRunCheckInputs(options: CommandLineOptions): Promise<void> {
     const updateMethodList: string[] = ['auto', 'background', 'none'];
     const defaultUpdateMethod = 'background';
     // handle the app-id option in case the user wants to override it
-    if (!options['app-id']) {
+    if (!options['app-id'] && this.env.flags.interactive) {
       const appId = await this.getAppId();
       if (!appId) {
         this.env.log.warn(
@@ -345,7 +323,7 @@ export abstract class DeployConfCommand extends Command {
       options['app-id'] = appIdOption;
     }
 
-    if (!options['channel-name']) {
+    if (!options['channel-name'] && this.env.flags.interactive) {
       options['channel-name'] = await this.env.prompt({
         type: 'input',
         name: 'channel-name',
@@ -366,7 +344,7 @@ export abstract class DeployConfCommand extends Command {
       }
       overrideUpdateMethodChoice = true;
     }
-    if (!options['update-method'] || overrideUpdateMethodChoice) {
+    if ((!options['update-method'] || overrideUpdateMethodChoice) && this.env.flags.interactive) {
       options['update-method'] = await this.env.prompt({
         type: 'list',
         name: 'update-method',

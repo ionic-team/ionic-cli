@@ -28,7 +28,47 @@ For Cordova projects this is not implemented because it is better to reinstall t
         'android',
         'ios',
       ],
-      options: this.commandOptions,
+      options: [
+        {
+          name: 'app-id',
+          summary: 'Your Appflow app ID',
+          type: String,
+          spec: { value: 'id' },
+        },
+        {
+          name: 'channel-name',
+          summary: 'The channel to check for updates from',
+          type: String,
+          spec: { value: 'name' },
+        },
+        {
+          name: 'update-method',
+          summary: 'The update method that dictates the behavior of the plugin',
+          type: String,
+          spec: { value: 'name' },
+        },
+        {
+          name: 'max-store',
+          summary: 'The maximum number of downloaded versions to store on the device',
+          type: String,
+          groups: [MetadataGroup.ADVANCED],
+          spec: { value: 'quantity' },
+        },
+        {
+          name: 'min-background-duration',
+          summary: 'The minimum duration after which the app checks for an update in the background',
+          type: String,
+          groups: [MetadataGroup.ADVANCED],
+          spec: { value: 'seconds' },
+        },
+        {
+          name: 'update-api',
+          summary: 'The location of the Appflow API',
+          type: String,
+          groups: [MetadataGroup.HIDDEN],
+          spec: { value: 'url' },
+        },
+      ],
       inputs: [
         {
           name: 'platform',
@@ -70,14 +110,17 @@ For Cordova projects this is not implemented because it is better to reinstall t
       const updateAndroid = !inputs[0] || (inputs[0] === 'android');
 
       // update the ios project if present
+      let printOkMessage = false;
       if (updateIos) {
-        await this.addConfToIosPlist(options);
+        printOkMessage = await this.addConfToIosPlist(options);
       }
       // update the android project if present
       if (updateAndroid) {
-        await this.addConfToAndroidString(options);
+        printOkMessage = await this.addConfToAndroidString(options);
       }
-      this.env.log.ok(`Deploy (cordova-plugin-ionic) configs successfully overridden for the project\n`);
+      if (printOkMessage) {
+        this.env.log.ok(`Deploy (cordova-plugin-ionic) configs successfully overridden for the project\n`);
+      }
     }
   }
 }
