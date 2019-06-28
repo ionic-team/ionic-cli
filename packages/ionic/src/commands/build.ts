@@ -8,17 +8,17 @@ import { FatalException, RunnerException } from '../lib/errors';
 
 export class BuildCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
+    const groups: string[] = [];
     const options: CommandMetadataOption[] = [];
     const footnotes: Footnote[] = [];
     const exampleCommands = [''];
     let description = `${input('ionic build')} will perform an Ionic build, which compiles web assets and prepares them for deployment.`;
-    let groups: string[] = [];
 
     const runner = this.project && await this.project.getBuildRunner();
 
     if (runner) {
       const libmetadata = await runner.getCommandMetadata();
-      groups = libmetadata.groups || [];
+      groups.push(...libmetadata.groups || []);
       options.push(...libmetadata.options || []);
       description += libmetadata.description ? `\n\n${libmetadata.description.trim()}` : '';
       footnotes.push(...libmetadata.footnotes || []);

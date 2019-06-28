@@ -10,7 +10,7 @@ import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT } from '../lib
 
 export class ServeCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
-    let groups: string[] = [];
+    const groups: string[] = [];
 
     let options: CommandMetadataOption[] = [
       ...COMMON_SERVE_COMMAND_OPTIONS,
@@ -70,7 +70,7 @@ Try the ${input('--lab')} option to see multiple platforms at once.`;
 
     if (runner) {
       const libmetadata = await runner.getCommandMetadata();
-      groups = libmetadata.groups || [];
+      groups.push(...libmetadata.groups || []);
       options = lodash.uniqWith([...libmetadata.options || [], ...options], (optionA, optionB) => optionA.name === optionB.name);
       description += `\n\n${(libmetadata.description || '').trim()}`;
       footnotes.push(...libmetadata.footnotes || []);

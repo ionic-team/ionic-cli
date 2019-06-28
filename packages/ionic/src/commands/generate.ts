@@ -12,8 +12,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     const options: CommandMetadataOption[] = [];
     const exampleCommands = [''];
     const footnotes: Footnote[] = [];
-
-    let groups: string[] = [MetadataGroup.HIDDEN];
+    const groups: string[] = [];
 
     let description = this.project
       ? failure(`Generators are not supported in this project type (${strong(prettyProjectName(this.project.type))}).`)
@@ -23,12 +22,14 @@ export class GenerateCommand extends Command implements CommandPreRun {
 
     if (runner) {
       const libmetadata = await runner.getCommandMetadata();
-      groups = libmetadata.groups || [];
+      groups.push(...libmetadata.groups || []);
       inputs.push(...libmetadata.inputs || []);
       options.push(...libmetadata.options || []);
       description = (libmetadata.description || '').trim();
       footnotes.push(...libmetadata.footnotes || []);
       exampleCommands.push(...libmetadata.exampleCommands || []);
+    } else {
+      groups.push(MetadataGroup.HIDDEN);
     }
 
     return {

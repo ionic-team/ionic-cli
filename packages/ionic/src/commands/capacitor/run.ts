@@ -15,7 +15,7 @@ import { CapacitorCommand } from './base';
 
 export class RunCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
-    let groups: string[] = [MetadataGroup.BETA];
+    const groups: string[] = [MetadataGroup.BETA];
     const exampleCommands = [
       '',
       'android',
@@ -59,7 +59,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
 
     if (buildRunner) {
       const libmetadata = await buildRunner.getCommandMetadata();
-      groups = libmetadata.groups || [];
+      groups.push(...libmetadata.groups || []);
       options.push(...libmetadata.options || []);
       footnotes.push(...libmetadata.footnotes || []);
     }
@@ -67,7 +67,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
     if (serveRunner) {
       const libmetadata = await serveRunner.getCommandMetadata();
       const existingOpts = options.map(o => o.name);
-      groups = libmetadata.groups || [];
+      groups.push(...libmetadata.groups || []);
       const runnerOpts = (libmetadata.options || [])
         .filter(o => !existingOpts.includes(o.name))
         .map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` }));
