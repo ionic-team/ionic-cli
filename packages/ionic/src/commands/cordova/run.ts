@@ -28,9 +28,8 @@ const NATIVE_RUN_OPTIONS: readonly CommandMetadataOption[] = [
   },
   {
     name: 'connect',
-    summary: 'Do not tie the running app to the process',
+    summary: 'Tie the running app to the process',
     type: Boolean,
-    default: true,
     groups: ['native-run'],
     hint: weak('[native-run] (--livereload)'),
   },

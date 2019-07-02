@@ -77,7 +77,7 @@ export interface RunNativeRunDeps {
 
 export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, args: readonly string[], options: IShellRunOptions = {}): Promise<void> {
   const connect = args.includes('--connect');
-  const stream = connect ? createPrefixedWriteStream(log, weak(`[native-run]`)) : undefined;
+  const stream = createPrefixedWriteStream(log, weak(`[native-run]`));
 
   try {
     await shell.run('native-run', args, { showCommand: !args.includes('--json'), fatalOnNotFound: false, stream, ...options });
