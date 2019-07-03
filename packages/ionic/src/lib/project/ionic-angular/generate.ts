@@ -1,7 +1,7 @@
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions } from '../../../definitions';
-import { input, strong } from '../../color';
+import { input, strong, weak } from '../../color';
 import { GenerateRunner, GenerateRunnerDeps } from '../../generate';
 
 import { IonicAngularProject } from './';
@@ -51,13 +51,15 @@ The given ${input('name')} is normalized into an appropriate naming convention. 
       options: [
         {
           name: 'module',
-          summary: 'Do not generate an NgModule for the component',
+          summary: 'Do not generate an NgModule for the page',
+          hint: weak('[page]'),
           type: Boolean,
           default: true,
         },
         {
           name: 'constants',
           summary: 'Generate a page constant file for lazy-loaded pages',
+          hint: weak('[page]'),
           type: Boolean,
           default: false,
         },
