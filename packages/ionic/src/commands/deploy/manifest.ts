@@ -6,9 +6,10 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { CommandMetadata } from '../../definitions';
-import { input } from '../../lib/color';
+import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
+import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 
 interface DeployManifestItem {
   href: string;
@@ -31,10 +32,32 @@ export class DeployManifestCommand extends Command {
       throw new FatalException(`Cannot run ${input('ionic deploy manifest')} outside a project directory.`);
     }
 
-    const buildDir = path.resolve(this.project.directory, 'www'); // TODO: this is hard-coded
+    let buildDir: string;
+    if (this.project.getIntegration('capacitor') !== undefined) {
+      const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+      const webDir = conf.get('webDir');
+      if (webDir) {
+        buildDir = webDir;
+      } else {
+        throw new FatalException(`WebDir parameter has no value set in the Capacitor config file ${input(CAPACITOR_CONFIG_FILE)}`);
+      }
+    } else if (this.project.getIntegration('cordova') !== undefined) {
+      // for cordova it is hardcoded because www is mandatory
+      buildDir = path.resolve(this.project.directory, 'www');
+    } else {
+      throw new FatalException(
+        `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
+        `In order to generate a manifestfor the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
+        `iOS: ${strong('https://ionicframework.com/docs/building/ios')}\n` +
+        `Android: ${strong('https://ionicframework.com/docs/building/android')}\n`
+      );
+    }
+
     const manifest = await this.getFilesAndSizesAndHashesForGlobPattern(buildDir);
 
-    await writeFile(path.resolve(buildDir, 'pro-manifest.json'), JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
+    const manifestPath = path.resolve(buildDir, 'pro-manifest.json');
+    await writeFile(manifestPath, JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
+    this.env.log.ok(`Manifest ${input(manifestPath)} correctly generated\n`);
   }
 
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {
