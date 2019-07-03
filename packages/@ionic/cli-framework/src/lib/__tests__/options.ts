@@ -211,6 +211,16 @@ describe('@ionic/cli-framework', () => {
         expect(result).toEqual(['foo', 'bar', '--cat="meow meow meow"', '--', '--', '--claws']);
       });
 
+      it('should ignore false values with ignoreFalse', () => {
+        const result = unparseArgs({ _: [], flag1: false }, { ignoreFalse: true });
+        expect(result).toEqual([]);
+      });
+
+      it('should not ignore false values with ignoreFalse set to false', () => {
+        const result = unparseArgs({ _: [], flag1: false }, { ignoreFalse: false });
+        expect(result).toEqual(['--no-flag1']);
+      });
+
       it('should account for aliases', () => {
         const result = unparseArgs({ _: [], foo: 'foo', fo: 'foo', f: 'foo', bar: 'bar', b: 'bar', baz: 'baz' }, {}, { alias: { foo: ['f', 'fo'], bar: 'b' } });
         expect(result).toEqual(['--foo=foo', '--bar=bar', '--baz=baz']);
