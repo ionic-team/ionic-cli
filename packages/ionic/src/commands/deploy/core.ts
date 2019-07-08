@@ -7,7 +7,21 @@ import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
-export abstract class DeployConfCommand extends Command {
+export abstract class DeployCoreCommand extends Command {
+  protected async getAppIntegration(): Promise<string | undefined> {
+    if (this.project) {
+      if (this.project.getIntegration('capacitor') !== undefined) {
+        return 'capacitor';
+      }
+      if (this.project.getIntegration('cordova') !== undefined) {
+        return 'cordova';
+      }
+    }
+    return undefined;
+  }
+}
+
+export abstract class DeployConfCommand extends DeployCoreCommand {
 
   protected readonly optionsToPlistKeys = {
     'app-id': 'IonAppId',
@@ -25,18 +39,6 @@ export abstract class DeployConfCommand extends Command {
     'min-background-duration': 'ionic_min_background_duration',
     'update-api': 'ionic_update_api',
   };
-
-  protected async getAppIntegration(): Promise<string | undefined> {
-    if (this.project) {
-      if (this.project.getIntegration('capacitor') !== undefined) {
-        return 'capacitor';
-      }
-      if (this.project.getIntegration('cordova') !== undefined) {
-        return 'cordova';
-      }
-    }
-    return undefined;
-  }
 
   protected async requireNativeIntegration(): Promise<void> {
     const integration = await this.getAppIntegration();

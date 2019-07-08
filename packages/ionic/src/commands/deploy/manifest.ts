@@ -7,9 +7,9 @@ import * as path from 'path';
 
 import { CommandMetadata } from '../../definitions';
 import { input, strong } from '../../lib/color';
-import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
+
+import { DeployCoreCommand } from './core';
 
 interface DeployManifestItem {
   href: string;
@@ -17,7 +17,7 @@ interface DeployManifestItem {
   integrity: string;
 }
 
-export class DeployManifestCommand extends Command {
+export class DeployManifestCommand extends DeployCoreCommand {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'manifest',
@@ -32,18 +32,10 @@ export class DeployManifestCommand extends Command {
       throw new FatalException(`Cannot run ${input('ionic deploy manifest')} outside a project directory.`);
     }
 
+    const integration = await this.getAppIntegration();
     let buildDir: string;
-    if (this.project.getIntegration('capacitor') !== undefined) {
-      const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
-      const webDir = conf.get('webDir');
-      if (webDir) {
-        buildDir = webDir;
-      } else {
-        throw new FatalException(`WebDir parameter has no value set in the Capacitor config file ${input(CAPACITOR_CONFIG_FILE)}`);
-      }
-    } else if (this.project.getIntegration('cordova') !== undefined) {
-      // for cordova it is hardcoded because www is mandatory
-      buildDir = path.resolve(this.project.directory, 'www');
+    if (integration && ['capacitor', 'cordova'].includes(integration)) {
+      buildDir = await this.project.getDistDir();
     } else {
       throw new FatalException(
         `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
