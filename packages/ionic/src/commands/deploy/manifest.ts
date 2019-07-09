@@ -1,4 +1,5 @@
 import { MetadataGroup } from '@ionic/cli-framework';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { map } from '@ionic/utils-array';
 import { readdirp, stat, writeFile } from '@ionic/utils-fs';
 import * as crypto from 'crypto';
@@ -7,8 +8,9 @@ import * as path from 'path';
 
 import { CommandMetadata } from '../../definitions';
 import { input } from '../../lib/color';
-import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
+
+import { DeployCoreCommand } from './core';
 
 interface DeployManifestItem {
   href: string;
@@ -16,7 +18,7 @@ interface DeployManifestItem {
   integrity: string;
 }
 
-export class DeployManifestCommand extends Command {
+export class DeployManifestCommand extends DeployCoreCommand {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'manifest',
@@ -30,11 +32,14 @@ export class DeployManifestCommand extends Command {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic deploy manifest')} outside a project directory.`);
     }
+    await this.requireNativeIntegration();
 
-    const buildDir = path.resolve(this.project.directory, 'www'); // TODO: this is hard-coded
+    const buildDir = await this.project.getDistDir();
     const manifest = await this.getFilesAndSizesAndHashesForGlobPattern(buildDir);
 
-    await writeFile(path.resolve(buildDir, 'pro-manifest.json'), JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
+    const manifestPath = path.resolve(buildDir, 'pro-manifest.json');
+    await writeFile(manifestPath, JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
+    this.env.log.ok(`Appflow Deploy manifest written to ${input(prettyPath(manifestPath))}!`);
   }
 
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {

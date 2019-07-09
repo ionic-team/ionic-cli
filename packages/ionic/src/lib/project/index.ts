@@ -13,6 +13,7 @@ import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
 import { BaseIntegration } from '../integrations';
+import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../integrations/capacitor/config';
 
 const debug = Debug('ionic:lib:project');
 
@@ -520,7 +521,20 @@ export abstract class Project implements IProject {
   }
 
   async getDistDir(): Promise<string> {
-    return path.resolve(this.directory, 'www');
+    if (this.getIntegration('capacitor') !== undefined) {
+      const conf = new CapacitorConfig(path.resolve(this.directory, CAPACITOR_CONFIG_FILE));
+      const webDir = conf.get('webDir');
+      if (webDir) {
+        return path.resolve(this.directory, webDir);
+      } else {
+        throw new FatalException(
+          `The ${input('webDir')} property must be set in the Capacitor configuration file (${input(CAPACITOR_CONFIG_FILE)}). \n` +
+          `See the Capacitor docs for more information: ${strong('https://capacitor.ionicframework.com/docs/basics/configuring-your-app')}`
+        );
+      }
+    } else {
+      return path.resolve(this.directory, 'www');
+    }
   }
 
   async getInfo(): Promise<InfoItem[]> {

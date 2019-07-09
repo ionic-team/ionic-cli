@@ -7,25 +7,7 @@ import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
-export abstract class DeployConfCommand extends Command {
-
-  protected readonly optionsToPlistKeys = {
-    'app-id': 'IonAppId',
-    'channel-name': 'IonChannelName',
-    'update-method': 'IonUpdateMethod',
-    'max-store': 'IonMaxVersions',
-    'min-background-duration': 'IonMinBackgroundDuration',
-    'update-api': 'IonApi',
-  };
-  protected readonly optionsToStringXmlKeys = {
-    'app-id': 'ionic_app_id',
-    'channel-name': 'ionic_channel_name',
-    'update-method': 'ionic_update_method',
-    'max-store': 'ionic_max_versions',
-    'min-background-duration': 'ionic_min_background_duration',
-    'update-api': 'ionic_update_api',
-  };
-
+export abstract class DeployCoreCommand extends Command {
   protected async getAppIntegration(): Promise<string | undefined> {
     if (this.project) {
       if (this.project.getIntegration('capacitor') !== undefined) {
@@ -44,12 +26,32 @@ export abstract class DeployConfCommand extends Command {
     if (!integration) {
       throw new FatalException(
         `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
-        `In order to add the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
+        `In order to use the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
         `iOS: ${strong('https://ionicframework.com/docs/building/ios')}\n` +
         `Android: ${strong('https://ionicframework.com/docs/building/android')}\n`
       );
     }
   }
+}
+
+export abstract class DeployConfCommand extends DeployCoreCommand {
+
+  protected readonly optionsToPlistKeys = {
+    'app-id': 'IonAppId',
+    'channel-name': 'IonChannelName',
+    'update-method': 'IonUpdateMethod',
+    'max-store': 'IonMaxVersions',
+    'min-background-duration': 'IonMinBackgroundDuration',
+    'update-api': 'IonApi',
+  };
+  protected readonly optionsToStringXmlKeys = {
+    'app-id': 'ionic_app_id',
+    'channel-name': 'ionic_channel_name',
+    'update-method': 'ionic_update_method',
+    'max-store': 'ionic_max_versions',
+    'min-background-duration': 'ionic_min_background_duration',
+    'update-api': 'ionic_update_api',
+  };
 
   protected async getAppId(): Promise<string | undefined> {
     if (this.project) {
