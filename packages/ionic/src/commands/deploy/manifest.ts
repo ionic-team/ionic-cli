@@ -1,4 +1,5 @@
 import { MetadataGroup } from '@ionic/cli-framework';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { map } from '@ionic/utils-array';
 import { readdirp, stat, writeFile } from '@ionic/utils-fs';
 import * as crypto from 'crypto';
@@ -6,7 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 
 import { CommandMetadata } from '../../definitions';
-import { input, strong } from '../../lib/color';
+import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
 import { DeployCoreCommand } from './core';
@@ -31,25 +32,14 @@ export class DeployManifestCommand extends DeployCoreCommand {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic deploy manifest')} outside a project directory.`);
     }
+    await this.requireNativeIntegration();
 
-    const integration = await this.getAppIntegration();
-    let buildDir: string;
-    if (integration && ['capacitor', 'cordova'].includes(integration)) {
-      buildDir = await this.project.getDistDir();
-    } else {
-      throw new FatalException(
-        `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
-        `In order to generate a manifestfor the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
-        `iOS: ${strong('https://ionicframework.com/docs/building/ios')}\n` +
-        `Android: ${strong('https://ionicframework.com/docs/building/android')}\n`
-      );
-    }
-
+    const buildDir = await this.project.getDistDir();
     const manifest = await this.getFilesAndSizesAndHashesForGlobPattern(buildDir);
 
     const manifestPath = path.resolve(buildDir, 'pro-manifest.json');
     await writeFile(manifestPath, JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
-    this.env.log.ok(`Manifest ${input(manifestPath)} correctly generated\n`);
+    this.env.log.ok(`Appflow Deploy manifest written to ${input(prettyPath(manifestPath))}!`);
   }
 
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {

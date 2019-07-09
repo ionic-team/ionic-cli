@@ -19,6 +19,19 @@ export abstract class DeployCoreCommand extends Command {
     }
     return undefined;
   }
+
+  protected async requireNativeIntegration(): Promise<void> {
+    const integration = await this.getAppIntegration();
+
+    if (!integration) {
+      throw new FatalException(
+        `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
+        `In order to use the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
+        `iOS: ${strong('https://ionicframework.com/docs/building/ios')}\n` +
+        `Android: ${strong('https://ionicframework.com/docs/building/android')}\n`
+      );
+    }
+  }
 }
 
 export abstract class DeployConfCommand extends DeployCoreCommand {
@@ -39,19 +52,6 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     'min-background-duration': 'ionic_min_background_duration',
     'update-api': 'ionic_update_api',
   };
-
-  protected async requireNativeIntegration(): Promise<void> {
-    const integration = await this.getAppIntegration();
-
-    if (!integration) {
-      throw new FatalException(
-        `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
-        `In order to add the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
-        `iOS: ${strong('https://ionicframework.com/docs/building/ios')}\n` +
-        `Android: ${strong('https://ionicframework.com/docs/building/android')}\n`
-      );
-    }
-  }
 
   protected async getAppId(): Promise<string | undefined> {
     if (this.project) {
