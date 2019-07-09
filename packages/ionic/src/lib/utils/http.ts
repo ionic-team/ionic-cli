@@ -39,8 +39,8 @@ export async function createRequest(method: HttpMethod, url: string, { proxy, ss
     const superagentProxy = await import('superagent-proxy');
     superagentProxy(superagent);
 
-    if (req.proxy) {
-      req.proxy(proxy);
+    if ((req as any).proxy) { // TODO: create/use `@types/superagent-proxy`
+      (req as any).proxy(proxy);
     } else {
       debug(`Cannot install proxy--req.proxy not defined`);
     }
@@ -77,16 +77,16 @@ export async function download(req: SuperAgentRequest, ws: NodeJS.WritableStream
   return new Promise<void>((resolve, reject) => {
     req
       .on('response', res => {
-        if (res.statusCode !== 200) {
+        if (res.status !== 200) {
           reject(new Error(
-            `Encountered bad status code (${res.statusCode}) for ${req.url}\n` +
+            `Encountered bad status code (${res.status}) for ${req.url}\n` +
             `This could mean the server is experiencing difficulties right now--please try again later.`
           ));
         }
 
         if (progress) {
           let loaded = 0;
-          const total = Number(res.headers['content-length']);
+          const total = Number(res.header['content-length']);
           res.on('data', chunk => {
             loaded += chunk.length;
             progress(loaded, total);

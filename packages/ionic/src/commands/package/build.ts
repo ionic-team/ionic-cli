@@ -341,7 +341,7 @@ Customizing the build:
 
     if (!filename) {
       req.on('response', res => {
-        const contentDisposition = res.headers['content-disposition'];
+        const contentDisposition = res.header['content-disposition'];
         filename = contentDisposition ? contentDisposition.split('=')[1] : 'output.bin';
       });
     }

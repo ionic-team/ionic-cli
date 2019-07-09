@@ -234,7 +234,7 @@ export function createFatalAPIFormat(req: SuperAgentRequest, res: APIResponse): 
 
 export function formatSuperAgentError(e: SuperAgentError): string {
   const res = e.response;
-  const req = res.request;
+  const req = (res as any).request; // TODO: `req` and `request` exist: https://visionmedia.github.io/superagent/docs/test.html
   const statusCode = e.response.status;
 
   let f = '';

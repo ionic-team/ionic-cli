@@ -179,10 +179,10 @@ export async function transformResourceImage(env: IonicEnvironment, resource: Im
         'encoding': 'png',
       })
       .on('response', res => {
-        debug('response %d received for %s: (id: %s)', res.statusCode, resource.name, resource.imageId);
+        debug('response %d received for %s: (id: %s)', res.status, resource.name, resource.imageId);
 
-        if (res.statusCode !== 200) {
-          const generalErrorMsg = !res.statusCode || res.statusCode >= 500
+        if (res.status !== 200) {
+          const generalErrorMsg = !res.status || res.status >= 500
             ? 'the server may be experiencing difficulties right now--please try again later.'
             : 'the server marked a source image as invalid for this resource.';
 
@@ -198,7 +198,7 @@ export async function transformResourceImage(env: IonicEnvironment, resource: Im
             try {
               serverMsg = JSON.parse(serverMsg).Error;
             } catch (e) {
-              serverMsg = formatResponseError(req, res.statusCode, serverMsg);
+              serverMsg = formatResponseError(req, res.status, serverMsg);
             }
 
             result.error = new Error(
