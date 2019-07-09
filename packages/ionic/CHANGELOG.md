@@ -16,7 +16,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ### Bug Fixes
 
-* **cordova:** revert to `--no-connect` as default ([e4368a8](https://github.com/ionic-team/ionic-cli/commit/e4368a8)), closes [/github.com/ionic-team/ionic-cli/issues/4060#issuecomment-507729166](https://github.com//github.com/ionic-team/ionic-cli/issues/4060/issues/issuecomment-507729166)
+* **cordova:** revert to `--no-connect` as default ([e4368a8](https://github.com/ionic-team/ionic-cli/commit/e4368a8))
 * **deploy:** support custom Capacitor build directory ([#4065](https://github.com/ionic-team/ionic-cli/issues/4065)) ([6146296](https://github.com/ionic-team/ionic-cli/commit/6146296))
 
 
@@ -25,7 +25,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 ## [5.2.1](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.0...ionic@5.2.1) (2019-06-28)
 
-**Note:** Version bump only for package ionic
+* **deploy:** fix bug with `ionic deploy configure` in CI ([7774dfe](https://github.com/ionic-team/ionic-cli/commit/7774dfe))
 
 
 
