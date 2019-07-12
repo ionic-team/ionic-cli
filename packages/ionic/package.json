@@ -93,7 +93,7 @@
     "@types/uuid": "^3.4.3",
     "jest": "^23.0.1",
     "jest-cli": "^24.1.0",
-    "lint-staged": "^8.0.0",
+    "lint-staged": "^9.2.0",
     "rimraf": "^2.6.2",
     "source-map": "^0.7.0",
     "ts-jest": "^23.10.1",
