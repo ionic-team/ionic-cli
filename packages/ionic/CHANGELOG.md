@@ -198,7 +198,7 @@ used if `--address` is not specified.
 will no longer be hosted on the BIND ALL address (0.0.0.0) by default.
 `localhost` is the new default. The old behavior is available by passing
 `--address=0.0.0.0`.
-* **serve:** This option is now irrelevant. The default address is
+* **serve:** The `ionic serve --local` option is now irrelevant. The default address is
 changing to `localhost`.
 * A minimum of Node.js 8.9.4 is required.
 * **help:** option/command/namespace groups are now `MetadataGroup`
