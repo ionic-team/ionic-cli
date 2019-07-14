@@ -133,11 +133,18 @@ Install the [`cordova-res`](https://github.com/ionic-team/cordova-res) and [`nat
 npm i -g cordova-res native-run
 ```
 
-For Angular projects, make sure you have the latest `@ionic/angular-toolkit` installed.
+For Angular 8 projects, make sure you have the latest `@ionic/angular-toolkit` installed.
 
 ```
 npm i @ionic/angular-toolkit@latest
 ```
+
+For Angular 7 projects, make sure you have the [latest 1.x](https://www.npmjs.com/package/@ionic/angular-toolkit?activeTab=versions) `@ionic/angular-toolkit` installed.
+
+```
+npm i @ionic/angular-toolkit@1.5.1
+```
+
 
 ### Bug Fixes
 
