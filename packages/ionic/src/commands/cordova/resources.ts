@@ -24,7 +24,7 @@ Generate perfectly sized icons and splash screens from PNG source images for you
 
 The source image for icons should ideally be at least ${strong('1024×1024px')} and located at ${strong('resources/icon.png')}. The source image for splash screens should ideally be at least ${strong('2732×2732px')} and located at ${strong('resources/splash.png')}. If you used ${input('ionic start')}, there should already be default Ionic resources in the ${strong('resources/')} directory, which you can overwrite.
 
-You can also generate platform-specific icons and splash screens by placing them in the respective ${strong('resources/<platform>/')} directory. For example, to generate an icon for Android, place your image at ${strong('resources/android/icon.png')}.
+You can also generate platform-specific icons and splash screens by placing them in the respective ${strong('resources/&lt;platform&gt;/')} directory. For example, to generate an icon for Android, place your image at ${strong('resources/android/icon.png')}.
 
 For best results, the splash screen's artwork should roughly fit within a square (${strong('1200×1200px')}) at the center of the image. You can use ${strong('https://code.ionicframework.com/resources/splash.psd')} as a template for your splash screen.
 
