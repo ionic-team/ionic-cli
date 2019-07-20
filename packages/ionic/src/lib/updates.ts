@@ -81,7 +81,7 @@ export async function runNotify(env: IonicEnvironment, pkg: PersistedPackage, la
   const dir = path.dirname(env.config.p);
   const args = await pkgManagerArgs(env.config.get('npmClient'), { command: 'install', pkg: pkg.name, global: true });
   const lines = [
-    `Update available: ${weak(pkg.version)} → ${success(latestVersion)}`,
+    `Ionic CLI update available: ${weak(pkg.version)} → ${success(latestVersion)}`,
     `Run ${input(args.join(' '))} to update`,
   ];
 

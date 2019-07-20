@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.3](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.2...ionic@5.2.3) (2019-07-15)
+
+**Note:** Version bump only for package ionic
+
+
+
+
+
 ## [5.2.2](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.1...ionic@5.2.2) (2019-07-09)
 
 
@@ -125,7 +133,7 @@ At a glance, this is what was changed or added in this major release of the Ioni
 
 #### :lollipop: Upgrading from CLI 4
 
-Make sure you have NodeJS 8+ installed. We recommend [the latest LTS version](https://nodejs.org/).
+Make sure you have NodeJS v8.9.4+ installed. We recommend [the latest LTS version](https://nodejs.org/).
 
 Install the [`cordova-res`](https://github.com/ionic-team/cordova-res) and [`native-run`](https://github.com/ionic-team/native-run) utilities.
 
@@ -205,7 +213,7 @@ used if `--address` is not specified.
 will no longer be hosted on the BIND ALL address (0.0.0.0) by default.
 `localhost` is the new default. The old behavior is available by passing
 `--address=0.0.0.0`.
-* **serve:** This option is now irrelevant. The default address is
+* **serve:** The `ionic serve --local` option is now irrelevant. The default address is
 changing to `localhost`.
 * A minimum of Node.js 8.9.4 is required.
 * **help:** option/command/namespace groups are now `MetadataGroup`
