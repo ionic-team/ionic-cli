@@ -142,7 +142,7 @@ npm i @ionic/angular-toolkit@latest
 For Angular 7 projects, make sure you have the [latest 1.x](https://www.npmjs.com/package/@ionic/angular-toolkit?activeTab=versions) `@ionic/angular-toolkit` installed.
 
 ```
-npm i @ionic/angular-toolkit@1.5.1
+npm i @ionic/angular-toolkit@1
 ```
 
 
