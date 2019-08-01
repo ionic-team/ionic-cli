@@ -17,7 +17,7 @@
     "publish:ci": "lerna publish -m 'chore(release): publish [skip ci]' --exact --conventional-commits"
   },
   "devDependencies": {
-    "chokidar-cli": "^1.2.0",
+    "chokidar-cli": "^2.0.0",
     "husky": "^3.0.0",
     "lerna": "^3.13.3",
     "tslint": "^5.9.1",
