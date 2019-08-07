@@ -49,7 +49,7 @@ export class DocsCommand extends Command {
   }
 
   private async extractCommand(command: CommandHelpSchema): Promise<CommandHelpSchema> {
-    const processText = lodash.flow([ansi2md, links2md, convertHTMLEntities, stripAnsi, text => text.trim()]);
+    const processText = lodash.flow([ansi2md, stripAnsi, links2md, convertHTMLEntities, text => text.trim()]);
 
     return {
       ...command,

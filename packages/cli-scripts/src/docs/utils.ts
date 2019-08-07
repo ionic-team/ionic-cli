@@ -30,9 +30,7 @@ export function ansi2md(str: string): string {
 }
 
 export function convertHTMLEntities(str: string): string {
-  str = str.replace(/\</g, '&lt;');
-  str = str.replace(/\>/g, '&gt;');
-  return str;
+  return str.replace(/(?<=^(?:[^\`]|\`[^\`]*\`)*)\<(\S+)\>/g, '&lt;$1&gt;');
 }
 
 function convertAnsiToMd(str: string, styles: readonly CodePair[], md: CodePair): string {

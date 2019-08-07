@@ -67,14 +67,19 @@ describe('cli-scripts', () => {
         expect(result).toEqual('hello world');
       });
 
-      it('should convert less than symbol', () => {
+      it('should not affect symbols that are not tags', () => {
         const result = convertHTMLEntities('I <3 TypeScript');
-        expect(result).toEqual('I &lt;3 TypeScript');
+        expect(result).toEqual('I <3 TypeScript');
       });
 
-      it('should convert less than/greater than symbols', () => {
+      it('should convert tag-like symbols', () => {
         const result = convertHTMLEntities('in the resources/<platform> folder');
         expect(result).toEqual('in the resources/&lt;platform&gt; folder');
+      });
+
+      it('should respect tag-like symbols in code ticks', () => {
+        const result = convertHTMLEntities('in the `resources/<platform>` folder');
+        expect(result).toEqual('in the `resources/<platform>` folder');
       });
 
     });
