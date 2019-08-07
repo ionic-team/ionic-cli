@@ -4,10 +4,11 @@ import { mkdirp, remove, writeFile } from '@ionic/utils-fs';
 import chalk from 'chalk';
 import { ProjectType, generateContext, loadExecutor } from 'ionic';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from 'ionic/lib/help';
+import * as lodash from 'lodash';
 import * as path from 'path';
 import stripAnsi from 'strip-ansi';
 
-import { ansi2md, links2md } from './utils';
+import { ansi2md, convertHTMLEntities, links2md } from './utils';
 
 const PROJECTS_DIRECTORY = path.resolve(__dirname, '..', '..', 'projects');
 const STAGING_DIRECTORY = path.resolve(__dirname, '..', '..', '..', '..', 'docs');
@@ -48,10 +49,12 @@ export class DocsCommand extends Command {
   }
 
   private async extractCommand(command: CommandHelpSchema): Promise<CommandHelpSchema> {
+    const processText = lodash.flow([ansi2md, links2md, convertHTMLEntities, stripAnsi, text => text.trim()]);
+
     return {
       ...command,
-      summary: stripAnsi(links2md(ansi2md(command.summary))).trim(),
-      description: await this.formatFootnotes(stripAnsi(links2md(ansi2md(command.description))).trim(), command.footnotes),
+      summary: processText(command.summary),
+      description: await this.formatFootnotes(processText(command.description), command.footnotes),
       footnotes: command.footnotes.filter(footnote => footnote.type !== 'link'), // we format link footnotes in `formatFootnotes()`
       inputs: await Promise.all(command.inputs.map(input => this.extractInput(input))),
       options: await Promise.all(command.options.map(opt => this.extractOption(opt))),
