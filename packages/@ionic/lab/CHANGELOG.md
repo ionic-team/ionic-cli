@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@2.0.6...@ionic/lab@2.0.7) (2019-08-07)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
 ## [2.0.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@2.0.5...@ionic/lab@2.0.6) (2019-07-09)
 
 **Note:** Version bump only for package @ionic/lab
