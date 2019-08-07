@@ -13,14 +13,6 @@
     "test": "jest --maxWorkers=4",
     "prepublishOnly": "npm run build"
   },
-  "lint-staged": {
-    "linters": {
-      "*.{ts,tsx}": "npm run lint"
-    },
-    "ignore": [
-      "**/__tests__/*.{ts,tsx}"
-    ]
-  },
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "dependencies": {

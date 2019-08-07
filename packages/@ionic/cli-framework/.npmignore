@@ -1,3 +1,5 @@
 src
+jest.config.js
+lint-staged.config.js
 tsconfig.json
 tslint.js
