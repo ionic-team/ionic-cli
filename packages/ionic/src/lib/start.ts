@@ -112,10 +112,25 @@ export async function readStarterManifest(p: string): Promise<StarterManifest> {
 }
 
 export function getAdvertisement(): string {
-  const choices = [getAppflowAdvertisement, getAdvisoryAdvertisement, getEnterpriseAdvertisement];
+  const choices = [getStudioAdvertisement, getAppflowAdvertisement, getAdvisoryAdvertisement, getEnterpriseAdvertisement];
   const idx = Math.floor(Math.random() * choices.length);
 
   return `${choices[idx]()}\n\n`;
+}
+
+function getStudioAdvertisement(): string {
+  return `
+  ──────────────────────────────────────────────────────────────────
+
+     ${title('Ionic Studio')}, a powerful, local editor made with ${emoji('💖', 'love')} by Ionic
+
+                  Lightning fast app creation ${emoji('⚡️', '')}
+         Quickest & easiest way to get started with Ionic ${emoji('🚀', '')}
+
+        ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/studio')} ${emoji(' 👈', '')}
+
+  ──────────────────────────────────────────────────────────────────
+`;
 }
 
 function getAppflowAdvertisement(): string {
@@ -124,8 +139,8 @@ function getAppflowAdvertisement(): string {
 
         ${title('Ionic Appflow')}, the mobile DevOps solution by Ionic
 
-           Continuously build, deploy, and ship apps ${emoji('🚀', ' ')}
-        Focus on building apps while we automate the rest ${emoji('🎁', ' ')}
+           Continuously build, deploy, and ship apps ${emoji('🚀', '')}
+        Focus on building apps while we automate the rest ${emoji('🎁', '')}
 
         ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/appflow')} ${emoji(' 👈', '')}
 
@@ -139,10 +154,10 @@ function getAdvisoryAdvertisement(): string {
 
          ${title('Ionic Advisory')}, tailored solutions and expert services by Ionic
 
-                             Go to market faster ${emoji('🏆', ' ')}
-                    Real-time troubleshooting and guidance ${emoji('💁', ' ')}
-        Custom training, best practices, code and architecture reviews ${emoji('🔎', ' ')}
-      Customized strategies for every phase of the development lifecycle ${emoji('🔮', ' ')}
+                             Go to market faster ${emoji('🏆', '')}
+                    Real-time troubleshooting and guidance ${emoji('💁', '')}
+        Custom training, best practices, code and architecture reviews ${emoji('🔎', '')}
+      Customized strategies for every phase of the development lifecycle ${emoji('🔮', '')}
 
                ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/advisory')} ${emoji(' 👈', '')}
 
