@@ -1,6 +1,3 @@
-import chalk from 'chalk';
-import { input, strong } from 'ionic/lib/color';
-
 import { ansi2md, convertHTMLEntities, links2md } from '../utils';
 
 describe('cli-scripts', () => {
@@ -15,17 +12,17 @@ describe('cli-scripts', () => {
       });
 
       it('should strip yellow', () => {
-        const result = ansi2md(`hello ${chalk.yellow('world')}`);
+        const result = ansi2md('hello \u001b[33mworld\u001b[39m');
         expect(result).toEqual('hello world');
       });
 
-      it('should mark input as code', () => {
-        const result = ansi2md(`hello ${input('world')}`);
+      it('should mark cyan as md code', () => {
+        const result = ansi2md('hello \u001b[36mworld\u001b[39m');
         expect(result).toEqual('hello `world`');
       });
 
-      it('should mark strong as bold', () => {
-        const result = ansi2md(`hello ${strong('world')}`);
+      it('should mark bold as md bold', () => {
+        const result = ansi2md('hello \u001b[1mworld\u001b[22m');
         expect(result).toEqual('hello **world**');
       });
 
