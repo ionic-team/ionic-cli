@@ -124,10 +124,10 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
     let formatter: HelpFormatter;
 
     if (isCommand(location.obj)) {
-      const options = { location, command: location.obj };
+      const options = { location, command: location.obj, colors: this.colors };
       formatter = format === 'json' ? new CommandSchemaHelpFormatter(options) : new CommandStringHelpFormatter(options);
     } else {
-      const options = { location, namespace: location.obj };
+      const options = { location, namespace: location.obj, colors: this.colors };
       formatter = format === 'json' ? new NamespaceSchemaHelpFormatter(options) : new NamespaceStringHelpFormatter(options);
     }
 
@@ -150,8 +150,8 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
       const location = await this.namespace.locate(cmdpath);
 
       const formatter = isCommand(location.obj)
-        ? new CommandSchemaHelpFormatter({ location, command: location.obj })
-        : new NamespaceSchemaHelpFormatter({ location, namespace: location.obj });
+        ? new CommandSchemaHelpFormatter({ location, command: location.obj, colors: this.colors })
+        : new NamespaceSchemaHelpFormatter({ location, namespace: location.obj, colors: this.colors });
 
       return formatter.serialize();
     });
