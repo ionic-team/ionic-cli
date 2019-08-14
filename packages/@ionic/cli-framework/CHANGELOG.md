@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@2.1.3...@ionic/cli-framework@2.1.4) (2019-08-14)
+
+
+### Bug Fixes
+
+* **help:** custom colors are not passed to SchemaHelpFormatter ([#4115](https://github.com/ionic-team/ionic-cli/issues/4115)) ([5634e9f](https://github.com/ionic-team/ionic-cli/commit/5634e9f))
+
+
+
+
+
 ## [2.1.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@2.1.2...@ionic/cli-framework@2.1.3) (2019-08-07)
 
 **Note:** Version bump only for package @ionic/cli-framework

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-array@1.0.2...@ionic/utils-array@1.1.0) (2019-08-14)
+
+
+### Features
+
+* add new `move` function ([ba8da3b](https://github.com/ionic-team/ionic-cli/commit/ba8da3b))
+
+
+
+
+
 ## [1.0.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-array@1.0.1...@ionic/utils-array@1.0.2) (2019-08-07)
 
 **Note:** Version bump only for package @ionic/utils-array

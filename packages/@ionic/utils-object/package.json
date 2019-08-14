@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-object",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Object utils",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
