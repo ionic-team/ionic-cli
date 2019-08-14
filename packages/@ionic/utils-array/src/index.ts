@@ -76,3 +76,23 @@ export async function reduce<T, U>(array: T[] | readonly T[], callback: (accumul
 
   return value;
 }
+
+/**
+ * Move an item in an array by index.
+ *
+ * This function will return a new array with the item in the `fromIndex`
+ * position moved to the `toIndex` position.
+ */
+export function move<T>(array: readonly T[], fromIndex: number, toIndex: number): T[] {
+  const element = array[fromIndex];
+  const result = [...array];
+
+  if (fromIndex <= -1 || toIndex <= -1 || fromIndex >= array.length || toIndex >= array.length) {
+    return result;
+  }
+
+  result.splice(fromIndex, 1);
+  result.splice(toIndex, 0, element);
+
+  return result;
+}

@@ -1,4 +1,4 @@
-import { concurrentFilter, conform, filter, reduce, map } from '../';
+import { concurrentFilter, conform, filter, reduce, map, move } from '../';
 
 describe('@ionic/utils-array', () => {
 
@@ -208,6 +208,55 @@ describe('@ionic/utils-array', () => {
       const initial = [1, 2, 3];
       const result = await reduce(initial, async (acc, v, i, arr) => { expect(arr).toBe(initial); return acc; }, []);
       expect(result).toEqual([]);
+    });
+
+  });
+
+  describe('move', () => {
+
+    const array = ['a', 'b', 'c'];
+
+    it('should move first element to last element', () => {
+      const result = move(array, 0, 2);
+      expect(result).toEqual(['b', 'c', 'a']);
+    });
+
+    it('should move last element to first element', () => {
+      const result = move(array, 2, 0);
+      expect(result).toEqual(['c', 'a', 'b']);
+    });
+
+    it('should not move element with equal indexes', () => {
+      const result = move(array, 1, 1);
+      expect(result).toEqual(['a', 'b', 'c']);
+      expect(result).not.toBe(array);
+    });
+
+    describe('out of bounds', () => {
+      it('should leave array unchanged for from index greater than array length', () => {
+        const result = move(array, 5, 0);
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
+      it('should leave array unchanged for to index greater than array length', () => {
+        const result = move(array, 0, 5);
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
+      it('should leave array unchanged for from index less than zero', () => {
+        const result = move(array, -1, 0);
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
+      it('should leave array unchanged for to index less than zero', () => {
+        const result = move(array, 0, -1);
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
     });
 
   });
