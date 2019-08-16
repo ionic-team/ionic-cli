@@ -578,6 +578,7 @@ export interface CustomBuildOptions extends BuildOptions<'custom'> {}
 export interface GenerateOptions {
   type: string;
   name: string;
+  cliFragment: string;
 }
 
 export interface AngularGenerateOptions extends GenerateOptions {

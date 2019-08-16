@@ -12,6 +12,7 @@ import { AngularProject } from './';
 
 // https://github.com/ionic-team/angular-toolkit/blob/master/collection.json
 const SCHEMATICS: readonly string[] = ['page', 'component', 'service', 'module', 'class', 'directive', 'guard', 'pipe', 'interface', 'enum'];
+const guardImplements: readonly string[] = ['CanActivate', 'CanActivateChild', 'CanLoad'];
 const SCHEMATIC_ALIAS = new Map<string, string>([
   ['pg', 'page'],
   ['cl', 'class'],
@@ -67,6 +68,10 @@ To test a generator before file modifications are made, use the ${input('--dry-r
           summary: 'The name/path of the feature being generated',
           validators: [validators.required],
         },
+        {
+          name: 'cliFragment',
+          summary: 'The name/path of the feature being generated',
+        },
       ],
     };
   }
@@ -96,6 +101,17 @@ To test a generator before file modifications are made, use the ${input('--dry-r
 
       inputs[1] = name.trim();
     }
+
+    if (inputs[0] === 'guard' && !inputs[2]) {
+      const guardType = await this.e.prompt({
+        type: 'list',
+        name: 'type',
+        message: 'Which interfaces would you like to implement?',
+        choices: guardImplements,
+      });
+
+      inputs[2] = '--implements=' + guardType;
+    }
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularGenerateOptions {
@@ -113,9 +129,10 @@ To test a generator before file modifications are made, use the ${input('--dry-r
   async run(options: AngularGenerateOptions) {
     const { name } = options;
     const type = SCHEMATIC_ALIAS.get(options.type) || options.type;
+    const cliFragment = (options['cliFragment']) ? options.cliFragment : '';
 
     try {
-      await this.generateComponent(type, name, lodash.omit(options, 'type', 'name'));
+      await this.generateComponent(type, name, cliFragment, lodash.omit(options, 'type', 'name', 'cliFragment'));
     } catch (e) {
       debug(e);
       throw new FatalException(`Could not generate ${input(type)}.`);
@@ -143,8 +160,12 @@ To test a generator before file modifications are made, use the ${input('--dry-r
     }
   }
 
-  private async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
-    const ngArgs = unparseArgs({ _: ['generate', type, name], ...options }, {});
+  private async generateComponent(type: string, name: string, cliFragment: string, options: { [key: string]: string | boolean; }) {
+    const commandArgs = ['generate', type, name];
+    if (cliFragment) {
+      commandArgs.push(cliFragment);
+    }
+    const ngArgs = unparseArgs({ _: commandArgs, ...options }, {});
     const shellOptions = { cwd: this.e.ctx.execPath };
 
     await this.e.shell.run('ng', ngArgs, shellOptions);
