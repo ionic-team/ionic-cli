@@ -204,7 +204,7 @@ export class ConfigConfig {
       nameElement.text = 'MyApp';
     }
 
-    const name = nameElement.text.toString();
+    const name = nameElement.text.toString().trim();
 
     return { id, name, version };
   }
