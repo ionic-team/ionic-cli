@@ -45,19 +45,19 @@ export class DeployManifestCommand extends DeployCoreCommand {
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {
     const contents = await readdirp(buildDir);
     const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await stat(f)]);
-    const files = stats.filter(([ , stat ]) => !stat.isDirectory());
+    const files = stats.filter(([ , s ]) => !s.isDirectory());
 
-    const items = await Promise.all(files.map(([f, stat]) => this.getFileAndSizeAndHashForFile(buildDir, f, stat)));
+    const items = await Promise.all(files.map(([f, s]) => this.getFileAndSizeAndHashForFile(buildDir, f, s)));
 
     return items.filter(item => item.href !== 'pro-manifest.json');
   }
 
-  private async getFileAndSizeAndHashForFile(buildDir: string, file: string, stat: fs.Stats): Promise<DeployManifestItem> {
+  private async getFileAndSizeAndHashForFile(buildDir: string, file: string, s: fs.Stats): Promise<DeployManifestItem> {
     const buffer = await this.readFile(file);
 
     return {
       href: path.relative(buildDir, file),
-      size: stat.size,
+      size: s.size,
       integrity: this.getIntegrity(buffer),
     };
   }

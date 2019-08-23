@@ -4,7 +4,7 @@ import { findClosestOpenPort } from '@ionic/utils-network';
 
 import { CommandMetadata, ReactServeOptions, ServeDetails } from '../../../definitions';
 import { input, strong } from '../../color';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 
 export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
   constructor(protected readonly e: ServeRunnerDeps) {
@@ -69,7 +69,7 @@ export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
   }
 
   async serveProject(options: ReactServeOptions): Promise<ServeDetails> {
-    const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
+    const [externalIP, availableInterfaces] = await this.selectExternalIP(options);
 
     const port = options.port = await findClosestOpenPort(options.port);
 
@@ -137,7 +137,7 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
     if (this.resolvedProgram === this.program) {
       return ['start'];
     } else {
-      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
+      const [, ...pkgArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
       return pkgArgs;
     }
   }
@@ -145,13 +145,17 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
   protected async buildEnvVars(options: ReactServeOptions): Promise<NodeJS.ProcessEnv> {
     const envVars: NodeJS.ProcessEnv = {};
 
-    if (options.browser) {
-      envVars.BROWSER = options.browser;
+    envVars.BROWSER = 'none';
+
+    /*
+      By default, CRA binds to localhost,
+      but if you specify it, it puts a warning in the console,
+      so don't set the HOST if the address is set to 'localhost'
+    */
+    if (options.address !== DEFAULT_ADDRESS) {
+      envVars.HOST = options.address;
     }
-    if (options.open !== true) {
-      envVars.BROWSER = 'none';
-    }
-    envVars.HOST = options.address;
+
     envVars.PORT = String(options.port);
     envVars.HTTPS = (options.https === true) ? 'true' : 'false';
     envVars.CI = (options.ci === true) ? 'true' : 'false';
