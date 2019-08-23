@@ -4,7 +4,7 @@ import { findClosestOpenPort } from '@ionic/utils-network';
 
 import { CommandMetadata, ReactServeOptions, ServeDetails } from '../../../definitions';
 import { input, strong } from '../../color';
-import { BIND_ALL_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
+import { BIND_ALL_ADDRESS, DEFAULT_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 
 export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
   constructor(protected readonly e: ServeRunnerDeps) {
@@ -152,7 +152,7 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
       but if you specify it, it puts a warning in the console,
       so don't set the HOST if the address is set to 'localhost'
     */
-    if (options.address !== 'localhost') {
+    if (options.address !== DEFAULT_ADDRESS) {
       envVars.HOST = options.address;
     }
 
