@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.6](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.5...ionic@5.2.6) (2019-08-23)
+
+
+### Bug Fixes
+
+* **cordova:** handle whitespace in app name when running ([0e662e7](https://github.com/ionic-team/ionic-cli/commit/0e662e7))
+* **react:** Disable CRA from opening window so two windows don't open ([#4119](https://github.com/ionic-team/ionic-cli/issues/4119)) ([f10c92c](https://github.com/ionic-team/ionic-cli/commit/f10c92c))
+
+
+
+
+
 ## [5.2.5](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.4...ionic@5.2.5) (2019-08-14)
 
 **Note:** Version bump only for package ionic

@@ -1,6 +1,6 @@
 {
   "name": "@ionic/v1-toolkit",
-  "version": "2.0.8",
+  "version": "2.0.9",
   "description": "Utility CLI for Ionic 1.x apps, used by Ionic CLI",
   "bin": {
     "ionic-v1": "./bin/ionic-v1"
@@ -33,8 +33,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ionic/cli-framework": "2.1.4",
-    "@ionic/utils-fs": "2.0.5",
+    "@ionic/cli-framework": "2.1.5",
+    "@ionic/utils-fs": "2.0.6",
     "chalk": "^2.3.0",
     "chokidar": "^3.0.1",
     "debug": "^4.0.0",
