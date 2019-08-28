@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.7](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.6...ionic@5.2.7) (2019-08-28)
+
+
+### Bug Fixes
+
+* **cordova:** use correct package path for release builds ([df34272](https://github.com/ionic-team/ionic-cli/commit/df34272))
+
+
+
+
+
 ## [5.2.6](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.5...ionic@5.2.6) (2019-08-23)
 
 
