@@ -78,6 +78,19 @@ export async function reduce<T, U>(array: T[] | readonly T[], callback: (accumul
 }
 
 /**
+ * Splice an array.
+ *
+ * This function will return a new array with the standard splice behavior
+ * applied. Unlike the standard array splice, the array of removed items is not
+ * returned.
+ */
+export function splice<T>(array: readonly T[], start: number, deleteCount = array.length - start, ...items: T[]): T[] {
+  const result = [...array];
+  result.splice(start, deleteCount, ...items);
+  return result;
+}
+
+/**
  * Move an item in an array by index.
  *
  * This function will return a new array with the item in the `fromIndex`
@@ -85,16 +98,12 @@ export async function reduce<T, U>(array: T[] | readonly T[], callback: (accumul
  */
 export function move<T>(array: readonly T[], fromIndex: number, toIndex: number): T[] {
   const element = array[fromIndex];
-  const result = [...array];
 
   if (fromIndex < 0 || toIndex < 0 || fromIndex >= array.length || toIndex >= array.length) {
-    return result;
+    return [...array];
   }
 
-  result.splice(fromIndex, 1);
-  result.splice(toIndex, 0, element);
-
-  return result;
+  return splice(splice(array, fromIndex, 1), toIndex, 0, element);
 }
 
 /**
@@ -108,5 +117,5 @@ export function replace<T>(array: readonly T[], index: number, item: T): T[] {
     return [...array];
   }
 
-  return [...array.slice(0, index), item, ...array.slice(index + 1)];
+  return splice(array, index, 1, item);
 }

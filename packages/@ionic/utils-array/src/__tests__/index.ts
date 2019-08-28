@@ -1,4 +1,4 @@
-import { concurrentFilter, conform, filter, reduce, map, move, replace } from '../';
+import { concurrentFilter, conform, filter, reduce, map, splice, move, replace } from '../';
 
 describe('@ionic/utils-array', () => {
 
@@ -208,6 +208,36 @@ describe('@ionic/utils-array', () => {
       const initial = [1, 2, 3];
       const result = await reduce(initial, async (acc, v, i, arr) => { expect(arr).toBe(initial); return acc; }, []);
       expect(result).toEqual([]);
+    });
+
+  });
+
+  describe('splice', () => {
+
+    const array = ['a', 'b', 'c'];
+
+    it('should delete all items with start equal to zero and without deleteCount', () => {
+      const result = splice(array, 0);
+      expect(result).toEqual([]);
+      expect(result).not.toBe(array);
+    });
+
+    it('should leave array unchanged with start equal to zero and with deleteCount equal to zero', () => {
+      const result = splice(array, 0, 0);
+      expect(result).toEqual(array);
+      expect(result).not.toBe(array);
+    });
+
+    it('should delete one from index position 1', () => {
+      const result = splice(array, 1, 1);
+      expect(result).toEqual(['a', 'c']);
+      expect(result).not.toBe(array);
+    });
+
+    it('should delete two from index position 0 and then add an item', () => {
+      const result = splice(array, 0, 2, 'z');
+      expect(result).toEqual(['z', 'c']);
+      expect(result).not.toBe(array);
     });
 
   });
