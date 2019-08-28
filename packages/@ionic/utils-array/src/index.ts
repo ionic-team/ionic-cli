@@ -87,7 +87,7 @@ export function move<T>(array: readonly T[], fromIndex: number, toIndex: number)
   const element = array[fromIndex];
   const result = [...array];
 
-  if (fromIndex <= -1 || toIndex <= -1 || fromIndex >= array.length || toIndex >= array.length) {
+  if (fromIndex < 0 || toIndex < 0 || fromIndex >= array.length || toIndex >= array.length) {
     return result;
   }
 
@@ -95,4 +95,18 @@ export function move<T>(array: readonly T[], fromIndex: number, toIndex: number)
   result.splice(toIndex, 0, element);
 
   return result;
+}
+
+/**
+ * Replace an item in an array by index.
+ *
+ * This function will return a new array with the item in the `index` position
+ * replaced with `item`.
+ */
+export function replace<T>(array: readonly T[], index: number, item: T): T[] {
+  if (index < 0 || index > array.length) {
+    return [...array];
+  }
+
+  return [...array.slice(0, index), item, ...array.slice(index + 1)];
 }

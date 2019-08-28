@@ -1,4 +1,4 @@
-import { concurrentFilter, conform, filter, reduce, map, move } from '../';
+import { concurrentFilter, conform, filter, reduce, map, move, replace } from '../';
 
 describe('@ionic/utils-array', () => {
 
@@ -253,6 +253,40 @@ describe('@ionic/utils-array', () => {
 
       it('should leave array unchanged for to index less than zero', () => {
         const result = move(array, 0, -1);
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
+    });
+
+  });
+
+  describe('replace', () => {
+
+    const array = ['a', 'b', 'c'];
+
+    it('should replace first element with z', () => {
+      const result = replace(array, 0, 'z');
+      expect(result).toEqual(['z', 'b', 'c']);
+      expect(result).not.toBe(array);
+    });
+
+    it('should replace last element with z', () => {
+      const result = replace(array, 2, 'z');
+      expect(result).toEqual(['a', 'b', 'z']);
+      expect(result).not.toBe(array);
+    });
+
+    describe('out of bounds', () => {
+
+      it('should leave array unchanged for index less than zero', () => {
+        const result = replace(array, -1, 'z');
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
+      it('should leave array unchanged for index greater than array index', () => {
+        const result = replace(array, 5, 'z');
         expect(result).toEqual(['a', 'b', 'c']);
         expect(result).not.toBe(array);
       });
