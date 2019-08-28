@@ -94,7 +94,8 @@ export function splice<T>(array: readonly T[], start: number, deleteCount = arra
  * Move an item in an array by index.
  *
  * This function will return a new array with the item in the `fromIndex`
- * position moved to the `toIndex` position.
+ * position moved to the `toIndex` position. If `fromIndex` or `toIndex` are
+ * out of bounds, the array items remain unmoved.
  */
 export function move<T>(array: readonly T[], fromIndex: number, toIndex: number): T[] {
   const element = array[fromIndex];
@@ -110,7 +111,7 @@ export function move<T>(array: readonly T[], fromIndex: number, toIndex: number)
  * Replace an item in an array by index.
  *
  * This function will return a new array with the item in the `index` position
- * replaced with `item`.
+ * replaced with `item`. If `index` is out of bounds, the item is not replaced.
  */
 export function replace<T>(array: readonly T[], index: number, item: T): T[] {
   if (index < 0 || index > array.length) {
