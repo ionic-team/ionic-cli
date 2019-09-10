@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.2.8](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.7...ionic@5.2.8) (2019-09-10)
+
+
+### Bug Fixes
+
+* **cordova:** use allowlist for supported project types ([167a68c](https://github.com/ionic-team/ionic-cli/commit/167a68c))
+* **multi-app:** use proper config path for integrations ([4e8a226](https://github.com/ionic-team/ionic-cli/commit/4e8a226))
+
+
+
+
+
 ## [5.2.7](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.6...ionic@5.2.7) (2019-08-28)
 
 

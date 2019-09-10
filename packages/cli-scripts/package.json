@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "cli-scripts",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "bin": {
     "ionic-cli-scripts": "./bin/ionic-cli-scripts"
   },
@@ -21,7 +21,7 @@
     "ansi-styles": "^4.0.0",
     "chalk": "^2.3.0",
     "escape-string-regexp": "^2.0.0",
-    "ionic": "5.2.7",
+    "ionic": "5.2.8",
     "strip-ansi": "^5.2.0",
     "tslib": "^1.9.0"
   },
