@@ -6,13 +6,15 @@ import * as os from 'os';
 import * as path from 'path';
 
 import { BaseIntegration, IntegrationConfig } from '../';
-import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails } from '../../../definitions';
+import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 import { FatalException } from '../../../lib/errors';
 import { ancillary, input, strong } from '../../color';
 
 const debug = Debug('ionic:lib:integrations:cordova');
 
 export class Integration extends BaseIntegration<ProjectIntegration> {
+  readonly SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'ionic1', 'ionic-angular', 'angular'];
+
   readonly name: IntegrationName = 'cordova';
   readonly summary = 'Target native iOS and Android with Apache Cordova';
   readonly archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
@@ -22,12 +24,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
-    if (this.e.project.type === 'vue' || this.e.project.type === 'react') {
-      throw new FatalException(
-        `Cordova is not supported for ${this.e.project.type} projects\n\n` +
-        `See ${strong(`https://ionicframework.com/docs/${this.e.project.type}/overview`)} for detailed information.\n`
-      );
+    if (!this.SUPPORTED_PROJECT_TYPES.includes(this.e.project.type)) {
+      throw new FatalException(`Cordova is not supported for ${this.e.project.type} projects`);
     }
+
     const handlers: IntegrationAddHandlers = {
       conflictHandler: async (f, stats) => {
         const isDirectory = stats.isDirectory();
