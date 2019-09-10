@@ -277,6 +277,7 @@ export interface IProject {
   readonly rootDirectory: string;
   readonly directory: string;
   readonly filePath: string;
+  readonly pathPrefix: readonly string[];
   readonly type: ProjectType;
   readonly config: BaseConfig<IProjectConfig>;
   readonly details: import('./lib/project').ProjectDetailsResult;

@@ -20,7 +20,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly archiveUrl = undefined;
 
   get config(): IntegrationConfig {
-    return new IntegrationConfig(this.e.project.filePath, { pathPrefix: ['integrations', this.name] });
+    return new IntegrationConfig(this.e.project.filePath, { pathPrefix: [...this.e.project.pathPrefix, 'integrations', this.name] });
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
