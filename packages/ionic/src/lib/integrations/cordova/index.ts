@@ -12,9 +12,9 @@ import { ancillary, input, strong } from '../../color';
 
 const debug = Debug('ionic:lib:integrations:cordova');
 
-export class Integration extends BaseIntegration<ProjectIntegration> {
-  readonly SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'ionic1', 'ionic-angular', 'angular'];
+export const SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'ionic1', 'ionic-angular', 'angular'];
 
+export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly name: IntegrationName = 'cordova';
   readonly summary = 'Target native iOS and Android with Apache Cordova';
   readonly archiveUrl = 'https://d2ql0qc7j8u4b2.cloudfront.net/integration-cordova.tar.gz';
@@ -24,7 +24,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
-    if (!this.SUPPORTED_PROJECT_TYPES.includes(this.e.project.type)) {
+    if (!SUPPORTED_PROJECT_TYPES.includes(this.e.project.type)) {
       throw new FatalException(`Cordova is not supported for ${this.e.project.type} projects`);
     }
 

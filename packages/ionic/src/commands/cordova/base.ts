@@ -103,16 +103,16 @@ export abstract class CordovaCommand extends Command {
   }
 
   protected async preRunChecks(runinfo: CommandInstanceInfo) {
+    const { SUPPORTED_PROJECT_TYPES } = await import('../../lib/integrations/cordova');
+    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
+
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
-    if (this.project.type === 'vue' || this.project.type === 'react') {
-      throw new FatalException(
-        `Cordova is not supported for ${this.project.type} projects\n\n` +
-        `See ${strong(`https://ionicframework.com/docs/${this.project.type}/overview`)} for detailed information.\n`
-      );
+
+    if (!SUPPORTED_PROJECT_TYPES.includes(this.project.type)) {
+      throw new FatalException(`Cordova is not supported for ${this.project.type} projects`);
     }
-    const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
 
     await this.checkCordova(runinfo);
 
