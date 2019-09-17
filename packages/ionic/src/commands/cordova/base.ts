@@ -166,7 +166,7 @@ export abstract class CordovaCommand extends Command {
     }
   }
 
-  protected async checkForPlatformInstallation(platform: string, { promptToInstall = false, promptToInstallRefusalMsg = `Cannot run this command for the ${input(platform)} platform unless it is installed.` }: { promptToInstall?: boolean; promptToInstallRefusalMsg?: string; } = {}): Promise<void> {
+  protected async checkForPlatformInstallation(platform: string, { promptToInstall = !['android', 'ios'].includes(platform), promptToInstallRefusalMsg = `Cannot run this command for the ${input(platform)} platform unless it is installed.` }: { promptToInstall?: boolean; promptToInstallRefusalMsg?: string; } = {}): Promise<void> {
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
