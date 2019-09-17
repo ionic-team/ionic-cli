@@ -12,9 +12,23 @@ const NG_BUILD_OPTIONS = [
     aliases: ['c'],
     summary: 'Specify the configuration to use.',
     type: String,
-    groups: [MetadataGroup.ADVANCED],
+    groups: [MetadataGroup.ADVANCED, 'cordova'],
     hint: weak('[ng]'),
     spec: { value: 'conf' },
+  },
+  {
+    name: 'source-map',
+    summary: 'Output source maps',
+    type: Boolean,
+    groups: [MetadataGroup.ADVANCED, 'cordova'],
+    hint: weak('[ng]'),
+  },
+  {
+    name: 'watch',
+    summary: 'Rebuild when files change',
+    type: Boolean,
+    groups: [MetadataGroup.ADVANCED],
+    hint: weak('[ng]'),
   },
 ];
 
@@ -45,13 +59,6 @@ ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to
           type: Boolean,
           hint: weak('[ng]'),
         },
-        {
-          name: 'source-map',
-          summary: 'Output source maps',
-          type: Boolean,
-          groups: [MetadataGroup.ADVANCED],
-          hint: weak('[ng]'),
-        },
         ...NG_BUILD_OPTIONS,
         {
           name: 'cordova-assets',
@@ -63,6 +70,7 @@ ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to
       ],
       exampleCommands: [
         '--prod',
+        '--watch',
       ],
     };
   }
@@ -73,12 +81,14 @@ ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
     const cordovaAssets = typeof options['cordova-assets'] === 'boolean' ? Boolean(options['cordova-assets']) : undefined;
+    const watch = typeof options['watch'] === 'boolean' ? Boolean(options['watch']) : undefined;
 
     return {
       ...baseOptions,
       configuration,
       sourcemaps,
       cordovaAssets,
+      watch,
       type: 'angular',
     };
   }
@@ -114,6 +124,7 @@ export class AngularBuildCLI extends BuildCLI<AngularBuildOptions> {
       _: [],
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
       'cordova-assets': options.cordovaAssets !== false ? undefined : 'false',
+      'watch': options.watch !== false ? options.watch : 'false',
     };
 
     const projectArgs = [];

@@ -547,6 +547,7 @@ export interface AngularBuildOptions extends BuildOptions<'angular'> {
   configuration?: string;
   sourcemaps?: boolean;
   cordovaAssets?: boolean;
+  watch?: boolean;
 }
 
 export interface ReactBuildOptions extends BuildOptions<'react'> {

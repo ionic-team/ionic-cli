@@ -100,7 +100,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
     if (buildRunner) {
       const libmetadata = await buildRunner.getCommandMetadata();
       groups.push(...libmetadata.groups || []);
-      options.push(...libmetadata.options || []);
+      options.push(...(libmetadata.options || []).filter(o => o.groups && o.groups.includes('cordova')));
       footnotes.push(...libmetadata.footnotes || []);
     }
 
