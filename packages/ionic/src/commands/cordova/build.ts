@@ -102,6 +102,6 @@ The Cordova CLI requires a separator for platform-specific arguments for Android
     }
 
     const cordovaArgs = filterArgumentsForCordova(metadata, options);
-    await this.runCordova(cordovaArgs, {});
+    await this.runCordova(cordovaArgs, { stdio: 'inherit' });
   }
 }
