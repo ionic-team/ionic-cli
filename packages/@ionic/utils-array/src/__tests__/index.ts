@@ -1,4 +1,4 @@
-import { concurrentFilter, conform, filter, reduce, map, move } from '../';
+import { concurrentFilter, conform, filter, reduce, map, splice, move, replace } from '../';
 
 describe('@ionic/utils-array', () => {
 
@@ -212,6 +212,36 @@ describe('@ionic/utils-array', () => {
 
   });
 
+  describe('splice', () => {
+
+    const array = ['a', 'b', 'c'];
+
+    it('should delete all items with start equal to zero and without deleteCount', () => {
+      const result = splice(array, 0);
+      expect(result).toEqual([]);
+      expect(result).not.toBe(array);
+    });
+
+    it('should leave array unchanged with start equal to zero and with deleteCount equal to zero', () => {
+      const result = splice(array, 0, 0);
+      expect(result).toEqual(array);
+      expect(result).not.toBe(array);
+    });
+
+    it('should delete one from index position 1', () => {
+      const result = splice(array, 1, 1);
+      expect(result).toEqual(['a', 'c']);
+      expect(result).not.toBe(array);
+    });
+
+    it('should delete two from index position 0 and then add an item', () => {
+      const result = splice(array, 0, 2, 'z');
+      expect(result).toEqual(['z', 'c']);
+      expect(result).not.toBe(array);
+    });
+
+  });
+
   describe('move', () => {
 
     const array = ['a', 'b', 'c'];
@@ -253,6 +283,40 @@ describe('@ionic/utils-array', () => {
 
       it('should leave array unchanged for to index less than zero', () => {
         const result = move(array, 0, -1);
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
+    });
+
+  });
+
+  describe('replace', () => {
+
+    const array = ['a', 'b', 'c'];
+
+    it('should replace first element with z', () => {
+      const result = replace(array, 0, 'z');
+      expect(result).toEqual(['z', 'b', 'c']);
+      expect(result).not.toBe(array);
+    });
+
+    it('should replace last element with z', () => {
+      const result = replace(array, 2, 'z');
+      expect(result).toEqual(['a', 'b', 'z']);
+      expect(result).not.toBe(array);
+    });
+
+    describe('out of bounds', () => {
+
+      it('should leave array unchanged for index less than zero', () => {
+        const result = replace(array, -1, 'z');
+        expect(result).toEqual(['a', 'b', 'c']);
+        expect(result).not.toBe(array);
+      });
+
+      it('should leave array unchanged for index greater than array index', () => {
+        const result = replace(array, 5, 'z');
         expect(result).toEqual(['a', 'b', 'c']);
         expect(result).not.toBe(array);
       });

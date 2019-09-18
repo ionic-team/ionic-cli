@@ -277,6 +277,7 @@ export interface IProject {
   readonly rootDirectory: string;
   readonly directory: string;
   readonly filePath: string;
+  readonly pathPrefix: readonly string[];
   readonly type: ProjectType;
   readonly config: BaseConfig<IProjectConfig>;
   readonly details: import('./lib/project').ProjectDetailsResult;
@@ -546,6 +547,7 @@ export interface AngularBuildOptions extends BuildOptions<'angular'> {
   configuration?: string;
   sourcemaps?: boolean;
   cordovaAssets?: boolean;
+  watch?: boolean;
 }
 
 export interface ReactBuildOptions extends BuildOptions<'react'> {

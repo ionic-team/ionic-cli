@@ -245,6 +245,6 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
   }
 
   get config(): EnterpriseIntegrationConfig {
-    return new EnterpriseIntegrationConfig(this.e.project.filePath, { pathPrefix: ['integrations', this.name] });
+    return new EnterpriseIntegrationConfig(this.e.project.filePath, { pathPrefix: [...this.e.project.pathPrefix, 'integrations', this.name] });
   }
 }

@@ -36,7 +36,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
 
     if (runner) {
       const libmetadata = await runner.getCommandMetadata();
-      options.push(...libmetadata.options || []);
+      options.push(...(libmetadata.options || []).filter(o => o.groups && o.groups.includes('cordova')));
       footnotes.push(...libmetadata.footnotes || []);
     }
 
@@ -102,6 +102,6 @@ The Cordova CLI requires a separator for platform-specific arguments for Android
     }
 
     const cordovaArgs = filterArgumentsForCordova(metadata, options);
-    await this.runCordova(cordovaArgs, {});
+    await this.runCordova(cordovaArgs, { stdio: 'inherit' });
   }
 }

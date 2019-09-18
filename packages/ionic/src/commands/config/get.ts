@@ -78,8 +78,8 @@ This command will sanitize config output for known sensitive fields (disabled wh
     } else {
       if (global && v && typeof v === 'object') {
         const columns = lodash.entries(v)
-          .map(([k, v]) => [k, this.sanitizeEntry(k, v)])
-          .map(([k, v]) => [strong(k), util.inspect(v, { colors: chalk.enabled })]);
+          .map(([key, value]) => [key, this.sanitizeEntry(key, value)])
+          .map(([key, value]) => [strong(key), util.inspect(value, { colors: chalk.enabled })]);
 
         columns.sort((a, b) => strcmp(a[0], b[0]));
 

@@ -423,9 +423,14 @@ export abstract class Project implements IProject {
     return path.resolve(this.rootDirectory, root);
   }
 
-  get config(): ProjectConfig {
+  get pathPrefix(): string[] {
     const id = this.details.context === 'multiapp' ? this.details.id : undefined;
-    const options = { type: this.type, pathPrefix: id ? ['projects', id] : [] };
+
+    return id ? ['projects', id] : [];
+  }
+
+  get config(): ProjectConfig {
+    const options = { type: this.type, pathPrefix: this.pathPrefix };
 
     return new ProjectConfig(this.filePath, options);
   }

@@ -78,21 +78,45 @@ export async function reduce<T, U>(array: T[] | readonly T[], callback: (accumul
 }
 
 /**
+ * Splice an array.
+ *
+ * This function will return a new array with the standard splice behavior
+ * applied. Unlike the standard array splice, the array of removed items is not
+ * returned.
+ */
+export function splice<T>(array: readonly T[], start: number, deleteCount = array.length - start, ...items: T[]): T[] {
+  const result = [...array];
+  result.splice(start, deleteCount, ...items);
+  return result;
+}
+
+/**
  * Move an item in an array by index.
  *
  * This function will return a new array with the item in the `fromIndex`
- * position moved to the `toIndex` position.
+ * position moved to the `toIndex` position. If `fromIndex` or `toIndex` are
+ * out of bounds, the array items remain unmoved.
  */
 export function move<T>(array: readonly T[], fromIndex: number, toIndex: number): T[] {
   const element = array[fromIndex];
-  const result = [...array];
 
-  if (fromIndex <= -1 || toIndex <= -1 || fromIndex >= array.length || toIndex >= array.length) {
-    return result;
+  if (fromIndex < 0 || toIndex < 0 || fromIndex >= array.length || toIndex >= array.length) {
+    return [...array];
   }
 
-  result.splice(fromIndex, 1);
-  result.splice(toIndex, 0, element);
+  return splice(splice(array, fromIndex, 1), toIndex, 0, element);
+}
 
-  return result;
+/**
+ * Replace an item in an array by index.
+ *
+ * This function will return a new array with the item in the `index` position
+ * replaced with `item`. If `index` is out of bounds, the item is not replaced.
+ */
+export function replace<T>(array: readonly T[], index: number, item: T): T[] {
+  if (index < 0 || index > array.length) {
+    return [...array];
+  }
+
+  return splice(array, index, 1, item);
 }

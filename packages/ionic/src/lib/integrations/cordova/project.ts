@@ -20,10 +20,19 @@ export async function getPlatforms(projectDir: string): Promise<string[]> {
   return platforms;
 }
 
-export async function getPackagePath(appName: string, platform: string, emulator = false): Promise<string> {
+export interface GetPackagePathOptions {
+  emulator?: boolean;
+  release?: boolean;
+}
+
+export async function getPackagePath(appName: string, platform: string, { emulator = false, release = false }: GetPackagePathOptions = {}): Promise<string> {
   if (platform === 'android') {
     // TODO: don't hardcode this/support multiple build paths (ex: multiple arch builds)
     // use app/build/outputs/apk/debug/output.json?
+    if (release) {
+      return path.join(CORDOVA_ANDROID_PACKAGE_PATH, 'release', 'app-release-unsigned.apk');
+    }
+
     return path.join(CORDOVA_ANDROID_PACKAGE_PATH, 'debug', 'app-debug.apk');
   } else if (platform === 'ios') {
     if (emulator) {

@@ -38,7 +38,7 @@ ${input('ionic build')} uses ${strong('@ionic/app-scripts')}. See the project's 
           name: 'source-map',
           summary: 'Output sourcemaps',
           type: Boolean,
-          groups: [MetadataGroup.ADVANCED],
+          groups: [MetadataGroup.ADVANCED, 'cordova'],
           hint: weak('[app-scripts]'),
         },
         ...APP_SCRIPTS_OPTIONS,
