@@ -43,6 +43,11 @@ export const SERVE_SCRIPT = 'ionic:serve';
 
 export const COMMON_SERVE_COMMAND_OPTIONS: readonly CommandMetadataOption[] = [
   {
+    name: 'external',
+    summary: `Host dev server on all network interfaces (i.e. ${input('--address=0.0.0.0')})`,
+    type: Boolean,
+  },
+  {
     name: 'address',
     summary: 'Use specific address for the dev server',
     default: DEFAULT_ADDRESS,
@@ -105,7 +110,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
 
-    if (options['devapp'] && options['address'] === DEFAULT_ADDRESS) {
+    if (options['external'] || (options['devapp'] && options['address'] === DEFAULT_ADDRESS)) {
       options['address'] = '0.0.0.0';
     }
 
@@ -393,7 +398,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       this.e.log.warn(
         'An external host may be required to serve for this target device/platform.\n' +
         'If you get connection issues on your device or emulator, try connecting the device to the same Wi-Fi network and selecting an accessible IP address for your computer on that network.\n\n' +
-        `You can use ${input('--address=0.0.0.0')} to run the dev server on all network interfaces, in which case an external address will be selected.\n`
+        `You can use ${input('--external')} to run the dev server on all network interfaces, in which case an external address will be selected.\n`
       );
     }
 

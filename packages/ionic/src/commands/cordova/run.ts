@@ -48,7 +48,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
     const exampleCommands = [
       ...CORDOVA_BUILD_EXAMPLE_COMMANDS,
       'android -l',
-      'ios --livereload',
+      'ios --livereload --external',
       'ios --livereload-url=http://localhost:8100',
     ].sort();
 
