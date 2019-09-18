@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.3.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.8...ionic@5.3.0) (2019-09-18)
+
+
+### Bug Fixes
+
+* **angular:** show Angular CLI prompts in `ionic generate` ([#4123](https://github.com/ionic-team/ionic-cli/issues/4123)) ([e97f868](https://github.com/ionic-team/ionic-cli/commit/e97f868))
+* **cordova:** fix hanging issue with modern iOS build system ([b7758ed](https://github.com/ionic-team/ionic-cli/commit/b7758ed))
+* **cordova:** offer confirmation on adding unknown platform ([453f08b](https://github.com/ionic-team/ionic-cli/commit/453f08b))
+
+
+### Features
+
+* **angular:** document and pass along `--watch` option to ng ([1444212](https://github.com/ionic-team/ionic-cli/commit/1444212))
+* **cordova:** --external option for hosting dev server on 0.0.0.0 ([fc6020f](https://github.com/ionic-team/ionic-cli/commit/fc6020f))
+
+
+
+
+
 ## [5.2.8](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.7...ionic@5.2.8) (2019-09-10)
 
 
