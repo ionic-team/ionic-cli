@@ -89,6 +89,11 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
         shortUrl: 'https://ion.link/remote-debugging-docs',
       },
       {
+        id: 'livereload-docs',
+        url: 'https://ionicframework.com/docs/cli/livereload',
+        shortUrl: 'https://ion.link/livereload-docs',
+      },
+      {
         id: 'native-run-repo',
         url: 'https://github.com/ionic-team/native-run',
       },
@@ -133,6 +138,8 @@ This command will first use ${input('ionic build')} to build web assets (or ${in
 If you have multiple devices and emulators, you can target a specific one with the ${input('--target')} option. You can list targets with ${input('--list')}.
 
 For Android and iOS, you can setup Remote Debugging on your device with browser development tools using these docs[^remote-debugging-docs].
+
+When using ${input('--livereload')} with hardware devices, remember that livereload needs an active connection between device and computer. In some scenarios, you may need to host the dev server on an external address using the ${input('--external')} option. See these docs[^livereload-docs] for more information.
 
 Just like with ${input('ionic cordova build')}, you can pass additional options to the Cordova CLI using the ${input('--')} separator. To pass additional options to the dev server, consider using ${input('ionic serve')} separately and using the ${input('--livereload-url')} option.
       `,
