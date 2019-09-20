@@ -194,7 +194,16 @@ export async function getStarterList(config: IConfig, tag = 'latest'): Promise<S
 export function getStarterProjectTypes(): string[] {
   return lodash.uniq(STARTER_TEMPLATES.map(t => t.projectType));
 }
-
+export const SUPPORTED_FRAMEWORKS = [
+  {
+    name: 'angular',
+    description: 'https://angular.io'
+  },
+  {
+    name: 'react',
+    description: 'https://reactjs.org'
+  },
+]
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'tabs',

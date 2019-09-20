@@ -13,7 +13,7 @@ import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
 import { createProjectFromDetails, createProjectFromDirectory, isValidProjectId } from '../lib/project';
 import { prependNodeModulesBinToPath } from '../lib/shell';
-import { AppSchema, STARTER_BASE_URL, STARTER_TEMPLATES, getAdvertisement, getStarterList, getStarterProjectTypes, readStarterManifest, verifyOptions } from '../lib/start';
+import { AppSchema, STARTER_BASE_URL, STARTER_TEMPLATES, SUPPORTED_FRAMEWORKS, getAdvertisement, getStarterList, getStarterProjectTypes, readStarterManifest, verifyOptions } from '../lib/start';
 import { emoji } from '../lib/utils/emoji';
 
 const debug = Debug('ionic:commands:start');
@@ -141,7 +141,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     const appflowId = options['id'] ? String(options['id']) : undefined;
     // TODO: currently defaults to angular as the project type if a type is not provided
     // we might want to make them select a type instead
-    const projectType = options['type'] ? String(options['type']) : 'angular';
+    const projectType = options['type'] ? String(options['type']) : await this.getProjectType();
 
     if (appflowId) {
       if (!this.env.session.isLoggedIn()) {
@@ -203,11 +203,11 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
             throw new FatalException(`No starter templates found for project type: ${input(projectType)}.`);
           }
 
-          return starterTemplateList.map((starterTemplate, i) => {
+          return starterTemplateList.map((starter, i) => {
             return {
               name: cols[i],
-              short: starterTemplate.name,
-              value: starterTemplate.name,
+              short: starter.name,
+              value: starter.name,
             };
           });
         },
@@ -301,6 +301,36 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         packageId,
         appflowId,
       };
+    }
+  }
+
+  async getProjectType() {
+    if (this.env.flags.interactive) {
+      this.env.log.nl();
+      this.env.log.msg(
+        `${strong(`What framework do you want to build with? ${emoji('🤔', '')}`)}\n\n`
+      );
+
+      const frameworkChoice = await this.env.prompt({
+        type: 'list',
+        name: 'frameworks',
+        message: 'Framework support:',
+        default: 'angular',
+        choices: () => {
+          const cols = columnar(SUPPORTED_FRAMEWORKS.map(({ name, description }) => [input(name), description || '']), {}).split('\n');
+          return SUPPORTED_FRAMEWORKS.map((starterTemplate, i) => {
+            return {
+              name: cols[i],
+              short: starterTemplate.name,
+              value: starterTemplate.name,
+            };
+          });
+        },
+      });
+
+      return frameworkChoice;
+    } else {
+      return 'angular';
     }
   }
 
@@ -420,7 +450,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       this.env.log.msg('Installing dependencies may take several minutes.');
       this.env.log.rawmsg(getAdvertisement());
 
-      const [ installer, ...installerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
+      const [installer, ...installerArgs] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
     }
 
