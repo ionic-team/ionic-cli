@@ -304,11 +304,13 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async getProjectType() {
-    this.env.log.nl();
-    this.env.log.msg(
-      `${strong(`Pick a framework! ${emoji('😁', '')}`)}\n\n` +
-      `Please select the JavaScript framework to use for your new app. To bypass this prompt next time, supply a value for the ${input('--type')} option.\n\n`
-    );
+    if (this.env.flags.interactive) {
+      this.env.log.nl();
+      this.env.log.msg(
+        `${strong(`Pick a framework! ${emoji('😁', '')}`)}\n\n` +
+        `Please select the JavaScript framework to use for your new app. To bypass this prompt next time, supply a value for the ${input('--type')} option.\n\n`
+      );
+    }
 
     const frameworkChoice = await this.env.prompt({
       type: 'list',
