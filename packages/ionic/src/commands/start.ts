@@ -139,9 +139,6 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     verifyOptions(options, this.env);
 
     const appflowId = options['id'] ? String(options['id']) : undefined;
-    // TODO: currently defaults to angular as the project type if a type is not provided
-    // we might want to make them select a type instead
-    const projectType = options['type'] ? String(options['type']) : await this.getProjectType();
 
     if (appflowId) {
       if (!this.env.session.isLoggedIn()) {
@@ -181,6 +178,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         inputs[0] = name;
       }
     }
+
+    const projectType = options['type'] ? String(options['type']) : await this.getProjectType();
 
     if (!inputs[1]) {
       if (this.env.flags.interactive) {
@@ -305,33 +304,30 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async getProjectType() {
-    if (this.env.flags.interactive) {
-      this.env.log.nl();
-      this.env.log.msg(
-        `${strong(`What framework do you want to build with? ${emoji('🤔', '')}`)}\n\n`
-      );
+    this.env.log.nl();
+    this.env.log.msg(
+      `${strong(`Pick a framework! ${emoji('😁', '')}`)}\n\n` +
+      `Please select the JavaScript framework to use for your new app. To bypass this prompt next time, supply a value for the ${input('--type')} option.\n\n`
+    );
 
-      const frameworkChoice = await this.env.prompt({
-        type: 'list',
-        name: 'frameworks',
-        message: 'Framework support:',
-        default: 'angular',
-        choices: () => {
-          const cols = columnar(SUPPORTED_FRAMEWORKS.map(({ name, description }) => [input(name), description || '']), {}).split('\n');
-          return SUPPORTED_FRAMEWORKS.map((starterTemplate, i) => {
-            return {
-              name: cols[i],
-              short: starterTemplate.name,
-              value: starterTemplate.name,
-            };
-          });
-        },
-      });
+    const frameworkChoice = await this.env.prompt({
+      type: 'list',
+      name: 'frameworks',
+      message: 'Framework:',
+      default: 'angular',
+      choices: () => {
+        const cols = columnar(SUPPORTED_FRAMEWORKS.map(({ name, description }) => [input(name), description]), {}).split('\n');
+        return SUPPORTED_FRAMEWORKS.map((starterTemplate, i) => {
+          return {
+            name: cols[i],
+            short: starterTemplate.name,
+            value: starterTemplate.type,
+          };
+        });
+      },
+    });
 
-      return frameworkChoice;
-    } else {
-      return 'angular';
-    }
+    return frameworkChoice;
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
