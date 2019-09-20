@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.4.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.3.0...ionic@5.4.0) (2019-09-20)
+
+
+### Bug Fixes
+
+* **angular:** fix `--prod` option ([609b80d](https://github.com/ionic-team/ionic-cli/commit/609b80d))
+
+
+### Features
+
+* **start:** add prompt for framework ([#4161](https://github.com/ionic-team/ionic-cli/issues/4161)) ([8f6ce37](https://github.com/ionic-team/ionic-cli/commit/8f6ce37))
+
+
+
+
+
 # [5.3.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.2.8...ionic@5.3.0) (2019-09-18)
 
 
