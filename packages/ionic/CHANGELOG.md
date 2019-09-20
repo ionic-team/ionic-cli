@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.1](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.0...ionic@5.4.1) (2019-09-20)
+
+
+### Bug Fixes
+
+* **cordova:** fix hanging issue for prepare/compile ([44697cf](https://github.com/ionic-team/ionic-cli/commit/44697cf))
+
+
+
+
+
 # [5.4.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.3.0...ionic@5.4.0) (2019-09-20)
 
 
