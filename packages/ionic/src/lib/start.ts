@@ -195,6 +195,25 @@ export function getStarterProjectTypes(): string[] {
   return lodash.uniq(STARTER_TEMPLATES.map(t => t.projectType));
 }
 
+export interface SupportedFramework {
+  name: string;
+  type: ProjectType;
+  description: string;
+}
+
+export const SUPPORTED_FRAMEWORKS: readonly SupportedFramework[] = [
+  {
+    name: 'Angular',
+    type: 'angular',
+    description: 'https://angular.io',
+  },
+  {
+    name: 'React',
+    type: 'react',
+    description: 'https://reactjs.org',
+  },
+];
+
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'tabs',
