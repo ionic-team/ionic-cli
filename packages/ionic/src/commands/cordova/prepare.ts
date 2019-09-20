@@ -118,6 +118,6 @@ You may wish to use ${input('ionic cordova prepare')} if you run your project wi
       }
     }
 
-    await this.runCordova(filterArgumentsForCordova(metadata, options), {});
+    await this.runCordova(filterArgumentsForCordova(metadata, options), { stdio: 'inherit' });
   }
 }

@@ -51,6 +51,6 @@ Like running ${input('cordova compile')} directly, but provides friendly checks.
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const metadata = await this.getMetadata();
-    await this.runCordova(filterArgumentsForCordova(metadata, options), {});
+    await this.runCordova(filterArgumentsForCordova(metadata, options), { stdio: 'inherit' });
   }
 }
