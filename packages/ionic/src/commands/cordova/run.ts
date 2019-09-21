@@ -292,10 +292,8 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
     const cordovalogws = createPrefixedWriteStream(this.env.log, weak(`[cordova]`));
     const buildOpts: IShellRunOptions = { stream: cordovalogws };
-    // ignore very verbose compiler output unless --verbose (still pipe stderr)
-    if (!options['verbose']) {
-      buildOpts.stdio = ['ignore', 'ignore', 'pipe'];
-    }
+    // ignore very verbose compiler output on stdout unless --verbose
+    buildOpts.stdio = options['verbose'] ? 'inherit' : ['pipe', 'ignore', 'pipe'];
 
     if (options['native-run']) {
       const [ platform ] = inputs;
@@ -334,10 +332,8 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
 
     const buildOpts: IShellRunOptions = { };
-    // ignore very verbose compiler output unless --verbose (still pipe stderr)
-    if (!options['verbose']) {
-      buildOpts.stdio = ['ignore', 'ignore', 'pipe'];
-    }
+    // ignore very verbose compiler output on stdout unless --verbose
+    buildOpts.stdio = options['verbose'] ? 'inherit' : ['pipe', 'ignore', 'pipe'];
 
     if (options['native-run']) {
       const [ platform ] = inputs;
