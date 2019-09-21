@@ -334,14 +334,19 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       }
     }
 
+    const buildOpts: IShellRunOptions = { };
+    // ignore very verbose compiler output unless --verbose (still pipe stderr)
+    if (!options['verbose']) {
+      buildOpts.stdio = ['ignore', 'ignore', 'pipe'];
+    }
+
     if (options['native-run']) {
       const [ platform ] = inputs;
       const packagePath = await getPackagePath(conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
-
-      await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), { stdio: 'inherit' });
+      await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), buildOpts);
       await this.runNativeRun(createNativeRunArgs({ packagePath, platform }, { ...options, connect: false }));
     } else {
-      await this.runCordova(filterArgumentsForCordova(metadata, options), { stdio: 'inherit' });
+      await this.runCordova(filterArgumentsForCordova(metadata, options), buildOpts);
     }
   }
 
