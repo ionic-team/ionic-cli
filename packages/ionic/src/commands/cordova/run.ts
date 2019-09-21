@@ -291,22 +291,21 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     await conf.save();
 
     const cordovalogws = createPrefixedWriteStream(this.env.log, weak(`[cordova]`));
+    const buildOpts: IShellRunOptions = { stream: cordovalogws };
+    // ignore very verbose compiler output unless --verbose (still pipe stderr)
+    if (!options['verbose']) {
+      buildOpts.stdio = ['ignore', 'ignore', 'pipe'];
+    }
 
     if (options['native-run']) {
       const [ platform ] = inputs;
       const packagePath = await getPackagePath(conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
       const forwardedPorts = details ? runner.getUsedPorts(runnerOpts, details) : [];
 
-      const buildOpts: IShellRunOptions = { stream: cordovalogws };
-      // ignore very verbose compiler output unless --verbose (still pipe stderr)
-      if (!options['verbose']) {
-        buildOpts.stdio = ['ignore', 'ignore', 'pipe'];
-      }
-
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), buildOpts);
       await this.runNativeRun(createNativeRunArgs({ packagePath, platform, forwardedPorts }, options));
     } else {
-      await this.runCordova(filterArgumentsForCordova(metadata, options), { stream: cordovalogws });
+      await this.runCordova(filterArgumentsForCordova(metadata, options), buildOpts);
       await sleepForever();
     }
   }
