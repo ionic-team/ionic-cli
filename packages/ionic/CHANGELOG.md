@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.2](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.1...ionic@5.4.2) (2019-10-01)
+
+
+### Bug Fixes
+
+* **cordova:** fix hanging issue for run w/ livereload ([#4162](https://github.com/ionic-team/ionic-cli/issues/4162)) ([1001108](https://github.com/ionic-team/ionic-cli/commit/1001108))
+
+
+
+
+
 ## [5.4.1](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.0...ionic@5.4.1) (2019-09-20)
 
 
