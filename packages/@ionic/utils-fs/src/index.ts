@@ -158,7 +158,7 @@ export async function fileToString(filePath: string): Promise<string> {
   try {
     return await fs.readFile(filePath, { encoding: 'utf8' });
   } catch (e) {
-    if (e.code === 'ENOENT') {
+    if (e.code === 'ENOENT' || e.code === 'ENOTDIR') {
       return '';
     }
 
