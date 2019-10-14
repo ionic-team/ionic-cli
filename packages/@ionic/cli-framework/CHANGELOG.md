@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@2.1.8...@ionic/cli-framework@3.0.0) (2019-10-14)
+
+
+### Code Refactoring
+
+* **prompts:** remove prompt support ([82241ef](https://github.com/ionic-team/ionic-cli/commit/82241ef7ddf8fdc6fc0db051a9acd0ed100c3fa8))
+
+
+### BREAKING CHANGES
+
+* **prompts:** This package no longer supports interactive prompts. See `@ionic/cli-framework-prompts`.
+
+
+
+
+
 ## [2.1.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@2.1.7...@ionic/cli-framework@2.1.8) (2019-10-14)
 
 **Note:** Version bump only for package @ionic/cli-framework
