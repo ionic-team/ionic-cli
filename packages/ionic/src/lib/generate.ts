@@ -1,4 +1,4 @@
-import { PromptModule } from '@ionic/cli-framework';
+import { PromptModule } from '@ionic/cli-framework-prompts';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IConfig, ILogger, IProject, IShell, IonicContext, Runner } from '../definitions';
 

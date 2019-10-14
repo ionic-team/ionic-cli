@@ -1,4 +1,5 @@
-import { MetadataGroup, createPromptChoiceSeparator, validators } from '@ionic/cli-framework';
+import { MetadataGroup, validators } from '@ionic/cli-framework';
+import { createPromptChoiceSeparator } from '@ionic/cli-framework-prompts';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import * as Debug from 'debug';
 

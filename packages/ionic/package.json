@@ -41,6 +41,7 @@
   "license": "MIT",
   "dependencies": {
     "@ionic/cli-framework": "2.1.7",
+    "@ionic/cli-framework-prompts": "1.0.0",
     "@ionic/discover": "2.0.6",
     "@ionic/utils-array": "1.2.1",
     "@ionic/utils-fs": "2.0.7",

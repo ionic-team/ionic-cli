@@ -1,4 +1,4 @@
-import { PromptQuestion, PromptValue } from '@ionic/cli-framework';
+import { PromptQuestion, PromptValue } from '@ionic/cli-framework-prompts';
 
 import { ILogger, IonicEnvironmentFlags } from '../definitions';
 

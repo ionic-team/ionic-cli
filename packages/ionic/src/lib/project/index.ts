@@ -1,4 +1,5 @@
-import { BaseConfig, BaseConfigOptions, PackageJson, ParsedArgs, PromptModule } from '@ionic/cli-framework';
+import { BaseConfig, BaseConfigOptions, PackageJson, ParsedArgs } from '@ionic/cli-framework';
+import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';

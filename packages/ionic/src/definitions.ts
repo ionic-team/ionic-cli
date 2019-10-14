@@ -12,8 +12,8 @@ import {
   Logger,
   NamespaceLocateResult as FrameworkNamespaceLocateResult,
   PackageJson,
-  PromptModule,
 } from '@ionic/cli-framework';
+import { PromptModule } from '@ionic/cli-framework-prompts';
 import { NetworkInterface } from '@ionic/utils-network';
 import { Subprocess, SubprocessOptions, WhichOptions } from '@ionic/utils-subprocess';
 import { ChildProcess, SpawnOptions } from 'child_process';

@@ -1,4 +1,5 @@
-import { BaseConfig, createPromptChoiceSeparator, parseArgs } from '@ionic/cli-framework';
+import { BaseConfig, parseArgs } from '@ionic/cli-framework';
+import { createPromptChoiceSeparator } from '@ionic/cli-framework-prompts';
 import { readFile, writeFile } from '@ionic/utils-fs';
 import * as lodash from 'lodash';
 import * as path from 'path';

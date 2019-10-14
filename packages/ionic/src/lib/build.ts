@@ -1,4 +1,5 @@
-import { BaseError, MetadataGroup, PromptModule } from '@ionic/cli-framework';
+import { BaseError, MetadataGroup } from '@ionic/cli-framework';
+import { PromptModule } from '@ionic/cli-framework-prompts';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import * as Debug from 'debug';
 
