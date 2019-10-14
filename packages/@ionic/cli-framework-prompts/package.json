@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-framework-prompts",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "The interactive prompts portion of Ionic CLI Framework",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com)",
