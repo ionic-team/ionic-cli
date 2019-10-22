@@ -1,6 +1,6 @@
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { Command } from '../lib/command';
-import { open } from '../lib/open';
+import { openUrl } from '../lib/open';
 
 export class SignupCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -23,7 +23,7 @@ If you are having issues signing up, please get in touch with our Support[^suppo
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const dashUrl = this.env.config.getDashUrl();
 
-    await open(`${dashUrl}/signup?source=cli`);
+    await openUrl(`${dashUrl}/signup?source=cli`);
 
     this.env.log.ok('Launched signup form in your browser!');
   }

@@ -130,7 +130,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
     return 'md';
   }
 
-  modifyOpenURL(url: string, options: AngularServeOptions): string {
+  modifyOpenUrl(url: string, options: AngularServeOptions): string {
     return `${url}${options.browserOption ? options.browserOption : ''}${options.platform ? `?ionic:mode=${this.platformToMode(options.platform)}&ionic:persistConfig=true` : ''}`;
   }
 

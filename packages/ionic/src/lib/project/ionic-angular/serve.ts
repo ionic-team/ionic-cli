@@ -101,7 +101,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
     };
   }
 
-  modifyOpenURL(url: string, options: IonicAngularServeOptions): string {
+  modifyOpenUrl(url: string, options: IonicAngularServeOptions): string {
     return `${url}${options.browserOption ? options.browserOption : ''}${options.platform ? `?ionicplatform=${options.platform}` : ''}`;
   }
 

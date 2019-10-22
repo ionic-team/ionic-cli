@@ -10,7 +10,7 @@ import { ancillary, input, strong, weak } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
-import { open } from '../lib/open';
+import { openUrl } from '../lib/open';
 
 const debug = Debug('ionic:commands:link');
 
@@ -397,7 +397,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     }
 
     const url = await userClient.oAuthGithubLogin(userId);
-    await open(url);
+    await openUrl(url);
 
     confirm = await this.env.prompt({
       type: 'confirm',

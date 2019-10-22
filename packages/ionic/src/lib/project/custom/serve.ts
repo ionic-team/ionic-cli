@@ -14,7 +14,7 @@ export class CustomServeRunner extends ServeRunner<CustomServeOptions> {
     return {};
   }
 
-  modifyOpenURL(url: string, options: CustomServeOptions): string {
+  modifyOpenUrl(url: string, options: CustomServeOptions): string {
     return url;
   }
 

@@ -6,7 +6,7 @@ class MyServeRunner extends ServeRunner<never> {
   }
 
   async getCommandMetadata(): Promise<any> { }
-  modifyOpenURL(): any { }
+  modifyOpenUrl(): any { }
   async serveProject(): Promise<any> { }
 }
 

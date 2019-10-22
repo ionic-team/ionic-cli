@@ -22,7 +22,7 @@ import { ancillary, input, strong, weak } from './color';
 import { FatalException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
-import { open } from './open';
+import { openUrl } from './open';
 import { createDefaultLoggerHandlers } from './utils/logger';
 
 const debug = Debug('ionic:lib:serve');
@@ -102,7 +102,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
   abstract serveProject(options: T): Promise<ServeDetails>;
-  abstract modifyOpenURL(url: string, options: T): string;
+  abstract modifyOpenUrl(url: string, options: T): string;
 
   getPkgManagerServeCLI(): PkgManagerServeCLI {
     return this.e.config.get('npmClient') === 'npm' ? new NpmServeCLI(this.e) : new YarnServeCLI(this.e);
@@ -220,11 +220,11 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
     if (options.open) {
       const openAddress = labAddress ? labAddress : localAddress;
-      const openURL = this.modifyOpenURL(openAddress, options);
+      const url = this.modifyOpenUrl(openAddress, options);
 
-      await open(openURL, { app: options.browser });
+      await openUrl(url, { app: options.browser });
 
-      this.e.log.info(`Browser window opened to ${strong(openURL)}!`);
+      this.e.log.info(`Browser window opened to ${strong(url)}!`);
       this.e.log.nl();
     }
 

@@ -64,7 +64,7 @@ export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
     };
   }
 
-  modifyOpenURL(url: string, options: ReactServeOptions): string {
+  modifyOpenUrl(url: string, options: ReactServeOptions): string {
     return url;
   }
 

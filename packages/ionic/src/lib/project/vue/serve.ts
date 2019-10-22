@@ -14,7 +14,7 @@ export class VueServeRunner extends ServeRunner<VueServeOptions> {
     return {};
   }
 
-  modifyOpenURL(url: string, options: VueServeOptions): string {
+  modifyOpenUrl(url: string, options: VueServeOptions): string {
     return url;
   }
 

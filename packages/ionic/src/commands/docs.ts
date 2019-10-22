@@ -4,7 +4,7 @@ import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../defin
 import { isSuperAgentError } from '../guards';
 import { input } from '../lib/color';
 import { Command } from '../lib/command';
-import { open } from '../lib/open';
+import { openUrl } from '../lib/open';
 import { BROWSERS } from '../lib/serve';
 import { createRequest } from '../lib/utils/http';
 
@@ -37,14 +37,14 @@ export class DocsCommand extends Command {
     } catch (e) {
       if (isSuperAgentError(e) && e.response.status === 404) {
         this.env.log.warn(`Docs not found for your specific version of Ionic. Directing you to docs homepage.`);
-        await open(homepage, { app: browser });
+        await openUrl(homepage, { app: browser });
         return;
       }
 
       throw e;
     }
 
-    await open(url, { app: browser });
+    await openUrl(url, { app: browser });
     this.env.log.ok('Launched Ionic docs in your browser!');
   }
 }
