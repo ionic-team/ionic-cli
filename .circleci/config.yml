@@ -7,6 +7,7 @@ aliases:
       keys:
         - dependency-cache-{{ checksum "package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/cli-framework-prompts/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/lab/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/utils-array/package.json" }}
@@ -30,6 +31,11 @@ aliases:
       key: dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
       paths:
         - packages/@ionic/cli-framework/node_modules
+
+  - &save-cache-cli-framework-prompts
+      key: dependency-cache-{{ checksum "packages/@ionic/cli-framework-prompts/package.json" }}
+      paths:
+        - packages/@ionic/cli-framework-prompts/node_modules
 
   - &save-cache-discover
       key: dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
@@ -124,6 +130,7 @@ jobs:
       - run: npm run bootstrap
       - run: npm run lint
       - save_cache: *save-cache-cli-framework
+      - save_cache: *save-cache-cli-framework-prompts
       - save_cache: *save-cache-discover
       - save_cache: *save-cache-lab
       - save_cache: *save-cache-utils-array
