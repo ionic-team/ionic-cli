@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.5](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.4...ionic@5.4.5) (2019-10-30)
+
+
+### Bug Fixes
+
+* **repair:** ignore missing package-lock.json when repairing ([#4197](https://github.com/ionic-team/ionic-cli/issues/4197)) ([94bddf3](https://github.com/ionic-team/ionic-cli/commit/94bddf38bd895396ab6d0aca87bf5016b45dc42b))
+
+
+
+
+
 ## [5.4.4](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.3...ionic@5.4.4) (2019-10-14)
 
 **Note:** Version bump only for package ionic
