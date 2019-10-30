@@ -1,5 +1,5 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { remove, unlink } from '@ionic/utils-fs';
+import { pathExists, remove, unlink } from '@ionic/utils-fs';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, IProject, ProjectIntegration } from '../definitions';
@@ -104,7 +104,11 @@ For Cordova apps, it removes and recreates the generated native project and the 
     const nodeModulesDir = path.resolve(project.directory, 'node_modules');
 
     tasks.next(`Removing ${strong(prettyPath(packageLockFile))}`);
-    await unlink(packageLockFile);
+    const packageLockFileExists = await pathExists(packageLockFile);
+
+    if (packageLockFileExists) {
+      await unlink(packageLockFile);
+    }
 
     tasks.next(`Removing ${strong(prettyPath(nodeModulesDir))}`);
     await remove(nodeModulesDir);
