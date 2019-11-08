@@ -9,9 +9,10 @@ export interface OpenUrlOptions {
 }
 
 export async function openUrl(target: string, options: OpenUrlOptions = {}): Promise<void> {
-  const o = await import ('open');
   // OpenUrlOptions.encode corresponds to open's 'url' option
   const openOptions: OpenOptions = typeof options.encode === 'undefined' ? { ...options } : { ...options, url: options.encode };
+
+  const o = await import ('open');
   const p = await o(target, { wait: false, url: true, ...openOptions });
   const e = (err: Error) => debug('Error during open: %O', err);
   const n = p.on.bind(p);
