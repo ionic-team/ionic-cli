@@ -610,7 +610,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${input(`cd ${prettyPath(projectDir)}`)}`,
       `Run ${input('ionic serve')} within the app directory to see your app`,
       `Build features and components: ${strong('https://ion.link/scaffolding-docs')}`,
-      `Get Ionic DevApp for easy device testing: ${strong('https://ion.link/devapp')}`,
+      `Run your app on a hardware or virtual device: ${strong('https://ion.link/running-docs')}`,
     ];
 
     if (linkConfirmed) {
