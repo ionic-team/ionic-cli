@@ -55,10 +55,16 @@ describe('ionic', () => {
           expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111, livereloadPort: 2222, notificationPort: 3333 });
         });
 
-        it('should respect --local flag', () => {
+        it('should respect --external flag', () => {
           const runner = new Ionic1ServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], local: true });
-          expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
+          const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
+          expect(result).toEqual({ ...defaults, address: '0.0.0.0', devapp: false });
+        });
+
+        it('should respect --devapp flag', () => {
+          const runner = new Ionic1ServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], devapp: true });
+          expect(result).toEqual({ ...defaults, devapp: true });
         });
 
         it('should pass on separated args', () => {

@@ -56,15 +56,17 @@ export class ServeCommand extends Command implements CommandPreRun {
       },
     ];
 
-    const exampleCommands = ['', '--local', '--lab'];
+    const exampleCommands = ['', '--external', '--lab'];
     const footnotes: Footnote[] = [];
 
     let description = `
 Easily spin up a development server which launches in your browser. It watches for changes in your source files and automatically reloads with the updated build.
 
-By default, ${input('ionic serve')} boots up a development server on all network interfaces and prints the external address(es) on which your app is being served. It also broadcasts your app to the Ionic DevApp on your network. To disable the DevApp and bind to ${input('localhost')}, use ${input('--local')}.
+By default, ${input('ionic serve')} boots up a development server on ${input('localhost')}. To serve to your LAN, specify the ${input('--external')} option, which will use all network interfaces and print the external address(es) on which your app is being served.
 
-Try the ${input('--lab')} option to see multiple platforms at once.`;
+Try the ${input('--lab')} option to see multiple platforms at once.
+
+To target the DevApp, use the ${input('--devapp')} option.`;
 
     const runner = this.project && await this.project.getServeRunner();
 

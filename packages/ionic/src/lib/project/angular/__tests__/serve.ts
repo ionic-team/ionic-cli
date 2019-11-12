@@ -54,10 +54,22 @@ describe('ionic', () => {
           expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111 });
         });
 
-        it('should respect --local flag', () => {
+        it('should respect --external flag', () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], local: true });
-          expect(result).toEqual({ ...defaults, address: 'localhost', devapp: false });
+          const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
+          expect(result).toEqual({ ...defaults, address: '0.0.0.0', devapp: false });
+        });
+
+        it('should respect --consolelogs flag', () => {
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], consolelogs: true });
+          expect(result).toEqual({ ...defaults, consolelogs: true, consolelogsPort: 53703 });
+        });
+
+        it('should respect --devapp flag', () => {
+          const runner = new AngularServeRunner({} as any);
+          const result = runner.createOptionsFromCommandLine([], { _: [], devapp: true });
+          expect(result).toEqual({ ...defaults, engine: 'cordova', devapp: true, consolelogs: true, consolelogsPort: 53703 });
         });
 
         it('should respect --project and --configuration flags', () => {
