@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.6](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.5...ionic@5.4.6) (2019-11-12)
+
+
+### Bug Fixes
+
+* **login:** don't doubly encode SSO login URL params ([#4209](https://github.com/ionic-team/ionic-cli/issues/4209)) ([e5fddfb](https://github.com/ionic-team/ionic-cli/commit/e5fddfb175f3eaf53a9dc5dd134d173a56098298))
+
+
+
+
+
 ## [5.4.5](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.4...ionic@5.4.5) (2019-10-30)
 
 
