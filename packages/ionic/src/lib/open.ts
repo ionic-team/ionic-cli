@@ -1,5 +1,4 @@
 import * as Debug from 'debug';
-import { Options as OpenOptions } from 'open';
 
 const debug = Debug('ionic:lib:open');
 
@@ -8,12 +7,9 @@ export interface OpenUrlOptions {
   encode?: boolean;
 }
 
-export async function openUrl(target: string, options: OpenUrlOptions = {}): Promise<void> {
-  // OpenUrlOptions.encode corresponds to open's 'url' option
-  const openOptions: OpenOptions = typeof options.encode === 'undefined' ? { ...options } : { ...options, url: options.encode };
-
+export async function openUrl(target: string, { app, encode: url = true }: OpenUrlOptions = {}): Promise<void> {
   const o = await import ('open');
-  const p = await o(target, { wait: false, url: true, ...openOptions });
+  const p = await o(target, { wait: false, app, url });
   const e = (err: Error) => debug('Error during open: %O', err);
   const n = p.on.bind(p);
 
