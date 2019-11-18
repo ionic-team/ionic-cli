@@ -3,10 +3,11 @@ import * as Debug from 'debug';
 const debug = Debug('ionic:utils-terminal');
 
 /**
- * These environment variables work for: Travis CI, CircleCI, Gitlab CI,
- * AppVeyor, CodeShip, Jenkins, TeamCity, Bitbucket Pipelines, AWS CodeBuild
+ * These environment variables work for: GitHub Actions, Travis CI, CircleCI,
+ * Gitlab CI, AppVeyor, CodeShip, Jenkins, TeamCity, Bitbucket Pipelines, AWS
+ * CodeBuild
  */
-export const CI_ENVIRONMENT_VARIABLES: readonly string[] = ['CI', 'BUILD_ID', 'BUILD_NUMBER', 'BITBUCKET_COMMIT', 'CODEBUILD_BUILD_ARN'];
+export const CI_ENVIRONMENT_VARIABLES: readonly string[] = ['CI', 'BUILD_ID', 'BUILD_NUMBER', 'BITBUCKET_COMMIT', 'CODEBUILD_BUILD_ARN', 'GITHUB_ACTIONS'];
 export const CI_ENVIRONMENT_VARIABLES_DETECTED = CI_ENVIRONMENT_VARIABLES.filter(v => !!process.env[v]);
 
 function getShell(): string {
