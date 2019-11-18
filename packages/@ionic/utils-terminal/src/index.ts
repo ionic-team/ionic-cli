@@ -1,4 +1,5 @@
 import * as Debug from 'debug';
+import * as os from 'os';
 
 const debug = Debug('ionic:utils-terminal');
 
@@ -11,6 +12,12 @@ export const CI_ENVIRONMENT_VARIABLES: readonly string[] = ['CI', 'BUILD_ID', 'B
 export const CI_ENVIRONMENT_VARIABLES_DETECTED = CI_ENVIRONMENT_VARIABLES.filter(v => !!process.env[v]);
 
 function getShell(): string {
+  const { shell } = os.userInfo();
+
+  if (shell) {
+    return shell;
+  }
+
   if (process.env.SHELL) {
     return process.env.SHELL;
   }
