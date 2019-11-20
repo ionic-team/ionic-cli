@@ -1,6 +1,7 @@
 import { createProcessEnv } from '@ionic/utils-process';
 import { ReadableStreamBuffer, WritableStreamBuffer } from '@ionic/utils-stream';
 import { EventEmitter } from 'events';
+import * as os from 'os';
 import * as path from 'path';
 
 const promisifyEvent = (emitter: EventEmitter, event: string | symbol): Promise<any> => {
@@ -17,11 +18,12 @@ const promisifyEvent = (emitter: EventEmitter, event: string | symbol): Promise<
 
 describe('@ionic/utils-subprocess', () => {
 
+  const mock_os = os;
+
   describe('expandTildePath', () => {
 
     jest.resetModules();
-    const mock_os = { homedir: () => '/home/me' };
-    jest.mock('os', () => mock_os);
+    jest.mock('os', () => ({ ...mock_os, homedir: () => '/home/me' }));
     const { expandTildePath } = require('../');
 
     it('should not change empty string', () => {
@@ -69,9 +71,8 @@ describe('@ionic/utils-subprocess', () => {
 
     jest.resetModules();
     const mockCrossSpawn = jest.fn();
-    const mock_os = { homedir: () => '/home/me' };
     jest.mock('cross-spawn', () => mockCrossSpawn);
-    jest.mock('os', () => mock_os);
+    jest.mock('os', () => ({ ...mock_os, homedir: () => '/home/me' }));
     const { Subprocess, SubprocessError } = require('../');
 
     beforeEach(() => {
