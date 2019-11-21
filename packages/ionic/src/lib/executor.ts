@@ -1,42 +1,32 @@
-import { AbstractExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
+import { BaseExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
+import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace } from '../definitions';
+import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, NamespaceLocateResult } from '../definitions';
 import { isCommand } from '../guards';
 
 import { input } from './color';
 import { GLOBAL_OPTIONS } from './config';
 import { FatalException } from './errors';
 
+export const VERSION_FLAGS: readonly string[] = ['--version', '-v'];
+export const HELP_FLAGS: readonly string[] = ['--help', '-?', '-h'];
+
 export interface ExecutorDeps {
   readonly namespace: INamespace;
 }
 
-export class Executor extends AbstractExecutor<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
-  readonly namespace: INamespace;
-
-  constructor({ namespace }: ExecutorDeps) {
-    super();
-    this.namespace = namespace;
-  }
-
-  async execute(argv: string[], env: NodeJS.ProcessEnv): Promise<void> {
+export class Executor extends BaseExecutor<ICommand, INamespace, CommandMetadata, CommandMetadataInput, CommandMetadataOption> {
+  async locate(argv: readonly string[]): Promise<NamespaceLocateResult> {
     const pargs = stripOptions(argv, {});
-
     const location = await this.namespace.locate(pargs);
 
-    if (argv.find(arg => arg === '--version' || arg === '-v')) {
-      return this.execute(['version', ...pargs], env);
-    } else if (argv.find(arg => arg === '--help' || arg === '-?' || arg === '-h') || !isCommand(location.obj)) {
-      return this.execute(['help', ...pargs], env);
+    if (lodash.intersection(VERSION_FLAGS, argv).length > 0) {
+      return this.locate(['version', ...pargs]);
+    } else if (lodash.intersection(HELP_FLAGS, argv).length > 0 || !isCommand(location.obj)) {
+      return this.locate(['help', ...pargs]);
     }
 
-    const cmd = location.obj;
-    const path = location.path;
-    const subcommandName = path[path.length - 1][0];
-    const subcommandNameArgIdx = argv.findIndex(arg => arg === subcommandName);
-    const cmdargs = argv.slice(subcommandNameArgIdx + 1);
-
-    await this.run(cmd, cmdargs, { location, env, executor: this });
+    return location;
   }
 
   async run(command: ICommand, cmdargs: string[], { location, env, executor }: CommandInstanceInfo): Promise<void> {

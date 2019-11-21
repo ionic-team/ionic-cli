@@ -5,7 +5,7 @@ import * as Debug from 'debug';
 import * as path from 'path';
 
 import { IonicNamespace } from './commands';
-import { IPCMessage, IonicContext } from './definitions';
+import { IPCMessage, IonicContext, IonicEnvironment } from './definitions';
 import { isExitCodeException, isSuperAgentError } from './guards';
 import { generateIonicEnvironment } from './lib';
 import { failure, input, strong } from './lib/color';
@@ -60,6 +60,39 @@ export async function loadExecutor(ctx: IonicContext, pargv: string[]): Promise<
   return _executor;
 }
 
+async function authenticateFromEnvironment(ienv: IonicEnvironment) {
+  const token = process.env['IONIC_TOKEN'];
+  const email = process.env['IONIC_EMAIL'];
+  const password = process.env['IONIC_PASSWORD'];
+
+  if (token) {
+    const wasLoggedIn = ienv.session.isLoggedIn();
+    debug(`${strong('IONIC_TOKEN')} environment variable detected`);
+
+    if (ienv.config.get('tokens.user') !== token) {
+      debug(`${strong('IONIC_TOKEN')} mismatch with current session--attempting login`);
+      await ienv.session.tokenLogin(token);
+
+      if (wasLoggedIn) {
+        ienv.log.info(`You have been logged out--using ${strong('IONIC_TOKEN')} environment variable`);
+      }
+    }
+  } else if (email && password) {
+    debug(`${strong('IONIC_EMAIL')} / ${strong('IONIC_PASSWORD')} environment variables detected`);
+
+    if (ienv.config.get('user.email') !== email) {
+      debug(`${strong('IONIC_EMAIL')} mismatch with current session--attempting login`);
+
+      try {
+        await ienv.session.login(email, password);
+      } catch (e) {
+        ienv.log.error(`Error occurred during automatic login via ${strong('IONIC_EMAIL')} / ${strong('IONIC_PASSWORD')} environment variables.`);
+        throw e;
+      }
+    }
+  }
+}
+
 export async function run(pargv: string[]): Promise<void> {
   let err: any;
   let executor: Executor;
@@ -74,52 +107,31 @@ export async function run(pargv: string[]): Promise<void> {
 
   const ienv = executor.namespace.env;
 
-  if (pargv[0] !== '_') {
-    try {
-      debug('Context: %o', ienv.ctx);
+  if (pargv[0] === '_') {
+    return;
+  }
 
-      ienv.config.set('version', ienv.ctx.version);
+  try {
+    debug('Context: %o', ienv.ctx);
 
-      const token = process.env['IONIC_TOKEN'];
-      const email = process.env['IONIC_EMAIL'];
-      const password = process.env['IONIC_PASSWORD'];
+    ienv.config.set('version', ienv.ctx.version);
 
-      if (token) {
-        const wasLoggedIn = ienv.session.isLoggedIn();
-        debug(`${strong('IONIC_TOKEN')} environment variable detected`);
+    const location = await executor.locate(pargv);
 
-        if (ienv.config.get('tokens.user') !== token) {
-          debug(`${strong('IONIC_TOKEN')} mismatch with current session--attempting login`);
-          await ienv.session.tokenLogin(token);
+    const [ , [ cmd = '' ] = [] ] = location.path;
 
-          if (wasLoggedIn) {
-            ienv.log.info(`You have been logged out--using ${strong('IONIC_TOKEN')} environment variable`);
-          }
-        }
-      } else if (email && password) {
-        debug(`${strong('IONIC_EMAIL')} / ${strong('IONIC_PASSWORD')} environment variables detected`);
-
-        if (ienv.config.get('user.email') !== email) {
-          debug(`${strong('IONIC_EMAIL')} mismatch with current session--attempting login`);
-
-          try {
-            await ienv.session.login(email, password);
-          } catch (e) {
-            ienv.log.error(`Error occurred during automatic login via ${strong('IONIC_EMAIL')} / ${strong('IONIC_PASSWORD')} environment variables.`);
-            throw e;
-          }
-        }
-      }
-
-      await executor.execute(pargv, process.env);
-
-      if (ienv.flags.interactive) {
-        const { runUpdateNotify } = await import('./lib/updates');
-        await runUpdateNotify(ienv, await loadPackageJson());
-      }
-    } catch (e) {
-      err = e;
+    if (!['config', 'completion', 'help', 'login', 'logout', 'version'].includes(cmd)) {
+      await authenticateFromEnvironment(ienv);
     }
+
+    await executor.execute(location, process.env);
+
+    if (ienv.flags.interactive) {
+      const { runUpdateNotify } = await import('./lib/updates');
+      await runUpdateNotify(ienv, await loadPackageJson());
+    }
+  } catch (e) {
+    err = e;
   }
 
   if (err) {
