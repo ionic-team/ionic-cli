@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
+import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateOptions, NamespaceLocateResult } from '../definitions';
 import { BaseError, InputValidationError } from '../errors';
 import { isCommand, isNamespace } from '../guards';
 
@@ -20,11 +20,23 @@ export const EXECUTOR_OPS: ExecutorOperations = Object.freeze({
   RPC: '📡',
 });
 
+export const HELP_FLAGS = ['--help', '-?'];
+
 export abstract class AbstractExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends EventEmitter implements IExecutor<C, N, M, I, O> {
   abstract readonly namespace: N;
 
+  abstract locate(argv: readonly string[], options?: NamespaceLocateOptions): Promise<NamespaceLocateResult<C, N, M, I, O>>;
+  abstract execute(location: NamespaceLocateResult<C, N, M, I, O>): Promise<void>;
   abstract execute(argv: readonly string[], env: NodeJS.ProcessEnv): Promise<void>;
   abstract run(command: C, cmdargs: readonly string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
+
+  async resolveExecuteInput(argvOrLocation: readonly string[] | NamespaceLocateResult<C, N, M, I, O>): Promise<[NamespaceLocateResult<C, N, M, I, O>, string[]]> {
+    if ('obj' in argvOrLocation) {
+      return [argvOrLocation, [...argvOrLocation.args]];
+    } else {
+      return [await this.locate(argvOrLocation), [...argvOrLocation]];
+    }
+  }
 }
 
 export interface BaseExecutorFormatHelpOptions {
@@ -58,6 +70,20 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
   }
 
   /**
+   * Locate a command or namespace given an array of positional arguments
+   * (argv).
+   *
+   * @param argv Command arguments sliced to the root for the namespace of this
+   *             executor. Usually, this means `process.argv.slice(2)`.
+   */
+  async locate(argv: readonly string[]): Promise<NamespaceLocateResult<C, N, M, I, O>> {
+    const parsedArgs = stripOptions(argv, {});
+    const location = await this.namespace.locate(parsedArgs);
+
+    return location;
+  }
+
+  /**
    * Locate and execute a command given an array of positional command
    * arguments (argv) and a set of environment variables.
    *
@@ -68,32 +94,21 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
    *             executor. Usually, this means `process.argv.slice(2)`.
    * @param env Environment variables for this execution.
    */
-  async execute(argv: readonly string[], env: NodeJS.ProcessEnv): Promise<void> {
-    if (argv[0] === EXECUTOR_OPS.RPC) {
+  async execute(argvOrLocation: readonly string[] | NamespaceLocateResult<C, N, M, I, O>, env?: NodeJS.ProcessEnv): Promise<void> {
+    if (Array.isArray(argvOrLocation) && argvOrLocation[0] === EXECUTOR_OPS.RPC) {
       return this.rpc();
     }
 
-    const parsedArgs = stripOptions(argv, { includeSeparated: false });
-    const location = await this.namespace.locate(parsedArgs);
+    const [ location, argv ] = await this.resolveExecuteInput(argvOrLocation);
 
-    if (argv.find(arg => arg === '--help' || arg === '-?') || isNamespace(location.obj)) {
-      const cmdoptions = parseArgs([...argv]);
+    if (lodash.intersection(HELP_FLAGS, argv).length > 0 || isNamespace(location.obj)) {
+      const cmdoptions = parseArgs(argv);
       this.stdout.write(await this.formatHelp(location, { format: cmdoptions['json'] ? 'json' : 'terminal' }));
     } else {
       const cmd = location.obj;
-      const cmdargs = lodash.drop(argv, location.path.length - 1);
+      const cmdargs = location.args;
 
-      try {
-        await this.run(cmd, cmdargs, { location, env, executor: this });
-      } catch (e) {
-        if (e instanceof BaseError) {
-          this.stderr.write(`Error: ${e.message}`);
-          process.exitCode = typeof e.exitCode === 'undefined' ? 1 : e.exitCode;
-          return;
-        }
-
-        throw e;
-      }
+      await this.run(cmd, cmdargs, { location, env, executor: this });
     }
   }
 
@@ -166,5 +181,16 @@ export class Executor extends BaseExecutor<Command, Namespace, CommandMetadata, 
 
 export async function execute<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption>({ namespace, argv, env, ...rest }: { namespace: N; argv: string[]; env: NodeJS.ProcessEnv } & Partial<BaseExecutorDeps<C, N, M, I, O>>) {
   const executor = new BaseExecutor<C, N, M, I, O>({ namespace, ...rest });
-  await executor.execute(argv, env);
+
+  try {
+    await executor.execute(argv, env);
+  } catch (e) {
+    if (e instanceof BaseError) {
+      executor.stderr.write(`Error: ${e.message}`);
+      process.exitCode = typeof e.exitCode === 'undefined' ? 1 : e.exitCode;
+      return;
+    }
+
+    throw e;
+  }
 }
