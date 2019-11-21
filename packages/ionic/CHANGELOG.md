@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.7](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.6...ionic@5.4.7) (2019-11-21)
+
+
+### Bug Fixes
+
+* do not try to auth for select commands ([162e733](https://github.com/ionic-team/ionic-cli/commit/162e733eaa5cf2efcaa0e5e087df53c376f62933))
+
+
+
+
+
 ## [5.4.6](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.5...ionic@5.4.6) (2019-11-12)
 
 

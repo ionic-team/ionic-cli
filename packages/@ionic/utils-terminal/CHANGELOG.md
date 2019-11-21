@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [1.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@1.0.5...@ionic/utils-terminal@1.1.0) (2019-11-21)
+
+
+### Bug Fixes
+
+* **shell:** use shell from NodeJS if available ([53d0afa](https://github.com/ionic-team/ionic-cli/commit/53d0afaea8966f7742220896a98da570c706fb63))
+
+
+### Features
+
+* **ci:** support GitHub Actions detection ([5646c8e](https://github.com/ionic-team/ionic-cli/commit/5646c8e083862dbf976cd6cdecabe209c0ad8cfd))
+
+
+
+
+
 ## [1.0.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@1.0.4...@ionic/utils-terminal@1.0.5) (2019-09-18)
 
 **Note:** Version bump only for package @ionic/utils-terminal
