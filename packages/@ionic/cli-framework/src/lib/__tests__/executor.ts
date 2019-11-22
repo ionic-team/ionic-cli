@@ -127,25 +127,42 @@ describe('@ionic/cli-framework', () => {
 
       describe('execute', () => {
 
+        const TEST_CASE_1 = {
+          input: ['foo', 'bar', 'a', '--flag', 'b', '--', 'c'],
+          validate: (mock: any) => {
+            expect(mock.calls.length).toEqual(2);
+            const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = mock.calls;
+            expect(validateId).toEqual('bar:validate');
+            expect(validateArgs).toEqual([['a', 'b']]);
+            expect(runId).toEqual('bar:run');
+            const args: any = runArgs;
+            expect(args[0]).toEqual(['a', 'b']);
+            expect(args[1]).toEqual({ '--': ['c'], '_': ['a', 'b'], flag: true });
+            expect(args[2].location.obj).toBeInstanceOf(BarCommand);
+            const runPath = args[2].location.path.map(([n]: any) => n);
+            const runPathObjs = args[2].location.path.map(([, o]: any) => o);
+            expect(runPath).toEqual(['my', 'foo', 'bar']);
+            expect(runPathObjs[0]).toBeInstanceOf(MyNamespace);
+            expect(runPathObjs[1]).toBeInstanceOf(FooNamespace);
+            expect(runPathObjs[2]).toBeInstanceOf(BarCommand);
+          },
+        };
+
         it('should call run function of found bar command using argv', async () => {
+          const { input, validate } = TEST_CASE_1;
           const namespace = new MyNamespace();
           const executor = new Executor({ namespace });
-          await executor.execute(['foo', 'bar', 'a', '--flag', 'b', '--', 'c'], {});
-          expect(spy.mock.calls.length).toEqual(2);
-          const [ [ validateId, validateArgs ], [ runId, runArgs ] ] = spy.mock.calls;
-          expect(validateId).toEqual('bar:validate');
-          expect(validateArgs).toEqual([['a', 'b']]);
-          expect(runId).toEqual('bar:run');
-          const args: any = runArgs;
-          expect(args[0]).toEqual(['a', 'b']);
-          expect(args[1]).toEqual({ '--': ['c'], '_': ['a', 'b'], flag: true });
-          expect(args[2].location.obj).toBeInstanceOf(BarCommand);
-          const runPath = args[2].location.path.map(([n]: any) => n);
-          const runPathObjs = args[2].location.path.map(([, o]: any) => o);
-          expect(runPath).toEqual(['my', 'foo', 'bar']);
-          expect(runPathObjs[0]).toBeInstanceOf(MyNamespace);
-          expect(runPathObjs[1]).toBeInstanceOf(FooNamespace);
-          expect(runPathObjs[2]).toBeInstanceOf(BarCommand);
+          await executor.execute(input, {});
+          validate(spy.mock);
+        });
+
+        it('should call run function of found bar command using location', async () => {
+          const { input, validate } = TEST_CASE_1;
+          const namespace = new MyNamespace();
+          const executor = new Executor({ namespace });
+          const location = await executor.locate(input);
+          await executor.execute(location, {});
+          validate(spy.mock);
         });
 
       });
