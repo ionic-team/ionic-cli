@@ -135,7 +135,7 @@ export interface HydratedNamespaceMetadata<C extends ICommand<C, N, M, I, O>, N 
 export interface IExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> {
   readonly namespace: N;
 
-  locate(argv: readonly string[], options?: NamespaceLocateOptions): Promise<NamespaceLocateResult<C, N, M, I, O>>;
+  locate(argv: readonly string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
   execute(location: NamespaceLocateResult<C, N, M, I, O>): Promise<void>;
   execute(argv: readonly string[], env: NodeJS.ProcessEnv): Promise<void>;
   run(command: C, cmdargs: readonly string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;

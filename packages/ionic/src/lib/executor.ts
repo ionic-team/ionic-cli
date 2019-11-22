@@ -19,6 +19,7 @@ export class Executor extends BaseExecutor<ICommand, INamespace, CommandMetadata
   async locate(argv: readonly string[]): Promise<NamespaceLocateResult> {
     const pargs = stripOptions(argv, {});
     const location = await this.namespace.locate(pargs);
+    const args = lodash.drop(argv, location.path.length - 1);
 
     if (lodash.intersection(VERSION_FLAGS, argv).length > 0) {
       return this.locate(['version', ...pargs]);
@@ -26,7 +27,7 @@ export class Executor extends BaseExecutor<ICommand, INamespace, CommandMetadata
       return this.locate(['help', ...pargs]);
     }
 
-    return location;
+    return { ...location, args };
   }
 
   async run(command: ICommand, cmdargs: string[], { location, env, executor }: CommandInstanceInfo): Promise<void> {

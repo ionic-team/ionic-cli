@@ -1,7 +1,7 @@
 import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateOptions, NamespaceLocateResult } from '../definitions';
+import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
 import { BaseError, InputValidationError } from '../errors';
 import { isCommand, isNamespace } from '../guards';
 
@@ -25,7 +25,7 @@ export const HELP_FLAGS = ['--help', '-?'];
 export abstract class AbstractExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespace<C, N, M, I, O>, M extends CommandMetadata<I, O>, I extends CommandMetadataInput, O extends CommandMetadataOption> extends EventEmitter implements IExecutor<C, N, M, I, O> {
   abstract readonly namespace: N;
 
-  abstract locate(argv: readonly string[], options?: NamespaceLocateOptions): Promise<NamespaceLocateResult<C, N, M, I, O>>;
+  abstract locate(argv: readonly string[]): Promise<NamespaceLocateResult<C, N, M, I, O>>;
   abstract execute(location: NamespaceLocateResult<C, N, M, I, O>): Promise<void>;
   abstract execute(argv: readonly string[], env: NodeJS.ProcessEnv): Promise<void>;
   abstract run(command: C, cmdargs: readonly string[], runinfo?: Partial<CommandInstanceInfo<C, N, M, I, O>>): Promise<void>;
@@ -79,8 +79,9 @@ export class BaseExecutor<C extends ICommand<C, N, M, I, O>, N extends INamespac
   async locate(argv: readonly string[]): Promise<NamespaceLocateResult<C, N, M, I, O>> {
     const parsedArgs = stripOptions(argv, {});
     const location = await this.namespace.locate(parsedArgs);
+    const args = lodash.drop(argv, location.path.length - 1);
 
-    return location;
+    return { ...location, args };
   }
 
   /**
