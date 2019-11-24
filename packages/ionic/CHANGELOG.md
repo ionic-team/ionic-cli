@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.8](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.7...ionic@5.4.8) (2019-11-24)
+
+
+### Bug Fixes
+
+* fix parsing of command line options ([060f67c](https://github.com/ionic-team/ionic-cli/commit/060f67cf63d37662ae44c4ae952161464a5d553c))
+
+
+
+
+
 ## [5.4.7](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.6...ionic@5.4.7) (2019-11-21)
 
 
