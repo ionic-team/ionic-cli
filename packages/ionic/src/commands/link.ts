@@ -397,7 +397,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     }
 
     const url = await userClient.oAuthGithubLogin(userId);
-    await openUrl(url);
+    await openUrl(url, { encode: false });
 
     confirm = await this.env.prompt({
       type: 'confirm',
