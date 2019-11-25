@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.9](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.8...ionic@5.4.9) (2019-11-25)
+
+
+### Bug Fixes
+
+* **link:** don't double encode GitHub URL ([#4230](https://github.com/ionic-team/ionic-cli/issues/4230)) ([cfb593b](https://github.com/ionic-team/ionic-cli/commit/cfb593b177cd98ad41358d1640accd62b78a4c6b))
+
+
+
+
+
 ## [5.4.8](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.7...ionic@5.4.8) (2019-11-24)
 
 
