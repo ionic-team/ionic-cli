@@ -40,7 +40,7 @@
     "@types/jest": "^24.0.3",
     "@types/lodash": "^4.14.104",
     "@types/node": "~8.10.54",
-    "jest": "^23.0.1",
+    "jest": "^24.9.0",
     "jest-cli": "^24.1.0",
     "lint-staged": "^9.2.0",
     "rimraf": "^3.0.0",

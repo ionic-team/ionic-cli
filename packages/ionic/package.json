@@ -84,7 +84,7 @@
     "@types/tar": "^4.0.0",
     "@types/through2": "^2.0.33",
     "@types/uuid": "^3.4.3",
-    "jest": "^23.0.1",
+    "jest": "^24.9.0",
     "jest-cli": "^24.1.0",
     "lint-staged": "^9.2.0",
     "rimraf": "^3.0.0",

@@ -34,7 +34,7 @@
     "@types/inquirer": "0.0.43",
     "@types/jest": "^24.0.3",
     "@types/node": "~8.10.54",
-    "jest": "^23.0.1",
+    "jest": "^24.9.0",
     "jest-cli": "^24.1.0",
     "lint-staged": "^9.2.0",
     "ts-jest": "^23.10.1",
