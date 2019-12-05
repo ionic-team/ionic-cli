@@ -1,5 +1,5 @@
 import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as os from 'os';

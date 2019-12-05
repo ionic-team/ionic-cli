@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 import { Writable } from 'stream';
 import * as util from 'util';

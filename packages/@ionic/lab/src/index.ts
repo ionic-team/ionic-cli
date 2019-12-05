@@ -1,6 +1,6 @@
 import { Command, CommandLineInputs, CommandLineOptions, CommandMap, CommandMapDefault, Namespace, execute, validators } from '@ionic/cli-framework';
 import { readFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as express from 'express';
 import * as http from 'http';
 import * as https from 'https';

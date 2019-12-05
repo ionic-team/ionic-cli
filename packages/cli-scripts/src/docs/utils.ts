@@ -1,5 +1,5 @@
 import { Colors } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as escapeStringRegexp from 'escape-string-regexp';
 import { COLORS } from 'ionic/lib/color';
 

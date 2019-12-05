@@ -1,5 +1,5 @@
 import { CreateTaggedFormatterOptions, DEFAULT_LOGGER_HANDLERS, LOGGER_LEVELS, Logger as BaseLogger, LoggerFormatter, LoggerLevelWeight, createPrefixedFormatter, createTaggedFormatter } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 import { ILogger } from '../../definitions';
 import { weak } from '../color';

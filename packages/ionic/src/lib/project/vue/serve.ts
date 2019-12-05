@@ -1,5 +1,5 @@
 import { findClosestOpenPort } from '@ionic/utils-network';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 import { CommandMetadata, ServeDetails, VueServeOptions } from '../../../definitions';
 import { RunnerException } from '../../errors';

@@ -1,5 +1,5 @@
 import { MetadataGroup, combine, validators } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as readline from 'readline';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';

@@ -1,5 +1,5 @@
 import { Colors, DEFAULT_COLORS, HelpColors } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 const HELP_COLORS: Partial<HelpColors> = {
   title: chalk.bold,

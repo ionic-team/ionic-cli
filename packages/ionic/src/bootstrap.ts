@@ -1,14 +1,9 @@
 import { compileNodeModulesPaths, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
-import chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 import * as semver from 'semver';
 
 import { strong } from './lib/color';
-
-if (process.argv.includes('--no-color')) {
-  chalk.enabled = false;
-}
 
 const debug = Debug('ionic:bootstrap');
 

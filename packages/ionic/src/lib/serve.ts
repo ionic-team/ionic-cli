@@ -4,7 +4,7 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 import { readJson } from '@ionic/utils-fs';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import { EventEmitter } from 'events';
 import * as lodash from 'lodash';

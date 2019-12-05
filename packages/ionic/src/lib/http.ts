@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
@@ -264,6 +264,6 @@ export function formatResponseError(req: SuperAgentRequest, status?: number, bod
   return failure(
     `Request: ${req.method} ${req.url}\n` +
     (status ? `Response: ${status}\n` : '') +
-    (body ? `Body: \n${util.inspect(body, { colors: chalk.enabled })}` : '')
+    (body ? `Body: \n${util.inspect(body, { colors: chalk.level > 0 })}` : '')
   );
 }

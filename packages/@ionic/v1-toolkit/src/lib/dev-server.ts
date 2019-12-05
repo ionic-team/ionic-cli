@@ -1,5 +1,5 @@
 import { readFile } from '@ionic/utils-fs';
-import chalk, { Chalk } from 'chalk';
+import * as chalk from 'chalk';
 import * as path from 'path';
 import * as util from 'util';
 
@@ -146,13 +146,13 @@ export async function createDevLoggerServer(host: string, port: number): Promise
       }
 
       if (!isDevServerMessage(msg)) {
-        const m = util.inspect(msg, { colors: chalk.enabled });
+        const m = util.inspect(msg, { colors: chalk.level > 0 });
         process.stderr.write(`Bad format in dev server message: ${m}\n`);
         return;
       }
 
       if (msg.category === 'console') {
-        let status: Chalk | undefined; // unknown levels are normal color
+        let status: chalk.Chalk | undefined; // unknown levels are normal color
 
         if (msg.type === 'info' || msg.type === 'log') {
           status = chalk.reset;

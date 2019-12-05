@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 import { ValidationError, Validator, Validators } from '../definitions';
 import { InputValidationError } from '../errors';

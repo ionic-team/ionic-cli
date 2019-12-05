@@ -2,7 +2,7 @@ import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { findClosestOpenPort } from '@ionic/utils-network';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { input, strong, weak } from '../../color';
