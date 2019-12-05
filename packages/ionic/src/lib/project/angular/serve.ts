@@ -240,8 +240,9 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       separatedArgs = [];
 
       if (options.devapp) {
-        args.cordovaMock = true;
+        args['cordova-mock'] = true;
       }
+
       args.consolelogs = options.consolelogs ? true : undefined;
       args['consolelogs-port'] = options.consolelogsPort ? String(options.consolelogsPort) : undefined;
     }

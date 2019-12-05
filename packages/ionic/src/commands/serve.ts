@@ -6,6 +6,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException, RunnerException } from '../lib/errors';
+import { runCommand } from '../lib/executor';
 import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT } from '../lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
@@ -123,7 +124,7 @@ To target the DevApp, use the ${input('--devapp')} option.`;
     }
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic serve')} outside a project directory.`);
     }
@@ -131,6 +132,14 @@ To target the DevApp, use the ${input('--devapp')} option.`;
     try {
       const runner = await this.project.requireServeRunner();
       const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
+
+      if (runnerOpts.devapp) {
+        const cordova = this.project.getIntegration('cordova');
+
+        if (!cordova) {
+          await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
+        }
+      }
 
       await runner.run(runnerOpts);
     } catch (e) {
