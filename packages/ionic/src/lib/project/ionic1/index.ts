@@ -1,3 +1,4 @@
+import { PackageJson } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readJson } from '@ionic/utils-fs';
 import * as Debug from 'debug';
@@ -41,10 +42,10 @@ export class Ionic1Project extends Project {
     const [
       ionic1Version,
       [ v1ToolkitPkg ],
-    ] = await Promise.all([
+    ] = await (Promise.all([
       this.getFrameworkVersion(),
       this.getPackageJson('@ionic/v1-toolkit'),
-    ]);
+    ]) as Promise<[string | undefined, [PackageJson | undefined, string]]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
 
     return [
       ...(await super.getInfo()),
