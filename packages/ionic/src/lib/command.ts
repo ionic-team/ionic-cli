@@ -63,7 +63,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const runPromise = this.run(inputs, options, runinfo);
 
     const telemetryPromise = (async () => {
-      if (this.env.config.get('telemetry') !== false && !TERMINAL_INFO.ci) {
+      if (this.env.config.get('telemetry') !== false && !TERMINAL_INFO.ci && TERMINAL_INFO.tty) {
         const { Telemetry } = await import('./telemetry');
 
         let cmdInputs: CommandLineInputs = [];
