@@ -1,7 +1,7 @@
 import { MetadataGroup } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
@@ -79,13 +79,13 @@ This command will sanitize config output for known sensitive fields (disabled wh
       if (global && v && typeof v === 'object') {
         const columns = lodash.entries(v)
           .map(([key, value]) => [key, this.sanitizeEntry(key, value)])
-          .map(([key, value]) => [strong(key), util.inspect(value, { colors: chalk.enabled })]);
+          .map(([key, value]) => [strong(key), util.inspect(value, { colors: chalk.level > 0 })]);
 
         columns.sort((a, b) => strcmp(a[0], b[0]));
 
         this.env.log.rawmsg(columnar(columns, {}));
       } else {
-        this.env.log.rawmsg(util.inspect(v, { depth: Infinity, colors: chalk.enabled }));
+        this.env.log.rawmsg(util.inspect(v, { depth: Infinity, colors: chalk.level > 0 }));
       }
     }
   }

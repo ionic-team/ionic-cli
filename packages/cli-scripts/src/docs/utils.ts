@@ -1,5 +1,5 @@
 import { Colors } from '@ionic/cli-framework';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as escapeStringRegexp from 'escape-string-regexp';
 import { COLORS } from 'ionic/lib/color';
 
@@ -9,7 +9,7 @@ interface CodePair {
 }
 
 interface Color {
-  _styles: readonly CodePair[];
+  _styler: CodePair;
 }
 
 type ColorRegistry = { [K in keyof Colors]: Color };
@@ -23,9 +23,9 @@ export function links2md(str: string): string {
 export function ansi2md(str: string): string {
   const yellow = chalk.yellow as any as Color;
   const { input, strong } = COLORS as any as ColorRegistry;
-  str = convertAnsiToMd(str, input._styles, { open: '`', close: '`' });
-  str = convertAnsiToMd(str, yellow._styles, { open: '', close: '' });
-  str = convertAnsiToMd(str, strong._styles, { open: '**', close: '**' });
+  str = convertAnsiToMd(str, [input._styler], { open: '`', close: '`' });
+  str = convertAnsiToMd(str, [yellow._styler], { open: '', close: '' });
+  str = convertAnsiToMd(str, [strong._styler], { open: '**', close: '**' });
   return str;
 }
 

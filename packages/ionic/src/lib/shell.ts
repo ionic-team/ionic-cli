@@ -2,7 +2,7 @@ import { LOGGER_LEVELS } from '@ionic/cli-framework';
 import { createProcessEnv, killProcessTree, onBeforeExit } from '@ionic/utils-process';
 import { ERROR_COMMAND_NOT_FOUND, Subprocess, SubprocessError, SubprocessOptions, WhichOptions, which } from '@ionic/utils-subprocess';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as Debug from 'debug';
 import * as path from 'path';
@@ -226,7 +226,7 @@ export class Shell implements IShell {
     // can run binaries inside a project.
     options.env = createProcessEnv(process.env, options.env, {
       PATH: this.alterPath(process.env.PATH || ''),
-      FORCE_COLOR: chalk.enabled ? '1' : '0',
+      FORCE_COLOR: chalk.level > 0 ? '1' : '0',
     });
   }
 }

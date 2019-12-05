@@ -1,6 +1,6 @@
 import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as path from 'path';
 

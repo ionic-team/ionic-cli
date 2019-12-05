@@ -2,7 +2,7 @@ import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, MetadataGroup, co
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { tmpfilepath } from '@ionic/utils-fs';
 import { sleep } from '@ionic/utils-process';
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as fs from 'fs';
 
