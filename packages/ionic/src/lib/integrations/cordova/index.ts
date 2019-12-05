@@ -134,7 +134,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       iosDeploy,
       iosSim,
       androidSdkToolsVersion,
-    ] = await Promise.all([
+    ] = await (Promise.all([
       this.getCordovaVersion(),
       this.getCordovaPlatformVersions(),
       this.getCordovaPluginVersions(),
@@ -142,7 +142,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       this.getIOSDeployVersion(),
       this.getIOSSimVersion(),
       getAndroidSdkToolsVersion(),
-    ]);
+    ]) as Promise<[string | undefined, string, string, string | undefined, string | undefined, string | undefined, string | undefined]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
 
     const info: InfoItem[] = [
       { group: 'cordova', key: 'Cordova CLI', value: cordovaVersion || 'not installed' },

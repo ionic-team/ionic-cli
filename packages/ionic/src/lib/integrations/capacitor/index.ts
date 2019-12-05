@@ -1,4 +1,4 @@
-import { parseArgs } from '@ionic/cli-framework';
+import { PackageJson, parseArgs } from '@ionic/cli-framework';
 import { mkdirp } from '@ionic/utils-fs';
 import * as path from 'path';
 
@@ -78,10 +78,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     const [
       [ capacitorCorePkg, capacitorCorePkgPath ],
       capacitorCLIVersion,
-    ] = await Promise.all([
+    ] = await (Promise.all([
       this.e.project.getPackageJson('@capacitor/core'),
       this.getCapacitorCLIVersion(),
-    ]);
+    ]) as Promise<[[PackageJson | undefined, string], string | undefined]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
 
     const info: InfoItem[] = [
       { group: 'capacitor', key: 'Capacitor CLI', value: capacitorCLIVersion || 'not installed' },

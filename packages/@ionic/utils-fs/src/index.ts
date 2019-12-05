@@ -208,7 +208,7 @@ export async function getFileChecksums(p: string): Promise<[string, string | und
         }
       }
     })(),
-  ]);
+  ]) as Promise<[string, string | undefined]>; // TODO: https://github.com/microsoft/TypeScript/issues/33752
 }
 
 /**
@@ -258,7 +258,10 @@ export async function pathExecutable(filePath: string): Promise<boolean> {
 }
 
 export async function isExecutableFile(filePath: string): Promise<boolean> {
-  const [ stats, executable ] = await Promise.all([safe.stat(filePath), pathExecutable(filePath)]);
+  const [ stats, executable ] = await (Promise.all([
+    safe.stat(filePath),
+    pathExecutable(filePath),
+  ]) as Promise<[fs.Stats, boolean]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
 
   return !!stats && (stats.isFile() || stats.isSymbolicLink()) && executable;
 }

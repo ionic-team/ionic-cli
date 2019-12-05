@@ -51,6 +51,6 @@
     "lint-staged": "^9.2.0",
     "rimraf": "^3.0.0",
     "tslint": "^5.9.1",
-    "typescript": "~3.6.3"
+    "typescript": "~3.7.3"
   }
 }
