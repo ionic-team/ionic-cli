@@ -1,5 +1,5 @@
 import { WritableStreamBuffer } from '@ionic/utils-stream';
-import stripAnsi from 'strip-ansi';
+import stripAnsi = require('strip-ansi');
 
 import { wordWrap } from '../../utils/format';
 

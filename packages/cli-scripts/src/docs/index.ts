@@ -6,7 +6,7 @@ import { ProjectType, generateContext, loadExecutor } from 'ionic';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from 'ionic/lib/help';
 import * as lodash from 'lodash';
 import * as path from 'path';
-import stripAnsi from 'strip-ansi';
+import stripAnsi = require('strip-ansi');
 
 import { ansi2md, convertHTMLEntities, links2md } from './utils';
 
