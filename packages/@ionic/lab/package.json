@@ -40,7 +40,7 @@
   "dependencies": {
     "@ionic/cli-framework": "3.0.3",
     "@ionic/utils-fs": "2.0.8",
-    "chalk": "^2.3.0",
+    "chalk": "^3.0.0",
     "express": "^4.16.2",
     "tslib": "^1.9.0"
   },

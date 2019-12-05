@@ -19,7 +19,7 @@
     "@ionic/cli-framework": "3.0.3",
     "@ionic/utils-fs": "2.0.8",
     "ansi-styles": "^4.0.0",
-    "chalk": "^2.3.0",
+    "chalk": "^3.0.0",
     "escape-string-regexp": "^2.0.0",
     "ionic": "5.4.9",
     "strip-ansi": "^5.2.0",

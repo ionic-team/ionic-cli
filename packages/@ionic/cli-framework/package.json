@@ -26,7 +26,7 @@
     "@ionic/utils-stream": "2.0.4",
     "@ionic/utils-subprocess": "1.0.10",
     "@ionic/utils-terminal": "1.1.0",
-    "chalk": "^2.3.0",
+    "chalk": "^3.0.0",
     "debug": "^4.0.0",
     "lodash": "^4.17.5",
     "log-update": "^3.2.0",
