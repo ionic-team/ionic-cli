@@ -10,6 +10,8 @@ import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationNam
 import { FatalException } from '../../../lib/errors';
 import { ancillary, input, strong } from '../../color';
 
+import * as configlib from './config';
+
 const debug = Debug('ionic:lib:integrations:cordova');
 
 export const SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'ionic1', 'ionic-angular', 'angular'];
@@ -123,6 +125,22 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     await super.add(details);
   }
 
+  async getConfig(): Promise<configlib.CordovaConfig | undefined> {
+    try {
+      return await this.requireConfig();
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  async requireConfig(): Promise<configlib.CordovaConfig> {
+    const { loadCordovaConfig } = await import('./config');
+    const integration = this.e.project.requireIntegration('cordova');
+    const conf = await loadCordovaConfig(integration);
+
+    return conf;
+  }
+
   async getInfo(): Promise<InfoItem[]> {
     const { getAndroidSdkToolsVersion } = await import('./android');
 
@@ -145,35 +163,39 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     ]) as Promise<[string | undefined, string, string, string | undefined, string | undefined, string | undefined, string | undefined]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
 
     const info: InfoItem[] = [
-      { group: 'cordova', key: 'Cordova CLI', value: cordovaVersion || 'not installed' },
-      { group: 'cordova', key: 'Cordova Platforms', value: cordovaPlatforms },
-      { group: 'cordova', key: 'Cordova Plugins', value: cordovaPlugins },
+      { group: 'cordova', name: 'Cordova CLI', key: 'cordova_version', value: cordovaVersion || 'not installed' },
+      { group: 'cordova', name: 'Cordova Platforms', key: 'cordova_platforms', value: cordovaPlatforms },
+      { group: 'cordova', name: 'Cordova Plugins', value: cordovaPlugins },
     ];
 
     if (xcode) {
-      info.push({ group: 'system', key: 'Xcode', value: xcode });
+      info.push({ group: 'system', name: 'Xcode', key: 'xcode_version', value: xcode });
     }
 
     if (iosDeploy) {
-      info.push({ group: 'system', key: 'ios-deploy', value: iosDeploy });
+      info.push({ group: 'system', name: 'ios-deploy', value: iosDeploy });
     }
 
     if (iosSim) {
-      info.push({ group: 'system', key: 'ios-sim', value: iosSim });
+      info.push({ group: 'system', name: 'ios-sim', value: iosSim });
     }
 
     if (androidSdkToolsVersion) {
-      info.push({ group: 'system', key: 'Android SDK Tools', value: androidSdkToolsVersion });
+      info.push({ group: 'system', name: 'Android SDK Tools', key: 'android_sdk_version', value: androidSdkToolsVersion });
+    }
+
+    const conf = await this.getConfig();
+
+    if (conf) {
+      const bundleId = conf.getBundleId();
+      info.push({ group: 'cordova', name: 'Bundle ID', key: 'bundle_id', value: bundleId || 'unknown', hidden: true });
     }
 
     return info;
   }
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
-    const { loadCordovaConfig } = await import('./config');
-
-    const integration = this.e.project.requireIntegration('cordova');
-    const conf = await loadCordovaConfig(integration);
+    const conf = await this.requireConfig();
 
     conf.setName(name);
 

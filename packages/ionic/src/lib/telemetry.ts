@@ -1,4 +1,5 @@
 import * as Debug from 'debug';
+import * as lodash from 'lodash';
 
 import { IClient, IConfig, IProject, ISession, ITelemetry, InfoItem, IonicContext } from '../definitions';
 
@@ -82,7 +83,8 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
     (async () => {
       const now = new Date().toISOString();
       const appflowId = project ? project.config.get('id') : undefined;
-
+      const info = await getInfo();
+      const results = info.map(r => r.key ? { [r.key]: r.value } : undefined).filter(r => !!r);
       const { req } = await client.make('POST', '/events/metrics');
 
       const metric: { [key: string]: any; } = {
@@ -93,60 +95,17 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
         'value': {
           'command': command,
           'arguments': prettyArgs.join(' '),
-          'version': ctx.version,
-          'node_version': process.version,
           'app_id': appflowId,
           'backend': 'pro', // TODO: is this necessary?
+          ...lodash.extend({}, ...results),
         },
       };
 
       const isLoggedIn = session.isLoggedIn();
-      const info = await getInfo();
 
       if (isLoggedIn) {
         const token = session.getUserToken();
         req.set('Authorization', `Bearer ${token}`);
-      }
-
-      const frameworkInfo = info.find(item => item.key === 'Ionic Framework');
-      const npmInfo = info.find(item => item.key === 'npm');
-      const osInfo = info.find(item => item.key === 'OS');
-      const xcodeInfo = info.find(item => item.key === 'Xcode');
-      const androidSdkInfo = info.find(item => item.key === 'Android SDK Tools');
-      const cordovaInfo = info.find(item => item.key === 'Cordova CLI');
-      const cordovaPlatformsInfo = info.find(item => item.key === 'Cordova Platforms');
-      const appScriptsInfo = info.find(item => item.key === '@ionic/app-scripts');
-
-      if (frameworkInfo) {
-        metric['value']['framework'] = frameworkInfo.value;
-      }
-
-      if (npmInfo) {
-        metric['value']['npm_version'] = npmInfo.value;
-      }
-
-      if (osInfo) {
-        metric['value']['os'] = osInfo.value;
-      }
-
-      if (xcodeInfo) {
-        metric['value']['xcode_version'] = xcodeInfo.value;
-      }
-
-      if (androidSdkInfo) {
-        metric['value']['android_sdk_version'] = androidSdkInfo.value;
-      }
-
-      if (cordovaInfo) {
-        metric['value']['cordova_version'] = cordovaInfo.value;
-      }
-
-      if (cordovaPlatformsInfo) {
-        metric['value']['cordova_platforms'] = cordovaPlatformsInfo.value;
-      }
-
-      if (appScriptsInfo) {
-        metric['value']['app_scripts_version'] = appScriptsInfo.value;
       }
 
       debug('metric: %o', metric);

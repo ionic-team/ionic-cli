@@ -71,26 +71,31 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     const info: InfoItem[] = [
       {
         group: 'ionic',
-        key: 'Ionic CLI',
+        name: 'Ionic CLI',
+        key: 'version',
         value: ctx.version,
         path: ctx.libPath,
       },
-      { group: 'system', key: 'NodeJS', value: process.version, path: process.execPath },
-      { group: 'system', key: 'npm', value: npm || 'not installed' },
-      { group: 'system', key: 'OS', value: os },
+      { group: 'system', name: 'NodeJS', key: 'node_version', value: process.version, path: process.execPath },
+      { group: 'system', name: 'npm', key: 'npm_version', value: npm || 'not installed' },
+      { group: 'system', name: 'OS', key: 'os', value: os },
       {
         group: 'utility',
-        key: 'native-run',
-        value: nativeRun ? (`${nativeRun} ${nativeRunUpdate ? `(update available: ${latestNativeRun ? success(latestNativeRun.version) : '???'})` : ''}`) : 'not installed',
+        name: 'native-run',
+        key: 'native_run_version',
+        value: nativeRun || 'not installed',
+        flair: nativeRunUpdate ? `update available: ${latestNativeRun ? success(latestNativeRun.version) : '???'}` : '',
       },
       {
         group: 'utility',
-        key: 'cordova-res',
-        value: cordovaRes ? (`${cordovaRes} ${cordovaResUpdate ? `(update available: ${latestCordovaRes ? success(latestCordovaRes.version) : '???'})` : ''}`) : 'not installed',
+        name: 'cordova-res',
+        key: 'cordova_res_version',
+        value: cordovaRes || 'not installed',
+        flair: cordovaResUpdate ? `update available: ${latestCordovaRes ? success(latestCordovaRes.version) : '???'}` : '',
       },
     ];
 
-    info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', key: e, value: v || 'not set' })));
+    info.push(...proxyVars.map(([e, v]): InfoItem => ({ group: 'environment', name: e, value: v || 'not set' })));
 
     if (project) {
       info.push(...(await project.getInfo()));

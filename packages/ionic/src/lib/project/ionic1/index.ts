@@ -49,8 +49,17 @@ export class Ionic1Project extends Project {
 
     return [
       ...(await super.getInfo()),
-      { group: 'ionic', key: 'Ionic Framework', value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown' },
-      { group: 'ionic', key: '@ionic/v1-toolkit', value: v1ToolkitPkg ? v1ToolkitPkg.version : 'not installed' },
+      {
+        group: 'ionic',
+        name: 'Ionic Framework',
+        key: 'framework',
+        value: ionic1Version ? `ionic1 ${ionic1Version}` : 'unknown',
+      },
+      {
+        group: 'ionic',
+        name: '@ionic/v1-toolkit',
+        value: v1ToolkitPkg ? v1ToolkitPkg.version : 'not installed',
+      },
     ];
   }
 

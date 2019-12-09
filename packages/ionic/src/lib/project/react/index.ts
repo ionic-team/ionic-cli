@@ -20,7 +20,13 @@ export class ReactProject extends Project {
 
     return [
       ...(await super.getInfo()),
-      { group: 'ionic', key: 'Ionic Framework', value: ionicReactPkg ? `@ionic/react ${ionicReactPkg.version}` : 'not installed', path: ionicReactPkgPath },
+      {
+        group: 'ionic',
+        name: 'Ionic Framework',
+        key: 'framework',
+        value: ionicReactPkg ? `@ionic/react ${ionicReactPkg.version}` : 'not installed',
+        path: ionicReactPkgPath,
+      },
     ];
   }
 

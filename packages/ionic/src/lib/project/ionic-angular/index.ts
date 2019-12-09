@@ -21,8 +21,18 @@ export class IonicAngularProject extends Project {
 
     return [
       ...(await super.getInfo()),
-      { group: 'ionic', key: 'Ionic Framework', value: ionicAngularPkg ? `ionic-angular ${ionicAngularPkg.version}` : 'not installed' },
-      { group: 'ionic', key: '@ionic/app-scripts', value: appScriptsPkg ? appScriptsPkg.version : 'not installed' },
+      {
+        group: 'ionic',
+        name: 'Ionic Framework',
+        key: 'framework',
+        value: ionicAngularPkg ? `ionic-angular ${ionicAngularPkg.version}` : 'not installed',
+      },
+      {
+        group: 'ionic',
+        name: '@ionic/app-scripts',
+        key: 'app_scripts_version',
+        value: appScriptsPkg ? appScriptsPkg.version : 'not installed',
+      },
     ];
   }
 

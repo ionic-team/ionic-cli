@@ -20,7 +20,13 @@ export class VueProject extends Project {
 
     return [
       ...(await super.getInfo()),
-      { group: 'ionic', key: 'Ionic Framework', value: ionicVuePkg ? `@ionic/vue ${ionicVuePkg.version}` : 'not installed', path: ionicVuePkgPath },
+      {
+        group: 'ionic',
+        name: 'Ionic Framework',
+        key: 'framework',
+        value: ionicVuePkg ? `@ionic/vue ${ionicVuePkg.version}` : 'not installed',
+        path: ionicVuePkgPath,
+      },
     ];
   }
 

@@ -30,32 +30,32 @@ This command is an easy way to share information about your setup. If applicable
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { json } = options;
 
-    if (json) {
-      process.stdout.write(JSON.stringify(await this.env.getInfo()));
-    } else {
-      const results = await this.env.getInfo();
+    const items = (await this.env.getInfo()).filter(item => item.hidden !== true);
 
+    if (json) {
+      process.stdout.write(JSON.stringify(items));
+    } else {
       const groupedInfo: Map<InfoItemGroup, InfoItem[]> = new Map(
-        INFO_GROUPS.map((group): [typeof group, InfoItem[]] => [group, results.filter(item => item.group === group)])
+        INFO_GROUPS.map((group): [typeof group, InfoItem[]] => [group, items.filter(item => item.group === group)])
       );
 
       const sortInfo = (a: InfoItem, b: InfoItem): number => {
-        if (a.key[0] === '@' && b.key[0] !== '@') {
+        if (a.name[0] === '@' && b.name[0] !== '@') {
           return 1;
         }
 
-        if (a.key[0] !== '@' && b.key[0] === '@') {
+        if (a.name[0] !== '@' && b.name[0] === '@') {
           return -1;
         }
 
-        return strcmp(a.key.toLowerCase(), b.key.toLowerCase());
+        return strcmp(a.name.toLowerCase(), b.name.toLowerCase());
       };
 
       const projectPath = this.project && this.project.directory;
 
       const splitInfo = (ary: InfoItem[]) => ary
         .sort(sortInfo)
-        .map((item): [string, string] => [`   ${item.key}${item.flair ? ' ' + weak('(' + item.flair + ')') : ''}`, weak(item.value) + (item.path && projectPath && !item.path.startsWith(projectPath) ? ` ${weak('(' + item.path + ')')}` : '')]);
+        .map((item): [string, string] => [`   ${item.name}${item.flair ? ' ' + weak('(' + item.flair + ')') : ''}`, weak(item.value) + (item.path && projectPath && !item.path.startsWith(projectPath) ? ` ${weak('(' + item.path + ')')}` : '')]);
 
       const format = (details: [string, string][]) => columnar(details, { vsep: ':' });
 

@@ -54,6 +54,12 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     await super.add(details);
   }
 
+  async getConfig(): Promise<CapacitorConfig> {
+    const conf = new CapacitorConfig(path.resolve(this.e.project.directory, CAPACITOR_CONFIG_FILE));
+
+    return conf;
+  }
+
   async installCapacitorCore() {
     const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core' });
     await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
@@ -65,7 +71,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
-    const conf = new CapacitorConfig(path.resolve(this.e.project.directory, CAPACITOR_CONFIG_FILE));
+    const conf = await this.getConfig();
 
     conf.set('appName', name);
 
@@ -75,6 +81,9 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async getInfo(): Promise<InfoItem[]> {
+    const conf = await this.getConfig();
+    const bundleId = conf.get('appId');
+
     const [
       [ capacitorCorePkg, capacitorCorePkgPath ],
       capacitorCLIVersion,
@@ -84,8 +93,26 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     ]) as Promise<[[PackageJson | undefined, string], string | undefined]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
 
     const info: InfoItem[] = [
-      { group: 'capacitor', key: 'Capacitor CLI', value: capacitorCLIVersion || 'not installed' },
-      { group: 'capacitor', key: '@capacitor/core', value: capacitorCorePkg ? capacitorCorePkg.version : 'not installed', path: capacitorCorePkgPath },
+      {
+        group: 'capacitor',
+        name: 'Capacitor CLI',
+        key: 'capacitor_cli_version',
+        value: capacitorCLIVersion || 'not installed',
+      },
+      {
+        group: 'capacitor',
+        name: '@capacitor/core',
+        key: 'capacitor_core_version',
+        value: capacitorCorePkg ? capacitorCorePkg.version : 'not installed',
+        path: capacitorCorePkgPath,
+      },
+      {
+        group: 'capacitor',
+        name: 'Bundle ID',
+        key: 'bundle_id',
+        value: bundleId || 'unknown',
+        hidden: true,
+      },
     ];
 
     return info;

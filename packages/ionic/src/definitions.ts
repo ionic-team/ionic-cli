@@ -519,10 +519,12 @@ export type InfoItemGroup = 'ionic' | 'capacitor' | 'cordova' | 'utility' | 'sys
 
 export interface InfoItem {
   group: InfoItemGroup;
-  key: string;
+  name: string;
   value: string;
+  key?: string;
   flair?: string;
   path?: string;
+  hidden?: boolean;
 }
 
 export interface BaseBuildOptions {

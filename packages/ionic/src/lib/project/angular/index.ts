@@ -27,11 +27,39 @@ export class AngularProject extends Project {
 
     return [
       ...(await super.getInfo()),
-      { group: 'ionic', key: 'Ionic Framework', value: ionicAngularPkg ? `@ionic/angular ${ionicAngularPkg.version}` : 'not installed', path: ionicAngularPkgPath },
-      { group: 'ionic', key: '@ionic/angular-toolkit', value: ionicAngularToolkitPkg ? ionicAngularToolkitPkg.version : 'not installed', path: ionicAngularToolkitPkgPath },
-      { group: 'ionic', key: '@angular/cli', value: angularCLIPkg ? angularCLIPkg.version : 'not installed', path: angularCLIPkgPath },
-      { group: 'ionic', key: '@angular-devkit/build-angular', value: angularDevKitBuildAngularPkg ? angularDevKitBuildAngularPkg.version : 'not installed', path: angularDevKitBuildAngularPkgPath },
-      { group: 'ionic', key: '@angular-devkit/schematics', value: angularDevKitSchematicsPkg ? angularDevKitSchematicsPkg.version : 'not installed', path: angularDevKitSchematicsPkgPath },
+      {
+        group: 'ionic',
+        name: 'Ionic Framework',
+        key: 'framework',
+        value: ionicAngularPkg ? `@ionic/angular ${ionicAngularPkg.version}` : 'not installed',
+        path: ionicAngularPkgPath,
+      },
+      {
+        group: 'ionic',
+        name: '@ionic/angular-toolkit',
+        key: 'ionic_angular_toolkit_version',
+        value: ionicAngularToolkitPkg ? ionicAngularToolkitPkg.version : 'not installed',
+        path: ionicAngularToolkitPkgPath,
+      },
+      {
+        group: 'ionic',
+        name: '@angular/cli',
+        key: 'angular_cli_version',
+        value: angularCLIPkg ? angularCLIPkg.version : 'not installed',
+        path: angularCLIPkgPath,
+      },
+      {
+        group: 'ionic',
+        name: '@angular-devkit/build-angular',
+        value: angularDevKitBuildAngularPkg ? angularDevKitBuildAngularPkg.version : 'not installed',
+        path: angularDevKitBuildAngularPkgPath,
+      },
+      {
+        group: 'ionic',
+        name: '@angular-devkit/schematics',
+        value: angularDevKitSchematicsPkg ? angularDevKitSchematicsPkg.version : 'not installed',
+        path: angularDevKitSchematicsPkgPath,
+      },
     ];
   }
 

@@ -18,7 +18,7 @@ export interface ConfiguredPlatform {
   spec?: string;
 }
 
-export class ConfigConfig {
+export class CordovaConfig {
   protected _doc?: et.ElementTree;
   protected _pkg?: CordovaPackageJson;
   protected _sessionid?: string;
@@ -50,12 +50,12 @@ export class ConfigConfig {
     return this._sessionid;
   }
 
-  static async load(configXmlPath: string, packageJsonPath: string): Promise<ConfigConfig> {
+  static async load(configXmlPath: string, packageJsonPath: string): Promise<CordovaConfig> {
     if (!configXmlPath || !packageJsonPath) {
       throw new Error('Must supply file paths for config.xml and package.json.');
     }
 
-    const conf = new ConfigConfig(configXmlPath, packageJsonPath);
+    const conf = new CordovaConfig(configXmlPath, packageJsonPath);
     await conf.reload();
 
     return conf;
@@ -293,14 +293,14 @@ export class ConfigConfig {
   }
 }
 
-export async function loadCordovaConfig(integration: Required<ProjectIntegration>): Promise<ConfigConfig> {
+export async function loadCordovaConfig(integration: Required<ProjectIntegration>): Promise<CordovaConfig> {
   const configXmlPath = path.resolve(integration.root, 'config.xml');
   const packageJsonPath = path.resolve(integration.root, 'package.json');
 
   debug('Loading Cordova Config (config.xml: %O, package.json: %O)', configXmlPath, packageJsonPath);
 
   try {
-    return await ConfigConfig.load(configXmlPath, packageJsonPath);
+    return await CordovaConfig.load(configXmlPath, packageJsonPath);
   } catch (e) {
     const msg = e.code === 'ENOENT'
       ? (
