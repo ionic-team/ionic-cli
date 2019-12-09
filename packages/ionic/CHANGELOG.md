@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.11](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.10...ionic@5.4.11) (2019-12-09)
+
+
+### Bug Fixes
+
+* **cordova:** do not detect hardware devices when using emulate ([446a149](https://github.com/ionic-team/ionic-cli/commit/446a1495eefc63995450d8b7e899b44910d70372))
+
+
+
+
+
 ## [5.4.10](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.9...ionic@5.4.10) (2019-12-05)
 
 
