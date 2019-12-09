@@ -183,13 +183,13 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       options['livereload'] = false;
     }
 
-    if (options['list']) {
-      if (!options['device'] && !options['emulator']) {
-        if (metadata.name === 'emulate') {
-          options['emulator'] = true;
-        }
-      }
+    // If we're using the emulate command, and if --device and --emulator are
+    // not used, we should set the --emulator flag to mark intent.
+    if (!options['device'] && !options['emulator'] && metadata.name === 'emulate') {
+      options['emulator'] = true;
+    }
 
+    if (options['list']) {
       if (options['native-run']) {
         const args = createNativeRunListArgs(inputs, options);
         await this.runNativeRun(args);
