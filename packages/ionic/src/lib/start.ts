@@ -173,7 +173,6 @@ function getEnterpriseAdvertisement(): string {
 
                   Powerful library of native APIs ${emoji('⚡️', '')}
                  A supercharged platform for teams ${emoji('💪', '')}
-       Bring your company's designs to life with Design Systems ${emoji('🎨', '')}
 
          ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/enterprise')} ${emoji(' 👈', '')}
 
