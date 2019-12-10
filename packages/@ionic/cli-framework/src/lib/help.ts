@@ -104,6 +104,14 @@ export abstract class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, 
     this.namespace = namespace;
   }
 
+  protected normalizeMetadata(metadata: NamespaceMetadata): NamespaceMetadata {
+    return { ...metadata, groups: lodash.uniq(metadata.groups) };
+  }
+
+  protected normalizeCommandMetadata(metadata: HydratedCommandMetadata<C, N, M, I, O>): HydratedCommandMetadata<C, N, M, I, O> {
+    return { ...metadata, groups: lodash.uniq(metadata.groups) };
+  }
+
   /**
    * Given command metadata, decide whether to keep or discard the command that
    * the metadata represents.
@@ -117,10 +125,16 @@ export abstract class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, 
 
   async getNamespaceMetadata(): Promise<NamespaceMetadata> {
     if (!this._metadata) {
-      this._metadata = await this.namespace.getMetadata();
+      this._metadata = this.normalizeMetadata(await this.namespace.getMetadata());
     }
 
     return this._metadata;
+  }
+
+  async getCommandMetadataList(): Promise<HydratedCommandMetadata<C, N, M, I, O>[]> {
+    const commands = await this.namespace.getCommandMetadataList();
+
+    return commands.map(cmd => this.normalizeCommandMetadata(cmd));
   }
 
   async getNamespaceFullName(): Promise<string> {
@@ -192,7 +206,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
   }
 
   async formatCommands() {
-    const commands = await this.namespace.getCommandMetadataList();
+    const commands = await this.getCommandMetadataList();
 
     return this.formatCommandGroup('Commands', commands);
   }
@@ -359,14 +373,17 @@ export abstract class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N 
   protected readonly dotswidth: number = DEFAULT_DOTS_WIDTH;
 
   protected _metadata?: M;
-  protected _hydratedMetadata?: HydratedCommandMetadata<C, N, M, I, O>;
   protected _fullName?: string;
 
   constructor({ location, command, metadata, colors }: CommandHelpFormatterDeps<C, N, M, I, O>) {
     super({ colors });
     this.location = location;
     this.command = command;
-    this._hydratedMetadata = metadata;
+    this._metadata = metadata ? this.normalizeMetadata(metadata) : undefined;
+  }
+
+  protected normalizeMetadata(metadata: M | HydratedCommandMetadata<C, N, M, I, O>): M {
+    return { ...metadata, groups: lodash.uniq(metadata.groups) };
   }
 
   /**
@@ -380,12 +397,8 @@ export abstract class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N 
   }
 
   async getCommandMetadata(): Promise<M | HydratedCommandMetadata<C, N, M, I, O>> {
-    if (this._hydratedMetadata) {
-      return this._hydratedMetadata;
-    }
-
     if (!this._metadata) {
-      this._metadata = await this.command.getMetadata({ location: this.location });
+      this._metadata = this.normalizeMetadata(await this.command.getMetadata({ location: this.location }));
     }
 
     return this._metadata;
@@ -622,7 +635,7 @@ export class NamespaceSchemaHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
 
   async serialize(): Promise<NamespaceHelpSchema> {
     const metadata = await this.getNamespaceMetadata();
-    const commands = await this.namespace.getCommandMetadataList();
+    const commands = await this.getCommandMetadataList();
 
     return {
       name: metadata.name,
