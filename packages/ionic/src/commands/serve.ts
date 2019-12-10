@@ -6,7 +6,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException, RunnerException } from '../lib/errors';
-import { runCommand } from '../lib/executor';
+import { getFullCommandParts, runCommand } from '../lib/executor';
 import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT } from '../lib/serve';
 
 export class ServeCommand extends Command implements CommandPreRun {
@@ -92,9 +92,9 @@ To target the DevApp, use the ${input('--devapp')} option.`;
     };
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const lastpath = lodash.last(runinfo.location.path);
-    const alias = lastpath ? lastpath[0] : undefined;
+  async preRun(inputs: CommandLineInputs, options: CommandLineOptions, { location }: CommandInstanceInfo): Promise<void> {
+    const parts = getFullCommandParts(location);
+    const alias = lodash.last(parts);
 
     if (alias === 'lab') {
       options['lab'] = true;

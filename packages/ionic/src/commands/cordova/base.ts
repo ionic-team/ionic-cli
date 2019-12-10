@@ -2,13 +2,15 @@ import { MetadataGroup } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
+import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions, ProjectIntegration } from '../../definitions';
-import { input, strong, weak } from '../../lib/color';
+import { ancillary, input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
-import { runCommand } from '../../lib/executor';
+import { getFullCommandParts, runCommand } from '../../lib/executor';
+import { prettyProjectName } from '../../lib/project';
 import { pkgManagerArgs } from '../../lib/utils/npm';
 
 export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
@@ -102,7 +104,7 @@ export abstract class CordovaCommand extends Command {
     }
   }
 
-  protected async preRunChecks(runinfo: CommandInstanceInfo) {
+  protected async preRunChecks(runinfo: CommandInstanceInfo): Promise<void> {
     const { SUPPORTED_PROJECT_TYPES } = await import('../../lib/integrations/cordova');
     const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
 
@@ -111,7 +113,16 @@ export abstract class CordovaCommand extends Command {
     }
 
     if (!SUPPORTED_PROJECT_TYPES.includes(this.project.type)) {
-      throw new FatalException(`Cordova is not supported for ${this.project.type} projects`);
+      const parts = getFullCommandParts(runinfo.location);
+      const alias = lodash.last(parts);
+
+      throw new FatalException(
+        `Ionic doesn't support using Cordova with ${input(prettyProjectName(this.project.type))} projects.\n` +
+        `We encourage you to try ⚡️ ${strong('Capacitor')} ⚡️ (${strong('https://ion.link/capacitor')})\n` +
+        (alias === 'run' ? `\nIf you want to run your project natively, see ${input('ionic capacitor run --help')}.` : '') +
+        (alias === 'plugin' ? `\nIf you want to add Cordova plugins to your Capacitor project, see these docs${ancillary('[1]')}.\n\n${ancillary('[1]')}: ${strong('https://capacitor.ionicframework.com/docs/cordova/using-cordova-plugins')}` : '')
+        // TODO: check for 'ionic cordova resources'
+      );
     }
 
     await this.checkCordova(runinfo);

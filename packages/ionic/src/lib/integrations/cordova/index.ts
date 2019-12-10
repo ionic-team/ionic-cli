@@ -9,6 +9,7 @@ import { BaseIntegration, IntegrationConfig } from '../';
 import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 import { FatalException } from '../../../lib/errors';
 import { ancillary, input, strong } from '../../color';
+import { prettyProjectName } from '../../project';
 
 import * as configlib from './config';
 
@@ -27,7 +28,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   async add(details: IntegrationAddDetails): Promise<void> {
     if (!SUPPORTED_PROJECT_TYPES.includes(this.e.project.type)) {
-      throw new FatalException(`Cordova is not supported for ${this.e.project.type} projects`);
+      throw new FatalException(
+        `Cordova is not supported for ${input(prettyProjectName(this.e.project.type))} projects.\n` +
+        `We encourage you to try ⚡️ ${strong('Capacitor')} ⚡️ (${strong('https://ion.link/capacitor')})`
+      );
     }
 
     const handlers: IntegrationAddHandlers = {
@@ -51,6 +55,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         }
       },
     };
+
     const onFileCreate = handlers.onFileCreate ? handlers.onFileCreate : lodash.noop;
     const conflictHandler = handlers.conflictHandler ? handlers.conflictHandler : async () => false;
 

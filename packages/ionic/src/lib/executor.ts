@@ -32,10 +32,10 @@ export class Executor extends BaseExecutor<ICommand, INamespace, CommandMetadata
 
   async run(command: ICommand, cmdargs: string[], { location, env, executor }: CommandInstanceInfo): Promise<void> {
     const metadata = await command.getMetadata();
-    const fullNameParts = location.path.map(([p]) => p);
+    const parts = getFullCommandParts(location);
 
     if (metadata.options) {
-      const optMap = metadataToCmdOptsEnv(metadata, fullNameParts.slice(1));
+      const optMap = metadataToCmdOptsEnv(metadata, parts.slice(1));
 
       // TODO: changes opt by reference, which is probably bad
       for (const [ opt, envvar ] of optMap.entries()) {
@@ -61,7 +61,7 @@ export class Executor extends BaseExecutor<ICommand, INamespace, CommandMetadata
     } else {
       if (metadata.type === 'project') {
         throw new FatalException(
-          `Sorry! ${input(fullNameParts.join(' '))} can only be run in an Ionic project directory.\n` +
+          `Sorry! ${input(parts.join(' '))} can only be run in an Ionic project directory.\n` +
           `If this is a project you'd like to integrate with Ionic, run ${input('ionic init')}.`
         );
       }
@@ -94,4 +94,8 @@ export function metadataToCmdOptsEnv(metadata: CommandMetadata, cmdNameParts: st
   }
 
   return optMap;
+}
+
+export function getFullCommandParts(location: NamespaceLocateResult): string[] {
+  return location.path.map(([p]) => p);
 }

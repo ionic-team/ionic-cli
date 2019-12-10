@@ -46,7 +46,7 @@ export class NamespaceStringHelpFormatter extends BaseNamespaceStringHelpFormatt
 
   async formatCommands() {
     const { strong } = this.colors;
-    const commands = await this.namespace.getCommandMetadataList();
+    const commands = await this.getCommandMetadataList();
     const globalCmds = commands.filter(cmd => cmd.type === 'global');
     const projectCmds = commands.filter(cmd => cmd.type === 'project');
 
