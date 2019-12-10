@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-framework-prompts",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "The interactive prompts portion of Ionic CLI Framework",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com)",
@@ -24,7 +24,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/utils-terminal": "1.1.1",
+    "@ionic/utils-terminal": "1.1.2",
     "debug": "^4.0.0",
     "inquirer": "^7.0.0",
     "tslib": "^1.9.0"

@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.1.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@1.1.1...@ionic/utils-terminal@1.1.2) (2019-12-10)
+
+
+### Bug Fixes
+
+* **windows:** do not check TERM for windows detection ([ac4b417](https://github.com/ionic-team/ionic-cli/commit/ac4b417385c0c7859674e2ba59e495e9abc5bce4))
+
+
+
+
+
 ## [1.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@1.1.0...@ionic/utils-terminal@1.1.1) (2019-12-05)
 
 **Note:** Version bump only for package @ionic/utils-terminal

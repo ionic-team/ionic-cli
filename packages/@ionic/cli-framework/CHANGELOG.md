@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@3.0.4...@ionic/cli-framework@3.0.5) (2019-12-10)
+
+
+### Bug Fixes
+
+* **help:** make namespace/command groups unique when displaying ([32215b2](https://github.com/ionic-team/ionic-cli/commit/32215b27d4511bd8966bb07ba1663392f790336f))
+
+
+
+
+
 ## [3.0.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@3.0.3...@ionic/cli-framework@3.0.4) (2019-12-05)
 
 **Note:** Version bump only for package @ionic/cli-framework

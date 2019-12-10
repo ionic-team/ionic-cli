@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.12](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.11...ionic@5.4.12) (2019-12-10)
+
+**Note:** Version bump only for package ionic
+
+
+
+
+
 ## [5.4.11](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.10...ionic@5.4.11) (2019-12-09)
 
 
