@@ -11,6 +11,7 @@ import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { getFullCommandParts, runCommand } from '../../lib/executor';
 import { prettyProjectName } from '../../lib/project';
+import { emoji } from '../../lib/utils/emoji';
 import { pkgManagerArgs } from '../../lib/utils/npm';
 
 export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
@@ -118,7 +119,7 @@ export abstract class CordovaCommand extends Command {
 
       throw new FatalException(
         `Ionic doesn't support using Cordova with ${input(prettyProjectName(this.project.type))} projects.\n` +
-        `We encourage you to try ⚡️ ${strong('Capacitor')} ⚡️ (${strong('https://ion.link/capacitor')})\n` +
+        `We encourage you to try ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})\n` +
         (alias === 'run' ? `\nIf you want to run your project natively, see ${input('ionic capacitor run --help')}.` : '') +
         (alias === 'plugin' ? `\nIf you want to add Cordova plugins to your Capacitor project, see these docs${ancillary('[1]')}.\n\n${ancillary('[1]')}: ${strong('https://capacitor.ionicframework.com/docs/cordova/using-cordova-plugins')}` : '')
         // TODO: check for 'ionic cordova resources'

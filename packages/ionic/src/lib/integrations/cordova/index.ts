@@ -8,6 +8,7 @@ import * as path from 'path';
 import { BaseIntegration, IntegrationConfig } from '../';
 import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
 import { FatalException } from '../../../lib/errors';
+import { emoji } from '../../../lib/utils/emoji';
 import { ancillary, input, strong } from '../../color';
 import { prettyProjectName } from '../../project';
 
@@ -29,8 +30,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   async add(details: IntegrationAddDetails): Promise<void> {
     if (!SUPPORTED_PROJECT_TYPES.includes(this.e.project.type)) {
       throw new FatalException(
-        `Cordova is not supported for ${input(prettyProjectName(this.e.project.type))} projects.\n` +
-        `We encourage you to try ⚡️ ${strong('Capacitor')} ⚡️ (${strong('https://ion.link/capacitor')})`
+        `Ionic doesn't support using Cordova with ${input(prettyProjectName(this.e.project.type))} projects.\n` +
+        `We encourage you to try ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})`
       );
     }
 
