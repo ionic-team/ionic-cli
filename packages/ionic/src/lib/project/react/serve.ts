@@ -3,7 +3,7 @@ import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { findClosestOpenPort } from '@ionic/utils-network';
 
 import { CommandMetadata, ReactServeOptions, ServeDetails } from '../../../definitions';
-import { input, strong } from '../../color';
+import { input, strong, weak } from '../../color';
 import { BIND_ALL_ADDRESS, DEFAULT_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 
 export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
@@ -14,7 +14,7 @@ export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       description: `
-    ${input('ionic serve')} uses React Scripts. See the ${input('create-react-app')} docs[^cra-build-docs] for explanations. This command interprets the arguments to environment variables supported by React Scripts.
+This command will convert options to the environment variables used by React Scripts. See the ${input('create-react-app')} docs[^cra-build-docs] for explanations.
       `,
       footnotes: [
         {
@@ -27,23 +27,23 @@ export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
           name: 'https',
           summary: 'Use HTTPS for the dev server',
           type: Boolean,
+          groups: ['cordova'],
+          hint: weak('[react-scripts]'),
         },
         {
           name: 'react-editor',
-          summary: `Specify the editor for app crash links.`,
+          summary: `Specify the editor that opens files upon crash`,
           type: String,
+          spec: { value: 'editor' },
+          groups: ['cordova'],
+          hint: weak('[react-scripts]'),
         },
         {
           name: 'ci',
-          summary: `Treat all warnings as build failures. Also makes the test runner non-watching.`,
+          summary: `Treat warnings as build failures, test runner does not watch`,
           type: Boolean,
-        },
-        {
-          name: 'livereload',
-          summary: 'Do not spin up dev server--just serve files',
-          type: Boolean,
-          default: true,
-          groups: [MetadataGroup.HIDDEN],
+          groups: ['cordova'],
+          hint: weak('[react-scripts]'),
         },
       ],
       groups: [MetadataGroup.BETA],
@@ -54,7 +54,7 @@ export class ReactServeRunner extends ServeRunner<ReactServeOptions> {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
     const ci = options['ci'] ? Boolean(options['ci']) : undefined;
     const https = options['https'] ? Boolean(options['https']) : undefined;
-    const reactEditor = options['reactEditor'] ? String(options['reactEditor']) : undefined;
+    const reactEditor = options['react-editor'] ? String(options['react-editor']) : undefined;
 
     return {
       ...baseOptions,
@@ -143,26 +143,28 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
   }
 
   protected async buildEnvVars(options: ReactServeOptions): Promise<NodeJS.ProcessEnv> {
-    const envVars: NodeJS.ProcessEnv = {};
+    const env: NodeJS.ProcessEnv = {};
 
-    envVars.BROWSER = 'none';
+    // Tell CRA not to open the dev server URL. We do this in Ionic CLI.
+    env.BROWSER = 'none';
 
-    /*
-      By default, CRA binds to localhost,
-      but if you specify it, it puts a warning in the console,
-      so don't set the HOST if the address is set to 'localhost'
-    */
+    // CRA binds to `localhost` by default, but if specified it prints a
+    // warning, so don't set `HOST` if the address is set to `localhost`.
     if (options.address !== DEFAULT_ADDRESS) {
-      envVars.HOST = options.address;
+      env.HOST = options.address;
     }
 
-    envVars.PORT = String(options.port);
-    envVars.HTTPS = (options.https === true) ? 'true' : 'false';
-    envVars.CI = (options.ci === true) ? 'true' : 'false';
+    env.PORT = String(options.port);
+    env.HTTPS = options.https ? 'true' : 'false';
+
+    if (options.ci) {
+      env.CI = '1';
+    }
+
     if (options.reactEditor) {
-      envVars.REACT = options.reactEditor;
+      env.REACT_EDITOR = options.reactEditor;
     }
 
-    return envVars;
+    return { ...super.buildEnvVars(options), ...env };
   }
 }

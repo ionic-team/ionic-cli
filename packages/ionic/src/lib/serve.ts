@@ -569,8 +569,8 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
   protected async spawn(options: T): Promise<void> {
     const args = await this.buildArgs(options);
-    const envVars = await this.buildEnvVars(options);
-    const p = await this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory, env: createProcessEnv(envVars) });
+    const env = await this.buildEnvVars(options);
+    const p = await this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory, env: createProcessEnv(env) });
 
     return new Promise<void>((resolve, reject) => {
       const errorHandler = (err: NodeJS.ErrnoException) => {

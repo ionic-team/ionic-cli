@@ -1,5 +1,6 @@
 import { BaseError, MetadataGroup } from '@ionic/cli-framework';
 import { PromptModule } from '@ionic/cli-framework-prompts';
+import { createProcessEnv } from '@ionic/utils-process';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import * as Debug from 'debug';
 
@@ -154,6 +155,13 @@ export abstract class BuildCLI<T extends object> {
    */
   protected abstract buildArgs(options: T): Promise<string[]>;
 
+  /**
+   * Build the environment variables for this Build CLI. Called by `this.run()`.
+   */
+  protected async buildEnvVars(options: T): Promise<NodeJS.ProcessEnv> {
+    return process.env;
+  }
+
   async resolveScript(): Promise<string | undefined> {
     if (typeof this.script === 'undefined') {
       return;
@@ -202,9 +210,10 @@ export abstract class BuildCLI<T extends object> {
 
   protected async run(options: T): Promise<void> {
     const args = await this.buildArgs(options);
+    const env = await this.buildEnvVars(options);
 
     try {
-      await this.e.shell.run(this.resolvedProgram, args, { stdio: 'inherit', cwd: this.e.project.directory, fatalOnNotFound: false });
+      await this.e.shell.run(this.resolvedProgram, args, { stdio: 'inherit', cwd: this.e.project.directory, fatalOnNotFound: false, env: createProcessEnv(env) });
     } catch (e) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         throw new BuildCLIProgramNotFoundException(`${strong(this.resolvedProgram)} command not found.`);

@@ -2,7 +2,7 @@ import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, ReactBuildOptions } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
-import { input } from '../../color';
+import { input, weak } from '../../color';
 
 import { ReactProject } from './';
 
@@ -18,38 +18,44 @@ export class ReactBuildRunner extends BuildRunner<ReactBuildOptions> {
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       description: `
-    ${input('ionic build')} uses React Scripts. See the ${input('create-react-app')} docs[^cra-build-docs] for explanations. This command interprets the arguments to environment variables supported by React Scripts.
+This command will convert options to the environment variables used by React Scripts. See the ${input('create-react-app')} docs[^cra-build-docs] for explanations.
       `,
       footnotes: [
         {
-            id: 'cra-build-docs',
-            url: 'https://facebook.github.io/create-react-app/docs/advanced-configuration',
+          id: 'cra-build-docs',
+          url: 'https://facebook.github.io/create-react-app/docs/advanced-configuration',
         },
       ],
       options: [
         {
           name: 'public-url',
-          summary: `You may use this variable to force assets to be referenced verbatim to the url you provide (hostname included). `,
-          type: String,
+          summary: 'The URL at which the app will be served',
           groups: ['cordova'],
+          spec: { value: 'url' },
+          hint: weak('[react-scripts]'),
         },
         {
           name: 'ci',
-          summary: `Treat all warnings as build failures. Also makes the test runner non-watching.`,
+          summary: `Treat warnings as build failures, test runner does not watch`,
           type: Boolean,
           groups: ['cordova'],
+          hint: weak('[react-scripts]'),
         },
         {
           name: 'source-map',
-          summary: `When set to false, source maps are not generated.`,
+          summary: 'Do not generate source maps',
           type: Boolean,
           groups: ['cordova'],
+          default: true,
+          hint: weak('[react-scripts]'),
         },
         {
           name: 'inline-runtime-chunk',
-          summary: `By default a runtime script is included in index.html. When set to false, the script will not be embedded and will be imported as usual. This is normally required when dealing with CSP.`,
+          summary: `Do not include the runtime script in ${input('index.html')} (import instead)`,
           type: Boolean,
           groups: ['cordova'],
+          default: true,
+          hint: weak('[react-scripts]'),
         },
       ],
       groups: [MetadataGroup.BETA],
@@ -98,15 +104,24 @@ export class ReactBuildCLI extends BuildCLI<ReactBuildOptions> {
   }
 
   protected async buildEnvVars(options: ReactBuildOptions): Promise<NodeJS.ProcessEnv> {
-    const envVars: NodeJS.ProcessEnv = {};
+    const env: NodeJS.ProcessEnv = {};
 
     if (options.publicUrl) {
-      envVars.PUBLIC_URL = options.publicUrl;
+      env.PUBLIC_URL = options.publicUrl;
     }
-    envVars.CI = String(options.ci);
-    envVars.GENERATE_SOURCEMAP = String(options.sourceMap);
-    envVars.INLINE_RUNTIME_CHUNK = String(options.inlineRuntimeChunk);
 
-    return envVars;
+    if (options.ci) {
+      env.CI = '1';
+    }
+
+    if (!options.sourceMap) {
+      env.GENERATE_SOURCEMAP = 'false';
+    }
+
+    if (!options.inlineRuntimeChunk) {
+      env.INLINE_RUNTIME_CHUNK = 'false';
+    }
+
+    return { ...super.buildEnvVars(options), ...env };
   }
 }
