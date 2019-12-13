@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.13](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.12...ionic@5.4.13) (2019-12-13)
+
+
+### Bug Fixes
+
+* **react:** fix build options, update tonality/style ([8656c60](https://github.com/ionic-team/ionic-cli/commit/8656c60ebb8206d2935669b7654995b82910e048))
+
+
+
+
+
 ## [5.4.12](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.11...ionic@5.4.12) (2019-12-10)
 
 **Note:** Version bump only for package ionic
