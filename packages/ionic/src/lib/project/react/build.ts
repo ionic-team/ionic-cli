@@ -1,5 +1,3 @@
-import { MetadataGroup } from '@ionic/cli-framework';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, ReactBuildOptions } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 import { input, weak } from '../../color';
@@ -58,7 +56,6 @@ This command will convert options to the environment variables used by React Scr
           hint: weak('[react-scripts]'),
         },
       ],
-      groups: [MetadataGroup.BETA],
     };
   }
 
