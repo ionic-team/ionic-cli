@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, MetadataGroup } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
 import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { findClosestOpenPort } from '@ionic/utils-network';
 
@@ -46,7 +46,6 @@ This command will convert options to the environment variables used by React Scr
           hint: weak('[react-scripts]'),
         },
       ],
-      groups: [MetadataGroup.BETA],
     };
   }
 
