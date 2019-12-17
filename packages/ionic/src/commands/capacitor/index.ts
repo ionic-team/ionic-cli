@@ -1,5 +1,3 @@
-import { MetadataGroup } from '@ionic/cli-framework';
-
 import { strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
@@ -14,7 +12,6 @@ These commands integrate with Capacitor, Ionic's new native layer project which 
 Learn more about Capacitor:
 - Main documentation: ${strong('https://ion.link/capacitor')}
       `,
-      groups: [MetadataGroup.BETA],
     };
   }
 

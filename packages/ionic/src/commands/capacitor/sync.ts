@@ -1,5 +1,3 @@
-import { MetadataGroup } from '@ionic/cli-framework';
-
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
 
@@ -23,7 +21,6 @@ ${input('ionic capacitor sync')} will do the following:
           summary: `The platform to sync (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
         },
       ],
-      groups: [MetadataGroup.BETA],
     };
   }
 

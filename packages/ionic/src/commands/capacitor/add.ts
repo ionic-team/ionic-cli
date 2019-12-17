@@ -1,4 +1,4 @@
-import { MetadataGroup, validators } from '@ionic/cli-framework';
+import { validators } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
@@ -22,7 +22,6 @@ ${input('ionic capacitor add')} will do the following:
           validators: [validators.required],
         },
       ],
-      groups: [MetadataGroup.BETA],
     };
   }
 
