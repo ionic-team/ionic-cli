@@ -43,7 +43,7 @@ export class DeployManifestCommand extends DeployCoreCommand {
   }
 
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {
-    const contents = await readdirp(buildDir);
+    const contents = await readdirp(buildDir, { filter: item => !/(css|js)\.map$/.test(item.path) });
     const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await stat(f)]);
     const files = stats.filter(([ , s ]) => !s.isDirectory());
 
