@@ -605,7 +605,6 @@ export interface ServeOptions {
   open: boolean;
   browser?: string;
   browserOption?: string;
-  devapp: boolean;
   platform?: string; // android, ios, etc.
   project?: string;
   verbose?: boolean;
@@ -658,16 +657,6 @@ export interface LabServeDetails {
   projectType: ProjectType;
   address: string;
   port: number;
-}
-
-export interface DevAppDetails {
-  channel?: string;
-  port: number;
-  commPort: number;
-  interfaces: {
-    address: string;
-    broadcast: string;
-  }[];
 }
 
 export interface ServeDetails {

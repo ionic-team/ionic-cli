@@ -1,22 +1,17 @@
 import { BaseError, LOGGER_LEVELS, MetadataGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
-import { readJson } from '@ionic/utils-fs';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
-import * as os from 'os';
-import * as path from 'path';
 import * as split2 from 'split2';
 import * as stream from 'stream';
 import * as through2 from 'through2';
 
-import { ASSETS_DIRECTORY } from '../constants';
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, DevAppDetails, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
-import { isCordovaPackageJson } from '../guards';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 
 import { ancillary, input, strong, weak } from './color';
 import { FatalException, ServeCLIProgramNotFoundException } from './errors';
@@ -77,13 +72,6 @@ export const COMMON_SERVE_COMMAND_OPTIONS: readonly CommandMetadataOption[] = [
     summary: `Target platform on chosen engine (e.g. ${['ios', 'android'].map(e => input(e)).join(', ')})`,
     groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
   },
-  {
-    name: 'devapp',
-    summary: 'Publish DevApp service',
-    type: Boolean,
-    default: false,
-    groups: [MetadataGroup.ADVANCED],
-  },
 ];
 
 export interface ServeRunnerDeps {
@@ -111,7 +99,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
 
-    if (options['external'] || (options['devapp'] && options['address'] === DEFAULT_ADDRESS)) {
+    if (options['external']) {
       options['address'] = '0.0.0.0';
     }
 
@@ -125,7 +113,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       address,
       browser: options['browser'] ? String(options['browser']) : undefined,
       browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
-      devapp: !!options['devapp'],
       engine,
       externalAddressRequired: !!options['externalAddressRequired'],
       lab: !!options['lab'],
@@ -153,28 +140,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     return 'browser';
   }
 
-  async displayDevAppMessage(options: T) {
-    const pkg = await this.e.project.requirePackageJson();
-
-    // If this is regular `ionic serve`, we warn the dev about unsupported
-    // plugins in the devapp.
-    if (options.devapp && isCordovaPackageJson(pkg)) {
-      const plugins = await this.getSupportedDevAppPlugins();
-      const packageCordovaPlugins = Object.keys(pkg.cordova.plugins);
-      const packageCordovaPluginsDiff = packageCordovaPlugins.filter(p => !plugins.has(p));
-
-      if (packageCordovaPluginsDiff.length > 0) {
-        this.e.log.warn(
-          'Detected unsupported Cordova plugins with Ionic DevApp:\n' +
-          `${packageCordovaPluginsDiff.map(p => `- ${strong(p)}`).join('\n')}\n\n` +
-          `App may not function as expected in Ionic DevApp.`
-        );
-
-        this.e.log.nl();
-      }
-    }
-  }
-
   async beforeServe(options: T) {
     const hook = new ServeBeforeHook(this.e);
 
@@ -194,22 +159,8 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
     await this.beforeServe(options);
 
-    if (options.devapp) {
-      this.e.log.warn(
-        `The DevApp has been retired.\n` +
-        `The app will no longer receive updates and the ${input('--devapp')} flag will be removed in Ionic CLI 6. See the DevApp docs${ancillary('[1]')} for details.\n\n` +
-        `${ancillary('[1]')}: ${strong('https://ionicframework.com/docs/appflow/devapp')}\n`
-      );
-    }
-
     const details = await this.serveProject(options);
-    const devAppDetails = await this.gatherDevAppDetails(options, details);
     const labDetails = options.lab ? await this.runLab(options, details) : undefined;
-
-    if (devAppDetails) {
-      const devAppName = await this.publishDevApp(options, devAppDetails);
-      devAppDetails.channel = devAppName;
-    }
 
     const localAddress = `${details.protocol}://localhost:${details.port}`;
     const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
@@ -221,7 +172,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       (labAddress ? `\nLab: ${strong(labAddress)}` : '') +
       `\nLocal: ${strong(localAddress)}` +
       (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => strong(fmtExternalAddress(v.address))).join(', ')}` : '') +
-      (devAppDetails && devAppDetails.channel ? `\nDevApp: ${strong(devAppDetails.channel)} on ${strong(os.hostname())}` : '') +
       `\n\n${chalk.yellow('Use Ctrl+C to quit this process')}`
     );
     this.e.log.nl();
@@ -264,85 +214,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
   getUsedPorts(options: T, details: ServeDetails): number[] {
     return [details.port];
-  }
-
-  async gatherDevAppDetails(options: T, details: ServeDetails): Promise<DevAppDetails | undefined> {
-    if (options.devapp) {
-      const { computeBroadcastAddress } = await import('./devapp');
-
-      // TODO: There is no accurate/reliable/realistic way to identify a WiFi
-      // network uniquely in NodeJS. But this is where we could detect new
-      // networks and prompt the dev if they want to "trust" it (allow binding to
-      // 0.0.0.0 and broadcasting).
-
-      const interfaces = getExternalIPv4Interfaces()
-        .map(i => ({ ...i, broadcast: computeBroadcastAddress(i.address, i.netmask) }));
-
-      const { port } = details;
-
-      // the comm server always binds to 0.0.0.0 to target every possible interface
-      const commPort = await findClosestOpenPort(DEFAULT_DEVAPP_COMM_PORT);
-
-      return { port, commPort, interfaces };
-    }
-  }
-
-  async publishDevApp(options: T, details: DevAppDetails): Promise<string | undefined> {
-    if (options.devapp) {
-      const { createCommServer, createPublisher } = await import('./devapp');
-
-      const publisher = await createPublisher(this.e.project.config.get('name'), details.port, details.commPort);
-      const comm = await createCommServer(publisher.id, details.commPort);
-
-      publisher.interfaces = details.interfaces;
-
-      comm.on('error', (err: Error) => {
-        debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
-      });
-
-      comm.on('connect', async data => {
-        this.e.log.info(`DevApp connection established from ${strong(data.device)}`);
-        this.e.log.nl();
-
-        if (!this.devAppConnectionMade) {
-          this.devAppConnectionMade = true;
-          await this.displayDevAppMessage(options);
-        }
-      });
-
-      publisher.on('error', (err: Error) => {
-        debug(`Error in DevApp service: ${String(err.stack ? err.stack : err)}`);
-      });
-
-      try {
-        await comm.start();
-      } catch (e) {
-        this.e.log.error(`Could not create DevApp comm server: ${String(e.stack ? e.stack : e)}`);
-      }
-
-      try {
-        await publisher.start();
-      } catch (e) {
-        this.e.log.error(`Could not publish DevApp service: ${String(e.stack ? e.stack : e)}`);
-      }
-
-      return publisher.name;
-    }
-  }
-
-  async getSupportedDevAppPlugins(): Promise<Set<string>> {
-    const p = path.resolve(ASSETS_DIRECTORY, 'devapp', 'plugins.json');
-    const plugins = await readJson(p);
-
-    if (!Array.isArray(plugins)) {
-      throw new Error(`Cannot read ${p} file of supported plugins.`);
-    }
-
-    // This one is common, and hopefully obvious enough that the devapp doesn't
-    // use any splash screen but its own, so we mark it as "supported".
-    plugins.push('cordova-plugin-splashscreen');
-
-    return new Set(plugins);
   }
 
   async runLab(options: T, serveDetails: ServeDetails): Promise<LabServeDetails> {

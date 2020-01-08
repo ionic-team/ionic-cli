@@ -42,7 +42,6 @@
   "dependencies": {
     "@ionic/cli-framework": "3.0.6",
     "@ionic/cli-framework-prompts": "1.0.4",
-    "@ionic/discover": "2.0.8",
     "@ionic/utils-array": "1.2.2",
     "@ionic/utils-fs": "2.0.9",
     "@ionic/utils-network": "1.0.6",

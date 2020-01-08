@@ -95,14 +95,8 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
     const ssl = options['ssl'] ? Boolean(options['ssl']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
-    let consolelogs = typeof options['consolelogs'] === 'boolean' ? Boolean(options['consolelogs']) : undefined;
-    let consolelogsPort = consolelogs ? str2num(options['consolelogs-port'], DEFAULT_CONSOLE_LOGS_PORT) : undefined;
-
-    // if not defined, default to true for devapp
-    if (options.devapp) {
-      consolelogs = consolelogs === undefined ? true : consolelogs;
-      consolelogsPort = str2num(options['consolelogs-port'], DEFAULT_CONSOLE_LOGS_PORT);
-    }
+    const consolelogs = typeof options['consolelogs'] === 'boolean' ? Boolean(options['consolelogs']) : undefined;
+    const consolelogsPort = consolelogs ? str2num(options['consolelogs-port'], DEFAULT_CONSOLE_LOGS_PORT) : undefined;
 
     return {
       ...baseOptions,
@@ -112,14 +106,6 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
       configuration,
       sourcemaps,
     };
-  }
-
-  determineEngineFromCommandLine(options: CommandLineOptions): string {
-    if (options['devapp']) {
-      return 'cordova';
-    }
-
-    return super.determineEngineFromCommandLine(options);
   }
 
   platformToMode(platform: string): string {
@@ -238,10 +224,6 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
       }
 
       separatedArgs = [];
-
-      if (options.devapp) {
-        args['cordova-mock'] = true;
-      }
 
       args.consolelogs = options.consolelogs ? true : undefined;
       args['consolelogs-port'] = options.consolelogsPort ? String(options.consolelogsPort) : undefined;

@@ -23,7 +23,6 @@ describe('ionic', () => {
           address: 'localhost',
           browser: undefined,
           browserOption: undefined,
-          devapp: false,
           engine: 'browser',
           externalAddressRequired: false,
           lab: false,
@@ -45,8 +44,8 @@ describe('ionic', () => {
 
         it('should provide options from negations of cli flag defaults', () => {
           const runner = new MyServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
-          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
+          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
+          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
         });
 
         it('should allow overrides of default values', () => {
@@ -58,7 +57,7 @@ describe('ionic', () => {
         it('should respect --external flag', () => {
           const runner = new MyServeRunner({});
           const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0', devapp: false });
+          expect(result).toEqual({ ...defaults, address: '0.0.0.0' });
         });
 
         it('should respect --project flag', () => {

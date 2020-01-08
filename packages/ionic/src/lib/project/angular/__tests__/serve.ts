@@ -14,7 +14,6 @@ describe('ionic', () => {
           address: 'localhost',
           browser: undefined,
           browserOption: undefined,
-          devapp: false,
           engine: 'browser',
           externalAddressRequired: false,
           lab: false,
@@ -38,14 +37,8 @@ describe('ionic', () => {
 
         it('should provide options from negations of cli flag defaults', () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
-          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, devapp: false, lab: true, open: true, externalAddressRequired: true });
-        });
-
-        it('should turn off devapp for cordova', () => {
-          const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], engine: 'cordova' });
-          expect(result).toEqual({ ...defaults, devapp: false, engine: 'cordova' });
+          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
+          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
         });
 
         it('should allow overrides of default values', () => {
@@ -57,19 +50,13 @@ describe('ionic', () => {
         it('should respect --external flag', () => {
           const runner = new AngularServeRunner({} as any);
           const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0', devapp: false });
+          expect(result).toEqual({ ...defaults, address: '0.0.0.0' });
         });
 
         it('should respect --consolelogs flag', () => {
           const runner = new AngularServeRunner({} as any);
           const result = runner.createOptionsFromCommandLine([], { _: [], consolelogs: true });
           expect(result).toEqual({ ...defaults, consolelogs: true, consolelogsPort: 53703 });
-        });
-
-        it('should respect --devapp flag', () => {
-          const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], devapp: true });
-          expect(result).toEqual({ ...defaults, engine: 'cordova', devapp: true, consolelogs: true, consolelogsPort: 53703 });
         });
 
         it('should respect --project and --configuration flags', () => {

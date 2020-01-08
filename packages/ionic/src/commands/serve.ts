@@ -3,13 +3,11 @@ import { sleepForever } from '@ionic/utils-process';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
-import { ancillary, input, strong } from '../lib/color';
+import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException, RunnerException } from '../lib/errors';
-import { getFullCommandParts, runCommand } from '../lib/executor';
-import { prettyProjectName } from '../lib/project';
+import { getFullCommandParts } from '../lib/executor';
 import { BROWSERS, COMMON_SERVE_COMMAND_OPTIONS, DEFAULT_LAB_PORT } from '../lib/serve';
-import { emoji } from '../lib/utils/emoji';
 
 export class ServeCommand extends Command implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -67,9 +65,7 @@ Easily spin up a development server which launches in your browser. It watches f
 
 By default, ${input('ionic serve')} boots up a development server on ${input('localhost')}. To serve to your LAN, specify the ${input('--external')} option, which will use all network interfaces and print the external address(es) on which your app is being served.
 
-Try the ${input('--lab')} option to see multiple platforms at once.
-
-To target the DevApp, use the ${input('--devapp')} option.`;
+Try the ${input('--lab')} option to see multiple platforms at once.`;
 
     const runner = this.project && await this.project.getServeRunner();
 
@@ -132,28 +128,8 @@ To target the DevApp, use the ${input('--devapp')} option.`;
     }
 
     try {
-      const { SUPPORTED_PROJECT_TYPES } = await import('../lib/integrations/cordova');
-
       const runner = await this.project.requireServeRunner();
       const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
-
-      if (runnerOpts.devapp) {
-        if (!SUPPORTED_PROJECT_TYPES.includes(this.project.type)) {
-          throw new FatalException(
-            `Ionic doesn't support using the DevApp with ${input(prettyProjectName(this.project.type))} projects.\n` +
-            `This is because the DevApp runs on Cordova, but Cordova isn't supported by ${input(prettyProjectName(this.project.type))} projects. To develop your app on a device, we recommend using ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})\n\n` +
-            `To learn more about running your project with Capacitor, see the docs for iOS${ancillary('[1]')} and Android${ancillary('[2]')}.\n\n` +
-            `${ancillary('[1]')}: ${strong('https://ion.link/running-ios-docs#running-with-the-ionic-cli')}\n` +
-            `${ancillary('[2]')}: ${strong('https://ion.link/running-android-docs#running-with-capacitor')}\n`
-          );
-        }
-
-        const cordova = this.project.getIntegration('cordova');
-
-        if (!cordova) {
-          await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
-        }
-      }
 
       await runner.run(runnerOpts);
     } catch (e) {
