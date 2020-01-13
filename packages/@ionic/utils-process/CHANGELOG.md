@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [1.0.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-process@1.0.8...@ionic/utils-process@1.0.9) (2020-01-13)
+
+**Note:** Version bump only for package @ionic/utils-process
+
+
+
+
+
 ## [1.0.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-process@1.0.7...@ionic/utils-process@1.0.8) (2019-12-10)
 
 **Note:** Version bump only for package @ionic/utils-process

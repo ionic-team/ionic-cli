@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.14](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.13...ionic@5.4.14) (2020-01-13)
+
+
+### Bug Fixes
+
+* **deploy:** exclude source maps from manifest ([#4256](https://github.com/ionic-team/ionic-cli/issues/4256)) ([52a33ba](https://github.com/ionic-team/ionic-cli/commit/52a33ba116e28c61287b03e938b5883df45ffb7b))
+
+
+
+
+
 ## [5.4.13](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.12...ionic@5.4.13) (2019-12-13)
 
 
