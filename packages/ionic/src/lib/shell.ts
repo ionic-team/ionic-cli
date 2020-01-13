@@ -224,7 +224,7 @@ export class Shell implements IShell {
     // then `options.env`, then add several key/values. PATH is supplemented
     // with the `node_modules\.bin` folder in the project directory so that we
     // can run binaries inside a project.
-    options.env = createProcessEnv(process.env, options.env, {
+    options.env = createProcessEnv(process.env, options.env ?? {}, {
       PATH: this.alterPath(process.env.PATH || ''),
       FORCE_COLOR: chalk.level > 0 ? '1' : '0',
     });

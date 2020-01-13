@@ -8,7 +8,7 @@
     "ionic": "./bin/ionic"
   },
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=10.3.0"
   },
   "main": "./index.js",
   "types": "./index.d.ts",
@@ -74,7 +74,7 @@
     "@types/elementtree": "^0.1.0",
     "@types/jest": "^24.0.3",
     "@types/lodash": "^4.14.104",
-    "@types/node": "~8.10.54",
+    "@types/node": "~10.17.13",
     "@types/open": "~6.2.1",
     "@types/os-name": "^3.1.0",
     "@types/semver": "^6.0.0",

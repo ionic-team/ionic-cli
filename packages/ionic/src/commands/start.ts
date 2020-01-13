@@ -6,7 +6,7 @@ import * as Debug from 'debug';
 import * as path from 'path';
 
 import { PROJECT_FILE } from '../constants';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, ProjectType, ResolvedStarterTemplate, StarterManifest } from '../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, IShellRunOptions, ProjectType, ResolvedStarterTemplate, StarterManifest } from '../definitions';
 import { failure, input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
@@ -442,7 +442,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       this.env.log.nl();
     }
 
-    const shellOptions = { cwd: projectDir, stdio: 'inherit' };
+    const shellOptions: IShellRunOptions = { cwd: projectDir, stdio: 'inherit' };
 
     if (options['deps']) {
       this.env.log.msg('Installing dependencies may take several minutes.');

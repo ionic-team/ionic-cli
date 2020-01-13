@@ -118,16 +118,12 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
     }
     if (integration === 'capacitor') {
       const { pkgManagerArgs } = await import('../../lib/utils/npm');
-      const shellOptions = {
-        stdio: 'inherit',
-        save: true,
-      };
       const [ installer, ...installerArgs ] = await pkgManagerArgs(
         this.env.config.get('npmClient'),
         { command: 'install', pkg: 'cordova-plugin-ionic' }
       );
       // install the plugin with npm
-      await this.env.shell.run(installer, installerArgs, shellOptions);
+      await this.env.shell.run(installer, installerArgs, { stdio: 'inherit' });
       // generate the manifest
       await runCommand(runinfo, ['deploy', 'manifest']);
       // run capacitor sync

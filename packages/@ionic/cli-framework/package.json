@@ -7,7 +7,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "engines": {
-    "node": ">=8.9.4"
+    "node": ">=10.3.0"
   },
   "scripts": {
     "clean": "rimraf index.* definitions.* errors.* guards.* lib utils",
@@ -45,7 +45,7 @@
     "@types/jest": "^24.0.3",
     "@types/lodash": "^4.14.104",
     "@types/minimist": "^1.2.0",
-    "@types/node": "~8.10.54",
+    "@types/node": "~10.17.13",
     "@types/rimraf": "^2.0.2",
     "@types/slice-ansi": "^2.0.0",
     "@types/wrap-ansi": "^3.0.0",
