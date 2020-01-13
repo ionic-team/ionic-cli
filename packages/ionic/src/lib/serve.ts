@@ -194,6 +194,14 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
     await this.beforeServe(options);
 
+    if (options.devapp) {
+      this.e.log.warn(
+        `The DevApp has been retired.\n` +
+        `The app will no longer receive updates and the ${input('--devapp')} flag will be removed in Ionic CLI 6. See the DevApp docs${ancillary('[1]')} for details.\n\n` +
+        `${ancillary('[1]')}: ${strong('https://ionicframework.com/docs/appflow/devapp')}\n`
+      );
+    }
+
     const details = await this.serveProject(options);
     const devAppDetails = await this.gatherDevAppDetails(options, details);
     const labDetails = options.lab ? await this.runLab(options, details) : undefined;
