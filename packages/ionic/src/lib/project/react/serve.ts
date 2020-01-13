@@ -112,7 +112,8 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
 
     const strippedLine = stripAnsi(line);
 
-    if (strippedLine.includes('Compiled successfully')) {
+    const compileMsgs = ['Compiled successfully', 'Compiled with warnings', 'Failed to compile'];
+    if (compileMsgs.some(msg => strippedLine.includes(msg)) {
       this.emit('ready');
       return false;
     }
