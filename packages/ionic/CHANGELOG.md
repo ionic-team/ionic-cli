@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.15](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.14...ionic@5.4.15) (2020-01-15)
+
+
+### Bug Fixes
+
+* **react:** indicate serve ready on warn/error as well ([#4280](https://github.com/ionic-team/ionic-cli/issues/4280)) ([1e9b754](https://github.com/ionic-team/ionic-cli/commit/1e9b7546fa561a99c33072908672fcea25c778d9))
+
+
+
+
+
 ## [5.4.14](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.13...ionic@5.4.14) (2020-01-13)
 
 
