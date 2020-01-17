@@ -432,6 +432,7 @@ export interface SSLConfig {
 }
 
 export interface CreateRequestOptions {
+  userAgent: string;
   ssl?: SSLConfig;
   proxy?: string;
 }

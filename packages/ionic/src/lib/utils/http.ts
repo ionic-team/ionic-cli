@@ -20,7 +20,7 @@ function getGlobalProxy(): { envvar: string; envval: string; } | undefined {
   }
 }
 
-export async function createRequest(method: HttpMethod, url: string, { proxy, ssl }: CreateRequestOptions): Promise<{ req: SuperAgentRequest; }> {
+export async function createRequest(method: HttpMethod, url: string, { userAgent, proxy, ssl }: CreateRequestOptions): Promise<{ req: SuperAgentRequest; }> {
   const superagent = await import('superagent');
 
   if (!proxy) {
@@ -33,14 +33,16 @@ export async function createRequest(method: HttpMethod, url: string, { proxy, ss
 
   const req = superagent(method, url);
 
-  req.redirects(25);
+  req
+    .set('User-Agent', userAgent)
+    .redirects(25);
 
   if (proxy) {
     const superagentProxy = await import('superagent-proxy');
     superagentProxy(superagent);
 
-    if ((req as any).proxy) { // TODO: create/use `@types/superagent-proxy`
-      (req as any).proxy(proxy);
+    if (req.proxy) {
+      req.proxy(proxy);
     } else {
       debug(`Cannot install proxy--req.proxy not defined`);
     }

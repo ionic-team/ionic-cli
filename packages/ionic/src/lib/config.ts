@@ -107,6 +107,7 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
     const { c } = this;
 
     return {
+      userAgent: `node/superagent/Ionic CLI ${c.version}`,
       ssl: {
         cafile: c['ssl.cafile'],
         certfile: c['ssl.certfile'],
