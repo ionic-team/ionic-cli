@@ -742,69 +742,6 @@ export interface INamespace extends FrameworkNamespace<ICommand, INamespace, Com
   project?: IProject;
 }
 
-export interface ImageResource {
-  platform: string;
-  imageId?: string;
-  dest: string;
-  resType: string;
-  nodeName: string;
-  nodeAttributes: string[];
-  name: string;
-  width: number;
-  height: number;
-  density?: string;
-  orientation?: 'landscape' | 'portrait';
-}
-
-export interface ImageResourceTransformResult {
-  resource: ImageResource;
-  error?: Error;
-  tmpDest: string;
-}
-
-export interface ResourcesImageConfig {
-  name: string;
-  width: number;
-  height: number;
-  density?: string;
-  orientation?: 'landscape' | 'portrait';
-}
-
-export interface SourceImage {
-  ext: string;
-  imageId?: string;
-  cachedId?: string;
-  platform: string;
-  resType: string;
-  path: string;
-  vector: boolean;
-  width: number;
-  height: number;
-}
-
-export interface ImageUploadResponse {
-  Error: string;
-  Width: number;
-  Height: number;
-  Type: string;
-  Vector: boolean;
-}
-
-export interface ResourcesPlatform {
-  [imgType: string]: {
-    images: ResourcesImageConfig[];
-    nodeName: string;
-    nodeAttributes: string[];
-  };
-}
-
-export interface ResourcesConfig {
-  [propName: string]: ResourcesPlatform;
-}
-
-export type KnownPlatform = 'ios' | 'android' | 'wp8' | 'windows' | 'browser';
-export type KnownResourceType = 'icon' | 'splash';
-
 export interface StarterList {
   starters: {
     name: string;

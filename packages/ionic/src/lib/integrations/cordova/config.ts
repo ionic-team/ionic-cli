@@ -5,7 +5,7 @@ import * as Debug from 'debug';
 import * as et from 'elementtree';
 import * as path from 'path';
 
-import { CordovaPackageJson, ProjectIntegration, ResourcesPlatform } from '../../../definitions';
+import { CordovaPackageJson, ProjectIntegration } from '../../../definitions';
 import { isCordovaPackageJson } from '../../../guards';
 import { failure, input, strong } from '../../color';
 import { FatalException } from '../../errors';
@@ -216,73 +216,6 @@ export class CordovaConfig {
       name: platform,
       spec: deps[`cordova-${platform}`],
     }));
-  }
-
-  ensurePlatformImages(platform: string, resourcesPlatform: ResourcesPlatform): void {
-    const root = this.doc.getroot();
-    const orientation = this.getPreference('Orientation') || 'default';
-
-    for (const imgName in resourcesPlatform) {
-      const imgType = resourcesPlatform[imgName];
-      let platformElement = root.find(`platform[@name='${platform}']`);
-
-      if (!platformElement) {
-        platformElement = et.SubElement(root, 'platform', { name: platform });
-      }
-
-      const images = imgType.images.filter(img => orientation === 'default' || typeof img.orientation === 'undefined' || img.orientation === orientation);
-
-      for (const image of images) {
-        // We use forward slashes, (not path.join) here to provide
-        // cross-platform compatibility for paths.
-        const imgPath = ['resources', platform, imgType.nodeName, image.name].join('/'); // TODO: hard-coded 'resources' dir
-        let imgElement = platformElement.find(`${imgType.nodeName}[@src='${imgPath}']`);
-
-        if (!imgElement) {
-          imgElement = platformElement.find(`${imgType.nodeName}[@src='${imgPath.split('/').join('\\')}']`);
-        }
-
-        if (!imgElement) {
-          const attrs: { [key: string]: string } = {};
-
-          for (const attr of imgType.nodeAttributes) {
-            let v = (image as any)[attr]; // TODO
-
-            if (attr === 'src') {
-              v = imgPath;
-            }
-
-            attrs[attr] = v;
-          }
-
-          imgElement = et.SubElement(platformElement, imgType.nodeName, attrs);
-        }
-
-        imgElement.set('src', imgPath);
-      }
-    }
-  }
-
-  ensureSplashScreenPreferences(): void {
-    const root = this.doc.getroot();
-
-    let splashScreenPrefElement = root.find(`preference[@name='SplashScreen']`);
-
-    if (!splashScreenPrefElement) {
-      splashScreenPrefElement = et.SubElement(root, 'preference', { name: 'SplashScreen', value: 'screen' });
-    }
-
-    let splashShowOnlyFirstTimePrefElement = root.find(`preference[@name='SplashShowOnlyFirstTime']`);
-
-    if (!splashShowOnlyFirstTimePrefElement) {
-      splashShowOnlyFirstTimePrefElement = et.SubElement(root, 'preference', { name: 'SplashShowOnlyFirstTime', value: 'false' });
-    }
-
-    let splashScreenDelayPrefElement = root.find(`preference[@name='SplashScreenDelay']`);
-
-    if (!splashScreenDelayPrefElement) {
-      splashScreenDelayPrefElement = et.SubElement(root, 'preference', { name: 'SplashScreenDelay', value: '3000' });
-    }
   }
 
   protected write(): string {
