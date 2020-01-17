@@ -1,4 +1,4 @@
-import { Component, Listen, State } from '@stencil/core';
+import { Component, Listen, State, h } from '@stencil/core';
 
 import { PLATFORM_IOS, PLATFORM_ANDROID } from '../../utils';
 
