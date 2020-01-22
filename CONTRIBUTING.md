@@ -7,9 +7,16 @@ issues on GitHub should be reserved for bug reports and feature requests.
 ### Branches
 
 * [`develop`](https://github.com/ionic-team/ionic-cli/tree/develop): **development** branch
-* [`master`](https://github.com/ionic-team/ionic-cli/tree/master): **stable** version (`npm install -g ionic`)
-* [`3.x`](https://github.com/ionic-team/ionic-cli/tree/3.x): **previous** version (`npm install -g ionic@3`)
-* [`2.x`](https://github.com/ionic-team/ionic-cli/tree/2.x): **legacy** version (`npm install -g ionic@legacy`)
+* [`master`](https://github.com/ionic-team/ionic-cli/tree/master): **stable** version
+
+##### Version Branches
+
+These are mostly for reference--older major versions are typically not maintained.
+
+* [`5.x`](https://github.com/ionic-team/ionic-cli/tree/5.x)
+* [`4.x`](https://github.com/ionic-team/ionic-cli/tree/4.x)
+* [`3.x`](https://github.com/ionic-team/ionic-cli/tree/3.x)
+* [`2.x`](https://github.com/ionic-team/ionic-cli/tree/2.x) (*legacy version*)
 
 ### Bug Reports
 
@@ -44,21 +51,30 @@ first PR to the Ionic CLI. :heart_eyes:
 
 The Ionic CLI is organized into a monorepo. Here are the packages:
 
-##### General Purpose
+##### CLIs
 
-* [`packages/ionic`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/ionic): Ionic CLI executable and library.
-* [`packages/@ionic/cli-framework`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-framework): Framework for command-line programs.
-* [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/discover): Service discovery library used for `ionic serve` with the [Ionic DevApp](https://ionicframework.com/docs/appflow/devapp/).
+* [`packages/@ionic/cli`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli): Ionic CLI executable and library.
 * [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/lab): Utility CLI for Ionic Lab, used by `ionic serve`.
-
-##### Ionic 1
-
 * [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/v1-toolkit): Utility CLI for Ionic v1 Apps, used by `ionic serve`.
+
+##### Libraries
+
+* [`packages/@ionic/cli-framework`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-framework): Framework for command-line programs.
+* [`packages/@ionic/cli-framework-prompts`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli-framework-prompts): Command-line prompting framework that wraps [Inquirer.js](https://github.com/SBoudrias/Inquirer.js).
+* [`packages/@ionic/discover`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/discover): Service discovery library used for `ionic serve` with the [Ionic DevApp](https://ionicframework.com/docs/appflow/devapp/) (now retired).
+* [`packages/@ionic/utils-array`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-array): General purpose array library with asynchronous map/filter/reduce.
+* [`packages/@ionic/utils-fs`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-fs): Filesystem library that wraps [fs-extra](https://github.com/jprichardson/node-fs-extra) for Node.js.
+* [`packages/@ionic/utils-network`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-network): Network library for Node.js.
+* [`packages/@ionic/utils-object`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-object): General purpose object library.
+* [`packages/@ionic/utils-process`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-process): OS process library for Node.js.
+* [`packages/@ionic/utils-stream`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-stream): Stream library for Node.js.
+* [`packages/@ionic/utils-subprocess`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-subprocess): Subprocess library that uses [cross-spawn](https://github.com/moxystudio/node-cross-spawn) for Node.js.
+* [`packages/@ionic/utils-terminal`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/utils-terminal): Terminal and command-line environment library for Node.js.
 
 #### Toolset
 
 * npm 6+ is required.
-* Node 10+ is required.
+* Node 12+ is required.
 * The codebase is written in [TypeScript](https://www.typescriptlang.org/). If
   you're unfamiliar with TypeScript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
@@ -85,8 +101,8 @@ such as [nvm](https://github.com/creationix/nvm) and switch between
 environments, e.g.
 
 ```bash
-nvm install v8.11.3
-nvm alias cli-local v8.11.3
+nvm install v12
+nvm alias cli-local v12
 ```
 
 You can even set up an alias in your terminal that sets `IONIC_CONFIG_DIRECTORY`
@@ -96,10 +112,10 @@ to have seperate configuration environments.
 alias cli-local="nvm use cli-local && export IONIC_CONFIG_DIRECTORY=$HOME/.ionic/cli-local"
 ```
 
-When the Node environment is created, create a symlink to `packages/ionic/bin/ionic` within `$NVM_BIN`:
+When the Node environment is created, create a symlink to `packages/@ionic/cli/bin/ionic` within `$NVM_BIN`:
 
 ```bash
-ln -s $(pwd)/packages/ionic/bin/ionic $NVM_BIN
+ln -s $(pwd)/packages/@ionic/cli/bin/ionic $NVM_BIN
 ```
 
 ##### Debugging
@@ -121,10 +137,6 @@ The following workflow is recommended for debugging the Ionic CLI:
 
 Read more about Node debugging in the [Debugging
 Guide](https://nodejs.org/en/docs/guides/debugging-getting-started/).
-
-##### Code Structure
-
-TODO: Be helpful about where to look for commands, utilities, etc.
 
 ##### Publishing
 

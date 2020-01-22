@@ -6,6 +6,7 @@ aliases:
   - &restore-cache
       keys:
         - dependency-cache-{{ checksum "package.json" }}
+        - dependency-cache-{{ checksum "packages/@ionic/cli/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/cli-framework-prompts/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/discover/package.json" }}
@@ -20,12 +21,16 @@ aliases:
         - dependency-cache-{{ checksum "packages/@ionic/utils-terminal/package.json" }}
         - dependency-cache-{{ checksum "packages/@ionic/v1-toolkit/package.json" }}
         - dependency-cache-{{ checksum "packages/cli-scripts/package.json" }}
-        - dependency-cache-{{ checksum "packages/ionic/package.json" }}
 
   - &save-cache
       key: dependency-cache-{{ checksum "package.json" }}
       paths:
         - node_modules
+
+  - &save-cache-cli
+      key: dependency-cache-{{ checksum "packages/@ionic/cli/package.json" }}
+      paths:
+        - packages/@ionic/cli/node_modules
 
   - &save-cache-cli-framework
       key: dependency-cache-{{ checksum "packages/@ionic/cli-framework/package.json" }}
@@ -97,11 +102,6 @@ aliases:
       paths:
         - packages/cli-scripts/node_modules
 
-  - &save-cache-ionic
-      key: dependency-cache-{{ checksum "packages/ionic/package.json" }}
-      paths:
-        - packages/ionic/node_modules
-
 defaults: &defaults
   docker:
     - image: circleci/node:12
@@ -129,6 +129,7 @@ jobs:
       - save_cache: *save-cache
       - run: npm run bootstrap
       - run: npm run lint
+      - save_cache: *save-cache-cli
       - save_cache: *save-cache-cli-framework
       - save_cache: *save-cache-cli-framework-prompts
       - save_cache: *save-cache-discover
@@ -143,16 +144,10 @@ jobs:
       - save_cache: *save-cache-utils-terminal
       - save_cache: *save-cache-v1-toolkit
       - save_cache: *save-cache-cli-scripts
-      - save_cache: *save-cache-ionic
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - "*"
-
-  unit-test-node-8:
-    <<: *unit-test-base
-    docker:
-      - image: circleci/node:8
 
   unit-test-node-10:
     <<: *unit-test-base
@@ -185,15 +180,12 @@ workflows:
   build:
     jobs:
       - build
-      - unit-test-node-8:
-          requires: [build]
       - unit-test-node-10:
           requires: [build]
       - unit-test-node-12:
           requires: [build]
       - deploy:
           requires:
-            - unit-test-node-8
             - unit-test-node-10
             - unit-test-node-12
           filters:

@@ -9,7 +9,7 @@ The Ionic command line interface (CLI) is your go-to tool for developing [Ionic]
 ### Installation
 
 ```
-npm install -g ionic
+npm install -g @ionic/cli
 ```
 
 Detailed installation instructions can be found in the [CLI documentation](https://ionicframework.com/docs/installation/cli).
