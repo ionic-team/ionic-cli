@@ -39,7 +39,7 @@ Integrations can be re-added with the ${input('--add')} option.
         },
         {
           name: 'quiet',
-          summary: 'Do not log file operations',
+          summary: 'Less verbose output, ignore integration errors',
           type: Boolean,
         },
       ],
@@ -86,10 +86,14 @@ Integrations can be re-added with the ${input('--add')} option.
       }
     } catch (e) {
       if (e instanceof BaseError) {
-        throw new FatalException(e.message);
+        if (quiet) {
+          this.env.log.error(e.message);
+        } else {
+          throw new FatalException(e.message);
+        }
+      } else {
+        throw e;
       }
-
-      throw e;
     }
   }
 }

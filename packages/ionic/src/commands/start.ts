@@ -146,6 +146,19 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       }
     }
 
+    const projectType = options['type'] ? String(options['type']) : await this.getProjectType();
+
+    if (options['cordova']) {
+      const { checkForUnsupportedProject } = await import('../lib/integrations/cordova/utils');
+
+      try {
+        await checkForUnsupportedProject(projectType as ProjectType);
+      } catch (e) {
+        this.env.log.error(e.message);
+        options['cordova'] = false;
+      }
+    }
+
     if (!inputs[0]) {
       if (appflowId) {
         const { AppClient } = await import('../lib/app');
@@ -178,8 +191,6 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         inputs[0] = name;
       }
     }
-
-    const projectType = options['type'] ? String(options['type']) : await this.getProjectType();
 
     if (!inputs[1]) {
       if (this.env.flags.interactive) {
@@ -416,21 +427,28 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     this.env.shell.alterPath = p => prependNodeModulesBinToPath(projectDir, p);
 
     if (!this.schema.cloned) {
-      if (typeof options['cordova'] === 'undefined' && !options['capacitor']) {
+      if (options['cordova']) {
+        const { confirmCordovaUsage } = await import('../lib/integrations/cordova/utils');
+        const confirm = await confirmCordovaUsage(this.env);
+
+        if (confirm) {
+          await runCommand(runinfo, ['integrations', 'enable', 'cordova', '--quiet']);
+        } else {
+          options['cordova'] = false;
+        }
+      }
+
+      if (options['capacitor'] === null && !options['cordova']) {
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: 'Integrate your new app with Cordova to target native iOS and Android?',
+          message: 'Integrate your new app with Capacitor to target native iOS and Android?',
           default: false,
         });
 
         if (confirm) {
-          options['cordova'] = true;
+          options['capacitor'] = true;
         }
-      }
-
-      if (options['cordova']) {
-        await runCommand(runinfo, ['integrations', 'enable', 'cordova', '--quiet']);
       }
 
       if (options['capacitor']) {

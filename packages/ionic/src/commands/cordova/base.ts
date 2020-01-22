@@ -99,6 +99,13 @@ export abstract class CordovaCommand extends Command {
     const cordova = this.project.getIntegration('cordova');
 
     if (!cordova) {
+      const { confirmCordovaUsage } = await import('../../lib/integrations/cordova/utils');
+      const confirm = await confirmCordovaUsage(this.env);
+
+      if (!confirm) {
+        throw new FatalException('', 0);
+      }
+
       await runCommand(runinfo, ['integrations', 'enable', 'cordova']);
     }
   }
@@ -115,7 +122,6 @@ export abstract class CordovaCommand extends Command {
     const alias = lodash.last(parts);
 
     await checkForUnsupportedProject(this.project.type, alias);
-
     await this.checkCordova(runinfo);
 
     // Check for www folder

@@ -1,6 +1,7 @@
 import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, unparseArgs } from '@ionic/cli-framework';
+import { PromptModule } from '@ionic/cli-framework-prompts';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, ProjectType } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, ILogger, ProjectType } from '../../../definitions';
 import { ancillary, input, strong } from '../../color';
 import { FatalException } from '../../errors';
 import { prettyProjectName } from '../../project';
@@ -73,10 +74,33 @@ export async function checkForUnsupportedProject(type: ProjectType, cmd?: string
   if (!SUPPORTED_PROJECT_TYPES.includes(type)) {
     throw new FatalException(
       `Ionic doesn't support using Cordova with ${input(prettyProjectName(type))} projects.\n` +
-      `We encourage you to try ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})\n` +
-      (cmd === 'run' ? `\nIf you want to run your project natively, see ${input('ionic capacitor run --help')}.` : '') +
-      (cmd === 'plugin' ? `\nIf you want to add Cordova plugins to your Capacitor project, see these docs${ancillary('[1]')}.\n\n${ancillary('[1]')}: ${strong('https://capacitor.ionicframework.com/docs/cordova/using-cordova-plugins')}` : '')
+      `We encourage you to try ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})` +
+      (cmd === 'run' ? `\n\nIf you want to run your project natively, see ${input('ionic capacitor run --help')}.` : '') +
+      (cmd === 'plugin' ? `\n\nIf you want to add Cordova plugins to your Capacitor project, see these docs${ancillary('[1]')}.\n\n${ancillary('[1]')}: ${strong('https://capacitor.ionicframework.com/docs/cordova/using-cordova-plugins')}` : '')
       // TODO: check for 'ionic cordova resources'
     );
   }
+}
+
+export interface ConfirmCordovaUsageDeps {
+  log: ILogger;
+  prompt: PromptModule;
+}
+
+export async function confirmCordovaUsage({ log, prompt }: ConfirmCordovaUsageDeps): Promise<boolean> {
+  log.nl();
+  log.warn(
+    `About to integrate your app with Cordova.\n` +
+    `We now recommend ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji('⚡️ ', '')} (${strong('https://ion.link/capacitor')}) as the official native runtime for Ionic. To learn about the differences between Capacitor and Cordova, see these docs${ancillary('[1]')}. For a getting started guide, see these docs${ancillary('[2]')}.\n\n` +
+    `${ancillary('[1]')}: ${strong('https://ion.link/capacitor-differences-with-cordova-docs')}\n` +
+    `${ancillary('[2]')}: ${strong('https://ion.link/capacitor-using-with-ionic-docs')}\n`
+  );
+
+  const confirm = await prompt({
+    type: 'confirm',
+    message: 'Are you sure you want to continue?',
+    default: true,
+  });
+
+  return confirm;
 }
