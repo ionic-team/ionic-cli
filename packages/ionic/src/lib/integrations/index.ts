@@ -1,11 +1,14 @@
 import { BaseConfig } from '@ionic/cli-framework';
+import { PromptModule } from '@ionic/cli-framework-prompts';
 import * as path from 'path';
 
 import {
+  IClient,
   IConfig,
   IIntegration,
   ILogger,
   IProject,
+  ISession,
   IShell,
   InfoItem,
   IntegrationAddDetails,
@@ -24,6 +27,9 @@ export interface IntegrationOptions {
 }
 
 export interface IntegrationDeps {
+  readonly prompt: PromptModule;
+  readonly client: IClient;
+  readonly session: ISession;
   readonly config: IConfig;
   readonly shell: IShell;
   readonly project: IProject;
@@ -33,7 +39,6 @@ export interface IntegrationDeps {
 export type IntegationUnion = import('./capacitor').Integration | import('./cordova').Integration | import('./enterprise').Integration;
 
 export class IntegrationConfig extends BaseConfig<ProjectIntegration> {
-
   provideDefaults(c: Partial<Readonly<ProjectIntegration>>): ProjectIntegration {
     return {};
   }

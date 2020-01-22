@@ -41,7 +41,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         const filename = `${path.basename(f)}${isDirectory ? '/' : ''}`;
         const type = isDirectory ? 'directory' : 'file';
 
-        const confirm = await details.env.prompt({
+        const confirm = await this.e.prompt({
           type: 'confirm',
           name: 'confirm',
           message: `The ${ancillary(filename)} ${type} exists in project. Overwrite?`,
@@ -52,7 +52,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       },
       onFileCreate: f => {
         if (!details.quiet) {
-          details.env.log.msg(`${chalk.green('CREATE')} ${f}`);
+          this.e.log.msg(`${chalk.green('CREATE')} ${f}`);
         }
       },
     };

@@ -68,7 +68,6 @@ Integrations can be re-added with the ${input('--add')} option.
           root,
           enableArgs: options['--'] ? options['--'] : undefined,
           quiet: Boolean(quiet),
-          env: this.env,
         });
 
         this.env.log.ok(`Integration ${input(integration.name)} added!`);

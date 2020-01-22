@@ -304,7 +304,6 @@ export interface IProject {
 }
 
 export interface IntegrationAddDetails {
-  env: IonicEnvironment;
   quiet?: boolean;
   root: string;
   enableArgs?: string[];

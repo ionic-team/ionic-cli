@@ -585,10 +585,13 @@ export abstract class Project implements IProject {
 
   async createIntegration(name: IntegrationName): Promise<IIntegration<ProjectIntegration>> {
     return BaseIntegration.createFromName({
+      client: this.e.client,
       config: this.e.config,
-      project: this,
-      shell: this.e.shell,
       log: this.e.log,
+      project: this,
+      prompt: this.e.prompt,
+      session: this.e.session,
+      shell: this.e.shell,
     }, name);
   }
 

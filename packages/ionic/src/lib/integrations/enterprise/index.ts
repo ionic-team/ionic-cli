@@ -58,13 +58,13 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     }
 
     if (!productKey) {
-      productKey = await details.env.prompt({
+      productKey = await this.e.prompt({
         type: 'input',
         name: 'product-key',
         message: 'Please enter your product key:',
       });
     }
-    const keyInfo = await this.validatePK(details, productKey, appId);
+    const keyInfo = await this.validatePK(productKey, appId);
 
     for (const entry of lodash.entries(keyInfo)) {
       const [key, value] = entry;
@@ -74,17 +74,17 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     return super.add(details);
   }
 
-  private async validatePK(details: IntegrationAddDetails, pk: string, appId?: string): Promise<EnterpriseProjectIntegration> {
-    let key = await this.getPK(details, pk);
+  protected async validatePK(pk: string, appId?: string): Promise<EnterpriseProjectIntegration> {
+    let key = await this.getPK(pk);
     if (!key.org) {
       throw new FatalException('No Organization attached to key. Please contact support@ionic.io');
     }
 
     if (!key.app || appId) {
       if (!appId) {
-        appId = await this.chooseAppToLink(details, key.org);
+        appId = await this.chooseAppToLink(key.org);
       }
-      key = await this.registerKey(details, key, appId);
+      key = await this.registerKey(key, appId);
     }
 
     return {
@@ -96,8 +96,8 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     };
   }
 
-  private async chooseAppToLink(details: IntegrationAddDetails, org: any): Promise<string> {
-    const appClient = await this.getAppClient(details);
+  protected async chooseAppToLink(org: any): Promise<string> {
+    const appClient = await this.getAppClient();
     const paginator = appClient.paginate({}, org.id);
     const apps: App[] = [];
 
@@ -106,22 +106,22 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       apps.push(...res.data);
     }
 
-    let appId = await this.chooseApp(details, apps, org);
+    let appId = await this.chooseApp(apps, org);
     if (appId === CHOICE_CREATE_NEW_APP) {
-      appId = await this.createNewApp(details, org);
+      appId = await this.createNewApp(org);
     }
 
     return appId;
   }
 
-  private async registerKey(details: IntegrationAddDetails, key: ProductKey, appId: string) {
-    const token = details.env.session.getUserToken();
-    const { req } = await details.env.client.make('PATCH', `/orgs/${key.org.id}/keys/${key.id}`);
+  protected async registerKey(key: ProductKey, appId: string) {
+    const token = this.e.session.getUserToken();
+    const { req } = await this.e.client.make('PATCH', `/orgs/${key.org.id}/keys/${key.id}`);
     req.set('Authorization', `Bearer ${token}`);
     req.send({ app_id: appId });
 
     try {
-      const res = await details.env.client.do(req);
+      const res = await this.e.client.do(req);
       return res.data as ProductKey;
     } catch (e) {
       if (isSuperAgentError(e)) {
@@ -136,26 +136,26 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     }
   }
 
-  private async getAppClient(details: IntegrationAddDetails) {
+  protected async getAppClient() {
     const { AppClient } = await import('../../../lib/app');
-    const token = details.env.session.getUserToken();
-    return new AppClient(token, details.env);
+    const token = this.e.session.getUserToken();
+    return new AppClient(token, this.e);
   }
 
-  private async createNewApp(details: IntegrationAddDetails, org: any): Promise<string> {
-    const appName = await details.env.prompt({
+  protected async createNewApp(org: any): Promise<string> {
+    const appName = await this.e.prompt({
       type: 'input',
       name: 'appName',
       message: 'Please enter the name of your app:',
     });
 
-    const appClient = await this.getAppClient(details);
+    const appClient = await this.getAppClient();
     const newApp = await appClient.create({ org_id: org.id, name: appName });
 
     return newApp.id;
   }
 
-  private async chooseApp(details: IntegrationAddDetails, apps: App[], org: any): Promise<string> {
+  protected async chooseApp(apps: App[], org: any): Promise<string> {
     const { formatName } = await import('../../../lib/app');
 
     const newAppChoice = {
@@ -165,7 +165,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       org,
     };
 
-    const linkedApp = await details.env.prompt({
+    const linkedApp = await this.e.prompt({
       type: 'list',
       name: 'linkedApp',
       message: 'This key needs to be registered to an app. Which app would you like to register it to?',
@@ -183,13 +183,13 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     return linkedApp;
   }
 
-  private async getPK(details: IntegrationAddDetails, pk: string): Promise<ProductKey> {
-    const token = details.env.session.getUserToken();
-    const { req } = await details.env.client.make('GET', '/keys/self');
+  protected async getPK(pk: string): Promise<ProductKey> {
+    const token = this.e.session.getUserToken();
+    const { req } = await this.e.client.make('GET', '/keys/self');
     req.set('Authorization', `Bearer ${token}`).set('Product-Key-ID', pk);
 
     try {
-      const res = await details.env.client.do(req);
+      const res = await this.e.client.do(req);
       return res.data as ProductKey;
     } catch (e) {
       if (isSuperAgentError(e)) {
@@ -207,7 +207,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     }
   }
 
-  private async updateNPMRC() {
+  protected async updateNPMRC() {
     const pk = this.config.get('productKey');
     const registries = this.config.get('registries');
     if (!pk || !registries) {
