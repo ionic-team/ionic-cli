@@ -1,6 +1,12 @@
 import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, unparseArgs } from '@ionic/cli-framework';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, ProjectType } from '../../../definitions';
+import { ancillary, input, strong } from '../../color';
+import { FatalException } from '../../errors';
+import { prettyProjectName } from '../../project';
+import { emoji } from '../../utils/emoji';
+
+export const SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'ionic1', 'ionic-angular', 'angular'];
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova
@@ -61,4 +67,16 @@ export function generateOptionsForCordovaBuild(metadata: CommandMetadata, inputs
     platform,
     project,
   };
+}
+
+export async function checkForUnsupportedProject(type: ProjectType, cmd?: string): Promise<void> {
+  if (!SUPPORTED_PROJECT_TYPES.includes(type)) {
+    throw new FatalException(
+      `Ionic doesn't support using Cordova with ${input(prettyProjectName(type))} projects.\n` +
+      `We encourage you to try ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})\n` +
+      (cmd === 'run' ? `\nIf you want to run your project natively, see ${input('ionic capacitor run --help')}.` : '') +
+      (cmd === 'plugin' ? `\nIf you want to add Cordova plugins to your Capacitor project, see these docs${ancillary('[1]')}.\n\n${ancillary('[1]')}: ${strong('https://capacitor.ionicframework.com/docs/cordova/using-cordova-plugins')}` : '')
+      // TODO: check for 'ionic cordova resources'
+    );
+  }
 }

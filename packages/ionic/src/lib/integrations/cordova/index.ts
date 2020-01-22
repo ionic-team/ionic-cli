@@ -6,17 +6,13 @@ import * as os from 'os';
 import * as path from 'path';
 
 import { BaseIntegration, IntegrationConfig } from '../';
-import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../../definitions';
-import { FatalException } from '../../../lib/errors';
-import { emoji } from '../../../lib/utils/emoji';
+import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails } from '../../../definitions';
 import { ancillary, input, strong } from '../../color';
-import { prettyProjectName } from '../../project';
 
 import * as configlib from './config';
+import { checkForUnsupportedProject } from './utils';
 
 const debug = Debug('ionic:lib:integrations:cordova');
-
-export const SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'ionic1', 'ionic-angular', 'angular'];
 
 export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly name: IntegrationName = 'cordova';
@@ -28,12 +24,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
-    if (!SUPPORTED_PROJECT_TYPES.includes(this.e.project.type)) {
-      throw new FatalException(
-        `Ionic doesn't support using Cordova with ${input(prettyProjectName(this.e.project.type))} projects.\n` +
-        `We encourage you to try ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})`
-      );
-    }
+    await checkForUnsupportedProject(this.e.project.type);
 
     const handlers: IntegrationAddHandlers = {
       conflictHandler: async (f, stats) => {

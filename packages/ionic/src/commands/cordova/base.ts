@@ -6,12 +6,10 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions, ProjectIntegration } from '../../definitions';
-import { ancillary, input, strong, weak } from '../../lib/color';
+import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { getFullCommandParts, runCommand } from '../../lib/executor';
-import { prettyProjectName } from '../../lib/project';
-import { emoji } from '../../lib/utils/emoji';
 import { pkgManagerArgs } from '../../lib/utils/npm';
 
 export const CORDOVA_COMPILE_OPTIONS: CommandMetadataOption[] = [
@@ -106,25 +104,17 @@ export abstract class CordovaCommand extends Command {
   }
 
   protected async preRunChecks(runinfo: CommandInstanceInfo): Promise<void> {
-    const { SUPPORTED_PROJECT_TYPES } = await import('../../lib/integrations/cordova');
+    const { checkForUnsupportedProject } = await import('../../lib/integrations/cordova/utils');
     const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
 
     if (!this.project) {
       throw new FatalException('Cannot use Cordova outside a project directory.');
     }
 
-    if (!SUPPORTED_PROJECT_TYPES.includes(this.project.type)) {
-      const parts = getFullCommandParts(runinfo.location);
-      const alias = lodash.last(parts);
+    const parts = getFullCommandParts(runinfo.location);
+    const alias = lodash.last(parts);
 
-      throw new FatalException(
-        `Ionic doesn't support using Cordova with ${input(prettyProjectName(this.project.type))} projects.\n` +
-        `We encourage you to try ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')})\n` +
-        (alias === 'run' ? `\nIf you want to run your project natively, see ${input('ionic capacitor run --help')}.` : '') +
-        (alias === 'plugin' ? `\nIf you want to add Cordova plugins to your Capacitor project, see these docs${ancillary('[1]')}.\n\n${ancillary('[1]')}: ${strong('https://capacitor.ionicframework.com/docs/cordova/using-cordova-plugins')}` : '')
-        // TODO: check for 'ionic cordova resources'
-      );
-    }
+    await checkForUnsupportedProject(this.project.type, alias);
 
     await this.checkCordova(runinfo);
 
