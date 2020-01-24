@@ -49,4 +49,4 @@ ionic cordova run --help
 [circle-badge]: https://circleci.com/gh/ionic-team/ionic-cli.svg?style=shield
 [circle-badge-url]: https://circleci.com/gh/ionic-team/ionic-cli
 [npm-badge]: https://img.shields.io/npm/v/ionic.svg
-[npm-badge-url]: https://www.npmjs.com/package/ionic
+[npm-badge-url]: https://www.npmjs.com/package/@ionic/cli
