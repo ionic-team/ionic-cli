@@ -51,7 +51,7 @@
     "@types/wrap-ansi": "^3.0.0",
     "@types/write-file-atomic": "^3.0.0",
     "jest": "^25.1.0",
-    "jest-cli": "^24.1.0",
+    "jest-cli": "^25.1.0",
     "lint-staged": "^10.0.2",
     "ts-jest": "^25.0.0",
     "tslint": "^5.9.1",
