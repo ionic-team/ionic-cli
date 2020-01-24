@@ -90,7 +90,7 @@
     "rimraf": "^3.0.0",
     "source-map": "^0.7.0",
     "ts-jest": "^25.0.0",
-    "tslint": "^5.9.1",
+    "tslint": "^6.0.0",
     "typescript": "~3.7.3"
   }
 }
