@@ -3,19 +3,37 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-# 6.0.0 (2020-01-25)
+# [6.0.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.15...@ionic/cli@6.0.0) (2020-01-25)
 
+The following changes were made in this major release of the Ionic CLI:
 
-### chore
+* The package name for the Ionic CLI is now `@ionic/cli`! :tada: The old `ionic` package will not be updated to CLI 6.
+* The DevApp [has been retired](https://ionicframework.com/docs/appflow/devapp), so `--devapp` has been removed from `ionic serve`. We encourage you to use native tooling (Cordova/Capacitor, Android Studio, and Xcode) to develop apps on hardware and virtual devices.
+* The Ionic Resources server is being retired, so `--no-cordova-res` has been removed from `ionic cordova resources`. We encourage you to switch to [`cordova-res`](https://github.com/ionic-team/cordova-res).
+* We are now recommending :zap: [Capacitor](https://capacitor.ionicframework.com/) :zap: as the official native runtime for Ionic apps. Cordova will still be supported for this major release.
 
-* rename Ionic CLI package to `@ionic/cli` ([1f86b34](https://github.com/ionic-team/ionic-cli/commit/1f86b34dc4ebfd565c240a6b4a44f3815a18b769))
+#### :lollipop: Upgrading from CLI 5
 
+Make sure you have NodeJS v10.3.0+ installed. We recommend [the latest LTS version](https://nodejs.org/).
+
+Uninstall the old Ionic CLI from your computer.
+
+```
+npm uninstall -g ionic
+```
+
+Install Ionic CLI 6 to your computer.
+
+```
+npm install -g @ionic/cli
+```
 
 ### BREAKING CHANGES
 
 * The npm package for the Ionic CLI is now `@ionic/cli`.
-
-
+* A minimum of Node.js 10.3.0 is required.
+* `--devapp` is no longer an option of `ionic serve`.
+* `--no-cordova-res` is no longer an option of `ionic cordova resources`.
 
 
 
