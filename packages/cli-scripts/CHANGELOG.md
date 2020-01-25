@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@1.0.31...cli-scripts@2.0.0) (2020-01-25)
+
+
+### chore
+
+* rename Ionic CLI package to `@ionic/cli` ([1f86b34](https://github.com/ionic-team/ionic-cli/commit/1f86b34dc4ebfd565c240a6b4a44f3815a18b769))
+* require Node 10 ([5a47874](https://github.com/ionic-team/ionic-cli/commit/5a478746c074207b6dc96aa8771f04a606deb1ef))
+
+
+### BREAKING CHANGES
+
+* The npm package for the Ionic CLI is now `@ionic/cli`.
+* A minimum of Node.js 10.3.0 is required.
+
+
+
+
+
 ## [1.0.31](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@1.0.30...cli-scripts@1.0.31) (2020-01-15)
 
 **Note:** Version bump only for package cli-scripts

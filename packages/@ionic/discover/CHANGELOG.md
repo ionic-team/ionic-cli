@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/discover@2.0.8...@ionic/discover@3.0.0) (2020-01-25)
+
+
+### chore
+
+* require Node 10 ([5a47874](https://github.com/ionic-team/ionic-cli/commit/5a478746c074207b6dc96aa8771f04a606deb1ef))
+
+
+### BREAKING CHANGES
+
+* A minimum of Node.js 10.3.0 is required.
+
+
+
+
+
 ## [2.0.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/discover@2.0.7...@ionic/discover@2.0.8) (2020-01-15)
 
 **Note:** Version bump only for package @ionic/discover
