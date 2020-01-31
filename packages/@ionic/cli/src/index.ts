@@ -125,13 +125,13 @@ export async function run(pargv: string[]): Promise<void> {
     }
 
     await executor.execute(location, process.env);
-
+  } catch (e) {
+    err = e;
+  } finally {
     if (ienv.flags.interactive) {
       const { runUpdateNotify } = await import('./lib/updates');
       await runUpdateNotify(ienv, await loadPackageJson());
     }
-  } catch (e) {
-    err = e;
   }
 
   if (err) {
