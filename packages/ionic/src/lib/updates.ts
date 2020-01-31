@@ -6,14 +6,14 @@ import * as semver from 'semver';
 
 import { IConfig, IonicEnvironment } from '../definitions';
 
-import { input, success, weak } from './color';
+import { input, strong, success, weak } from './color';
 import { sendMessage } from './helper';
 import { pkgFromRegistry, pkgManagerArgs } from './utils/npm';
 
 const UPDATE_CONFIG_FILE = 'update.json';
 const UPDATE_CHECK_INTERVAL = 60 * 60 * 24 * 1000; // 1 day
 const UPDATE_NOTIFY_INTERVAL = 60 * 60 * 12 * 1000; // 12 hours
-const PACKAGES = ['ionic', 'native-run', 'cordova-res'];
+const PACKAGES = ['@ionic/cli', 'ionic', 'native-run', 'cordova-res'];
 
 export interface PersistedPackage {
   name: string;
@@ -79,10 +79,15 @@ export async function runUpdateCheck({ config }: PersistPackageVersionsDeps): Pr
 
 export async function runNotify(env: IonicEnvironment, pkg: PersistedPackage, latestVersion: string): Promise<void> {
   const dir = path.dirname(env.config.p);
-  const args = await pkgManagerArgs(env.config.get('npmClient'), { command: 'install', pkg: pkg.name, global: true });
+  const uninstallArgs = await pkgManagerArgs(env.config.get('npmClient'), { command: 'uninstall', pkg: 'ionic', global: true });
+  const installArgs = await pkgManagerArgs(env.config.get('npmClient'), { command: 'install', pkg: '@ionic/cli', global: true });
   const lines = [
     `Ionic CLI update available: ${weak(pkg.version)} → ${success(latestVersion)}`,
-    `Run ${input(args.join(' '))} to update`,
+    '',
+    `${strong(`The package name has changed from ${input('ionic')} to ${input('@ionic/cli')}!`)}`,
+    '',
+    `To update, run: ${input(uninstallArgs.join(' '))}`,
+    `Then run: ${input(installArgs.join(' '))}`,
   ];
 
   // TODO: Pull this into utils/format
@@ -104,7 +109,7 @@ export async function runNotify(env: IonicEnvironment, pkg: PersistedPackage, la
 }
 
 export async function runUpdateNotify(env: IonicEnvironment, pkg: PackageJson): Promise<void> {
-  const { name, version } = pkg;
+  const { name, version } = { ...pkg, name: '@ionic/cli' }; // use new package name
   const { lastUpdate, lastNotify, packages } = await getUpdateConfig(env);
   const latestPkg = packages.find(pkg => pkg.name === name);
   const latestVersion = latestPkg ? latestPkg.version : undefined;
