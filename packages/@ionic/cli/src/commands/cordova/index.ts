@@ -29,6 +29,7 @@ Cordova Reference documentation:
       ['requirements', async () => { const { RequirementsCommand } = await import('./requirements'); return new RequirementsCommand(this); }],
       ['platforms', 'platform'],
       ['plugins', 'plugin'],
+      ['res', 'resources'],
     ]);
   }
 }
