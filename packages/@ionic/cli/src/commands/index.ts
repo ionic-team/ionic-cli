@@ -56,6 +56,7 @@ export class IonicNamespace extends Namespace {
       ['cap', 'capacitor'],
       ['cdv', 'cordova'],
       ['i', 'integrations'],
+      ['integration', 'integrations'],
     ]);
   }
 
