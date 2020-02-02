@@ -54,6 +54,7 @@ export class IonicNamespace extends Namespace {
       ['integrations', async () => { const { IntegrationsNamespace } = await import('./integrations/index'); return new IntegrationsNamespace(this); }],
       ['enterprise', async () => { const { EnterpriseNamespace } = await import('./enterprise/index'); return new EnterpriseNamespace(this); }],
       ['cap', 'capacitor'],
+      ['cdv', 'cordova'],
       ['i', 'integrations'],
     ]);
   }
