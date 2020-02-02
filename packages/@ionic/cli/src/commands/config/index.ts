@@ -26,6 +26,8 @@ To use these commands for the global CLI config file (${strong('~/.ionic/config.
       ['get', async () => { const { ConfigGetCommand } = await import('./get'); return new ConfigGetCommand(this); }],
       ['set', async () => { const { ConfigSetCommand } = await import('./set'); return new ConfigSetCommand(this); }],
       ['unset', async () => { const { ConfigUnsetCommand } = await import('./unset'); return new ConfigUnsetCommand(this); }],
+      ['delete', 'unset'],
+      ['del', 'unset'],
     ]);
   }
 }
