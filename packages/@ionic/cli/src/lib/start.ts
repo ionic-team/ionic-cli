@@ -240,7 +240,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     projectType: 'angular',
     type: 'repo',
     description: 'An example application that builds a camera with gallery',
-    repo: 'https://github.com/ionic-team/photo-gallery-tutorial-ionic4',
+    repo: 'https://github.com/ionic-team/photo-gallery-capacitor-ng',
   },
   {
     name: 'conference',
@@ -255,6 +255,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     type: 'managed',
     description: 'A blank starter project',
     id: 'react-official-blank',
+  },
+  {
+    name: 'my-first-app',
+    projectType: 'react',
+    type: 'repo',
+    description: 'An example application that builds a camera with gallery',
+    repo: 'https://github.com/ionic-team/photo-gallery-capacitor-react',
   },
   {
     name: 'sidemenu',
