@@ -17,6 +17,11 @@ export class IntegrationsNamespace extends Namespace {
       ['ls', 'list'],
       ['en', 'enable'],
       ['add', 'enable'],
+      ['dis', 'disable'],
+      ['delete', 'disable'],
+      ['del', 'disable'],
+      ['remove', 'disable'],
+      ['rm', 'disable'],
     ]);
   }
 }
