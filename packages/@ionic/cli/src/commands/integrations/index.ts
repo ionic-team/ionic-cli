@@ -15,6 +15,8 @@ export class IntegrationsNamespace extends Namespace {
       ['disable', async () => { const { IntegrationsDisableCommand } = await import('./disable'); return new IntegrationsDisableCommand(this); }],
       ['list', async () => { const { IntegrationsListCommand } = await import('./list'); return new IntegrationsListCommand(this); }],
       ['ls', 'list'],
+      ['en', 'enable'],
+      ['add', 'enable'],
     ]);
   }
 }
