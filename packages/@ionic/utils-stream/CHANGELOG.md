@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## 3.0.1 (2020-02-03)
+
+**Note:** Version bump only for package @ionic/utils-stream
+
+
+
+
+
 # [3.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-stream@2.0.5...@ionic/utils-stream@3.0.0) (2020-01-25)
 
 
