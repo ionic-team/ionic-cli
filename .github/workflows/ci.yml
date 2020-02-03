@@ -17,6 +17,12 @@ jobs:
         with:
           node-version: ${{ matrix.node }}
       - uses: actions/checkout@v1
+      - name: Restore Dependency Cache
+        uses: actions/cache@v1
+        id: restore-dependencies
+        with:
+          path: ~/.npm
+          key: ${{ runner.OS }}-dependency-cache-${{ hashFiles('**/package.json') }}
       - run: npm install
       - run: npm run bootstrap
       - run: npm run lint
