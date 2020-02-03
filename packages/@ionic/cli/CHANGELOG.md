@@ -3,12 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## 6.0.1 (2020-02-03)
-
-**Note:** Version bump only for package @ionic/cli
+## [6.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.0.0...@ionic/cli@6.0.1) (2020-02-03)
 
 
+### Bug Fixes
 
+* **update:** show update message even with command error ([6f32ebc](https://github.com/ionic-team/ionic-cli/commit/6f32ebc7f07f8bdd39ee538c9d605945c4a8e03e))
+
+
+### Features
+
+* **start**: update "my-first-app" to use Capacitor for Angular and React ([#4307](https://github.com/ionic-team/ionic-cli/issues/4307)) ([de350a7](https://github.com/ionic-team/ionic-cli/commit/de350a757078515a94ebbac3cf45b915970345f7))
+* **config:** add `delete` and `del` aliases for `ionic config unset` ([56295c2](https://github.com/ionic-team/ionic-cli/commit/56295c2641cadd350c780db0e559a4bac49a0112))
+* **cordova:** add `cdv` alias for `ionic cordova` ([ea503b7](https://github.com/ionic-team/ionic-cli/commit/ea503b7c5580fe449b10a1e11a40179375dfa1e9))
+* **cordova:** add `res` alias for `ionic cordova resources` ([2d6ec39](https://github.com/ionic-team/ionic-cli/commit/2d6ec39243752abed92eaa6f3be56460d2b40bf4))
+* **integrations:** add `integration` alias for `ionic integrations` ([a9bf5a1](https://github.com/ionic-team/ionic-cli/commit/a9bf5a16c95f0a5760179d5b9db569242d6a12a5))
+* **integrations:** add `en` and `add` aliases for `ionic integrations enable` ([b85b5f9](https://github.com/ionic-team/ionic-cli/commit/b85b5f9d4c76e877d126e7185459589d73deb529))
+* **integrations:** add `dis`, `delete`, `del`, `remove`, and `rm` aliases for `ionic integrations disable`([fd33cb3](https://github.com/ionic-team/ionic-cli/commit/fd33cb3d0b32520d609850cab83cbba3c767c7e4))
+* **integrations:** add `dis`, `delete`, `del`, `remove`, and `rm` aliases for `ionic integrations disable`([fd33cb3](https://github.com/ionic-team/ionic-cli/commit/fd33cb3d0b32520d609850cab83cbba3c767c7e4))
 
 
 # [6.0.0](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.15...@ionic/cli@6.0.0) (2020-01-25)
