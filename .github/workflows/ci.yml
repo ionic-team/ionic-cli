@@ -19,7 +19,6 @@ jobs:
       - uses: actions/checkout@v1
       - name: Restore Dependency Cache
         uses: actions/cache@v1
-        id: restore-dependencies
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-dependency-cache-${{ hashFiles('**/package.json') }}
