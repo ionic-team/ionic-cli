@@ -100,12 +100,13 @@ To test a generator before file modifications are made, use the ${input('--dry-r
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularGenerateOptions {
     const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+    const project = options['project'] ? String(options['project']) : 'app';
 
     // TODO: this is a little gross, is there a better way to pass in all the
     // options that the command got?
     return {
       ...lodash.omit(options, '_', '--', ...GLOBAL_OPTIONS.map(opt => opt.name)),
-      project: options['project'],
+      project,
       ...baseOptions,
     };
   }
