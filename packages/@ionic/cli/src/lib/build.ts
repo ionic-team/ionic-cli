@@ -40,14 +40,14 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
   protected abstract readonly e: BuildRunnerDeps;
 
   abstract getCommandMetadata(): Promise<Partial<CommandMetadata>>;
-  abstract createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): T;
+  abstract createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<T>;
   abstract buildProject(options: T): Promise<void>;
 
   getPkgManagerBuildCLI(): PkgManagerBuildCLI {
     return this.e.config.get('npmClient') === 'npm' ? new NpmBuildCLI(this.e) : new YarnBuildCLI(this.e);
   }
 
-  createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BaseBuildOptions {
+  async createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<BaseBuildOptions> {
     const separatedArgs = options['--'];
     const platform = options['platform'] ? String(options['platform']) : undefined;
     const engine = this.determineEngineFromCommandLine(options);

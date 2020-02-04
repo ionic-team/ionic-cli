@@ -1,6 +1,6 @@
 import * as chalk from 'chalk';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, VueBuildOptions } from '../../../definitions';
+import { BaseBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, VueBuildOptions } from '../../../definitions';
 import { BuildRunner, BuildRunnerDeps } from '../../build';
 import { RunnerException } from '../../errors';
 
@@ -13,8 +13,8 @@ export class VueBuildRunner extends BuildRunner<VueBuildOptions> {
     return {};
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): VueBuildOptions {
-    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<VueBuildOptions> {
+    const baseOptions: BaseBuildOptions = await super.createBaseOptionsFromCommandLine(inputs, options);
 
     return {
       ...baseOptions,

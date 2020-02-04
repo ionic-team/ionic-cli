@@ -1,7 +1,7 @@
 import { MetadataGroup, unparseArgs } from '@ionic/cli-framework';
 import * as Debug from 'debug';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
+import { BaseBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularBuildOptions } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 import { ancillary, input, strong, weak } from '../../color';
 
@@ -49,8 +49,8 @@ ${input('ionic build')} uses ${strong('@ionic/app-scripts')}. See the project's 
     };
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularBuildOptions {
-    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicAngularBuildOptions> {
+    const baseOptions: BaseBuildOptions = await super.createBaseOptionsFromCommandLine(inputs, options);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
 
     return {

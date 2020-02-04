@@ -4,7 +4,7 @@ import { str2num } from '@ionic/cli-framework/utils/string';
 import { findClosestOpenPort } from '@ionic/utils-network';
 import * as chalk from 'chalk';
 
-import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
+import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails, ServeOptions } from '../../../definitions';
 import { input, strong, weak } from '../../color';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT as DEFAULT_CONSOLE_LOGS_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 
@@ -89,8 +89,8 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
     };
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularServeOptions {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<AngularServeOptions> {
+    const baseOptions: ServeOptions = await super.createOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
     const ssl = options['ssl'] ? Boolean(options['ssl']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);

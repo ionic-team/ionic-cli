@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CustomBuildOptions } from '../../../definitions';
+import { BaseBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CustomBuildOptions } from '../../../definitions';
 import { BuildRunner, BuildRunnerDeps } from '../../build';
 import { input, strong } from '../../color';
 import { RunnerException } from '../../errors';
@@ -12,8 +12,8 @@ export class CustomBuildRunner extends BuildRunner<CustomBuildOptions> {
     return {};
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): CustomBuildOptions {
-    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<CustomBuildOptions> {
+    const baseOptions: BaseBuildOptions = await super.createBaseOptionsFromCommandLine(inputs, options);
 
     return {
       ...baseOptions,

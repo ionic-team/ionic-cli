@@ -1,6 +1,6 @@
 import { contains, unparseArgs, validators } from '@ionic/cli-framework';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularGenerateOptions } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, GenerateOptions, IonicAngularGenerateOptions } from '../../../definitions';
 import { input, strong, weak } from '../../color';
 import { GenerateRunner, GenerateRunnerDeps } from '../../generate';
 
@@ -91,8 +91,8 @@ The given ${input('name')} is normalized into an appropriate naming convention. 
     }
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularGenerateOptions {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicAngularGenerateOptions> {
+    const baseOptions: GenerateOptions = await super.createOptionsFromCommandLine(inputs, options);
 
     return {
       ...baseOptions,

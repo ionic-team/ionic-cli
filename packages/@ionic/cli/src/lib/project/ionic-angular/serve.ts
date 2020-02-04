@@ -2,7 +2,7 @@ import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import * as Debug from 'debug';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails } from '../../../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, IonicAngularServeOptions, ServeDetails, ServeOptions } from '../../../definitions';
 import { ancillary, weak } from '../../color';
 import { BIND_ALL_ADDRESS, DEFAULT_DEV_LOGGER_PORT, DEFAULT_LIVERELOAD_PORT, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 import { findOpenIonicPorts } from '../common';
@@ -84,8 +84,8 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
     };
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicAngularServeOptions {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicAngularServeOptions> {
+    const baseOptions: ServeOptions = await super.createOptionsFromCommandLine(inputs, options);
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
     const livereloadPort = str2num(options['livereload-port'], DEFAULT_LIVERELOAD_PORT);
     const notificationPort = str2num(options['dev-logger-port'], DEFAULT_DEV_LOGGER_PORT);

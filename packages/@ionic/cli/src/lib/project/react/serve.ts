@@ -2,7 +2,7 @@ import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
 import { stripAnsi } from '@ionic/cli-framework/utils/format';
 import { findClosestOpenPort } from '@ionic/utils-network';
 
-import { CommandMetadata, ReactServeOptions, ServeDetails } from '../../../definitions';
+import { CommandMetadata, ReactServeOptions, ServeDetails, ServeOptions } from '../../../definitions';
 import { input, strong, weak } from '../../color';
 import { BIND_ALL_ADDRESS, DEFAULT_ADDRESS, LOCAL_ADDRESSES, SERVE_SCRIPT, ServeCLI, ServeRunner, ServeRunnerDeps } from '../../serve';
 
@@ -49,8 +49,8 @@ This command will convert options to the environment variables used by React Scr
     };
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ReactServeOptions {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<ReactServeOptions> {
+    const baseOptions: ServeOptions = await super.createOptionsFromCommandLine(inputs, options);
     const ci = options['ci'] ? Boolean(options['ci']) : undefined;
     const https = options['https'] ? Boolean(options['https']) : undefined;
     const reactEditor = options['react-editor'] ? String(options['react-editor']) : undefined;

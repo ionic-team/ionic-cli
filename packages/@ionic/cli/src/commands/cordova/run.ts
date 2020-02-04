@@ -262,7 +262,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
 
     const runner = await this.project.requireServeRunner();
-    const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+    const runnerOpts = await runner.createOptionsFromCommandLine(inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
 
     /**
      * With the --livereload-url option, this command won't perform a serve. If
@@ -320,7 +320,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     if (options.build) {
       try {
         const runner = await this.project.requireBuildRunner();
-        const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
+        const runnerOpts = await runner.createOptionsFromCommandLine(inputs, generateOptionsForCordovaBuild(metadata, inputs, options));
         await runner.run(runnerOpts);
       } catch (e) {
         if (e instanceof RunnerException) {

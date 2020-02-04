@@ -64,7 +64,7 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
 
     if (doBuild || !sourcemapsExist) {
       const runner = await this.project.requireBuildRunner();
-      const runnerOpts = runner.createOptionsFromCommandLine([], { _: [], prod: true });
+      const runnerOpts = await runner.createOptionsFromCommandLine([], { _: [], prod: true });
       await runner.run(runnerOpts);
     }
 

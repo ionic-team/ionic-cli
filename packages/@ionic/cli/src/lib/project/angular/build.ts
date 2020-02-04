@@ -1,6 +1,6 @@
 import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 
-import { AngularBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
+import { AngularBuildOptions, BaseBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 import { input, weak } from '../../color';
 
@@ -76,8 +76,8 @@ ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to
     };
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularBuildOptions {
-    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<AngularBuildOptions> {
+    const baseOptions: BaseBuildOptions = await super.createBaseOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const project = options['project'] ? String(options['project']) : 'app';

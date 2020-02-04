@@ -96,7 +96,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     return this.e.config.get('npmClient') === 'npm' ? new NpmServeCLI(this.e) : new YarnServeCLI(this.e);
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<ServeOptions> {
     const separatedArgs = options['--'];
 
     if (options['external']) {
@@ -140,7 +140,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     return 'browser';
   }
 
-  async beforeServe(options: T) {
+  async beforeServe(options: T): Promise<void> {
     const hook = new ServeBeforeHook(this.e);
 
     try {

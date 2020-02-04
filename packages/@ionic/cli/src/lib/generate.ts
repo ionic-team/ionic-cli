@@ -14,7 +14,7 @@ export interface GenerateRunnerDeps {
 export abstract class GenerateRunner<T extends GenerateOptions> implements Runner<T, void> {
   protected abstract readonly e: GenerateRunnerDeps;
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): GenerateOptions {
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<GenerateOptions> {
     const [ type, name ] = inputs;
     return { type, name };
   }

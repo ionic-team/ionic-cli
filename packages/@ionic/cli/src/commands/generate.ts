@@ -59,7 +59,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     }
 
     const runner = await this.project.requireGenerateRunner();
-    const opts = runner.createOptionsFromCommandLine(inputs, options);
+    const opts = await runner.createOptionsFromCommandLine(inputs, options);
     await runner.run(opts);
   }
 }

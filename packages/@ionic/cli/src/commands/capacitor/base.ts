@@ -78,7 +78,7 @@ export abstract class CapacitorCommand extends Command {
     if (options['build']) {
       try {
         const runner = await this.project.requireBuildRunner();
-        const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
+        const runnerOpts = await runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
         await runner.run(runnerOpts);
       } catch (e) {
         if (e instanceof RunnerException) {

@@ -1,4 +1,4 @@
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, ReactBuildOptions } from '../../../definitions';
+import { BaseBuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ReactBuildOptions } from '../../../definitions';
 import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 import { input, weak } from '../../color';
 
@@ -59,8 +59,8 @@ This command will convert options to the environment variables used by React Scr
     };
   }
 
-  createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ReactBuildOptions {
-    const baseOptions = super.createBaseOptionsFromCommandLine(inputs, options);
+  async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<ReactBuildOptions> {
+    const baseOptions: BaseBuildOptions = await super.createBaseOptionsFromCommandLine(inputs, options);
     const publicUrl = options['public-url'] ? String(options['public-url']) : undefined;
     const ci = options['ci'] ? Boolean(options['ci']) : undefined;
     const sourceMap = options['source-map'] ? Boolean(options['source-map']) : undefined;

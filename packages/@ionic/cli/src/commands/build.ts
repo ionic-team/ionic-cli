@@ -57,7 +57,7 @@ export class BuildCommand extends Command implements CommandPreRun {
 
     try {
       const runner = await this.project.requireBuildRunner();
-      const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
+      const runnerOpts = await runner.createOptionsFromCommandLine(inputs, options);
 
       await runner.run(runnerOpts);
     } catch (e) {

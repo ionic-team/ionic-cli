@@ -129,7 +129,7 @@ Try the ${input('--lab')} option to see multiple platforms at once.`;
 
     try {
       const runner = await this.project.requireServeRunner();
-      const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
+      const runnerOpts = await runner.createOptionsFromCommandLine(inputs, options);
 
       await runner.run(runnerOpts);
     } catch (e) {

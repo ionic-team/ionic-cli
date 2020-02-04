@@ -181,7 +181,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     }
 
     const runner = await this.project.requireServeRunner();
-    const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
+    const runnerOpts = await runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
 
     let serverUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
 
