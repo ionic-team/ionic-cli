@@ -100,7 +100,7 @@ To test a generator before file modifications are made, use the ${input('--dry-r
 
   async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<AngularGenerateOptions> {
     const baseOptions: GenerateOptions = await super.createOptionsFromCommandLine(inputs, options);
-    const project = options['project'] ? String(options['project']) : 'app';
+    const project = options['project'] ? String(options['project']) : await this.e.project.getWorkspaceDefaultProject();
 
     // TODO: this is a little gross, is there a better way to pass in all the
     // options that the command got?

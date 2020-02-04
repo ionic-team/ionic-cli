@@ -80,7 +80,7 @@ ${input('ionic build')} uses the Angular CLI. Use ${input('ng build --help')} to
     const baseOptions: BaseBuildOptions = await super.createBaseOptionsFromCommandLine(inputs, options);
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
-    const project = options['project'] ? String(options['project']) : 'app';
+    const project = options['project'] ? String(options['project']) : await this.e.project.getWorkspaceDefaultProject();
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
     const cordovaAssets = typeof options['cordova-assets'] === 'boolean' ? Boolean(options['cordova-assets']) : undefined;
     const watch = typeof options['watch'] === 'boolean' ? Boolean(options['watch']) : undefined;

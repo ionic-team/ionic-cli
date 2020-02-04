@@ -1,11 +1,23 @@
+import { readJson } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import { resolve } from 'path';
 
 import { Project } from '../';
 import { IAilmentRegistry, InfoItem } from '../../../definitions';
 import { strong } from '../../color';
 
 const debug = Debug('ionic:lib:project:angular');
+
+/**
+ * Partial '@angular-devkit' interface containing the structure of the angular workspace configuratin.
+ */
+export interface WorkspaceSchema {
+  /**
+   * The default project.
+   */
+  defaultProject?: string;
+}
 
 export class AngularProject extends Project {
   readonly type: 'angular' = 'angular';
@@ -63,7 +75,7 @@ export class AngularProject extends Project {
     ];
   }
 
-  async detected() {
+  async detected(): Promise<boolean> {
     try {
       const pkg = await this.requirePackageJson();
       const deps = lodash.assign({}, pkg.dependencies, pkg.devDependencies);
@@ -77,6 +89,20 @@ export class AngularProject extends Project {
     }
 
     return false;
+  }
+
+  async getWorkspaceDefaultProject(): Promise<string> {
+    try {
+      const angularJsonPath = resolve(this.directory, 'angular.json');
+      const angularWorkspace: WorkspaceSchema = await readJson(angularJsonPath);
+      if (angularWorkspace && angularWorkspace.defaultProject && angularWorkspace.defaultProject !== '') {
+        return Promise.resolve(angularWorkspace.defaultProject);
+      }
+    } catch (e) {
+      // ignore
+    }
+
+    return Promise.resolve('app');
   }
 
   async requireBuildRunner(): Promise<import('./build').AngularBuildRunner> {
