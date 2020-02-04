@@ -1,4 +1,4 @@
-[![Build Status][circle-badge]][circle-badge-url]
+[![Build Status][ci-badge]][ci-badge-url]
 [![Dependabot Status](https://api.dependabot.com/badges/status?host=github&repo=ionic-team/ionic-cli)](https://dependabot.com)
 [![npm][npm-badge]][npm-badge-url]
 
@@ -46,7 +46,7 @@ ionic cordova run --help
 [ionic-cli-docs]: https://ionicframework.com/docs/cli
 [ionic-support]: https://ionicframework.com/support
 
-[circle-badge]: https://circleci.com/gh/ionic-team/ionic-cli.svg?style=shield
-[circle-badge-url]: https://circleci.com/gh/ionic-team/ionic-cli
+[ci-badge]: https://github.com/ionic-team/ionic-cli/workflows/CI/badge.svg
+[ci-badge-url]: https://github.com/ionic-team/ionic-cli/actions?query=workflow%3ACI
 [npm-badge]: https://img.shields.io/npm/v/@ionic/cli.svg
 [npm-badge-url]: https://www.npmjs.com/package/@ionic/cli
