@@ -76,7 +76,7 @@ export class ServeCommand extends Command {
       await runTask('ionic:serve:before');
     }
 
-    const config = new Config(path.resolve(process.cwd(), 'ionic.config.json'));
+    const config = new Config(path.resolve(process.cwd(), process.env['IONIC_CONFIG_FILE'] ?? 'ionic.config.json'));
 
     const c = config.c;
     const wwwDir = c.documentRoot || 'www';

@@ -406,7 +406,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     if (this.project && this.project.details.context === 'multiapp' && !this.schema.cloned) {
       // We're in a multi-app setup, so the new config file isn't wanted.
-      await unlink(path.resolve(projectDir, 'ionic.config.json'));
+      await unlink(path.resolve(projectDir, PROJECT_FILE));
 
       project = await createProjectFromDetails({ context: 'multiapp', configPath: path.resolve(this.project.rootDirectory, PROJECT_FILE), id: projectId, type: this.schema.type, errors: [] }, this.env);
       project.config.set('type', this.schema.type);
