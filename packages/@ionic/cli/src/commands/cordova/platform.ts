@@ -73,7 +73,7 @@ Like running ${input('cordova platform')} directly, but adds default Ionic icons
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     const { getPlatforms } = await import('../../lib/integrations/cordova/project');
-    const { filterArgumentsForCordova } = await import('../../lib/integrations/cordova/utils');
+    const { confirmCordovaBrowserUsage, filterArgumentsForCordova } = await import('../../lib/integrations/cordova/utils');
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic cordova platform')} outside a project directory.`);
@@ -83,9 +83,19 @@ Like running ${input('cordova platform')} directly, but adds default Ionic icons
 
     const platforms = await getPlatforms(this.integration.root);
 
-    if (action === 'add' && platforms.includes(platformName)) {
-      this.env.log.msg(`Platform ${platformName} already exists.`);
-      return;
+    if (action === 'add') {
+      if (platforms.includes(platformName)) {
+        this.env.log.msg(`Platform ${platformName} already exists.`);
+        return;
+      }
+
+      if (platformName === 'browser') {
+        const confirm = await confirmCordovaBrowserUsage(this.env);
+
+        if (!confirm) {
+          return;
+        }
+      }
     }
 
     const metadata = await this.getMetadata();

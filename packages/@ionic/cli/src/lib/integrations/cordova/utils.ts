@@ -104,3 +104,23 @@ export async function confirmCordovaUsage({ log, prompt }: ConfirmCordovaUsageDe
 
   return confirm;
 }
+
+export async function confirmCordovaBrowserUsage({ log, prompt }: ConfirmCordovaUsageDeps): Promise<boolean> {
+  log.nl();
+  log.warn(
+    `About to add the ${input('browser')} platform to your app.\n` +
+    `${strong(`The ${input('browser')} Cordova platform is not recommended for production use.`)}\n\n` +
+    `Instead, we recommend using platform detection and browser APIs to target web/PWA. See the Cross Platform docs${ancillary('[1]')} for details.\n\n` +
+    `Alternatively, ${emoji('⚡️ ', '')}${strong('Capacitor')}${emoji(' ⚡️', '')} (${strong('https://ion.link/capacitor')}), Ionic's official native runtime, fully supports traditional web and Progressive Web Apps. See the Capacitor docs${ancillary('[2]')} to learn how easy it is to migrate.\n\n` +
+    `${ancillary('[1]')}: ${strong('https://ion.link/cross-platform-docs')}\n` +
+    `${ancillary('[2]')}: ${strong('https://ion.link/capacitor-cordova-migration-docs')}\n`
+  );
+
+  const confirm = await prompt({
+    type: 'confirm',
+    message: 'Are you sure you want to continue?',
+    default: true,
+  });
+
+  return confirm;
+}

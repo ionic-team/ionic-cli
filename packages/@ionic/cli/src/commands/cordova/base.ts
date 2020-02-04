@@ -181,10 +181,19 @@ export abstract class CordovaCommand extends Command {
 
     if (platform) {
       const { getPlatforms } = await import('../../lib/integrations/cordova/project');
+      const { confirmCordovaBrowserUsage } = await import('../../lib/integrations/cordova/utils');
 
       const platforms = await getPlatforms(this.integration.root);
 
       if (!platforms.includes(platform)) {
+        if (platform === 'browser') {
+          const confirm = await confirmCordovaBrowserUsage(this.env);
+
+          if (!confirm) {
+            throw new FatalException(promptToInstallRefusalMsg);
+          }
+        }
+
         const confirm = promptToInstall ? await this.env.prompt({
           message: `Platform ${input(platform)} is not installed! Would you like to install it?`,
           type: 'confirm',
