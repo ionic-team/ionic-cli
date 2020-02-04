@@ -2,11 +2,12 @@ import { pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
 import * as path from 'path';
 
-import { CommandInstanceInfo, ProjectIntegration } from '../../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, ProjectIntegration } from '../../definitions';
 import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
-import { FatalException } from '../../lib/errors';
+import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
+import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 
 export abstract class CapacitorCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
@@ -66,6 +67,26 @@ export abstract class CapacitorCommand extends Command {
       }
 
       throw e;
+    }
+  }
+
+  async runBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    if (options['build']) {
+      try {
+        const runner = await this.project.requireBuildRunner();
+        const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
+        await runner.run(runnerOpts);
+      } catch (e) {
+        if (e instanceof RunnerException) {
+          throw new FatalException(e.message);
+        }
+
+        throw e;
+      }
     }
   }
 

@@ -1,3 +1,5 @@
+import { CommandMetadataOption } from '@ionic/cli-framework';
+
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
 
@@ -5,15 +7,32 @@ import { CapacitorCommand } from './base';
 
 export class SyncCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
+    const options: CommandMetadataOption[] = [
+      {
+        name: 'build',
+        summary: 'Do not invoke an Ionic build',
+        type: Boolean,
+        default: true,
+      },
+    ];
+
+    const runner = this.project && await this.project.getBuildRunner();
+
+    if (runner) {
+      const libmetadata = await runner.getCommandMetadata();
+      options.push(...libmetadata.options || []);
+    }
+
     return {
       name: 'sync',
       type: 'project',
       summary: 'Sync (copy + update) an Ionic project',
       description: `
 ${input('ionic capacitor sync')} will do the following:
-- Copy web assets to all Capacitor native platforms
-- Update each Capacitor native platforms, such as any dependencies that need updating.
-- Install any discovered Capacitor or Cordova plugins.
+- Perform an Ionic build, which compiles web assets
+- Copy web assets to Capacitor native platform(s)
+- Update Capacitor native platform(s) and dependencies
+- Install any discovered Capacitor or Cordova plugins
       `,
       inputs: [
         {
@@ -21,6 +40,7 @@ ${input('ionic capacitor sync')} will do the following:
           summary: `The platform to sync (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
         },
       ],
+      options,
     };
   }
 
@@ -34,6 +54,11 @@ ${input('ionic capacitor sync')} will do the following:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
+
+    if (options.build) {
+      await this.runBuild(inputs, options);
+    }
+
     const args = ['sync'];
 
     if (platform) {

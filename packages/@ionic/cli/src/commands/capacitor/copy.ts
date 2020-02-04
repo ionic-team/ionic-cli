@@ -1,17 +1,36 @@
+import { CommandMetadataOption } from '@ionic/cli-framework';
+
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
-import { input, strong } from '../../lib/color';
+import { input } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
 
 export class CopyCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
+    const options: CommandMetadataOption[] = [
+      {
+        name: 'build',
+        summary: 'Do not invoke an Ionic build',
+        type: Boolean,
+        default: true,
+      },
+    ];
+
+    const runner = this.project && await this.project.getBuildRunner();
+
+    if (runner) {
+      const libmetadata = await runner.getCommandMetadata();
+      options.push(...libmetadata.options || []);
+    }
+
     return {
       name: 'copy',
       type: 'project',
       summary: 'Copy web assets to native platforms',
       description: `
 ${input('ionic capacitor copy')} will do the following:
-- Copy the ${strong('www/')} directory into your native platforms.
+- Perform an Ionic build, which compiles web assets
+- Copy web assets to Capacitor native platform(s)
       `,
       inputs: [
         {
@@ -19,6 +38,7 @@ ${input('ionic capacitor copy')} will do the following:
           summary: `The platform to copy (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
         },
       ],
+      options,
     };
   }
 
@@ -32,6 +52,11 @@ ${input('ionic capacitor copy')} will do the following:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
+
+    if (options.build) {
+      await this.runBuild(inputs, options);
+    }
+
     const args = ['copy'];
 
     if (platform) {
