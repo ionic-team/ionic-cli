@@ -29,45 +29,45 @@ describe('@ionic/cli', () => {
           verbose: false,
         };
 
-        it('should provide defaults with no options', () => {
+        it('should provide defaults with no options', async () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], {} as CommandLineOptions);
+          const result = await runner.createOptionsFromCommandLine([], {} as CommandLineOptions);
           expect(result).toEqual(defaults);
         });
 
-        it('should provide options from negations of cli flag defaults', () => {
+        it('should provide options from negations of cli flag defaults', async () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
           expect(result).toEqual({ ...defaults, livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
         });
 
-        it('should allow overrides of default values', () => {
+        it('should allow overrides of default values', async () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111' });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111' });
           expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111 });
         });
 
-        it('should respect --external flag', () => {
+        it('should respect --external flag', async () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], external: true });
           expect(result).toEqual({ ...defaults, address: '0.0.0.0' });
         });
 
-        it('should respect --consolelogs flag', () => {
+        it('should respect --consolelogs flag', async () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], consolelogs: true });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], consolelogs: true });
           expect(result).toEqual({ ...defaults, consolelogs: true, consolelogsPort: 53703 });
         });
 
-        it('should respect --project and --configuration flags', () => {
+        it('should respect --project and --configuration flags', async () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], project: 'otherProject', configuration: 'production' });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], project: 'otherProject', configuration: 'production' });
           expect(result).toEqual({ ...defaults, project: 'otherProject', configuration: 'production' });
         });
 
-        it('should pass on separated args', () => {
+        it('should pass on separated args', async () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], '--': ['foo', '--bar'] });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], '--': ['foo', '--bar'] });
           expect(result).toEqual({ ...defaults, '--': ['foo', '--bar'] });
         });
 

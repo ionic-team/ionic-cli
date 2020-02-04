@@ -30,33 +30,33 @@ describe('@ionic/cli', () => {
           verbose: false,
         };
 
-        it('should provide defaults with no options', () => {
+        it('should provide defaults with no options', async () => {
           const runner = new Ionic1ServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [] });
+          const result = await runner.createOptionsFromCommandLine([], { _: [] });
           expect(result).toEqual(defaults);
         });
 
-        it('should provide options from negations of cli flag defaults', () => {
+        it('should provide options from negations of cli flag defaults', async () => {
           const runner = new Ionic1ServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
           expect(result).toEqual({ ...defaults, livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
         });
 
-        it('should allow overrides of default values', () => {
+        it('should allow overrides of default values', async () => {
           const runner = new Ionic1ServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
           expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111, livereloadPort: 2222, notificationPort: 3333 });
         });
 
-        it('should respect --external flag', () => {
+        it('should respect --external flag', async () => {
           const runner = new Ionic1ServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], external: true });
           expect(result).toEqual({ ...defaults, address: '0.0.0.0' });
         });
 
-        it('should pass on separated args', () => {
+        it('should pass on separated args', async () => {
           const runner = new Ionic1ServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], '--': ['foo', '--bar'] });
+          const result = await runner.createOptionsFromCommandLine([], { _: [], '--': ['foo', '--bar'] });
           expect(result).toEqual({ ...defaults, '--': ['foo', '--bar'] });
         });
 
