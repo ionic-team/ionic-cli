@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.4.16](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.15...ionic@5.4.16) (2020-02-04)
+
+
+### Bug Fixes
+
+* **update:** show update message even with command error ([dee817e](https://github.com/ionic-team/ionic-cli/commit/dee817ed13c6730156224e7a2f145ed0ac8f4f81))
+
+
+
+
+
 ## [5.4.15](https://github.com/ionic-team/ionic-cli/compare/ionic@5.4.14...ionic@5.4.15) (2020-01-15)
 
 
