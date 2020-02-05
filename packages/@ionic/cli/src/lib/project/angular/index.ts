@@ -10,7 +10,7 @@ import { strong } from '../../color';
 const debug = Debug('ionic:lib:project:angular');
 
 /**
- * Partial '@angular-devkit' interface containing the structure of the angular workspace configuratin.
+ * Partial '@angular-devkit' interface containing the structure of the angular workspace configuration.
  */
 export interface WorkspaceSchema {
   /**
