@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.0.1...@ionic/cli@6.0.2) (2020-02-10)
+
+### Bug Fixes
+
+* **capacitor:** allow cleartext for Android live-reload ([#4308](https://github.com/ionic-team/ionic-cli/issues/4308)) ([4d13261](https://github.com/ionic-team/ionic-cli/commit/4d132615fdac01af93404ff939a3364d6f72fb6e))
+
+### Features
+
+* **capacitor:** perform Ionic build for copy and sync ([be42aee](https://github.com/ionic-team/ionic-cli/commit/be42aee601e7abb0fd2f0b3957d561e26b0c688f))
+* **config:** make project file configurable ([43ba45c](https://github.com/ionic-team/ionic-cli/commit/43ba45c134abae3279dd8776bd667b7dd9c002a7))
+
 ## [6.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.0.0...@ionic/cli@6.0.1) (2020-02-03)
 
 
