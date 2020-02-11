@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# 2.1.0 (2020-02-11)
+
+
+### Features
+
+* **start:** add new list starter option ([#4315](https://github.com/ionic-team/ionic-cli/issues/4315)) ([1df44c1](https://github.com/ionic-team/ionic-cli/commit/1df44c1591f37b89f2b672857740edd6cb2aea67))
+
+
+
+
+
 ## [2.0.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-object@2.0.1...@ionic/utils-object@2.0.2) (2020-02-10)
 
 **Note:** Version bump only for package @ionic/utils-object
