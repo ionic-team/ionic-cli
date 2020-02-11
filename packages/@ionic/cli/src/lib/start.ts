@@ -236,6 +236,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     id: 'angular-official-blank',
   },
   {
+    name: 'list',
+    projectType: 'angular',
+    type: 'managed',
+    description: 'A starting project with a list',
+    id: 'angular-official-list',
+  },
+  {
     name: 'my-first-app',
     projectType: 'angular',
     type: 'repo',
@@ -255,6 +262,13 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     type: 'managed',
     description: 'A blank starter project',
     id: 'react-official-blank',
+  },
+  {
+    name: 'list',
+    projectType: 'react',
+    type: 'managed',
+    description: 'A starting project with a list',
+    id: 'react-official-list',
   },
   {
     name: 'my-first-app',
