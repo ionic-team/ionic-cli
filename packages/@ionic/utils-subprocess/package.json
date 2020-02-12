@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-subprocess",
-  "version": "2.0.1",
+  "version": "2.1.0",
   "description": "Subprocess utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,11 +31,11 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ionic/utils-array": "2.0.1",
-    "@ionic/utils-fs": "3.0.1",
-    "@ionic/utils-process": "2.0.1",
-    "@ionic/utils-stream": "3.0.1",
-    "@ionic/utils-terminal": "2.0.1",
+    "@ionic/utils-array": "2.1.0",
+    "@ionic/utils-fs": "3.1.0",
+    "@ionic/utils-process": "2.1.0",
+    "@ionic/utils-stream": "3.1.0",
+    "@ionic/utils-terminal": "2.1.0",
     "cross-spawn": "^7.0.0",
     "debug": "^4.0.0",
     "tslib": "^1.9.0"
