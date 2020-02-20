@@ -112,25 +112,10 @@ export async function readStarterManifest(p: string): Promise<StarterManifest> {
 }
 
 export function getAdvertisement(): string {
-  const choices = [getStudioAdvertisement, getAppflowAdvertisement, getAdvisoryAdvertisement, getEnterpriseAdvertisement];
+  const choices = [getAppflowAdvertisement, getAdvisoryAdvertisement, getEnterpriseAdvertisement];
   const idx = Math.floor(Math.random() * choices.length);
 
   return `${choices[idx]()}\n\n`;
-}
-
-function getStudioAdvertisement(): string {
-  return `
-  ──────────────────────────────────────────────────────────────────
-
-     ${title('Ionic Studio')}, a powerful, local editor made with ${emoji('💖', 'love')} by Ionic
-
-                  Lightning fast app creation ${emoji('⚡️', '')}
-         Quickest & easiest way to get started with Ionic ${emoji('🚀', '')}
-
-        ${emoji('         👉 ', 'Learn more:')} ${strong('https://ion.link/studio')} ${emoji(' 👈', '')}
-
-  ──────────────────────────────────────────────────────────────────
-`;
 }
 
 function getAppflowAdvertisement(): string {
