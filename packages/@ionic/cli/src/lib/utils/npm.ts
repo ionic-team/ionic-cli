@@ -76,16 +76,21 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
 
   const installerArgs: string[] = [];
 
-  if (npmClient === 'npm') {
-    vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
-  } else if (npmClient === 'yarn') {
-    vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
-
-    if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
-      installerArgs.push('global');
-    }
-  } else {
-    throw new Error(`unknown installer: ${npmClient}`);
+  switch (npmClient) {
+    case 'npm':
+      vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
+      break;
+    case 'yarn':
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
+      if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
+        installerArgs.push('global');
+      }
+      break;
+    case 'pnpm':
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '' };
+      break;
+    default:
+      throw new Error(`unknown installer: ${npmClient}`);
   }
 
   if (cmd === 'install') {
