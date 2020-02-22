@@ -42,7 +42,6 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           summary: 'Print app console logs to the terminal',
           type: Boolean,
           groups: [MetadataGroup.ADVANCED, 'cordova'],
-          // aliases: ['c'], Already used by ng cli for --configuration
           hint: weak('[ng]'),
         },
         {
@@ -72,6 +71,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           summary: 'Specify the configuration to use.',
           type: String,
           groups: [MetadataGroup.ADVANCED, 'cordova'],
+          aliases: ['c'],
           hint: weak('[ng]'),
           spec: { value: 'conf' },
         },
