@@ -206,7 +206,7 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
   protected async serveOptionsToNgArgs(options: AngularServeOptions): Promise<string[]> {
     const args: ParsedArgs = {
       _: [],
-      host: options.address,
+      host: options.host,
       port: options.port ? options.port.toString() : undefined,
       'source-map': options.sourcemaps !== false ? options.sourcemaps : 'false',
       'ssl': options.ssl !== false ? options.ssl : 'false',

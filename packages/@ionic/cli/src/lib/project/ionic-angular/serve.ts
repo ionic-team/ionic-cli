@@ -107,7 +107,7 @@ export class IonicAngularServeRunner extends ServeRunner<IonicAngularServeOption
 
   async serveProject(options: IonicAngularServeOptions): Promise<ServeDetails> {
     const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
-    const { port, livereloadPort, notificationPort } = await findOpenIonicPorts(options.address, options);
+    const { port, livereloadPort, notificationPort } = await findOpenIonicPorts(options.host, options);
 
     options.port = port;
     options.livereloadPort = livereloadPort;
@@ -172,7 +172,7 @@ class IonicAngularServeCLI extends ServeCLI<IonicAngularServeOptions> {
   protected serveOptionsToAppScriptsArgs(options: IonicAngularServeOptions): string[] {
     const args: ParsedArgs = {
       _: [],
-      address: options.address,
+      address: options.host,
       port: String(options.port),
       'livereload-port': String(options.livereloadPort),
       'dev-logger-port': String(options.notificationPort),

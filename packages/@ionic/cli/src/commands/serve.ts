@@ -17,7 +17,7 @@ export class ServeCommand extends Command implements CommandPreRun {
       ...COMMON_SERVE_COMMAND_OPTIONS,
       {
         name: 'lab-host',
-        summary: 'Use specific address for Ionic Lab server',
+        summary: 'Use specific host for Ionic Lab server',
         default: 'localhost',
         groups: [MetadataGroup.ADVANCED],
         spec: { value: 'host' },

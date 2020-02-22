@@ -10,7 +10,7 @@ describe('@ionic/cli', () => {
 
         const defaults = {
           '--': [],
-          address: 'localhost',
+          host: 'localhost',
           browser: undefined,
           browserOption: undefined,
           consolelogs: false,
@@ -45,14 +45,14 @@ describe('@ionic/cli', () => {
 
         it('should allow overrides of default values', () => {
           const runner = new IonicAngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333', env: 'prod' });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111, livereloadPort: 2222, notificationPort: 3333, env: 'prod' });
+          const result = runner.createOptionsFromCommandLine([], { _: [], host: '0.0.0.0', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333', env: 'prod' });
+          expect(result).toEqual({ ...defaults, host: '0.0.0.0', port: 1111, livereloadPort: 2222, notificationPort: 3333, env: 'prod' });
         });
 
         it('should respect --external flag', () => {
           const runner = new IonicAngularServeRunner({} as any);
           const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0' });
+          expect(result).toEqual({ ...defaults, host: '0.0.0.0' });
         });
 
         it('should pass on separated args', () => {
