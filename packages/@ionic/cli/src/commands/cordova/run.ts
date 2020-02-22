@@ -68,7 +68,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       },
       ...COMMON_BUILD_COMMAND_OPTIONS.filter(o => !['engine', 'platform'].includes(o.name)),
       // Serve Options
-      ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)),
+      ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)).map(o => ({ ...o, hint: weak('(--livereload)') })),
       {
         name: 'livereload',
         summary: 'Spin up dev server to live-reload www files',

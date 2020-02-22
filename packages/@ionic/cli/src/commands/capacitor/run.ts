@@ -32,7 +32,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
-      ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)),
+      ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)).map(o => ({ ...o, hint: weak('(--livereload)') })),
       {
         name: 'livereload',
         summary: 'Spin up dev server to live-reload www files',

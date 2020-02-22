@@ -62,6 +62,12 @@ export const COMMON_SERVE_COMMAND_OPTIONS: readonly CommandMetadataOption[] = [
     groups: [MetadataGroup.ADVANCED],
   },
   {
+    name: 'public-host',
+    summary: 'The host used for the browser or web view',
+    groups: [MetadataGroup.ADVANCED],
+    spec: { value: 'host' },
+  },
+  {
     name: 'livereload',
     summary: 'Do not spin up dev server--just serve files',
     type: Boolean,
@@ -104,7 +110,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
 
-    if (options['external']) {
+    if (options['external'] && options['host'] === DEFAULT_ADDRESS) {
       options['host'] = '0.0.0.0';
     }
 
@@ -138,6 +144,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       project: options['project'] ? String(options['project']) : undefined,
+      publicHost: options['public-host'] ? String(options['public-host']) : undefined,
       verbose: !!options['verbose'],
     };
   }
@@ -176,7 +183,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     const details = await this.serveProject(options);
     const labDetails = options.lab ? await this.runLab(options, details) : undefined;
 
-    const localAddress = `${details.protocol}://localhost:${details.port}`;
+    const localAddress = `${details.protocol}://${options.publicHost ? options.publicHost : 'localhost'}:${details.port}`;
     const fmtExternalAddress = (host: string) => `${details.protocol}://${host}:${details.port}`;
     const labHost = labDetails ? `http://${labDetails.host}:${labDetails.port}` : undefined;
 
@@ -251,40 +258,45 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       // ignore link-local addresses
       availableInterfaces = getExternalIPv4Interfaces().filter(i => !i.address.startsWith('169.254'));
 
-      if (availableInterfaces.length === 0) {
-        if (options.externalAddressRequired) {
-          throw new FatalException(
-            `No external network interfaces detected. In order to use the dev server externally you will need one.\n` +
-            `Are you connected to a local network?\n`
-          );
-        }
-      } else if (availableInterfaces.length === 1) {
-        chosenIP = availableInterfaces[0].address;
-      } else if (availableInterfaces.length > 1) {
-        if (options.externalAddressRequired) {
-          if (this.e.flags.interactive) {
-            this.e.log.warn(
-              'Multiple network interfaces detected!\n' +
-              'You will be prompted to select an external-facing IP for the dev server that your device or emulator has access to.\n\n' +
-              `You may also use the ${input('--host')} option to skip this prompt.`
-            );
-
-            const promptedIp = await this.e.prompt({
-              type: 'list',
-              name: 'promptedIp',
-              message: 'Please select which IP to use:',
-              choices: availableInterfaces.map(i => ({
-                name: `${i.address} ${weak(`(${i.device})`)}`,
-                value: i.address,
-              })),
-            });
-
-            chosenIP = promptedIp;
-          } else {
+      if (options.publicHost) {
+        chosenIP = options.publicHost;
+      } else {
+        if (availableInterfaces.length === 0) {
+          if (options.externalAddressRequired) {
             throw new FatalException(
-              `Multiple network interfaces detected!\n` +
-              `You must select an external-facing IP for the dev server that your device or emulator has access to with the ${input('--host')} option.`
+              `No external network interfaces detected. In order to use the dev server externally you will need one.\n` +
+              `Are you connected to a local network?\n`
             );
+          }
+        } else if (availableInterfaces.length === 1) {
+          chosenIP = availableInterfaces[0].address;
+        } else if (availableInterfaces.length > 1) {
+          if (options.externalAddressRequired) {
+            if (this.e.flags.interactive) {
+              this.e.log.warn(
+                'Multiple network interfaces detected!\n' +
+                `You will be prompted to select an external-facing IP for the dev server that your device or emulator can access. Make sure your device is on the same Wi-Fi network as your computer. Learn more about Live Reload in the docs${ancillary('[1]')}.\n\n` +
+                `To bypass this prompt, use the ${input('--public-host')} option (e.g. ${input(`--public-host=${availableInterfaces[0].address}`)}). You can alternatively bind the dev server to a specific IP (e.g. ${input(`--host=${availableInterfaces[0].address}`)}).\n\n` +
+                `${ancillary('[1]')}: ${strong('https://ion.link/livereload-docs')}\n`
+              );
+
+              const promptedIp = await this.e.prompt({
+                type: 'list',
+                name: 'promptedIp',
+                message: 'Please select which IP to use:',
+                choices: availableInterfaces.map(i => ({
+                  name: `${i.address} ${weak(`(${i.device})`)}`,
+                  value: i.address,
+                })),
+              });
+
+              chosenIP = promptedIp;
+            } else {
+              throw new FatalException(
+                `Multiple network interfaces detected!\n` +
+                `You must select an external-facing IP for the dev server that your device or emulator can access with the ${input('--public-host')} option.`
+              );
+            }
           }
         }
       }

@@ -10,6 +10,7 @@ describe('@ionic/cli', () => {
 
         const defaults = {
           '--': [],
+          publicHost: undefined,
           host: 'localhost',
           browser: undefined,
           browserOption: undefined,
@@ -51,7 +52,7 @@ describe('@ionic/cli', () => {
 
         it('should respect --external flag', () => {
           const runner = new IonicAngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
+          const result = runner.createOptionsFromCommandLine([], { _: [], host: 'localhost', external: true });
           expect(result).toEqual({ ...defaults, host: '0.0.0.0' });
         });
 
