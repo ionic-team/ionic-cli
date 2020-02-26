@@ -15,8 +15,21 @@ import { createProjectFromDetails, createProjectFromDirectory, isValidProjectId 
 import { prependNodeModulesBinToPath } from '../lib/shell';
 import { AppSchema, STARTER_BASE_URL, STARTER_TEMPLATES, SUPPORTED_FRAMEWORKS, getAdvertisement, getStarterList, getStarterProjectTypes, readStarterManifest, verifyOptions } from '../lib/start';
 import { emoji } from '../lib/utils/emoji';
+import { createRequest } from '../lib/utils/http';
 
 const debug = Debug('ionic:commands:start');
+
+  interface StartWizardApp {
+    type: ProjectType;
+    name: string;
+    appId: string;
+    template: string;
+    'package-id': string;
+    tid: string;
+    atk: string;
+    email: string;
+    cid: number;
+  }
 
 export class StartCommand extends Command implements CommandPreRun {
   private canRemoveExisting = false;
@@ -129,7 +142,43 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           default: 'latest',
           groups: [MetadataGroup.HIDDEN],
         },
+        {
+          name: '--start-id',
+          summary: 'Used by the Ionic app start experience to generate an associated app locally.',
+          groups: [MetadataGroup.ADVANCED],
+          spec: { value: 'id' },
+        },
       ],
+    };
+  }
+
+  async startIdStart(inputs: CommandLineInputs, options: CommandLineOptions) {
+    console.log('Starting with id', inputs, options);
+
+    const startId = options['start-id'];
+
+    const wizardApiUrl = process.env.START_WIZARD_URL;
+
+    console.log('Fetching', startId, wizardApiUrl);
+
+    if (!wizardApiUrl) {
+      return;
+    }
+
+    const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
+
+    const data = (await req).body as StartWizardApp;
+    console.log('Got app config', data);
+
+    this.schema = {
+      cloned: false,
+      name: data.name,
+      type: data.type,
+      template: data.template,
+      projectId: slugify(data.name),
+      projectDir: slugify(data.name),
+      packageId: data["package-id"],
+      appflowId: undefined,
     };
   }
 
@@ -144,6 +193,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (!this.env.session.isLoggedIn()) {
         await promptToLogin(this.env);
       }
+    }
+
+    // The start wizard pre-populates all arguments for the CLI
+    if (options['start-id']) {
+      await this.startIdStart(inputs, options);
+      return;
     }
 
     const projectType = options['type'] ? String(options['type']) : await this.getProjectType();
