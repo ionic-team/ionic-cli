@@ -211,7 +211,7 @@ describe('@ionic/cli', () => {
 
         it('should be run args with script and script args', async () => {
           const result = await pkgManagerArgs('pnpm', { command: 'run', script: 'test', scriptArgs: ['-s'] });
-          expect(result).toEqual(['pnpm', 'run',  'test', '-s']);
+          expect(result).toEqual(['pnpm', 'run',  'test', '--', '-s']);
         });
 
         it('should be info args', async () => {
