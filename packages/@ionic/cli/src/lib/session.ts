@@ -6,6 +6,7 @@ import { isLoginResponse, isSuperAgentError } from '../guards';
 import { input } from './color';
 import { FatalException, SessionException } from './errors';
 import { formatResponseError } from './http';
+import { openUrl } from './open';
 
 export interface SessionDeps {
   readonly config: IConfig;
@@ -158,6 +159,27 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   });
 
   await env.session.login(email, password);
+}
+
+export async function promptToSignup(env: IonicEnvironment): Promise<void> {
+  env.log.msg(
+    `Join the Ionic Community\n` +
+    `Join the millions of developers on the Ionic Forum,\n` +
+    `get access to live events, news updates, and more.\n\n`
+  );
+
+  const create = await env.prompt({
+    type: 'confirm',
+    name: 'create',
+    message: 'Create free Ionic account?',
+    default: true,
+  });
+
+  if (create) {
+    const dashUrl = env.config.getDashUrl();
+
+    await openUrl(`${dashUrl}/signup?source=cli`);
+  }
 }
 
 function hasTokenAttribute(r: any): r is { token: string; } {
