@@ -164,7 +164,7 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
 export async function promptToSignup(env: IonicEnvironment): Promise<void> {
   env.log.msg(
     `Join the Ionic Community\n` +
-    `Join the millions of developers on the Ionic Forum,\n` +
+    `Connect with millions of developers on the Ionic Forum and\n` +
     `get access to live events, news updates, and more.\n\n`
   );
 
