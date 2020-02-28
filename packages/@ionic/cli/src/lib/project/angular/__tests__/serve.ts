@@ -11,7 +11,7 @@ describe('@ionic/cli', () => {
 
         const defaults = {
           '--': [],
-          address: 'localhost',
+          host: 'localhost',
           browser: undefined,
           browserOption: undefined,
           engine: 'browser',
@@ -43,14 +43,14 @@ describe('@ionic/cli', () => {
 
         it('should allow overrides of default values', () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111' });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111 });
+          const result = runner.createOptionsFromCommandLine([], { _: [], host: '0.0.0.0', port: '1111' });
+          expect(result).toEqual({ ...defaults, host: '0.0.0.0', port: 1111 });
         });
 
         it('should respect --external flag', () => {
           const runner = new AngularServeRunner({} as any);
           const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0' });
+          expect(result).toEqual({ ...defaults, host: '0.0.0.0' });
         });
 
         it('should respect --consolelogs flag', () => {
@@ -88,7 +88,7 @@ describe('@ionic/cli', () => {
           const cli = new AngularServeCLI({ project } as any);
           const options = {
             ...defaults,
-            address: 'localhost',
+            host: 'localhost',
             port: 4200,
             sourcemaps: true,
             ssl: true,
@@ -96,7 +96,7 @@ describe('@ionic/cli', () => {
 
           const result = await (cli as any).serveOptionsToNgArgs(options);
           expect(result).toEqual([
-            `--host=${options.address}`,
+            `--host=${options.host}`,
             `--port=${options.port}`,
             `--source-map`,
             `--ssl`,

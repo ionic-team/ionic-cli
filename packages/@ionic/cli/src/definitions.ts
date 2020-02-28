@@ -595,7 +595,7 @@ export interface IonicAngularGenerateOptions extends GenerateOptions {
 
 export interface ServeOptions {
   // Command Options
-  address: string;
+  host: string;
   port: number;
   livereload: boolean;
   proxy: boolean;
@@ -655,7 +655,7 @@ export interface CustomServeOptions extends ServeOptions {}
 
 export interface LabServeDetails {
   projectType: ProjectType;
-  address: string;
+  host: string;
   port: number;
 }
 

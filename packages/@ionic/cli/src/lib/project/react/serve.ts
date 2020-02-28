@@ -149,9 +149,9 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
     env.BROWSER = 'none';
 
     // CRA binds to `localhost` by default, but if specified it prints a
-    // warning, so don't set `HOST` if the address is set to `localhost`.
-    if (options.address !== DEFAULT_ADDRESS) {
-      env.HOST = options.address;
+    // warning, so don't set `HOST` if the host is set to `localhost`.
+    if (options.host !== DEFAULT_ADDRESS) {
+      env.HOST = options.host;
     }
 
     env.PORT = String(options.port);
