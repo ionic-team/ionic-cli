@@ -138,8 +138,9 @@ export class ProSession extends BaseSession implements ISession {
 export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   const { validators } = await import('@ionic/cli-framework');
 
+  env.log.nl();
   env.log.msg(
-    `Log in to your Ionic account\n` +
+    `Log in to your Ionic account!\n` +
     `If you don't have one yet, create yours by running: ${input(`ionic signup`)}\n`
   );
 
@@ -162,10 +163,10 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
 }
 
 export async function promptToSignup(env: IonicEnvironment): Promise<void> {
+  env.log.nl();
   env.log.msg(
-    `Join the Ionic Community\n` +
-    `Connect with millions of developers on the Ionic Forum and\n` +
-    `get access to live events, news updates, and more.\n\n`
+    `Join the Ionic Community! 💙\n` +
+    `Connect with millions of developers on the Ionic Forum and get access to live events, news updates, and more.\n\n`
   );
 
   const create = await env.prompt({
