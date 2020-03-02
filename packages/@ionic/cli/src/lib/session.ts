@@ -173,7 +173,7 @@ export async function promptToSignup(env: IonicEnvironment): Promise<void> {
     type: 'confirm',
     name: 'create',
     message: 'Create free Ionic account?',
-    default: true,
+    default: false,
   });
 
   if (create) {
