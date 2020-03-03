@@ -597,6 +597,7 @@ export interface ServeOptions {
   // Command Options
   host: string;
   port: number;
+  publicHost?: string;
   livereload: boolean;
   proxy: boolean;
   lab: boolean;

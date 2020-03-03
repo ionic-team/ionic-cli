@@ -227,6 +227,8 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
 
       args.consolelogs = options.consolelogs ? true : undefined;
       args['consolelogs-port'] = options.consolelogsPort ? String(options.consolelogsPort) : undefined;
+    } else {
+      args['public-host'] = options.publicHost; // TODO: @ionic/angular-toolkit would need to support --public-host
     }
 
     if (this.resolvedProgram !== this.program) {
