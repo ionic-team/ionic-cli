@@ -125,6 +125,10 @@ export class ProjectDetails {
       const p = await createProjectFromDetails({ context: 'app', configPath: path.resolve(this.rootDirectory, PROJECT_FILE), type: projectType, errors: [] }, this.e);
       const type = p.type;
 
+      // TODO: This is a hack to avoid accessing `this.config` within the
+      // `Project.directory` getter, which writes config files.
+      Object.defineProperty(p, 'directory', { value: this.rootDirectory, writable: false });
+
       if (await p.detected()) {
         debug(`Project type from detection: ${strong(prettyProjectName(type))} ${type ? strong(`(${type})`) : ''}`);
         return type;
@@ -198,7 +202,7 @@ export class ProjectDetails {
         log.warn(
           `Multi-app workspace detected, but cannot determine which project to use.\n` +
           `Please set a ${input('defaultProject')} in ${strong(prettyPath(result.configPath))} or specify the project using the global ${input('--project')} option. Read the documentation${ancillary('[1]')} for more information.\n\n` +
-          `${ancillary('[1]')}: ${strong('https://beta.ionicframework.com/docs/cli/configuration#multi-app-projects')}`
+          `${ancillary('[1]')}: ${strong('https://ion.link/multi-app-docs')}`
         );
 
         log.nl();
@@ -387,6 +391,14 @@ export class ProjectConfig extends BaseConfig<IProjectConfig> {
   }
 }
 
+export class MultiProjectConfig extends BaseConfig<IMultiProjectConfig> {
+  provideDefaults(c: Partial<Readonly<IMultiProjectConfig>>): IMultiProjectConfig {
+    return lodash.assign({
+      projects: {},
+    }, c);
+  }
+}
+
 export interface ProjectDeps {
   readonly client: IClient;
   readonly config: IConfig;
@@ -489,7 +501,7 @@ export abstract class Project implements IProject {
     return path.resolve(this.directory, 'package.json');
   }
 
-  async getPackageJson(pkgName?: string): Promise<[PackageJson | undefined, string | undefined]> {
+  async getPackageJson(pkgName?: string, { logErrors = true }: { logErrors?: boolean; } = {}): Promise<[PackageJson | undefined, string | undefined]> {
     let pkg: PackageJson | undefined;
     let pkgPath: string | undefined;
 
@@ -497,7 +509,9 @@ export abstract class Project implements IProject {
       pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       pkg = await readPackageJsonFile(pkgPath);
     } catch (e) {
-      this.e.log.error(`Error loading ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}: ${e}`);
+      if (logErrors) {
+        this.e.log.warn(`Error loading ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}: ${e}`);
+      }
     }
 
     return [pkg, pkgPath ? path.dirname(pkgPath) : undefined];
@@ -661,6 +675,8 @@ export function prettyProjectName(type?: string): string {
     return 'Ionic 2/3';
   } else if (type === 'ionic1') {
     return 'Ionic 1';
+  } else if (type === 'custom') {
+    return 'Custom';
   }
 
   return type;

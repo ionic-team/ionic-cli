@@ -423,7 +423,11 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       return;
     }
 
-    const pkg = await this.e.project.requirePackageJson();
+    const [ pkg ] = await this.e.project.getPackageJson(undefined, { logErrors: false });
+
+    if (!pkg) {
+      return;
+    }
 
     return pkg.scripts && pkg.scripts[this.script];
   }

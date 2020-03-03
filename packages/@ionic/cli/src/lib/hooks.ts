@@ -35,7 +35,11 @@ export abstract class Hook {
       return; // TODO: will we need hooks outside a project?
     }
 
-    const pkg = await this.e.project.requirePackageJson();
+    const [ pkg ] = await this.e.project.getPackageJson(undefined, { logErrors: false });
+
+    if (!pkg) {
+      return;
+    }
 
     debug(`Looking for ${ancillary(this.script)} npm script.`);
 

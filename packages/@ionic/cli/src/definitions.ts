@@ -291,7 +291,7 @@ export interface IProject {
   getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined;
   requireIntegration(name: IntegrationName): Required<ProjectIntegration>;
   requireAppflowId(): Promise<string>;
-  getPackageJson(pkgName?: string): Promise<[PackageJson | undefined, string | undefined]>;
+  getPackageJson(pkgName?: string, options?: { logErrors?: boolean }): Promise<[PackageJson | undefined, string | undefined]>;
   requirePackageJson(pkgName?: string): Promise<PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   registerAilments(registry: IAilmentRegistry): Promise<void>;
