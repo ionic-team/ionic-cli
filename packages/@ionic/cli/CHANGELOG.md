@@ -3,6 +3,21 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.1.0...@ionic/cli@6.2.0) (2020-03-03)
+
+
+### Features
+
+* add support for pnpm ([#4330](https://github.com/ionic-team/ionic-cli/issues/4330)) ([47bf076](https://github.com/ionic-team/ionic-cli/commit/47bf076427f3c5d36e241b85cacf30b23f2efd24))
+* **init:** add --multi-app option to init monorepos ([42c5199](https://github.com/ionic-team/ionic-cli/commit/42c51996632cdbc6ad6e514f36a584e3a450e380))
+* **serve:** -c as alias for --configuration for Angular projects ([c010f37](https://github.com/ionic-team/ionic-cli/commit/c010f375dc8f1d7bc93cb313729f92d4d905a3cc))
+* **serve:** add `--public-host` option ([#4331](https://github.com/ionic-team/ionic-cli/issues/4331)) ([8ae752d](https://github.com/ionic-team/ionic-cli/commit/8ae752d60de69063c752870f96a617a270316ca7))
+* **start:** add signup prompt ([#4338](https://github.com/ionic-team/ionic-cli/issues/4338)) ([1f23b66](https://github.com/ionic-team/ionic-cli/commit/1f23b662c05114d1645b6f3ab2678e54d517b324))
+
+
+
+
+
 # 6.1.0 (2020-02-11)
 
 
