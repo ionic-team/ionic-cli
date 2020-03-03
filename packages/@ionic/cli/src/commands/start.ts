@@ -12,6 +12,7 @@ import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
 import { createProjectFromDetails, createProjectFromDirectory, isValidProjectId } from '../lib/project';
+import { promptToSignup } from '../lib/session';
 import { prependNodeModulesBinToPath } from '../lib/shell';
 import { AppSchema, STARTER_BASE_URL, STARTER_TEMPLATES, SUPPORTED_FRAMEWORKS, getAdvertisement, getStarterList, getStarterProjectTypes, readStarterManifest, verifyOptions } from '../lib/start';
 import { emoji } from '../lib/utils/emoji';
@@ -478,6 +479,11 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           this.env.log.warn('Error encountered during repo initialization. Disabling further git operations.');
           gitIntegration = false;
         }
+      }
+
+      // Prompt to create account
+      if (!this.env.session.isLoggedIn()) {
+        await promptToSignup(this.env);
       }
 
       if (options['link']) {

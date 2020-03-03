@@ -154,6 +154,83 @@ describe('@ionic/cli', () => {
 
       });
 
+      describe('pnpm', () => {
+
+        jest.resetModules();
+        const { pkgManagerArgs } = require('../npm');
+
+        it('should be pkg install with default args', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'install' });
+          expect(result).toEqual(['pnpm', 'install']);
+        });
+
+        it('should be pkg install args for local package', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'install', pkg: 'foo' });
+          expect(result).toEqual(['pnpm', 'add', '--save-exact', 'foo']);
+        });
+
+        it('should be pkg install args for local package install', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'install', pkg: 'foo', saveDev: true });
+          expect(result).toEqual(['pnpm', 'add', '--save-dev', '--save-exact', 'foo']);
+        });
+
+        it('should be pkg install args for local package uninstall', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'uninstall', pkg: 'foo' });
+          expect(result).toEqual(['pnpm', 'remove', 'foo']);
+        });
+
+        it('should be pkg install args for global package install', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'install', pkg: 'foo', global: true });
+          expect(result).toEqual(['pnpm', 'add', '--global', 'foo']);
+        });
+
+        it('should be pkg install args for global package install with bad options', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'install', pkg: 'foo', global: true, saveDev: true });
+          expect(result).toEqual(['pnpm', 'add', '--global', 'foo']);
+        });
+
+        it('should be dedupe args', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'dedupe' });
+          expect(result).toEqual([]); // pnpm doesn't support dedupe
+        });
+
+        it('should be rebuild args', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'rebuild' });
+          expect(result).toEqual(['pnpm', 'rebuild']);
+        });
+
+        it('should be run args', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'run' });
+          expect(result).toEqual(['pnpm', 'run']);
+        });
+
+        it('should be run args with script', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'run', script: 'test' });
+          expect(result).toEqual(['pnpm', 'run',  'test']);
+        });
+
+        it('should be run args with script and script args', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'run', script: 'test', scriptArgs: ['-s'] });
+          expect(result).toEqual(['pnpm', 'run',  'test', '--', '-s']);
+        });
+
+        it('should be info args', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'info' });
+          expect(result).toEqual(['pnpm', 'info']);
+        });
+
+        it('should be pkg info args', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'info', pkg: '@ionic/cli' });
+          expect(result).toEqual(['pnpm', 'info',  '@ionic/cli']);
+        });
+
+        it('should be pkg info args with json flag', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'info', pkg: '@ionic/cli', json: true });
+          expect(result).toEqual(['pnpm', 'info',  '@ionic/cli', '--json']);
+        });
+
+      });
+
     });
 
   });
