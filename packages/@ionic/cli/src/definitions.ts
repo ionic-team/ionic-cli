@@ -252,6 +252,7 @@ export interface ProjectPersonalizationDetails {
   packageId?: string;
   version?: string;
   description?: string;
+  themeColor?: string;
 }
 
 export interface IProjectConfig {

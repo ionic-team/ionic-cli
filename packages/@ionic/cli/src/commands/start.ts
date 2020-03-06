@@ -19,17 +19,18 @@ import { createRequest } from '../lib/utils/http';
 
 const debug = Debug('ionic:commands:start');
 
-  interface StartWizardApp {
-    type: ProjectType;
-    name: string;
-    appId: string;
-    template: string;
-    'package-id': string;
-    tid: string;
-    atk: string;
-    email: string;
-    cid: number;
-  }
+interface StartWizardApp {
+  type: ProjectType;
+  name: string;
+  appId: string;
+  template: string;
+  'package-id': string;
+  tid: string;
+  atk: string;
+  email: string;
+  cid: number;
+  theme: string;
+}
 
 export class StartCommand extends Command implements CommandPreRun {
   private canRemoveExisting = false;
@@ -153,13 +154,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async startIdStart(inputs: CommandLineInputs, options: CommandLineOptions) {
-    console.log('Starting with id', inputs, options);
-
     const startId = options['start-id'];
 
     const wizardApiUrl = process.env.START_WIZARD_URL;
-
-    console.log('Fetching', startId, wizardApiUrl);
 
     if (!wizardApiUrl) {
       return;
@@ -168,7 +165,15 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
 
     const data = (await req).body as StartWizardApp;
-    console.log('Got app config', data);
+
+    // TODO: Allow only one extra arg
+    let projectDir = slugify(data.name);
+    if (inputs.length === 1) {
+      projectDir = inputs[0];
+    }
+
+    inputs.push(data.name);
+    inputs.push(data.template);
 
     this.schema = {
       cloned: false,
@@ -176,9 +181,10 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       type: data.type,
       template: data.template,
       projectId: slugify(data.name),
-      projectDir: slugify(data.name),
-      packageId: data["package-id"],
+      projectDir,
+      packageId: data['package-id'],
       appflowId: undefined,
+      themeColor: data.theme,
     };
   }
 
@@ -365,6 +371,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         projectDir,
         packageId,
         appflowId,
+        themeColor: undefined,
       };
     }
   }
@@ -510,7 +517,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet', '--', this.schema.name, packageId ? packageId : 'io.ionic.starter']);
       }
 
-      await this.project.personalize({ name: this.schema.name, projectId, packageId });
+      await this.project.personalize({ name: this.schema.name, projectId, packageId, themeColor: this.schema.themeColor });
 
       this.env.log.nl();
     }
