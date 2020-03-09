@@ -165,6 +165,6 @@ export class ReactServeCLI extends ServeCLI<ReactServeOptions> {
       env.REACT_EDITOR = options.reactEditor;
     }
 
-    return { ...super.buildEnvVars(options), ...env };
+    return { ...await super.buildEnvVars(options), ...env };
   }
 }
