@@ -442,7 +442,6 @@ export abstract class Project implements IProject {
   abstract requireBuildRunner(): Promise<import('../build').BuildRunner<any>>;
   abstract requireServeRunner(): Promise<import('../serve').ServeRunner<any>>;
   abstract requireGenerateRunner(): Promise<import('../generate').GenerateRunner<any>>;
-
   async getBuildRunner(): Promise<import('../build').BuildRunner<any> | undefined> {
     try {
       return await this.requireBuildRunner();
@@ -565,7 +564,7 @@ export abstract class Project implements IProject {
     await writeJson(this.packageJsonPath, pkg, { spaces: 2 });
 
     if (themeColor) {
-      await this.setTheme(themeColor);
+      await this.setPrimaryTheme(themeColor);
     }
 
     const integrations = await this.getIntegrations();
@@ -573,24 +572,9 @@ export abstract class Project implements IProject {
     await Promise.all(integrations.map(async i => i.personalize(details)));
   }
 
-  async setTheme(themeColor: string): Promise<void> {
-    let themePath;
-    switch (this.type) {
-      case 'angular': {
-        themePath = path.join(this.directory, 'src', 'theme', 'variables.scss');
-        break;
-      }
-      case 'react': {
-        themePath = path.join(this.directory, 'src', 'theme', 'variables.css');
-        break;
-      }
-    }
-    if (!themePath) {
-      return;
-    }
-
-    return this.writeThemeColor(themePath, themeColor);
-  }
+  // Empty to avoid sub-classes having to implement
+  // tslint:disable-next-line:no-empty
+  async setPrimaryTheme(_themeColor: string): Promise<void> {}
 
   async writeThemeColor(variablesPath: string, themeColor: string): Promise<void> {
     const color = new Color(themeColor);
