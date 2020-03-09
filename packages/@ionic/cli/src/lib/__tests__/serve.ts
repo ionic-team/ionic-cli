@@ -20,7 +20,8 @@ describe('@ionic/cli', () => {
 
         const defaults = {
           '--': [],
-          address: 'localhost',
+          publicHost: undefined,
+          host: 'localhost',
           browser: undefined,
           browserOption: undefined,
           engine: 'browser',
@@ -50,14 +51,14 @@ describe('@ionic/cli', () => {
 
         it('should allow overrides of default values', () => {
           const runner = new MyServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { _: [], address: '0.0.0.0', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0', port: 1111 });
+          const result = runner.createOptionsFromCommandLine([], { _: [], host: '0.0.0.0', port: '1111', 'livereload-port': '2222', 'dev-logger-port': '3333' });
+          expect(result).toEqual({ ...defaults, host: '0.0.0.0', port: 1111 });
         });
 
         it('should respect --external flag', () => {
           const runner = new MyServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { _: [], external: true });
-          expect(result).toEqual({ ...defaults, address: '0.0.0.0' });
+          const result = runner.createOptionsFromCommandLine([], { _: [], host: 'localhost', external: true });
+          expect(result).toEqual({ ...defaults, host: '0.0.0.0' });
         });
 
         it('should respect --project flag', () => {

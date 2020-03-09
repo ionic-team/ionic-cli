@@ -119,6 +119,6 @@ export class ReactBuildCLI extends BuildCLI<ReactBuildOptions> {
       env.INLINE_RUNTIME_CHUNK = 'false';
     }
 
-    return { ...super.buildEnvVars(options), ...env };
+    return { ...await super.buildEnvVars(options), ...env };
   }
 }

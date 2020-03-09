@@ -6,6 +6,7 @@ import { isLoginResponse, isSuperAgentError } from '../guards';
 import { input } from './color';
 import { FatalException, SessionException } from './errors';
 import { formatResponseError } from './http';
+import { openUrl } from './open';
 
 export interface SessionDeps {
   readonly config: IConfig;
@@ -137,8 +138,9 @@ export class ProSession extends BaseSession implements ISession {
 export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   const { validators } = await import('@ionic/cli-framework');
 
+  env.log.nl();
   env.log.msg(
-    `Log in to your Ionic account\n` +
+    `Log in to your Ionic account!\n` +
     `If you don't have one yet, create yours by running: ${input(`ionic signup`)}\n`
   );
 
@@ -158,6 +160,27 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   });
 
   await env.session.login(email, password);
+}
+
+export async function promptToSignup(env: IonicEnvironment): Promise<void> {
+  env.log.nl();
+  env.log.msg(
+    `Join the Ionic Community! 💙\n` +
+    `Connect with millions of developers on the Ionic Forum and get access to live events, news updates, and more.\n\n`
+  );
+
+  const create = await env.prompt({
+    type: 'confirm',
+    name: 'create',
+    message: 'Create free Ionic account?',
+    default: false,
+  });
+
+  if (create) {
+    const dashUrl = env.config.getDashUrl();
+
+    await openUrl(`${dashUrl}/signup?source=cli`);
+  }
 }
 
 function hasTokenAttribute(r: any): r is { token: string; } {

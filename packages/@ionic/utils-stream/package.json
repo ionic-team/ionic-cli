@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-stream",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Stream utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -45,6 +45,6 @@
     "stream-combiner2": "^1.1.1",
     "ts-jest": "^25.0.0",
     "tslint": "^5.9.1",
-    "typescript": "~3.7.3"
+    "typescript": "~3.8.2"
   }
 }

@@ -292,7 +292,7 @@ export interface IProject {
   getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined;
   requireIntegration(name: IntegrationName): Required<ProjectIntegration>;
   requireAppflowId(): Promise<string>;
-  getPackageJson(pkgName?: string): Promise<[PackageJson | undefined, string | undefined]>;
+  getPackageJson(pkgName?: string, options?: { logErrors?: boolean }): Promise<[PackageJson | undefined, string | undefined]>;
   requirePackageJson(pkgName?: string): Promise<PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
   registerAilments(registry: IAilmentRegistry): Promise<void>;
@@ -393,7 +393,7 @@ export interface ITelemetry {
   sendCommand(command: string, args: string[]): Promise<void>;
 }
 
-export type NpmClient = 'yarn' | 'npm';
+export type NpmClient = 'yarn' | 'npm' | 'pnpm';
 
 export type FeatureId = 'ssl-commands';
 
@@ -596,8 +596,9 @@ export interface IonicAngularGenerateOptions extends GenerateOptions {
 
 export interface ServeOptions {
   // Command Options
-  address: string;
+  host: string;
   port: number;
+  publicHost?: string;
   livereload: boolean;
   proxy: boolean;
   lab: boolean;
@@ -656,7 +657,7 @@ export interface CustomServeOptions extends ServeOptions {}
 
 export interface LabServeDetails {
   projectType: ProjectType;
-  address: string;
+  host: string;
   port: number;
 }
 

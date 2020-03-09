@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli",
-  "version": "6.1.0",
+  "version": "6.2.0",
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "https://ionicframework.com",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
@@ -40,15 +40,15 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework": "4.1.0",
-    "@ionic/cli-framework-prompts": "2.1.0",
-    "@ionic/utils-array": "2.1.0",
-    "@ionic/utils-fs": "3.1.0",
-    "@ionic/utils-network": "2.1.0",
-    "@ionic/utils-process": "2.1.0",
-    "@ionic/utils-stream": "3.1.0",
-    "@ionic/utils-subprocess": "2.1.0",
-    "@ionic/utils-terminal": "2.1.0",
+    "@ionic/cli-framework": "4.1.1",
+    "@ionic/cli-framework-prompts": "2.1.1",
+    "@ionic/utils-array": "2.1.1",
+    "@ionic/utils-fs": "3.1.1",
+    "@ionic/utils-network": "2.1.1",
+    "@ionic/utils-process": "2.1.1",
+    "@ionic/utils-stream": "3.1.1",
+    "@ionic/utils-subprocess": "2.1.1",
+    "@ionic/utils-terminal": "2.1.1",
     "chalk": "^3.0.0",
     "debug": "^4.0.0",
     "diff": "^4.0.1",
@@ -66,7 +66,7 @@
     "tar": "^6.0.1",
     "through2": "^3.0.0",
     "tslib": "^1.9.0",
-    "uuid": "^3.2.1"
+    "uuid": "^7.0.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",
@@ -83,7 +83,7 @@
     "@types/superagent-proxy": "^2.0.0",
     "@types/tar": "^4.0.0",
     "@types/through2": "^2.0.33",
-    "@types/uuid": "^3.4.3",
+    "@types/uuid": "^7.0.0",
     "jest": "^25.1.0",
     "jest-cli": "^25.1.0",
     "lint-staged": "^10.0.2",
@@ -91,6 +91,6 @@
     "source-map": "^0.7.0",
     "ts-jest": "^25.0.0",
     "tslint": "^5.9.1",
-    "typescript": "~3.7.3"
+    "typescript": "~3.8.2"
   }
 }

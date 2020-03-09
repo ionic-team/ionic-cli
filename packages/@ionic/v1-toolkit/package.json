@@ -1,6 +1,6 @@
 {
   "name": "@ionic/v1-toolkit",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "description": "Utility CLI for Ionic 1.x apps, used by Ionic CLI",
   "bin": {
     "ionic-v1": "./bin/ionic-v1"
@@ -36,8 +36,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ionic/cli-framework": "4.1.0",
-    "@ionic/utils-fs": "3.1.0",
+    "@ionic/cli-framework": "4.1.1",
+    "@ionic/utils-fs": "3.1.1",
     "chalk": "^3.0.0",
     "chokidar": "^3.0.1",
     "debug": "^4.0.0",
@@ -62,6 +62,6 @@
     "rimraf": "^3.0.0",
     "ts-jest": "^25.0.0",
     "tslint": "^5.9.1",
-    "typescript": "~3.7.3"
+    "typescript": "~3.8.2"
   }
 }

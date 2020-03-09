@@ -40,21 +40,32 @@ export const SERVE_SCRIPT = 'ionic:serve';
 export const COMMON_SERVE_COMMAND_OPTIONS: readonly CommandMetadataOption[] = [
   {
     name: 'external',
-    summary: `Host dev server on all network interfaces (i.e. ${input('--address=0.0.0.0')})`,
+    summary: `Host dev server on all network interfaces (i.e. ${input('--host=0.0.0.0')})`,
     type: Boolean,
   },
   {
-    name: 'address',
-    summary: 'Use specific address for the dev server',
+    name: 'address', // keep this here so the option is parsed with its value
+    summary: '',
+    groups: [MetadataGroup.HIDDEN],
+  },
+  {
+    name: 'host',
+    summary: 'Use specific host for the dev server',
     default: DEFAULT_ADDRESS,
     groups: [MetadataGroup.ADVANCED],
   },
   {
     name: 'port',
-    summary: 'Use specific port for HTTP',
+    summary: 'Use specific port for the dev server',
     default: DEFAULT_SERVER_PORT.toString(),
     aliases: ['p'],
     groups: [MetadataGroup.ADVANCED],
+  },
+  {
+    name: 'public-host',
+    summary: 'The host used for the browser or web view',
+    groups: [MetadataGroup.ADVANCED],
+    spec: { value: 'host' },
   },
   {
     name: 'livereload',
@@ -99,18 +110,27 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
     const separatedArgs = options['--'];
 
-    if (options['external']) {
-      options['address'] = '0.0.0.0';
+    if (options['external'] && options['host'] === DEFAULT_ADDRESS) {
+      options['host'] = '0.0.0.0';
+    }
+
+    if (options['address'] && options['host'] === DEFAULT_ADDRESS) {
+      this.e.log.warn(
+        `The ${input('--address')} option is deprecated in favor of ${input('--host')}.\n` +
+        `Please use the ${input('--host')} option (e.g. ${input(`--host=${options['address']}`)}) to specify the host of the dev server.\n`
+      );
+
+      options['host'] = options['address'];
     }
 
     const engine = this.determineEngineFromCommandLine(options);
-    const address = options['address'] ? String(options['address']) : DEFAULT_ADDRESS;
+    const host = options['host'] ? String(options['host']) : DEFAULT_ADDRESS;
     const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
 
     return {
       '--': separatedArgs ? separatedArgs : [],
-      address,
+      host,
       browser: options['browser'] ? String(options['browser']) : undefined,
       browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
       engine,
@@ -124,6 +144,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       project: options['project'] ? String(options['project']) : undefined,
+      publicHost: options['public-host'] ? String(options['public-host']) : undefined,
       verbose: !!options['verbose'],
     };
   }
@@ -162,14 +183,14 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     const details = await this.serveProject(options);
     const labDetails = options.lab ? await this.runLab(options, details) : undefined;
 
-    const localAddress = `${details.protocol}://localhost:${details.port}`;
-    const fmtExternalAddress = (address: string) => `${details.protocol}://${address}:${details.port}`;
-    const labAddress = labDetails ? `http://${labDetails.address}:${labDetails.port}` : undefined;
+    const localAddress = `${details.protocol}://${options.publicHost ? options.publicHost : 'localhost'}:${details.port}`;
+    const fmtExternalAddress = (host: string) => `${details.protocol}://${host}:${details.port}`;
+    const labHost = labDetails ? `http://${labDetails.host}:${labDetails.port}` : undefined;
 
     this.e.log.nl();
     this.e.log.info(
       `Development server running!` +
-      (labAddress ? `\nLab: ${strong(labAddress)}` : '') +
+      (labHost ? `\nLab: ${strong(labHost)}` : '') +
       `\nLocal: ${strong(localAddress)}` +
       (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => strong(fmtExternalAddress(v.address))).join(', ')}` : '') +
       `\n\n${chalk.yellow('Use Ctrl+C to quit this process')}`
@@ -177,7 +198,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     this.e.log.nl();
 
     if (options.open) {
-      const openAddress = labAddress ? labAddress : localAddress;
+      const openAddress = labHost ? labHost : localAddress;
       const url = this.modifyOpenUrl(openAddress, options);
 
       await openUrl(url, { app: options.browser });
@@ -219,7 +240,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   async runLab(options: T, serveDetails: ServeDetails): Promise<LabServeDetails> {
     const labDetails: LabServeDetails = {
       projectType: this.e.project.type,
-      address: options.labHost,
+      host: options.labHost,
       port: await findClosestOpenPort(options.labPort),
     };
 
@@ -231,50 +252,55 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
   async selectExternalIP(options: T): Promise<[string, NetworkInterface[]]> {
     let availableInterfaces: NetworkInterface[] = [];
-    let chosenIP = options.address;
+    let chosenIP = options.host;
 
-    if (options.address === BIND_ALL_ADDRESS) {
+    if (options.host === BIND_ALL_ADDRESS) {
       // ignore link-local addresses
       availableInterfaces = getExternalIPv4Interfaces().filter(i => !i.address.startsWith('169.254'));
 
-      if (availableInterfaces.length === 0) {
-        if (options.externalAddressRequired) {
-          throw new FatalException(
-            `No external network interfaces detected. In order to use the dev server externally you will need one.\n` +
-            `Are you connected to a local network?\n`
-          );
-        }
-      } else if (availableInterfaces.length === 1) {
-        chosenIP = availableInterfaces[0].address;
-      } else if (availableInterfaces.length > 1) {
-        if (options.externalAddressRequired) {
-          if (this.e.flags.interactive) {
-            this.e.log.warn(
-              'Multiple network interfaces detected!\n' +
-              'You will be prompted to select an external-facing IP for the dev server that your device or emulator has access to.\n\n' +
-              `You may also use the ${input('--address')} option to skip this prompt.`
-            );
-
-            const promptedIp = await this.e.prompt({
-              type: 'list',
-              name: 'promptedIp',
-              message: 'Please select which IP to use:',
-              choices: availableInterfaces.map(i => ({
-                name: `${i.address} ${weak(`(${i.device})`)}`,
-                value: i.address,
-              })),
-            });
-
-            chosenIP = promptedIp;
-          } else {
+      if (options.publicHost) {
+        chosenIP = options.publicHost;
+      } else {
+        if (availableInterfaces.length === 0) {
+          if (options.externalAddressRequired) {
             throw new FatalException(
-              `Multiple network interfaces detected!\n` +
-              `You must select an external-facing IP for the dev server that your device or emulator has access to with the ${input('--address')} option.`
+              `No external network interfaces detected. In order to use the dev server externally you will need one.\n` +
+              `Are you connected to a local network?\n`
             );
+          }
+        } else if (availableInterfaces.length === 1) {
+          chosenIP = availableInterfaces[0].address;
+        } else if (availableInterfaces.length > 1) {
+          if (options.externalAddressRequired) {
+            if (this.e.flags.interactive) {
+              this.e.log.warn(
+                'Multiple network interfaces detected!\n' +
+                `You will be prompted to select an external-facing IP for the dev server that your device or emulator can access. Make sure your device is on the same Wi-Fi network as your computer. Learn more about Live Reload in the docs${ancillary('[1]')}.\n\n` +
+                `To bypass this prompt, use the ${input('--public-host')} option (e.g. ${input(`--public-host=${availableInterfaces[0].address}`)}). You can alternatively bind the dev server to a specific IP (e.g. ${input(`--host=${availableInterfaces[0].address}`)}).\n\n` +
+                `${ancillary('[1]')}: ${strong('https://ion.link/livereload-docs')}\n`
+              );
+
+              const promptedIp = await this.e.prompt({
+                type: 'list',
+                name: 'promptedIp',
+                message: 'Please select which IP to use:',
+                choices: availableInterfaces.map(i => ({
+                  name: `${i.address} ${weak(`(${i.device})`)}`,
+                  value: i.address,
+                })),
+              });
+
+              chosenIP = promptedIp;
+            } else {
+              throw new FatalException(
+                `Multiple network interfaces detected!\n` +
+                `You must select an external-facing IP for the dev server that your device or emulator can access with the ${input('--public-host')} option.`
+              );
+            }
           }
         }
       }
-    } else if (options.externalAddressRequired && LOCAL_ADDRESSES.includes(options.address)) {
+    } else if (options.externalAddressRequired && LOCAL_ADDRESSES.includes(options.host)) {
       this.e.log.warn(
         'An external host may be required to serve for this target device/platform.\n' +
         'If you get connection issues on your device or emulator, try connecting the device to the same Wi-Fi network and selecting an accessible IP address for your computer on that network.\n\n' +
@@ -295,7 +321,7 @@ class ServeAfterHook extends Hook {
 }
 
 export interface ServeCLIOptions {
-  readonly address: string;
+  readonly host: string;
   readonly port: number;
 }
 
@@ -397,7 +423,11 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       return;
     }
 
-    const pkg = await this.e.project.requirePackageJson();
+    const [ pkg ] = await this.e.project.getPackageJson(undefined, { logErrors: false });
+
+    if (!pkg) {
+      return;
+    }
 
     return pkg.scripts && pkg.scripts[this.script];
   }
@@ -411,8 +441,8 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       this.e.log.info(`Waiting for connectivity with ${input(this.resolvedProgram)}...`);
     }, 5000);
 
-    debug('awaiting TCP connection to %s:%d', options.address, options.port);
-    await isHostConnectable(options.address, options.port);
+    debug('awaiting TCP connection to %s:%d', options.host, options.port);
+    await isHostConnectable(options.host, options.port);
     clearInterval(interval);
   }
 
@@ -570,7 +600,7 @@ abstract class PkgManagerServeCLI extends ServeCLI<ServeOptions> {
     // attempt.
     const args: ParsedArgs = {
       _: [],
-      host: options.address,
+      host: options.host,
       port: options.port.toString(),
     };
 
@@ -621,7 +651,7 @@ class IonicLabServeCLI extends ServeCLI<IonicLabServeCLIOptions> {
 
     const url = `${serveDetails.protocol}://localhost:${serveDetails.port}`;
     const appName = this.e.project.config.get('name');
-    const labArgs = [url, '--host', labDetails.address, '--port', String(labDetails.port), '--project-type', labDetails.projectType];
+    const labArgs = [url, '--host', labDetails.host, '--port', String(labDetails.port), '--project-type', labDetails.projectType];
     const nameArgs = appName ? ['--app-name', appName] : [];
     const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
 

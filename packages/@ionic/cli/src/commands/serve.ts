@@ -3,7 +3,7 @@ import { sleepForever } from '@ionic/utils-process';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
-import { input, strong } from '../lib/color';
+import { input, strong, weak } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException, RunnerException } from '../lib/errors';
 import { getFullCommandParts } from '../lib/executor';
@@ -17,10 +17,11 @@ export class ServeCommand extends Command implements CommandPreRun {
       ...COMMON_SERVE_COMMAND_OPTIONS,
       {
         name: 'lab-host',
-        summary: 'Use specific address for Ionic Lab server',
+        summary: 'Use specific host for Ionic Lab server',
         default: 'localhost',
         groups: [MetadataGroup.ADVANCED],
         spec: { value: 'host' },
+        hint: weak('(--lab)'),
       },
       {
         name: 'lab-port',
@@ -28,6 +29,7 @@ export class ServeCommand extends Command implements CommandPreRun {
         default: DEFAULT_LAB_PORT.toString(),
         groups: [MetadataGroup.ADVANCED],
         spec: { value: 'port' },
+        hint: weak('(--lab)'),
       },
       {
         name: 'open',
