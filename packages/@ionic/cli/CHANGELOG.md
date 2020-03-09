@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.0...@ionic/cli@6.2.1) (2020-03-09)
+
+
+### Bug Fixes
+
+* **react:** accept environment variables into build process ([0932ff0](https://github.com/ionic-team/ionic-cli/commit/0932ff04f45633e51b1d4b78857dbecedaee0c45))
+
+
+
+
+
 # [6.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.1.0...@ionic/cli@6.2.0) (2020-03-03)
 
 
