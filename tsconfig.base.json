@@ -9,10 +9,10 @@
     "noUnusedLocals": true,
     "pretty": true,
     "strict": true,
-    "target": "es2018",
+    "target": "es2019",
     "types": [],
     "lib": [
-      "es2018"
+      "es2019"
     ]
   }
 }

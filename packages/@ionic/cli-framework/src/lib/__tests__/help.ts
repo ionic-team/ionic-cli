@@ -130,7 +130,7 @@ describe('@ionic/cli-framework', () => {
 
       it('should format a command appropriately', async () => {
         const myns = new MyNamespace();
-        const location = await myns.locate(['foo', 'bar']);
+        const location = await myns.locate(['foo', 'b']);
         const formatter = new CommandStringHelpFormatter({ location, command: location.obj as any });
         const result = await formatter.format();
 
@@ -193,7 +193,7 @@ describe('@ionic/cli-framework', () => {
 
       it('should format a subnamespace appropriately', async () => {
         const myns = new MyNamespace();
-        const location = await myns.locate(['foo']);
+        const location = await myns.locate(['f']);
         const formatter = new NamespaceStringHelpFormatter({ location, namespace: location.obj as any });
         const result = await formatter.format();
 

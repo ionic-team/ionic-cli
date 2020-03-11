@@ -139,7 +139,14 @@ export abstract class NamespaceHelpFormatter<C extends ICommand<C, N, M, I, O>, 
 
   async getNamespaceFullName(): Promise<string> {
     if (!this._fullName) {
-      this._fullName = this.location.path.map(([p]) => p).join(' ');
+      const parts = await map(
+        this.location.path.slice(0, this.location.path.length - 1),
+        async ([, cmd]) => (await cmd.getMetadata()).name
+      );
+
+      const name = (await this.getNamespaceMetadata()).name;
+
+      this._fullName = [...parts, name].join(' ');
     }
 
     return this._fullName;
@@ -406,7 +413,14 @@ export abstract class CommandHelpFormatter<C extends ICommand<C, N, M, I, O>, N 
 
   async getCommandFullName(): Promise<string> {
     if (!this._fullName) {
-      this._fullName = this.location.path.map(([p]) => p).join(' ');
+      const parts = await map(
+        this.location.path.slice(0, this.location.path.length - 1),
+        async ([, cmd]) => (await cmd.getMetadata()).name
+      );
+
+      const name = (await this.getCommandMetadata()).name;
+
+      this._fullName = [...parts, name].join(' ');
     }
 
     return this._fullName;

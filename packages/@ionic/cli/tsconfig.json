@@ -1,0 +1,20 @@
+{
+  "extends": "../../../tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./",
+    "types": [
+      "node"
+    ]
+  },
+  "include": [
+    "../../../types/leek.d.ts",
+    "../../../types/ssh-config.d.ts",
+    "../../../types/stream-combiner2.d.ts",
+    "../../../types/superagent-proxy.d.ts",
+    "src/**/*.ts"
+  ],
+  "exclude": [
+    "node_modules",
+    "src/**/__tests__/*.ts"
+  ]
+}
