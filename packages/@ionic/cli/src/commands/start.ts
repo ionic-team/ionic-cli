@@ -27,10 +27,11 @@ interface StartWizardApp {
   template: string;
   'package-id': string;
   tid: string;
-  atk: string;
   email: string;
   cid: number;
   theme: string;
+  ip: string;
+  utm: { [key:string]: string }
 }
 
 export class StartCommand extends Command implements CommandPreRun {
@@ -154,6 +155,31 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     };
   }
 
+  async startSubmitForm(app: StartWizardApp) {
+    const formUrl = `https://forms.hubspot.com/uploads/form/v2/3776657/03342c92-c6a9-450c-b84b-c246588cf880`;
+
+    const hsContext = {
+      hutk: app.tid,
+      pageUrl: 'https://ionicframework.com/start',
+      pageName: 'Ionic Start Wizard',
+      ipAddress: app.ip
+    };
+
+    const payload = {
+      email: app.email,
+      'hs_context': JSON.stringify(hsContext),
+      ...(app.utm || {})
+    }
+
+    const { req } = await createRequest('POST', formUrl, this.env.config.getHTTPConfig());
+
+    try {
+      await req.type('form').send(payload);
+    } catch (e) {
+      this.env.log.warn(`Unable to contact hbs: ${e.message}`);
+    }
+  }
+
   async startIdStart(inputs: CommandLineInputs, options: CommandLineOptions) {
     const startId = options['start-id'];
 
@@ -163,11 +189,10 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       return;
     }
 
-    const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
+    let { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
 
     const data = (await req).body as StartWizardApp;
 
-    // TODO: Allow only one extra arg
     let projectDir = slugify(data.name);
     if (inputs.length === 1) {
       projectDir = inputs[0];
@@ -175,6 +200,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     inputs.push(data.name);
     inputs.push(data.template);
+
+    await this.startSubmitForm(data);
 
     this.schema = {
       cloned: false,
