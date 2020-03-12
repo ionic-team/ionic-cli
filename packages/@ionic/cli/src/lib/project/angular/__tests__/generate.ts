@@ -11,7 +11,7 @@ describe('@ionic/cli', () => {
 
         const defaults = {
           name: undefined,
-          project: undefined,
+          project: 'app',
           type: undefined,
         };
 
