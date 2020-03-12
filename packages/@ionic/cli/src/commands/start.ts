@@ -175,7 +175,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     inputs.push(data.name);
     inputs.push(data.template);
 
-    await this.startSubmitForm(data);
+    await this.startIdConvert(startId as string);
 
     this.schema = {
       cloned: false,
@@ -190,28 +190,19 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     };
   }
 
-  async startSubmitForm(app: StartWizardApp) {
-    const formUrl = `https://forms.hubspot.com/uploads/form/v2/3776657/03342c92-c6a9-450c-b84b-c246588cf880`;
+  async startIdConvert(id: string) {
+    const wizardApiUrl = process.env.START_WIZARD_URL;
 
-    const hsContext = {
-      hutk: app.tid,
-      pageUrl: 'https://ionicframework.com/start',
-      pageName: 'Ionic Start Wizard',
-      ipAddress: app.ip,
-    };
+    if (!wizardApiUrl) {
+      return;
+    }
 
-    const payload = {
-      email: app.email,
-      'hs_context': JSON.stringify(hsContext),
-      ...(app.utm || {}),
-    };
-
-    const { req } = await createRequest('POST', formUrl, this.env.config.getHTTPConfig());
+    const { req } = await createRequest('POST', `${wizardApiUrl}/api/v1/wizard/app/${id}/start`, this.env.config.getHTTPConfig());
 
     try {
-      await req.type('form').send(payload);
+      await req;
     } catch (e) {
-      this.env.log.warn(`Unable to contact hbs: ${e.message}`);
+      this.env.log.warn(`Unable to set app flag on server: ${e.message}`);
     }
   }
 
