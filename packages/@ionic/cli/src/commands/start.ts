@@ -157,11 +157,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   async startIdStart(inputs: CommandLineInputs, options: CommandLineOptions) {
     const startId = options['start-id'];
 
-    const wizardApiUrl = process.env.START_WIZARD_URL;
-
-    if (!wizardApiUrl) {
-      return;
-    }
+    const wizardApiUrl = process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
 
     const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
 
@@ -191,7 +187,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async startIdConvert(id: string) {
-    const wizardApiUrl = process.env.START_WIZARD_URL;
+    const wizardApiUrl = process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
 
     if (!wizardApiUrl) {
       return;
