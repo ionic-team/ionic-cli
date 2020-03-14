@@ -24,7 +24,7 @@ describe('@ionic/cli', () => {
           open: false,
           port: 8100,
           proxy: true,
-          project: undefined,
+          project: 'app',
           prod: undefined,
           platform: undefined,
           verbose: false,
@@ -62,8 +62,8 @@ describe('@ionic/cli', () => {
 
         it('should respect --project and --configuration flags', () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], project: 'app', configuration: 'production' });
-          expect(result).toEqual({ ...defaults, project: 'app', configuration: 'production' });
+          const result = runner.createOptionsFromCommandLine([], { _: [], project: 'otherProject', configuration: 'production' });
+          expect(result).toEqual({ ...defaults, project: 'otherProject', configuration: 'production' });
         });
 
         it('should pass on separated args', () => {
