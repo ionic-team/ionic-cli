@@ -168,6 +168,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       projectDir = inputs[0];
     }
 
+    await this.checkForExisting(projectDir);
+
     inputs.push(data.name);
     inputs.push(data.template);
 
