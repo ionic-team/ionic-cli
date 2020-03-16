@@ -16,8 +16,22 @@ import { promptToSignup } from '../lib/session';
 import { prependNodeModulesBinToPath } from '../lib/shell';
 import { AppSchema, STARTER_BASE_URL, STARTER_TEMPLATES, SUPPORTED_FRAMEWORKS, getAdvertisement, getStarterList, getStarterProjectTypes, readStarterManifest, verifyOptions } from '../lib/start';
 import { emoji } from '../lib/utils/emoji';
+import { createRequest } from '../lib/utils/http';
 
 const debug = Debug('ionic:commands:start');
+
+interface StartWizardApp {
+  type: ProjectType;
+  name: string;
+  appId: string;
+  template: string;
+  'package-id': string;
+  tid: string;
+  email: string;
+  theme: string;
+  ip: string;
+  utm: { [key: string]: string };
+}
 
 export class StartCommand extends Command implements CommandPreRun {
   private canRemoveExisting = false;
@@ -125,6 +139,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           spec: { value: 'id' },
         },
         {
+          name: 'start-id',
+          summary: 'Used by the Ionic app start experience to generate an associated app locally',
+          groups: [MetadataGroup.HIDDEN],
+          spec: { value: 'id' },
+        },
+        {
           name: 'tag',
           summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => input(t)).join(', ')})`,
           default: 'latest',
@@ -132,6 +152,54 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         },
       ],
     };
+  }
+
+  async startIdStart(inputs: CommandLineInputs, options: CommandLineOptions) {
+    const startId = options['start-id'];
+
+    const wizardApiUrl = process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
+
+    const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
+
+    const data = (await req).body as StartWizardApp;
+
+    let projectDir = slugify(data.name);
+    if (inputs.length === 1) {
+      projectDir = inputs[0];
+    }
+
+    inputs.push(data.name);
+    inputs.push(data.template);
+
+    await this.startIdConvert(startId as string);
+
+    this.schema = {
+      cloned: false,
+      name: data.name,
+      type: data.type,
+      template: data.template,
+      projectId: slugify(data.name),
+      projectDir,
+      packageId: data['package-id'],
+      appflowId: undefined,
+      themeColor: data.theme,
+    };
+  }
+
+  async startIdConvert(id: string) {
+    const wizardApiUrl = process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
+
+    if (!wizardApiUrl) {
+      return;
+    }
+
+    const { req } = await createRequest('POST', `${wizardApiUrl}/api/v1/wizard/app/${id}/start`, this.env.config.getHTTPConfig());
+
+    try {
+      await req;
+    } catch (e) {
+      this.env.log.warn(`Unable to set app flag on server: ${e.message}`);
+    }
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -145,6 +213,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (!this.env.session.isLoggedIn()) {
         await promptToLogin(this.env);
       }
+    }
+
+    // The start wizard pre-populates all arguments for the CLI
+    if (options['start-id']) {
+      await this.startIdStart(inputs, options);
+      return;
     }
 
     const projectType = options['type'] ? String(options['type']) : await this.getProjectType();
@@ -311,6 +385,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         projectDir,
         packageId,
         appflowId,
+        themeColor: undefined,
       };
     }
   }
@@ -456,7 +531,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet', '--', this.schema.name, packageId ? packageId : 'io.ionic.starter']);
       }
 
-      await this.project.personalize({ name: this.schema.name, projectId, packageId });
+      await this.project.personalize({ name: this.schema.name, projectId, packageId, themeColor: this.schema.themeColor });
 
       this.env.log.nl();
     }

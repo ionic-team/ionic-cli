@@ -15,6 +15,7 @@ import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
 import { BaseIntegration } from '../integrations';
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../integrations/capacitor/config';
+import { Color } from '../utils/color';
 
 const debug = Debug('ionic:lib:project');
 
@@ -453,7 +454,6 @@ export abstract class Project implements IProject {
   abstract requireBuildRunner(): Promise<import('../build').BuildRunner<any>>;
   abstract requireServeRunner(): Promise<import('../serve').ServeRunner<any>>;
   abstract requireGenerateRunner(): Promise<import('../generate').GenerateRunner<any>>;
-
   async getBuildRunner(): Promise<import('../build').BuildRunner<any> | undefined> {
     try {
       return await this.requireBuildRunner();
@@ -565,7 +565,7 @@ export abstract class Project implements IProject {
   }
 
   async personalize(details: ProjectPersonalizationDetails): Promise<void> {
-    const { name, projectId, description, version } = details;
+    const { name, projectId, description, version, themeColor } = details;
 
     this.config.set('name', name);
 
@@ -577,9 +577,49 @@ export abstract class Project implements IProject {
 
     await writeJson(this.packageJsonPath, pkg, { spaces: 2 });
 
+    if (themeColor) {
+      await this.setPrimaryTheme(themeColor);
+    }
+
     const integrations = await this.getIntegrations();
 
     await Promise.all(integrations.map(async i => i.personalize(details)));
+  }
+
+  // Empty to avoid sub-classes having to implement
+  // tslint:disable-next-line:no-empty
+  async setPrimaryTheme(_themeColor: string): Promise<void> {}
+
+  async writeThemeColor(variablesPath: string, themeColor: string): Promise<void> {
+    const color = new Color(themeColor);
+
+    const { rgb, contrast, shade, tint } = color;
+
+    const contrastRgb = contrast().rgb;
+
+    const variables: { [key: string]: string } = {
+      '--ion-color-primary': `${themeColor}`,
+      '--ion-color-primary-rgb': `${rgb.r}, ${rgb.g}, ${rgb.b}`,
+      '--ion-color-primary-contrast': `${contrast().hex}`,
+      '--ion-color-primary-contrast-rgb': `${contrastRgb.r}, ${contrastRgb.g}, ${contrastRgb.b}`,
+      '--ion-color-primary-shade': `${shade().hex}`,
+      '--ion-color-primary-tint': `${tint().hex}`,
+    };
+
+    try {
+      let themeVarsContents = await readFile(variablesPath, { encoding: 'utf8' });
+
+      // Replace every theme variable with the updated ones
+      for (const v in variables) {
+        const regExp = new RegExp(`(${v}):([^;]*)`, 'g');
+        themeVarsContents = themeVarsContents.replace(regExp, `$1: ${variables[v]}`);
+      }
+
+      await writeFile(variablesPath, themeVarsContents);
+    } catch (e) {
+      const { log } = this.e;
+      log.error(`Unable to modify theme variables, theme will need to be set manually: ${e}`);
+    }
   }
 
   async registerAilments(registry: IAilmentRegistry): Promise<void> {
