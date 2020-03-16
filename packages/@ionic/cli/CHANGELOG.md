@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.2.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.1...@ionic/cli@6.2.2) (2020-03-16)
+
+
+### Bug Fixes
+
+* **angular:** always provide the project name fallback ([#4349](https://github.com/ionic-team/ionic-cli/issues/4349)) ([c498f59](https://github.com/ionic-team/ionic-cli/commit/c498f598dac54e8050f041401648efba0597ec3a))
+* **multi-app:** use proper paths for integration root ([d53cee3](https://github.com/ionic-team/ionic-cli/commit/d53cee3def8dab8dd3e76c643d73c7c134b327fa))
+
+
+
+
+
 ## [6.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.0...@ionic/cli@6.2.1) (2020-03-09)
 
 
