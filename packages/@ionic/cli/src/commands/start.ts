@@ -139,16 +139,16 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           spec: { value: 'id' },
         },
         {
+          name: 'start-id',
+          summary: 'Used by the Ionic app start experience to generate an associated app locally',
+          groups: [MetadataGroup.HIDDEN],
+          spec: { value: 'id' },
+        },
+        {
           name: 'tag',
           summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => input(t)).join(', ')})`,
           default: 'latest',
           groups: [MetadataGroup.HIDDEN],
-        },
-        {
-          name: '--start-id',
-          summary: 'Used by the Ionic app start experience to generate an associated app locally.',
-          groups: [MetadataGroup.ADVANCED],
-          spec: { value: 'id' },
         },
       ],
     };
