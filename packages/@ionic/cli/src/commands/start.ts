@@ -2,6 +2,7 @@ import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
+import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
@@ -161,30 +162,51 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
 
-    const data = (await req).body as StartWizardApp;
+    const error = () => {
+      this.env.log.error(`No such app ${chalk.bold(startId)}. This app configuration may have expired. Please retry at https://ionicframework.com/start`);
+    };
 
-    let projectDir = slugify(data.name);
+    let data: StartWizardApp;
+    try {
+      const ret = await req;
+      if (ret.status !== 200) {
+        return error();
+      }
+
+      data = (await req).body as StartWizardApp;
+
+      if (!data) {
+        return error();
+      }
+    } catch (e) {
+      error();
+      return;
+    }
+
+    const app = data;
+
+    let projectDir = slugify(app.name);
     if (inputs.length === 1) {
       projectDir = inputs[0];
     }
 
     await this.checkForExisting(projectDir);
 
-    inputs.push(data.name);
-    inputs.push(data.template);
+    inputs.push(app.name);
+    inputs.push(app.template);
 
     await this.startIdConvert(startId as string);
 
     this.schema = {
       cloned: false,
-      name: data.name,
-      type: data.type,
-      template: data.template,
-      projectId: slugify(data.name),
+      name: app.name,
+      type: app.type,
+      template: app.template,
+      projectId: slugify(app.name),
       projectDir,
       packageId: data['package-id'],
       appflowId: undefined,
-      themeColor: data.theme,
+      themeColor: app.theme,
     };
   }
 
