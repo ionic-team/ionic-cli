@@ -162,8 +162,11 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
 
-    const error = () => {
+    const error = (e?: Error) => {
       this.env.log.error(`No such app ${chalk.bold(startId)}. This app configuration may have expired. Please retry at https://ionicframework.com/start`);
+      if (e) {
+        throw e;
+      }
     };
 
     let data: StartWizardApp;
@@ -179,8 +182,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         return error();
       }
     } catch (e) {
-      error();
-      return;
+      return error(e);
     }
 
     const app = data;
