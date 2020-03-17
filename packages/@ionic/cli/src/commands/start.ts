@@ -185,30 +185,28 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       return error(e);
     }
 
-    const app = data;
-
-    let projectDir = slugify(app.name);
+    let projectDir = slugify(data.name);
     if (inputs.length === 1) {
       projectDir = inputs[0];
     }
 
     await this.checkForExisting(projectDir);
 
-    inputs.push(app.name);
-    inputs.push(app.template);
+    inputs.push(data.name);
+    inputs.push(data.template);
 
     await this.startIdConvert(startId as string);
 
     this.schema = {
       cloned: false,
-      name: app.name,
-      type: app.type,
-      template: app.template,
-      projectId: slugify(app.name),
+      name: data.name,
+      type: data.type,
+      template: data.template,
+      projectId: slugify(data.name),
       projectDir,
       packageId: data['package-id'],
       appflowId: undefined,
-      themeColor: app.theme,
+      themeColor: data.theme,
     };
   }
 
