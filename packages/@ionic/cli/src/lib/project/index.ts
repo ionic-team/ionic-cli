@@ -540,6 +540,10 @@ export abstract class Project implements IProject {
     return path.resolve(this.directory, 'src');
   }
 
+  async getDefaultDistDir(): Promise<string> {
+    return 'www';
+  }
+
   async getDistDir(): Promise<string> {
     if (this.getIntegration('capacitor') !== undefined) {
       const conf = new CapacitorConfig(path.resolve(this.directory, CAPACITOR_CONFIG_FILE));

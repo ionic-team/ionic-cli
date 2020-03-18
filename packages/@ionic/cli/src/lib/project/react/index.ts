@@ -50,6 +50,10 @@ export class ReactProject extends Project {
     return false;
   }
 
+  async getDefaultDistDir(): Promise<string> {
+    return 'build';
+  }
+
   async requireBuildRunner(): Promise<import('./build').ReactBuildRunner> {
     const { ReactBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };

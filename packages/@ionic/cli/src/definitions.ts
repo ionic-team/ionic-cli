@@ -285,6 +285,7 @@ export interface IProject {
 
   getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
+  getDefaultDistDir(): Promise<string>;
   getDistDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
