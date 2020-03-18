@@ -591,28 +591,85 @@ export abstract class Project implements IProject {
   async setPrimaryTheme(_themeColor: string): Promise<void> {}
 
   async writeThemeColor(variablesPath: string, themeColor: string): Promise<void> {
-    const color = new Color(themeColor);
+    const light = new Color(themeColor);
 
-    const { rgb, contrast, shade, tint } = color;
+    const ionicThemeLightDarkMap = {
+      '#3880ff': '#4c8dff', // blue
+      '#5260ff': '#6a64ff', // purple
+      '#2dd36f': '#2fdf75', // green
+      '#ffc409': '#ffd534', // yellow
+      '#eb445a': '#ff4961', // red
+      '#f4f5f8': '#222428', // light
+      '#92949c': '#989aa2', // medium
+      '#222428': '#f4f5f8', // dark
+    } as { [key: string]: string };
 
-    const contrastRgb = contrast().rgb;
+    const matchingThemeColor = ionicThemeLightDarkMap[themeColor];
 
-    const variables: { [key: string]: string } = {
+    let dark;
+
+    // If this is a standard Ionic theme color, then use the hard-coded dark mode
+    // colors. Otherwise, compute a plausible dark mode color for this theme
+    if (matchingThemeColor) {
+      dark = new Color(matchingThemeColor);
+    } else if (light.yiq > 128) {
+      // Light mode was light enough, just use it for both
+      dark = light;
+    } else {
+      // Light mode was too dark, so tint it to make it brighter
+      dark = light.tint(0.6);
+    }
+
+    // Build the light colors
+
+    const lightContrastRgb = light.contrast().rgb;
+
+    const lightVariables: { [key: string]: string } = {
       '--ion-color-primary': `${themeColor}`,
-      '--ion-color-primary-rgb': `${rgb.r}, ${rgb.g}, ${rgb.b}`,
-      '--ion-color-primary-contrast': `${contrast().hex}`,
-      '--ion-color-primary-contrast-rgb': `${contrastRgb.r}, ${contrastRgb.g}, ${contrastRgb.b}`,
-      '--ion-color-primary-shade': `${shade().hex}`,
-      '--ion-color-primary-tint': `${tint().hex}`,
+      '--ion-color-primary-rgb': `${light.rgb.r}, ${light.rgb.g}, ${light.rgb.b}`,
+      '--ion-color-primary-contrast': `${light.contrast().hex}`,
+      '--ion-color-primary-contrast-rgb': `${lightContrastRgb.r}, ${lightContrastRgb.g}, ${lightContrastRgb.b}`,
+      '--ion-color-primary-shade': `${light.shade().hex}`,
+      '--ion-color-primary-tint': `${light.tint().hex}`,
+    };
+
+    const darkContrastRgb = dark.contrast().rgb;
+
+    const darkVariables: { [key: string]: string } = {
+      '--ion-color-primary': `${dark.hex}`,
+      '--ion-color-primary-rgb': `${dark.rgb.r}, ${dark.rgb.g}, ${dark.rgb.b}`,
+      '--ion-color-primary-contrast': `${dark.contrast().hex}`,
+      '--ion-color-primary-contrast-rgb': `${darkContrastRgb.r}, ${darkContrastRgb.g}, ${darkContrastRgb.b}`,
+      '--ion-color-primary-shade': `${dark.shade().hex}`,
+      '--ion-color-primary-tint': `${dark.tint().hex}`,
     };
 
     try {
       let themeVarsContents = await readFile(variablesPath, { encoding: 'utf8' });
 
       // Replace every theme variable with the updated ones
-      for (const v in variables) {
+      for (const v in lightVariables) {
         const regExp = new RegExp(`(${v}):([^;]*)`, 'g');
-        themeVarsContents = themeVarsContents.replace(regExp, `$1: ${variables[v]}`);
+        let variableIndex = 0;
+        themeVarsContents = themeVarsContents.replace(regExp, (str, match) => {
+          if (variableIndex === 0) {
+            variableIndex++;
+            return `${match}: ${lightVariables[v]}`;
+          }
+          return str;
+        });
+      }
+
+      for (const v in darkVariables) {
+        const regExp = new RegExp(`(${v}):([^;]*)`, 'g');
+        let variableIndex = 0;
+        themeVarsContents = themeVarsContents.replace(regExp, (str, match) => {
+          if (variableIndex === 1) {
+            return `${match}: ${darkVariables[v]}`;
+          }
+          variableIndex++;
+          return str;
+        });
       }
 
       await writeFile(variablesPath, themeVarsContents);
