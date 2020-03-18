@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.2...@ionic/cli@6.3.0) (2020-03-18)
+
+
+### Features
+
+* **start:** online start experience ([#4356](https://github.com/ionic-team/ionic-cli/issues/4356)) ([fcc5a75](https://github.com/ionic-team/ionic-cli/commit/fcc5a75a11291d069dae123b9d331ecae2d2ac2a))
+
+
+
+
+
 ## [6.2.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.1...@ionic/cli@6.2.2) (2020-03-16)
 
 
