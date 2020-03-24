@@ -3,7 +3,7 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
-import { findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
+import { findBaseDirectory, readFile, writeFile, writeJson, mkdir, pathExists } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
@@ -569,7 +569,7 @@ export abstract class Project implements IProject {
   }
 
   async personalize(details: ProjectPersonalizationDetails): Promise<void> {
-    const { name, projectId, description, version, themeColor } = details;
+    const { name, projectId, description, version, themeColor, appIcon, splash } = details;
 
     this.config.set('name', name);
 
@@ -583,6 +583,11 @@ export abstract class Project implements IProject {
 
     if (themeColor) {
       await this.setPrimaryTheme(themeColor);
+    }
+
+    console.log('Going to write resources, has?', appIcon, splash);
+    if (appIcon && splash) {
+      await this.setAppResources(appIcon, splash);
     }
 
     const integrations = await this.getIntegrations();
@@ -680,6 +685,25 @@ export abstract class Project implements IProject {
     } catch (e) {
       const { log } = this.e;
       log.error(`Unable to modify theme variables, theme will need to be set manually: ${e}`);
+    }
+  }
+
+  async setAppResources(appIcon: Buffer, splash: Buffer) {
+    const resourcesDir = path.join(this.directory, 'resources');
+    const iconPath = path.join(resourcesDir, 'icon.png');
+    const splashPath = path.join(resourcesDir, 'splash.png');
+
+    try {
+      if (!(await pathExists(resourcesDir))) {
+        console.log('Making resources dir');
+        await mkdir(resourcesDir);
+      }
+      console.log('Writing icon');
+      await writeFile(iconPath, appIcon);
+      await writeFile(splashPath, splash);
+    } catch (e) {
+      const { log } = this.e;
+      log.error(`Unable to find or create the resources directory. Skipping icon generation: ${e}`);
     }
   }
 

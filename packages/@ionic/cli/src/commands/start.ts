@@ -31,6 +31,8 @@ interface StartWizardApp {
   email: string;
   theme: string;
   ip: string;
+  appIcon: string;
+  appSplash: string;
   utm: { [key: string]: string };
 }
 
@@ -195,17 +197,30 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     inputs.push(data.name);
     inputs.push(data.template);
 
+    console.log(data);
+
     await this.startIdConvert(startId as string);
+
+    const appIconBuffer = data.appIcon ?
+      Buffer.from(data.appIcon.replace(/^data:image\/\w+;base64,/, ""), 'base64') :
+        undefined;
+
+    const splashBuffer = data.appSplash ?
+      Buffer.from(data.appSplash.replace(/^data:image\/\w+;base64,/, ""), 'base64') :
+        undefined;
 
     this.schema = {
       cloned: false,
       name: data.name,
       type: data.type,
+      forceCapacitor: true,
       template: data.template,
       projectId: slugify(data.name),
       projectDir,
       packageId: data['package-id'],
       appflowId: undefined,
+      appIcon: appIconBuffer,
+      splash: splashBuffer,
       themeColor: data.theme,
     };
   }
@@ -538,8 +553,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         }
       }
 
-      if (options['capacitor'] === null && !options['cordova']) {
-        const confirm = await this.env.prompt({
+      if (this.schema.forceCapacitor || (options['capacitor'] === null && !options['cordova'])) {
+        const confirm = this.schema.forceCapacitor || await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
           message: 'Integrate your new app with Capacitor to target native iOS and Android?',
@@ -555,7 +570,14 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet', '--', this.schema.name, packageId ? packageId : 'io.ionic.starter']);
       }
 
-      await this.project.personalize({ name: this.schema.name, projectId, packageId, themeColor: this.schema.themeColor });
+      await this.project.personalize({
+        name: this.schema.name,
+        projectId,
+        packageId,
+        appIcon: this.schema.appIcon,
+        splash: this.schema.splash,
+        themeColor: this.schema.themeColor
+      });
 
       this.env.log.nl();
     }
