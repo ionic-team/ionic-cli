@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.3.0...@ionic/cli@6.4.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* **angular:** convert `--no-<opt>` to `--<opt>=false` for ng ([176ff4b](https://github.com/ionic-team/ionic-cli/commit/176ff4b960c883950f7247120f776ee110816f88))
+* **capacitor:** check for capacitor.config.json before integrating ([2d7992c](https://github.com/ionic-team/ionic-cli/commit/2d7992cf2093e671a4d10243bf959a2e0f917b60))
+
+
+### Features
+
+* **package:** add functionality to deploy to app store ([#4366](https://github.com/ionic-team/ionic-cli/issues/4366)) ([cdd87ac](https://github.com/ionic-team/ionic-cli/commit/cdd87ac795f22d82401f79abb97bef65d8dd1e33))
+
+
+
+
+
 # [6.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.2...@ionic/cli@6.3.0) (2020-03-18)
 
 
