@@ -197,16 +197,14 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     inputs.push(data.name);
     inputs.push(data.template);
 
-    console.log(data);
-
     await this.startIdConvert(startId as string);
 
     const appIconBuffer = data.appIcon ?
-      Buffer.from(data.appIcon.replace(/^data:image\/\w+;base64,/, ""), 'base64') :
+      Buffer.from(data.appIcon.replace(/^data:image\/\w+;base64,/, ''), 'base64') :
         undefined;
 
     const splashBuffer = data.appSplash ?
-      Buffer.from(data.appSplash.replace(/^data:image\/\w+;base64,/, ""), 'base64') :
+      Buffer.from(data.appSplash.replace(/^data:image\/\w+;base64,/, ''), 'base64') :
         undefined;
 
     this.schema = {
@@ -576,7 +574,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         packageId,
         appIcon: this.schema.appIcon,
         splash: this.schema.splash,
-        themeColor: this.schema.themeColor
+        themeColor: this.schema.themeColor,
       });
 
       this.env.log.nl();

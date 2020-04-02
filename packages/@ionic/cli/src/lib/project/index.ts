@@ -3,7 +3,7 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
-import { findBaseDirectory, readFile, writeFile, writeJson, mkdir, pathExists } from '@ionic/utils-fs';
+import { findBaseDirectory, mkdir, pathExists, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
@@ -585,7 +585,6 @@ export abstract class Project implements IProject {
       await this.setPrimaryTheme(themeColor);
     }
 
-    console.log('Going to write resources, has?', appIcon, splash);
     if (appIcon && splash) {
       await this.setAppResources(appIcon, splash);
     }
@@ -695,10 +694,8 @@ export abstract class Project implements IProject {
 
     try {
       if (!(await pathExists(resourcesDir))) {
-        console.log('Making resources dir');
         await mkdir(resourcesDir);
       }
-      console.log('Writing icon');
       await writeFile(iconPath, appIcon);
       await writeFile(splashPath, splash);
     } catch (e) {
