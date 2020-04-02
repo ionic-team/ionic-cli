@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.0...@ionic/cli@6.4.1) (2020-04-02)
+
+
+### Bug Fixes
+
+* **cordova:** use output.json to deploy correct apk ([#4377](https://github.com/ionic-team/ionic-cli/issues/4377)) ([3f09331](https://github.com/ionic-team/ionic-cli/commit/3f09331daa38f1ebe9eae79831e9d1fe7f28c1a2))
+
+
+
+
+
 # [6.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.3.0...@ionic/cli@6.4.0) (2020-03-30)
 
 
