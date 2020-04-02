@@ -1,5 +1,5 @@
 import { filter } from '@ionic/utils-array';
-import { readdirSafe, statSafe } from '@ionic/utils-fs';
+import { readJson, readdirSafe, statSafe } from '@ionic/utils-fs';
 import * as path from 'path';
 
 import { input } from '../../color';
@@ -20,20 +20,37 @@ export async function getPlatforms(projectDir: string): Promise<string[]> {
   return platforms;
 }
 
+export interface AndroidBuildOutputEntry {
+  outputType: {
+    type: string;
+  };
+  path: string;
+}
+
+export async function getAndroidBuildOutputJson(p: string): Promise<AndroidBuildOutputEntry[]> {
+  try {
+    return await readJson(p); // TODO: type check
+  } catch (e) {
+    throw new FatalException(`Could not parse build output file: ${p}`);
+  }
+}
+
 export interface GetPackagePathOptions {
   emulator?: boolean;
   release?: boolean;
 }
 
+/**
+ * Get the relative path to most recently built APK or IPA file
+ */
 export async function getPackagePath(appName: string, platform: string, { emulator = false, release = false }: GetPackagePathOptions = {}): Promise<string> {
   if (platform === 'android') {
-    // TODO: don't hardcode this/support multiple build paths (ex: multiple arch builds)
-    // use app/build/outputs/apk/debug/output.json?
-    if (release) {
-      return path.join(CORDOVA_ANDROID_PACKAGE_PATH, 'release', 'app-release-unsigned.apk');
-    }
+    const outputPath = path.join(CORDOVA_ANDROID_PACKAGE_PATH, release ? 'release' : 'debug');
+    const outputJsonPath = path.join(outputPath, 'output.json');
+    const outputJson = await getAndroidBuildOutputJson(outputJsonPath);
 
-    return path.join(CORDOVA_ANDROID_PACKAGE_PATH, 'debug', 'app-debug.apk');
+    // TODO: handle multiple files from output.json, prompt to select?
+    return path.join(outputPath, outputJson[0].path);
   } else if (platform === 'ios') {
     if (emulator) {
       return path.join(CORDOVA_IOS_SIMULATOR_PACKAGE_PATH, `${appName}.app`);
