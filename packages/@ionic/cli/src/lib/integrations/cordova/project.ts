@@ -1,9 +1,14 @@
 import { filter } from '@ionic/utils-array';
 import { readJson, readdirSafe, statSafe } from '@ionic/utils-fs';
+import * as Debug from 'debug';
 import * as path from 'path';
 
+import { CordovaAndroidBuildOutputEntry } from '../../../definitions';
+import { isCordovaAndroidBuildOutputFile } from '../../../guards';
 import { input } from '../../color';
 import { FatalException } from '../../errors';
+
+const debug = Debug('ionic:lib:cordova:project');
 
 const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
 const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
@@ -20,19 +25,20 @@ export async function getPlatforms(projectDir: string): Promise<string[]> {
   return platforms;
 }
 
-export interface AndroidBuildOutputEntry {
-  outputType: {
-    type: string;
-  };
-  path: string;
-}
-
-export async function getAndroidBuildOutputJson(p: string): Promise<AndroidBuildOutputEntry[]> {
+export async function getAndroidBuildOutputJson(p: string): Promise<CordovaAndroidBuildOutputEntry[]> {
   try {
-    return await readJson(p); // TODO: type check
+    const json = await readJson(p);
+
+    if (isCordovaAndroidBuildOutputFile(json)) {
+      return json;
+    } else {
+      debug('Output file does not match expected format: %O', json);
+    }
   } catch (e) {
-    throw new FatalException(`Could not parse build output file: ${p}`);
+    debug('Error parsing file %O: %O', p, e);
   }
+
+  throw new FatalException(`Could not parse build output file: ${p}`);
 }
 
 export interface GetPackagePathOptions {
