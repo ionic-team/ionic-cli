@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.1...@ionic/cli@6.4.2) (2020-04-05)
+
+
+### Bug Fixes
+
+* **cordova:** use integration root path for file read ([79dc0b1](https://github.com/ionic-team/ionic-cli/commit/79dc0b10a9ff68e0b4a29e826ef95891b0129b8e))
+
+
+
+
+
 ## [6.4.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.0...@ionic/cli@6.4.1) (2020-04-02)
 
 
