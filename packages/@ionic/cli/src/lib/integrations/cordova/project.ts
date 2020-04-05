@@ -49,20 +49,20 @@ export interface GetPackagePathOptions {
 /**
  * Get the relative path to most recently built APK or IPA file
  */
-export async function getPackagePath(appName: string, platform: string, { emulator = false, release = false }: GetPackagePathOptions = {}): Promise<string> {
+export async function getPackagePath(root: string, appName: string, platform: string, { emulator = false, release = false }: GetPackagePathOptions = {}): Promise<string> {
   if (platform === 'android') {
-    const outputPath = path.join(CORDOVA_ANDROID_PACKAGE_PATH, release ? 'release' : 'debug');
-    const outputJsonPath = path.join(outputPath, 'output.json');
+    const outputPath = path.resolve(root, CORDOVA_ANDROID_PACKAGE_PATH, release ? 'release' : 'debug');
+    const outputJsonPath = path.resolve(root, outputPath, 'output.json');
     const outputJson = await getAndroidBuildOutputJson(outputJsonPath);
 
     // TODO: handle multiple files from output.json, prompt to select?
-    return path.join(outputPath, outputJson[0].path);
+    return path.relative(root, path.resolve(outputPath, outputJson[0].path));
   } else if (platform === 'ios') {
     if (emulator) {
-      return path.join(CORDOVA_IOS_SIMULATOR_PACKAGE_PATH, `${appName}.app`);
+      return path.resolve(CORDOVA_IOS_SIMULATOR_PACKAGE_PATH, `${appName}.app`);
     }
 
-    return path.join(CORDOVA_IOS_DEVICE_PACKAGE_PATH, `${appName}.ipa`);
+    return path.resolve(CORDOVA_IOS_DEVICE_PACKAGE_PATH, `${appName}.ipa`);
   }
 
   throw new FatalException(`Unknown package path for ${input(appName)} on ${input(platform)}.`);
