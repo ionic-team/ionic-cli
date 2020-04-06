@@ -3,7 +3,7 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
-import { findBaseDirectory, mkdir, pathExists, readFile, writeFile, writeJson } from '@ionic/utils-fs';
+import { ensureDir, findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
@@ -89,7 +89,7 @@ export class ProjectDetails {
   async getIdFromPathMatch(config: IMultiProjectConfig): Promise<string | undefined> {
     const { ctx } = this.e;
 
-    for (const [ key, value ] of lodash.entries(config.projects)) {
+    for (const [key, value] of lodash.entries(config.projects)) {
       const id = key;
 
       if (value && value.root) {
@@ -596,7 +596,7 @@ export abstract class Project implements IProject {
 
   // Empty to avoid sub-classes having to implement
   // tslint:disable-next-line:no-empty
-  async setPrimaryTheme(_themeColor: string): Promise<void> {}
+  async setPrimaryTheme(_themeColor: string): Promise<void> { }
 
   async writeThemeColor(variablesPath: string, themeColor: string): Promise<void> {
     const light = new Color(themeColor);
@@ -693,9 +693,8 @@ export abstract class Project implements IProject {
     const splashPath = path.join(resourcesDir, 'splash.png');
 
     try {
-      if (!(await pathExists(resourcesDir))) {
-        await mkdir(resourcesDir);
-      }
+      await ensureDir(resourcesDir);
+
       await writeFile(iconPath, appIcon);
       await writeFile(splashPath, splash);
     } catch (e) {
