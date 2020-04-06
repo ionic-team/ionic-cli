@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.4.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.2...@ionic/cli@6.4.3) (2020-04-05)
+
+
+### Bug Fixes
+
+* **cordova:** make sure build is complete before reading output.json ([f1abe83](https://github.com/ionic-team/ionic-cli/commit/f1abe8392a6f2eaf910d23558b26228affd467bb))
+* **cordova:** use relative path for ipa files ([4831758](https://github.com/ionic-team/ionic-cli/commit/4831758ed12982a1dd4a4cd30f447a304abc4140))
+
+
+
+
+
+## [6.4.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.1...@ionic/cli@6.4.2) (2020-04-05)
+
+
+### Bug Fixes
+
+* **cordova:** use integration root path for file read ([79dc0b1](https://github.com/ionic-team/ionic-cli/commit/79dc0b10a9ff68e0b4a29e826ef95891b0129b8e))
+
+
+
+
+
+## [6.4.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.0...@ionic/cli@6.4.1) (2020-04-02)
+
+
+### Bug Fixes
+
+* **cordova:** use output.json to deploy correct apk ([#4377](https://github.com/ionic-team/ionic-cli/issues/4377)) ([3f09331](https://github.com/ionic-team/ionic-cli/commit/3f09331daa38f1ebe9eae79831e9d1fe7f28c1a2))
+
+
+
+
+
+# [6.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.3.0...@ionic/cli@6.4.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* **angular:** convert `--no-<opt>` to `--<opt>=false` for ng ([176ff4b](https://github.com/ionic-team/ionic-cli/commit/176ff4b960c883950f7247120f776ee110816f88))
+* **capacitor:** check for capacitor.config.json before integrating ([2d7992c](https://github.com/ionic-team/ionic-cli/commit/2d7992cf2093e671a4d10243bf959a2e0f917b60))
+
+
+### Features
+
+* **package:** add functionality to deploy to app store ([#4366](https://github.com/ionic-team/ionic-cli/issues/4366)) ([cdd87ac](https://github.com/ionic-team/ionic-cli/commit/cdd87ac795f22d82401f79abb97bef65d8dd1e33))
+
+
+
+
+
 # [6.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.2...@ionic/cli@6.3.0) (2020-03-18)
 
 

@@ -54,6 +54,13 @@ export interface CordovaPackageJson extends PackageJson {
   };
 }
 
+export interface CordovaAndroidBuildOutputEntry {
+  outputType: {
+    type: string;
+  };
+  path: string;
+}
+
 export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }

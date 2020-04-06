@@ -145,9 +145,15 @@ To test a generator before file modifications are made, use the ${input('--dry-r
   }
 
   private async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
+    const args = {
+      _: ['generate', type, name],
+      // convert `--no-<opt>` style options to `--<opt>=false`
+      ...lodash.mapValues(options, v => v === false ? 'false' : v),
+    };
+
     await this.e.shell.run(
       'ng',
-      unparseArgs({ _: ['generate', type, name], ...options }, {}),
+      unparseArgs(args, { useEquals: true }),
       { cwd: this.e.ctx.execPath, stdio: 'inherit' }
     );
   }
