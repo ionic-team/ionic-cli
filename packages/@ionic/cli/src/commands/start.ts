@@ -741,7 +741,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       `Run ${input('ionic serve')} within the app directory to see your app in the browser`,
       isCapacitor ?
         `Run ${input('ionic capacitor add')} to add a native iOS or Android project using Capacitor` :
-        `Run ${input('ionic cordova platform add')} to add a native iOS or Androd project using Cordova`,
+        `Run ${input('ionic cordova platform add')} to add a native iOS or Android project using Cordova`,
       `Generate your app icon and splash using ${input(cordovaResCommand)}`,
       `Explore the Ionic docs for components, tutorials, and more: ${strong('https://ion.link/docs')}`,
       `Building an enterprise app? Ionic has Enterprise Support and Features: ${strong('https://ion.link/enterprise-edition')}`,
