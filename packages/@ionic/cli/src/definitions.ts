@@ -260,6 +260,8 @@ export interface ProjectPersonalizationDetails {
   version?: string;
   description?: string;
   themeColor?: string;
+  appIcon?: Buffer;
+  splash?: Buffer;
 }
 
 export interface IProjectConfig {
