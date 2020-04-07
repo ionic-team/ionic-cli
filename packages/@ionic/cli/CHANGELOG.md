@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.5.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.3...@ionic/cli@6.5.0) (2020-04-07)
+
+
+### Features
+
+* **start:** Default to Capacitor for React ([#4383](https://github.com/ionic-team/ionic-cli/issues/4383)) ([3fd72ec](https://github.com/ionic-team/ionic-cli/commit/3fd72ec828a1a30ddb8439bb9c7123bdcc88e46a))
+* **start:** icon/splash from start wizard ([#4376](https://github.com/ionic-team/ionic-cli/issues/4376)) ([bb4c12b](https://github.com/ionic-team/ionic-cli/commit/bb4c12b569685dad228ff7a5588a19ba22c06278))
+
+
+
+
+
 ## [6.4.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.2...@ionic/cli@6.4.3) (2020-04-05)
 
 
