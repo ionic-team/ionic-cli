@@ -539,6 +539,10 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     this.env.shell.alterPath = p => prependNodeModulesBinToPath(projectDir, p);
 
     if (!this.schema.cloned) {
+      if (this.schema.type === 'react') {
+        options['capacitor'] = true;
+      }
+
       if (options['cordova']) {
         const { confirmCordovaUsage } = await import('../lib/integrations/cordova/utils');
         const confirm = await confirmCordovaUsage(this.env);
@@ -550,7 +554,20 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         }
       }
 
-      if (!options['cordova']) {
+      if (options['capacitor'] === null && !options['cordova']) {
+        const confirm = await this.env.prompt({
+          type: 'confirm',
+          name: 'confirm',
+          message: 'Integrate your new app with Capacitor to target native iOS and Android?',
+          default: false,
+        });
+
+        if (confirm) {
+          options['capacitor'] = true;
+        }
+      }
+
+      if (options['capacitor']) {
         await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet', '--', this.schema.name, packageId ? packageId : 'io.ionic.starter']);
       }
 
