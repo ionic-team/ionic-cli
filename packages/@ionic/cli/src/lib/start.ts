@@ -27,7 +27,6 @@ export interface NewAppSchema extends BaseAppSchema {
   type: ProjectType;
   template: string;
   themeColor?: string;
-  forceCapacitor?: boolean;
   appIcon?: Buffer;
   splash?: Buffer;
 }

@@ -201,17 +201,16 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     const appIconBuffer = data.appIcon ?
       Buffer.from(data.appIcon.replace(/^data:image\/\w+;base64,/, ''), 'base64') :
-        undefined;
+      undefined;
 
     const splashBuffer = data.appSplash ?
       Buffer.from(data.appSplash.replace(/^data:image\/\w+;base64,/, ''), 'base64') :
-        undefined;
+      undefined;
 
     this.schema = {
       cloned: false,
       name: data.name,
       type: data.type,
-      forceCapacitor: true,
       template: data.template,
       projectId: slugify(data.name),
       projectDir,
@@ -551,20 +550,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         }
       }
 
-      if (this.schema.forceCapacitor || (options['capacitor'] === null && !options['cordova'])) {
-        const confirm = this.schema.forceCapacitor || await this.env.prompt({
-          type: 'confirm',
-          name: 'confirm',
-          message: 'Integrate your new app with Capacitor to target native iOS and Android?',
-          default: false,
-        });
-
-        if (confirm) {
-          options['capacitor'] = true;
-        }
-      }
-
-      if (options['capacitor']) {
+      if (!options['cordova']) {
         await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet', '--', this.schema.name, packageId ? packageId : 'io.ionic.starter']);
       }
 
@@ -642,7 +628,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     this.env.log.nl();
 
-    await this.showNextSteps(projectDir, this.schema.cloned, linkConfirmed);
+    await this.showNextSteps(projectDir, this.schema.cloned, linkConfirmed, !options['cordova']);
   }
 
   async checkForExisting(projectDir: string) {
@@ -748,18 +734,23 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     tasks.end();
   }
 
-  async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean) {
+  async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean, isCapacitor: boolean) {
+    const cordovaResCommand = isCapacitor ? 'cordova-res --skip-config --copy' : 'cordova-res';
     const steps = [
-      `Go to your ${cloned ? 'cloned' : 'newly created'} project: ${input(`cd ${prettyPath(projectDir)}`)}`,
-      `Run ${input('ionic serve')} within the app directory to see your app`,
-      `Build features and components: ${strong('https://ion.link/scaffolding-docs')}`,
-      `Run your app on a hardware or virtual device: ${strong('https://ion.link/running-docs')}`,
+      `Go to your ${cloned ? 'cloned' : 'new'} project: ${input(`cd ${prettyPath(projectDir)}`)}`,
+      `Run ${input('ionic serve')} within the app directory to see your app in the browser`,
+      isCapacitor ?
+        `Run ${input('ionic capacitor add')} to add a native iOS or Android project using Capacitor` :
+        `Run ${input('ionic cordova platform add')} to add a native iOS or Androd project using Cordova`,
+      `Generate your app icon and splash using ${input(cordovaResCommand)}`,
+      `Explore the Ionic docs for components, tutorials, and more: ${strong('https://ion.link/docs')}`,
+      `Building an enterprise app? Ionic has Enterprise Support and Features: ${strong('https://ion.link/enterprise-edition')}`,
     ];
 
     if (linkConfirmed) {
       steps.push(`Push your code to Ionic Appflow to perform real-time updates, and more: ${input('git push ionic master')}`);
     }
 
-    this.env.log.info(`${strong('Next Steps')}:\n${steps.map(s => `- ${s}`).join('\n')}`);
+    this.env.log.msg(`${strong('Your Ionic app is ready! Follow these next steps')}:\n${steps.map(s => ` - ${s}`).join('\n')}`);
   }
 }
