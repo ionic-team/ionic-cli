@@ -3,7 +3,7 @@ import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
-import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
+import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform } from '../../lib/integrations/capacitor/utils';
 
 import { CapacitorCommand } from './base';
 
@@ -119,11 +119,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
     await this.runCapacitor(['copy', platform]);
 
     this.env.log.nl();
-    this.env.log.info(
-      'Ready for use in your Native IDE!\n' +
-      `To continue, build your project using ${platform === 'ios' ? 'Xcode' : 'Android Studio'}!`
-    );
-
+    this.env.log.info('Ready for use in your Native IDE!\n' + this.getContinueMessage(platform));
     this.env.log.nl();
 
     await this.runCapacitor(['open', platform]);
@@ -147,5 +143,9 @@ To configure your native project, see the common configuration docs[^capacitor-n
         throw e;
       }
     }
+  }
+
+  protected getContinueMessage(platform: string): string {
+    return `To continue, build your project using ${getNativeIDEForPlatform(platform)}!`;
   }
 }
