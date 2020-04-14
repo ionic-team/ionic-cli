@@ -176,6 +176,8 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       throw new FatalException(`Cannot run ${input('ionic capacitor run/emulate')} outside a project directory.`);
     }
 
+    const [ platform ] = inputs;
+
     const runner = await this.project.requireServeRunner();
     const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
 
@@ -196,6 +198,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     onBeforeExit(async () => {
       conf.resetServerUrl();
+      await this.runCapacitor(['copy', platform]);
     });
 
     conf.setServerUrl(serverUrl);
