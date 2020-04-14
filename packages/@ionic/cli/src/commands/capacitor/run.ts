@@ -8,7 +8,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
-import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
+import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform, getVirtualDeviceNameForPlatform } from '../../lib/integrations/capacitor/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 
 import { CapacitorCommand } from './base';
@@ -156,11 +156,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     // TODO: native-run
 
     this.env.log.nl();
-    this.env.log.info(
-      'Ready for use in your Native IDE!\n' +
-      `To continue, run your project on a device or ${platform === 'ios' ? 'simulator' : 'emulator'} using ${platform === 'ios' ? 'Xcode' : 'Android Studio'}!`
-    );
-
+    this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
     await this.runCapacitor(['open', platform]);
@@ -203,5 +199,16 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     });
 
     conf.setServerUrl(serverUrl);
+  }
+
+  protected getContinueMessage(platform: string): string {
+    if (platform === 'electron') {
+      return 'Ready to be used in Electron!';
+    }
+
+    return (
+      'Ready for use in your Native IDE!\n' +
+      `To continue, run your project on a device or ${getVirtualDeviceNameForPlatform(platform)} using ${getNativeIDEForPlatform(platform)}!`
+    );
   }
 }
