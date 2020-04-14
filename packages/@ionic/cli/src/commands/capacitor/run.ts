@@ -2,12 +2,10 @@ import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
-import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform, getVirtualDeviceNameForPlatform } from '../../lib/integrations/capacitor/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 
@@ -194,7 +192,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
     }
 
-    const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+    const conf = this.getCapacitorConfig();
 
     onBeforeExit(async () => {
       conf.resetServerUrl();

@@ -3,7 +3,7 @@ import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
-import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform } from '../../lib/integrations/capacitor/utils';
+import { getNativeIDEForPlatform } from '../../lib/integrations/capacitor/utils';
 
 import { CapacitorCommand } from './base';
 
@@ -122,26 +122,6 @@ To configure your native project, see the common configuration docs[^capacitor-n
     this.env.log.nl();
 
     await this.runCapacitor(['open', platform]);
-  }
-
-  async runBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    if (!this.project) {
-      throw new FatalException(`Cannot run ${input('ionic capacitor build')} outside a project directory.`);
-    }
-
-    if (options['build']) {
-      try {
-        const runner = await this.project.requireBuildRunner();
-        const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
-        await runner.run(runnerOpts);
-      } catch (e) {
-        if (e instanceof RunnerException) {
-          throw new FatalException(e.message);
-        }
-
-        throw e;
-      }
-    }
   }
 
   protected getContinueMessage(platform: string): string {
