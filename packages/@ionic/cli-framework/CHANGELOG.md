@@ -3,6 +3,76 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [4.1.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.1...@ionic/cli-framework@4.1.2) (2020-03-30)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
+## [4.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.0...@ionic/cli-framework@4.1.1) (2020-03-03)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
+# 4.1.0 (2020-02-11)
+
+
+### Features
+
+* **start:** add new list starter option ([#4315](https://github.com/ionic-team/ionic-cli/issues/4315)) ([1df44c1](https://github.com/ionic-team/ionic-cli/commit/1df44c1591f37b89f2b672857740edd6cb2aea67))
+
+
+
+
+
+## [4.0.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.0.1...@ionic/cli-framework@4.0.2) (2020-02-10)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
+## [4.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.0.0...@ionic/cli-framework@4.0.1) (2020-02-03)
+
+
+### Bug Fixes
+
+* **help:** use proper full command/namespace name, not alias ([e42efc6](https://github.com/ionic-team/ionic-cli/commit/e42efc6ad6ce48545fe3f106720a9aa14af478f5))
+
+
+
+
+
+# [4.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@3.0.6...@ionic/cli-framework@4.0.0) (2020-01-25)
+
+
+### chore
+
+* require Node 10 ([5a47874](https://github.com/ionic-team/ionic-cli/commit/5a478746c074207b6dc96aa8771f04a606deb1ef))
+
+
+### BREAKING CHANGES
+
+* A minimum of Node.js 10.3.0 is required.
+
+
+
+
+
+## [3.0.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@3.0.5...@ionic/cli-framework@3.0.6) (2020-01-13)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
 ## [3.0.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@3.0.4...@ionic/cli-framework@3.0.5) (2019-12-10)
 
 

@@ -1,0 +1,71 @@
+#!/usr/bin/env node
+
+'use strict';
+
+// IMPORTANT: This file uses ES5 syntax to avoid syntax errors in older Node
+// versions (mostly 0.12). See https://node.green for syntax support.
+
+process.title = 'ionic';
+process.on('unhandledRejection', function(r) { process.stderr.write(String(r)); process.exit(1); });
+
+var events = require('events');
+var path = require('path');
+var evt = new events.EventEmitter();
+
+var cli;
+
+process.on('message', function(msg) {
+  evt.once('ready', function() {
+    cli.receive(msg);
+  });
+});
+
+var semver = require('semver');
+var version = semver.parse(process.version);
+var minversion = 'v10.3.0';
+
+if (semver.lt(version, minversion)) {
+  var details = version.major === 6
+    ? ' Node.js 6 reached end-of-life on 2019-04-30 and is no longer supported.'
+    : version.major === 8
+    ? ' Node.js 8 reached end-of-life on 2019-12-31 and is no longer supported.'
+    : '';
+
+  process.stderr.write('ERR: Your Node.js version is ' + version.raw + '.' + details + ' Please update to the latest Node LTS version.\n');
+  process.exit(1);
+}
+
+if (process.argv.includes('--verbose')) {
+  process.env.DEBUG = '*';
+}
+
+if (process.argv.includes('--no-color')) {
+  process.env.DEBUG_COLORS = '0';
+}
+
+var pargv = process.argv.slice(2);
+var lib = path.resolve(__dirname, '..');
+
+process.env.IONIC_CLI_BIN = __filename;
+process.env.IONIC_CLI_LIB = lib;
+
+var bootstrap = require(path.resolve(lib, 'bootstrap'));
+
+bootstrap.detectLocalCLI()
+  .then(function(localPath) {
+    cli = require(localPath);
+    return cli.run(pargv, process.env);
+  }, function(err) {
+    cli = require(lib);
+
+    if (typeof err !== 'string') {
+      throw err;
+    }
+
+    process.env.IONIC_CLI_LOCAL_ERROR = err;
+
+    return cli.run(pargv, process.env);
+  })
+  .then(function() {
+    evt.emit('ready');
+  });
