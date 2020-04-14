@@ -115,8 +115,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
       throw e;
     }
 
-    // copy assets and capacitor.config.json into place
-    await this.runCapacitor(['copy', platform]);
+    await this.runCapacitor(['sync', platform]);
 
     this.env.log.nl();
     this.env.log.info(this.getContinueMessage(platform));
