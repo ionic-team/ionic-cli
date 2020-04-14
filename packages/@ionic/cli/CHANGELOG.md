@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.6.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.5.0...@ionic/cli@6.6.0) (2020-04-14)
+
+
+### Bug Fixes
+
+* **capacitor:** restore capacitor config after livereload ([cdc0190](https://github.com/ionic-team/ionic-cli/commit/cdc0190eaef38f5a5f1dad79c0953bfd8fa08c57))
+
+
+### Features
+
+* **capacitor:** warn about server.url during capacitor builds ([5f6b5dd](https://github.com/ionic-team/ionic-cli/commit/5f6b5dd46e0206c7de51a518a1e463a921d85217))
+* `ionic capacitor build` command ([#4254](https://github.com/ionic-team/ionic-cli/issues/4254)) ([906fa96](https://github.com/ionic-team/ionic-cli/commit/906fa96ddca7e0156f22d94af3029b29306a6d3a))
+
+
+
+
+
 # [6.5.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.3...@ionic/cli@6.5.0) (2020-04-07)
 
 
