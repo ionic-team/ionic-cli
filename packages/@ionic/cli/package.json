@@ -49,7 +49,7 @@
     "@ionic/utils-stream": "3.1.1",
     "@ionic/utils-subprocess": "2.1.1",
     "@ionic/utils-terminal": "2.1.1",
-    "chalk": "^3.0.0",
+    "chalk": "^4.0.0",
     "debug": "^4.0.0",
     "diff": "^4.0.1",
     "elementtree": "^0.1.7",
