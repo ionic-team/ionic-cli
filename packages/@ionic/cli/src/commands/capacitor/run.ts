@@ -156,7 +156,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     // TODO: native-run
 
     this.env.log.nl();
-    this.env.log.info('Ready for use in your Native IDE!\n' + this.getContinueMessage(platform));
+    this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
     await this.runCapacitor(['open', platform]);
@@ -202,6 +202,13 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
   }
 
   protected getContinueMessage(platform: string): string {
-    return `To continue, run your project on a device or ${getVirtualDeviceNameForPlatform(platform)} using ${getNativeIDEForPlatform(platform)}!`;
+    if (platform === 'electron') {
+      return 'Ready to be used in Electron!';
+    }
+
+    return (
+      'Ready for use in your Native IDE!\n' +
+      `To continue, run your project on a device or ${getVirtualDeviceNameForPlatform(platform)} using ${getNativeIDEForPlatform(platform)}!`
+    );
   }
 }

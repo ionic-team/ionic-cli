@@ -119,7 +119,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
     await this.runCapacitor(['copy', platform]);
 
     this.env.log.nl();
-    this.env.log.info('Ready for use in your Native IDE!\n' + this.getContinueMessage(platform));
+    this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
     await this.runCapacitor(['open', platform]);
@@ -146,6 +146,13 @@ To configure your native project, see the common configuration docs[^capacitor-n
   }
 
   protected getContinueMessage(platform: string): string {
-    return `To continue, build your project using ${getNativeIDEForPlatform(platform)}!`;
+    if (platform === 'electron') {
+      return 'Ready to be used in Electron!';
+    }
+
+    return (
+      'Ready for use in your Native IDE!\n' +
+      `To continue, build your project using ${getNativeIDEForPlatform(platform)}!`
+    );
   }
 }
