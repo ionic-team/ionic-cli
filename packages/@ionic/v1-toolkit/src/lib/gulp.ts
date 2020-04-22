@@ -27,7 +27,7 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
       throw new Error(chalk.red(`Cannot find module 'gulp'`));
     }
 
-    let gulpFile;
+    let gulpFile: any;
     try {
       gulpFile = require(gulpFilePath); // requiring the gulp file sets up the gulp instance with local gulp task definitions
 
@@ -70,7 +70,7 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
           });
       }
       catch (e) {
-        throw new Error(`Cannot declare gulp v4 task: ${chalk.bold(format_1.prettyPath(gulpFilePath))}:\n` +
+        throw new Error(`Cannot declare gulp v4 task: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
           chalk.red(e.stack ? e.stack : e));
       }
     }
