@@ -27,8 +27,10 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
       throw new Error(chalk.red(`Cannot find module 'gulp'`));
     }
 
+    let gulpFile: any;
     try {
-      require(gulpFilePath); // requiring the gulp file sets up the gulp instance with local gulp task definitions
+      gulpFile = require(gulpFilePath); // requiring the gulp file sets up the gulp instance with local gulp task definitions
+
     } catch (e) {
       if (e.code !== 'MODULE_NOT_FOUND') {
         throw e;
@@ -38,6 +40,39 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
         `Error in module: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
         chalk.red(e.stack ? e.stack : e)
       );
+    }
+
+    // Add gulp file v4 compatibility - fix #4114
+    const isGulpV4File = gulpFile && Object.keys(gulpFile)
+      .findIndex(key => typeof gulpFile[key] === 'function') !== -1;
+    if (isGulpV4File) {
+      try {
+        debug(`Declaring gulp v4 tasks...`);
+        Object.keys(gulpFile)
+          .forEach(key => {
+            const task = gulpFile[key];
+
+            // Keep functions only
+            if (typeof task === 'function') {
+              debug(` - task ${key}`);
+
+              // Declare using gulp.task()
+              _gulpInst.task(key, [] /*no dependencies*/, done => {
+                return new Promise(resolve => {
+                  // Execute the task.
+                  // Do NOT pass done function to the task, because 'watch' can never finished
+                  task.call(gulpFile);
+
+                  // Finish, to let ionic-cli start to serve
+                  done();
+                });
+              });
+            }
+          });
+      } catch (e) {
+        throw new Error(`Cannot declare gulp v4 task: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
+          chalk.red(e.stack ? e.stack : e));
+      }
     }
 
     debug('Loaded gulp tasks: %o', _gulpInst.tasks);
