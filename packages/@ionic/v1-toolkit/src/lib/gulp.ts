@@ -53,23 +53,23 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
             const task = gulpFile[key];
 
             // Keep functions only
-            if (typeof task !== 'function') return;
-            debug(` - task ${key}`);
+            if (typeof task === 'function') {
+              debug(` - task ${key}`);
 
-            // Declare using gulp.task()
-            _gulpInst.task(key, []/*no dependencies*/, (done) => {
-              return new Promise(resolve => {
-                // Execute the task.
-                // Do NOT pass done function to the task, because 'watch' can never finished
-                task.call(gulpFile);
+              // Declare using gulp.task()
+              _gulpInst.task(key, [] /*no dependencies*/, done => {
+                return new Promise(resolve => {
+                  // Execute the task.
+                  // Do NOT pass done function to the task, because 'watch' can never finished
+                  task.call(gulpFile);
 
-                // Finish, to let ionic-cli start to serve
-                done();
-              })
-            });
+                  // Finish, to let ionic-cli start to serve
+                  done();
+                });
+              });
+            }
           });
-      }
-      catch (e) {
+      } catch (e) {
         throw new Error(`Cannot declare gulp v4 task: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
           chalk.red(e.stack ? e.stack : e));
       }
