@@ -18,11 +18,11 @@
   },
   "devDependencies": {
     "chokidar-cli": "^2.0.0",
-    "husky": "^3.0.0",
+    "husky": "^4.2.0",
     "lerna": "^3.13.3",
     "tslint": "^5.9.1",
     "tslint-ionic-rules": "0.0.21",
-    "typescript": "~3.7.3"
+    "typescript": "~3.8.2"
   },
   "husky": {
     "hooks": {

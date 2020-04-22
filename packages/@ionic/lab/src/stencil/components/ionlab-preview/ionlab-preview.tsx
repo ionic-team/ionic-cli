@@ -1,4 +1,4 @@
-import { Component, Prop } from '@stencil/core';
+import { Component, Prop, h } from '@stencil/core';
 
 import { PLATFORM_IOS, platformIoniconClass, platformMode, platformPrettyName } from '../../utils';
 

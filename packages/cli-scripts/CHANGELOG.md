@@ -3,6 +3,83 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.2](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.1...cli-scripts@2.1.2) (2020-03-09)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.1](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.0...cli-scripts@2.1.1) (2020-03-03)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+# 2.1.0 (2020-02-11)
+
+
+### Features
+
+* **start:** add new list starter option ([#4315](https://github.com/ionic-team/ionic-cli/issues/4315)) ([1df44c1](https://github.com/ionic-team/ionic-cli/commit/1df44c1591f37b89f2b672857740edd6cb2aea67))
+
+
+
+
+
+## [2.0.2](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.0.1...cli-scripts@2.0.2) (2020-02-10)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.0.1](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.0.0...cli-scripts@2.0.1) (2020-02-03)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@1.0.31...cli-scripts@2.0.0) (2020-01-25)
+
+
+### chore
+
+* rename Ionic CLI package to `@ionic/cli` ([1f86b34](https://github.com/ionic-team/ionic-cli/commit/1f86b34dc4ebfd565c240a6b4a44f3815a18b769))
+* require Node 10 ([5a47874](https://github.com/ionic-team/ionic-cli/commit/5a478746c074207b6dc96aa8771f04a606deb1ef))
+
+
+### BREAKING CHANGES
+
+* The npm package for the Ionic CLI is now `@ionic/cli`.
+* A minimum of Node.js 10.3.0 is required.
+
+
+
+
+
+## [1.0.31](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@1.0.30...cli-scripts@1.0.31) (2020-01-15)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [1.0.30](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@1.0.29...cli-scripts@1.0.30) (2020-01-13)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
 ## [1.0.29](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@1.0.28...cli-scripts@1.0.29) (2019-12-13)
 
 **Note:** Version bump only for package cli-scripts
