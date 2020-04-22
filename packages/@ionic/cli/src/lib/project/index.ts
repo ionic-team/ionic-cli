@@ -3,7 +3,7 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
-import { findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
+import { ensureDir, findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
@@ -15,6 +15,7 @@ import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
 import { BaseIntegration } from '../integrations';
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../integrations/capacitor/config';
+import { Color } from '../utils/color';
 
 const debug = Debug('ionic:lib:project');
 
@@ -88,7 +89,7 @@ export class ProjectDetails {
   async getIdFromPathMatch(config: IMultiProjectConfig): Promise<string | undefined> {
     const { ctx } = this.e;
 
-    for (const [ key, value ] of lodash.entries(config.projects)) {
+    for (const [key, value] of lodash.entries(config.projects)) {
       const id = key;
 
       if (value && value.root) {
@@ -453,7 +454,6 @@ export abstract class Project implements IProject {
   abstract requireBuildRunner(): Promise<import('../build').BuildRunner<any>>;
   abstract requireServeRunner(): Promise<import('../serve').ServeRunner<any>>;
   abstract requireGenerateRunner(): Promise<import('../generate').GenerateRunner<any>>;
-
   async getBuildRunner(): Promise<import('../build').BuildRunner<any> | undefined> {
     try {
       return await this.requireBuildRunner();
@@ -540,6 +540,10 @@ export abstract class Project implements IProject {
     return path.resolve(this.directory, 'src');
   }
 
+  async getDefaultDistDir(): Promise<string> {
+    return 'www';
+  }
+
   async getDistDir(): Promise<string> {
     if (this.getIntegration('capacitor') !== undefined) {
       const conf = new CapacitorConfig(path.resolve(this.directory, CAPACITOR_CONFIG_FILE));
@@ -565,7 +569,7 @@ export abstract class Project implements IProject {
   }
 
   async personalize(details: ProjectPersonalizationDetails): Promise<void> {
-    const { name, projectId, description, version } = details;
+    const { name, projectId, description, version, themeColor, appIcon, splash } = details;
 
     this.config.set('name', name);
 
@@ -577,9 +581,126 @@ export abstract class Project implements IProject {
 
     await writeJson(this.packageJsonPath, pkg, { spaces: 2 });
 
+    if (themeColor) {
+      await this.setPrimaryTheme(themeColor);
+    }
+
+    if (appIcon && splash) {
+      await this.setAppResources(appIcon, splash);
+    }
+
     const integrations = await this.getIntegrations();
 
     await Promise.all(integrations.map(async i => i.personalize(details)));
+  }
+
+  // Empty to avoid sub-classes having to implement
+  // tslint:disable-next-line:no-empty
+  async setPrimaryTheme(_themeColor: string): Promise<void> { }
+
+  async writeThemeColor(variablesPath: string, themeColor: string): Promise<void> {
+    const light = new Color(themeColor);
+
+    const ionicThemeLightDarkMap = {
+      '#3880ff': '#4c8dff', // blue
+      '#5260ff': '#6a64ff', // purple
+      '#2dd36f': '#2fdf75', // green
+      '#ffc409': '#ffd534', // yellow
+      '#eb445a': '#ff4961', // red
+      '#f4f5f8': '#222428', // light
+      '#92949c': '#989aa2', // medium
+      '#222428': '#f4f5f8', // dark
+    } as { [key: string]: string };
+
+    const matchingThemeColor = ionicThemeLightDarkMap[themeColor];
+
+    let dark;
+
+    // If this is a standard Ionic theme color, then use the hard-coded dark mode
+    // colors. Otherwise, compute a plausible dark mode color for this theme
+    if (matchingThemeColor) {
+      dark = new Color(matchingThemeColor);
+    } else if (light.yiq > 128) {
+      // Light mode was light enough, just use it for both
+      dark = light;
+    } else {
+      // Light mode was too dark, so tint it to make it brighter
+      dark = light.tint(0.6);
+    }
+
+    // Build the light colors
+
+    const lightContrastRgb = light.contrast().rgb;
+
+    const lightVariables: { [key: string]: string } = {
+      '--ion-color-primary': `${themeColor}`,
+      '--ion-color-primary-rgb': `${light.rgb.r}, ${light.rgb.g}, ${light.rgb.b}`,
+      '--ion-color-primary-contrast': `${light.contrast().hex}`,
+      '--ion-color-primary-contrast-rgb': `${lightContrastRgb.r}, ${lightContrastRgb.g}, ${lightContrastRgb.b}`,
+      '--ion-color-primary-shade': `${light.shade().hex}`,
+      '--ion-color-primary-tint': `${light.tint().hex}`,
+    };
+
+    const darkContrastRgb = dark.contrast().rgb;
+
+    const darkVariables: { [key: string]: string } = {
+      '--ion-color-primary': `${dark.hex}`,
+      '--ion-color-primary-rgb': `${dark.rgb.r}, ${dark.rgb.g}, ${dark.rgb.b}`,
+      '--ion-color-primary-contrast': `${dark.contrast().hex}`,
+      '--ion-color-primary-contrast-rgb': `${darkContrastRgb.r}, ${darkContrastRgb.g}, ${darkContrastRgb.b}`,
+      '--ion-color-primary-shade': `${dark.shade().hex}`,
+      '--ion-color-primary-tint': `${dark.tint().hex}`,
+    };
+
+    try {
+      let themeVarsContents = await readFile(variablesPath, { encoding: 'utf8' });
+
+      // Replace every theme variable with the updated ones
+      for (const v in lightVariables) {
+        const regExp = new RegExp(`(${v}):([^;]*)`, 'g');
+        let variableIndex = 0;
+        themeVarsContents = themeVarsContents.replace(regExp, (str, match) => {
+          if (variableIndex === 0) {
+            variableIndex++;
+            return `${match}: ${lightVariables[v]}`;
+          }
+          return str;
+        });
+      }
+
+      for (const v in darkVariables) {
+        const regExp = new RegExp(`(${v}):([^;]*)`, 'g');
+        let variableIndex = 0;
+        themeVarsContents = themeVarsContents.replace(regExp, (str, match) => {
+          if (variableIndex === 1) {
+            return `${match}: ${darkVariables[v]}`;
+          }
+          variableIndex++;
+          return str;
+        });
+      }
+
+      await writeFile(variablesPath, themeVarsContents);
+    } catch (e) {
+      const { log } = this.e;
+      log.error(`Unable to modify theme variables, theme will need to be set manually: ${e}`);
+    }
+  }
+
+  async setAppResources(appIcon: Buffer, splash: Buffer) {
+    const resourcesDir = path.join(this.directory, 'resources');
+    const iconPath = path.join(resourcesDir, 'icon.png');
+    const splashPath = path.join(resourcesDir, 'splash.png');
+
+    try {
+      await ensureDir(resourcesDir);
+
+      await writeFile(iconPath, appIcon);
+      await writeFile(splashPath, splash);
+    } catch (e) {
+      const { log } = this.e;
+      log.error(`Unable to find or create the resources directory. Skipping icon generation: ${e}`);
+    }
   }
 
   async registerAilments(registry: IAilmentRegistry): Promise<void> {

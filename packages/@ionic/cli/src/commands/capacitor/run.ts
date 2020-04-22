@@ -2,13 +2,11 @@ import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
-import * as path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
-import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
+import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform, getVirtualDeviceNameForPlatform } from '../../lib/integrations/capacitor/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 
 import { CapacitorCommand } from './base';
@@ -156,11 +154,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     // TODO: native-run
 
     this.env.log.nl();
-    this.env.log.info(
-      'Ready for use in your Native IDE!\n' +
-      `To continue, run your project on a device or ${platform === 'ios' ? 'simulator' : 'emulator'} using ${platform === 'ios' ? 'Xcode' : 'Android Studio'}!`
-    );
-
+    this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
     await this.runCapacitor(['open', platform]);
@@ -180,6 +174,8 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       throw new FatalException(`Cannot run ${input('ionic capacitor run/emulate')} outside a project directory.`);
     }
 
+    const [ platform ] = inputs;
+
     const runner = await this.project.requireServeRunner();
     const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
 
@@ -196,12 +192,24 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
     }
 
-    const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+    const conf = this.getCapacitorConfig();
 
     onBeforeExit(async () => {
       conf.resetServerUrl();
+      await this.runCapacitor(['copy', platform]);
     });
 
     conf.setServerUrl(serverUrl);
+  }
+
+  protected getContinueMessage(platform: string): string {
+    if (platform === 'electron') {
+      return 'Ready to be used in Electron!';
+    }
+
+    return (
+      'Ready for use in your Native IDE!\n' +
+      `To continue, run your project on a device or ${getVirtualDeviceNameForPlatform(platform)} using ${getNativeIDEForPlatform(platform)}!`
+    );
   }
 }

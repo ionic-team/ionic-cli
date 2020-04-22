@@ -94,6 +94,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
     const prod = options['prod'] ? Boolean(options['prod']) : undefined;
     const ssl = options['ssl'] ? Boolean(options['ssl']) : undefined;
     const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
+    const project = options['project'] ? String(options['project']) : 'app';
     const sourcemaps = typeof options['source-map'] === 'boolean' ? Boolean(options['source-map']) : undefined;
     const consolelogs = typeof options['consolelogs'] === 'boolean' ? Boolean(options['consolelogs']) : undefined;
     const consolelogsPort = consolelogs ? str2num(options['consolelogs-port'], DEFAULT_CONSOLE_LOGS_PORT) : undefined;
@@ -104,6 +105,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
       consolelogsPort,
       ssl,
       configuration,
+      project,
       sourcemaps,
     };
   }
@@ -250,8 +252,7 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
 
   protected buildArchitectCommand(options: AngularServeOptions): string[] {
     const cmd = options.engine === 'cordova' ? 'ionic-cordova-serve' : 'serve';
-    const project = options.project ? options.project : 'app';
 
-    return ['run', `${project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
+    return ['run', `${options.project}:${cmd}${options.configuration ? `:${options.configuration}` : ''}`];
   }
 }

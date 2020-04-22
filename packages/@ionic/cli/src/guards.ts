@@ -1,4 +1,4 @@
-import { APIResponse, APIResponseError, APIResponseSuccess, App, AppAssociation, BitbucketCloudRepoAssociation, BitbucketServerRepoAssociation, CommandPreRun, CordovaPackageJson, ExitCodeException, GithubBranch, GithubRepo, GithubRepoAssociation, ICommand, IMultiProjectConfig, IProjectConfig, IntegrationName, Login, Org, Response, SSHKey, SecurityProfile, Snapshot, StarterManifest, SuperAgentError, TreatableAilment, User } from './definitions';
+import { APIResponse, APIResponseError, APIResponseSuccess, App, AppAssociation, BitbucketCloudRepoAssociation, BitbucketServerRepoAssociation, CommandPreRun, CordovaAndroidBuildOutputEntry, CordovaPackageJson, ExitCodeException, GithubBranch, GithubRepo, GithubRepoAssociation, ICommand, IMultiProjectConfig, IProjectConfig, IntegrationName, Login, Org, Response, SSHKey, SecurityProfile, Snapshot, StarterManifest, SuperAgentError, TreatableAilment, User } from './definitions';
 import { AuthConnection } from './lib/auth';
 
 export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova', 'enterprise'];
@@ -23,6 +23,21 @@ export function isCordovaPackageJson(obj: any): obj is CordovaPackageJson {
     typeof obj.cordova === 'object' &&
     Array.isArray(obj.cordova.platforms) &&
     typeof obj.cordova.plugins === 'object';
+}
+
+export function isCordovaAndroidBuildOutputFile(obj: any): obj is CordovaAndroidBuildOutputEntry[] {
+  if (!Array.isArray(obj)) {
+    return false;
+  }
+
+  if (obj.length === 0) {
+    return true;
+  }
+
+  return obj[0]
+    && typeof obj[0].path === 'string'
+    && typeof obj[0].outputType === 'object'
+    && typeof obj[0].outputType.type === 'string';
 }
 
 export function isExitCodeException(err: any): err is ExitCodeException {
