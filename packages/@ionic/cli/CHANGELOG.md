@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.7.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.6.0...@ionic/cli@6.7.0) (2020-04-29)
+
+
+### Features
+
+* **capacitor:** add `--no-open` option for run and build ([#4403](https://github.com/ionic-team/ionic-cli/issues/4403)) ([977811e](https://github.com/ionic-team/ionic-cli/commit/977811e652f96aa4f5b4de92a80d9c25ae693d15))
+
+
+
+
+
 # [6.6.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.5.0...@ionic/cli@6.6.0) (2020-04-14)
 
 
