@@ -30,6 +30,12 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
+      {
+        name: 'open',
+        summary: 'Do not invoke Capacitor open',
+        type: Boolean,
+        default: true,
+      },
       ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)).map(o => ({ ...o, hint: weak('(--livereload)') })),
       {
         name: 'livereload',
@@ -157,7 +163,9 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    await this.runCapacitor(['open', platform]);
+    if (options['open']) {
+      await this.runCapacitor(['open', platform]);
+    }
 
     if (options['livereload']) {
       this.env.log.nl();

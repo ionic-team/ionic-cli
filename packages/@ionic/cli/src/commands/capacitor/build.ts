@@ -24,6 +24,12 @@ export class BuildCommand extends CapacitorCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
+      {
+        name: 'open',
+        summary: 'Do not invoke Capacitor open',
+        type: Boolean,
+        default: true,
+      },
     ];
 
     const footnotes: Footnote[] = [
@@ -121,7 +127,9 @@ To configure your native project, see the common configuration docs[^capacitor-n
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    await this.runCapacitor(['open', platform]);
+    if (options['open']) {
+      await this.runCapacitor(['open', platform]);
+    }
   }
 
   protected getContinueMessage(platform: string): string {
