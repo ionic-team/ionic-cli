@@ -128,17 +128,17 @@ To configure your native project, see the common configuration docs[^capacitor-n
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    if (options['open']) {
-      await this.runCapacitor(['open', platform]);
-    }
-
     const hookOptions = this.createOptionsFromCommandLine(inputs, options);
 
     await this.capacitorBuild(hookOptions, {
-        config: this.env.config,
-        project: this.project,
-        shell: this.env.shell,
+      config: this.env.config,
+      project: this.project,
+      shell: this.env.shell,
     });
+
+    if (options['open']) {
+      await this.runCapacitor(['open', platform]);
+    }
   }
 
   protected getContinueMessage(platform: string): string {

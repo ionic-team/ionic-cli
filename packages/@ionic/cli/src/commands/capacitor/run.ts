@@ -164,17 +164,17 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    if (options['open']) {
-      await this.runCapacitor(['open', platform]);
-    }
-
     const hookOptions = this.createOptionsFromCommandLine(inputs, options);
 
     await this.capacitorRun(hookOptions, {
-        config: this.env.config,
-        project: this.project,
-        shell: this.env.shell,
+      config: this.env.config,
+      project: this.project,
+      shell: this.env.shell,
     });
+
+    if (options['open']) {
+      await this.runCapacitor(['open', platform]);
+    }
 
     if (options['livereload']) {
       this.env.log.nl();
