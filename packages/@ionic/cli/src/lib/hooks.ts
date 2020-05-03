@@ -43,10 +43,14 @@ export abstract class Hook {
 
     debug(`Looking for ${ancillary(this.script)} npm script.`);
 
+    const ctxEnvironment = this.generateCTXEnvironment(input);
+
     if (pkg.scripts && pkg.scripts[this.script]) {
       debug(`Invoking ${ancillary(this.script)} npm script.`);
       const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
-      await this.e.shell.run(pkgManager, pkgArgs, {});
+      await this.e.shell.run(pkgManager, pkgArgs, {
+        env: ctxEnvironment,
+      });
     }
 
     const projectHooks = this.e.project.config.get('hooks');
@@ -73,7 +77,10 @@ export abstract class Hook {
             srcDir: await this.e.project.getSourceDir(),
           },
           argv: process.argv,
-          env: process.env,
+          env: {
+            ...process.env,
+            ...ctxEnvironment,
+          },
         }));
       } catch (e) {
         throw new HookException(
@@ -96,6 +103,23 @@ export abstract class Hook {
     }
 
     debug(`Could not load hook function ${strong(p)}: %o not a function`, module);
+  }
+
+  private generateCTXEnvironment(input: HookInput): NodeJS.ProcessEnv {
+    let environment: NodeJS.ProcessEnv = {};
+
+    for (const [key, value] of Object.entries(input)) {
+      if (typeof value === 'object') {
+        environment = {
+          ...environment,
+          ...this.generateCTXEnvironment(value),
+        };
+      } else {
+        environment[ 'IONIC_CLI_HOOK_CTX_' + key.toUpperCase() ] = value;
+      }
+    }
+
+    return environment;
   }
 }
 
