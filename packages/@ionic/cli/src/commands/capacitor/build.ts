@@ -1,8 +1,9 @@
-import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
+import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IonicCapacitorOptions } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
+import { Hook, HookDeps } from '../../lib/hooks';
 import { getNativeIDEForPlatform } from '../../lib/integrations/capacitor/utils';
 
 import { CapacitorCommand } from './base';
@@ -130,6 +131,14 @@ To configure your native project, see the common configuration docs[^capacitor-n
     if (options['open']) {
       await this.runCapacitor(['open', platform]);
     }
+
+    const hookOptions = this.createOptionsFromCommandLine(inputs, options);
+
+    await this.capacitorBuild(hookOptions, {
+        config: this.env.config,
+        project: this.project,
+        shell: this.env.shell,
+    });
   }
 
   protected getContinueMessage(platform: string): string {
@@ -142,4 +151,22 @@ To configure your native project, see the common configuration docs[^capacitor-n
       `To continue, build your project using ${getNativeIDEForPlatform(platform)}!`
     );
   }
+
+  private async capacitorBuild(options: IonicCapacitorOptions, e: HookDeps): Promise<void> {
+    const hook = new CapacitorRunHook(e);
+
+    try {
+      await hook.run({ name: hook.name, capacitor: options });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+}
+
+class CapacitorRunHook extends Hook {
+  readonly name = 'capacitor:build';
 }

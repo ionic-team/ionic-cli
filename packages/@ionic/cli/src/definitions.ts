@@ -66,7 +66,7 @@ export interface Runner<T extends object, U> {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue';
-export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after';
+export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run' | 'capacitor:build';
 
 export interface BaseHookContext {
   project: {
@@ -76,6 +76,16 @@ export interface BaseHookContext {
   };
   argv: string[];
   env: NodeJS.ProcessEnv;
+}
+
+export interface CapacitorRunHookInput {
+  readonly name: 'capacitor:run';
+  readonly capacitor: IonicCapacitorOptions;
+}
+
+export interface CapacitorBuildHookInput {
+  readonly name: 'capacitor:build';
+  readonly capacitor: IonicCapacitorOptions;
 }
 
 export interface BuildHookInput {
@@ -93,7 +103,7 @@ export interface ServeAfterHookInput {
   readonly serve: (AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions) & ServeDetails;
 }
 
-export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput;
+export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput | CapacitorRunHookInput | CapacitorBuildHookInput;
 export type HookContext = BaseHookContext & HookInput;
 
 export type HookFn = (ctx: HookContext) => Promise<void>;
@@ -574,6 +584,14 @@ export interface VueBuildOptions extends BuildOptions<'vue'> {
   configuration?: string;
   sourcemaps?: boolean;
   cordovaAssets?: boolean;
+}
+
+export interface IonicCapacitorOptions {
+  configuration?: string;
+  platform?: string; // android, ios, etc.
+  project?: string;
+  verbose?: boolean;
+  '--': string[];
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {

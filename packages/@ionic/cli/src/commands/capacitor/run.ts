@@ -1,11 +1,12 @@
-import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
+import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IonicCapacitorOptions } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
+import { Hook, HookDeps } from '../../lib/hooks';
 import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform, getVirtualDeviceNameForPlatform } from '../../lib/integrations/capacitor/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 
@@ -167,6 +168,14 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       await this.runCapacitor(['open', platform]);
     }
 
+    const hookOptions = this.createOptionsFromCommandLine(inputs, options);
+
+    await this.capacitorRun(hookOptions, {
+        config: this.env.config,
+        project: this.project,
+        shell: this.env.shell,
+    });
+
     if (options['livereload']) {
       this.env.log.nl();
       this.env.log.info(
@@ -220,4 +229,22 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       `To continue, run your project on a device or ${getVirtualDeviceNameForPlatform(platform)} using ${getNativeIDEForPlatform(platform)}!`
     );
   }
+
+  private async capacitorRun(options: IonicCapacitorOptions, e: HookDeps): Promise<void> {
+    const hook = new CapacitorRunHook(e);
+
+    try {
+      await hook.run({ name: hook.name, capacitor: options });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+}
+
+class CapacitorRunHook extends Hook {
+  readonly name = 'capacitor:run';
 }
