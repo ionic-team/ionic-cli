@@ -23,7 +23,7 @@ const APP_STORE_COMPATIBLE_TYPES = ['release', 'app-store', 'enterprise'];
 const BUILD_TYPES = ANDROID_BUILD_TYPES.concat(IOS_BUILD_TYPES);
 const TARGET_PLATFORM = ['Android', 'iOS - Xcode 11 (Preferred)', 'iOS - Xcode 10'];
 
-interface PackageBuild {
+export interface PackageBuild {
   job_id: number;
   id: string;
   caller_id: number;
@@ -43,6 +43,7 @@ interface PackageBuild {
   native_config_name: string;
   distribution_credential_name: string;
   job: any;
+  distribution_trace: string;
 }
 
 interface DownloadUrl {
