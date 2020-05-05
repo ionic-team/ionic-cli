@@ -115,7 +115,7 @@ export abstract class Hook {
           ...this.generateCTXEnvironment(value),
         };
       } else {
-        environment[ 'IONIC_CLI_HOOK_CTX_' + key.toUpperCase() ] = value;
+        environment[`IONIC_CLI_HOOK_CTX_${lodash.snakeCase(key.toUpperCase())}`] = value;
       }
     }
 
