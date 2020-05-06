@@ -153,7 +153,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
   }
 
   private async capacitorBuild(options: IonicCapacitorOptions, e: HookDeps): Promise<void> {
-    const hook = new CapacitorRunHook(e);
+    const hook = new CapacitorBuildHook(e);
 
     try {
       await hook.run({ name: hook.name, capacitor: options });
@@ -167,6 +167,6 @@ To configure your native project, see the common configuration docs[^capacitor-n
   }
 }
 
-class CapacitorRunHook extends Hook {
+class CapacitorBuildHook extends Hook {
   readonly name = 'capacitor:build';
 }
