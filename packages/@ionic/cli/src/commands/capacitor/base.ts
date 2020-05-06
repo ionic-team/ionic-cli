@@ -130,14 +130,20 @@ export abstract class CapacitorCommand extends Command {
   }
 
   protected createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicCapacitorOptions {
-    const prod = options['prod'] ? Boolean(options['prod']) : undefined;
     const separatedArgs = options['--'];
-    const [ platform ] = inputs;
-    const project = options['project'] ? String(options['project']) : 'app';
-    const configuration = options['configuration'] ? String(options['configuration']) : (prod ? 'production' : undefined);
     const verbose = !!options['verbose'];
+    const conf = this.getCapacitorConfig();
+    const server = conf.get('server');
 
-    return { '--': separatedArgs ? separatedArgs : [], platform, configuration, project, verbose };
+    return {
+      '--': separatedArgs ? separatedArgs : [],
+      appId: conf.get('appId'),
+      appName: conf.get('appName'),
+      server: {
+        url: server?.url,
+      },
+      verbose,
+    };
   }
 
   private async promptToInstallCapacitor(): Promise<boolean> {

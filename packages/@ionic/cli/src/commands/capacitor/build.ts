@@ -1,6 +1,6 @@
 import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IonicCapacitorOptions } from '../../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IProject } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
@@ -128,9 +128,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    const hookOptions = this.createOptionsFromCommandLine(inputs, options);
-
-    await this.capacitorBuild(hookOptions, {
+    await this.runCapacitorHook(this.project, inputs, options, {
       config: this.env.config,
       project: this.project,
       shell: this.env.shell,
@@ -152,11 +150,16 @@ To configure your native project, see the common configuration docs[^capacitor-n
     );
   }
 
-  private async capacitorBuild(options: IonicCapacitorOptions, e: HookDeps): Promise<void> {
+  private async runCapacitorHook(project: IProject, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
     const hook = new CapacitorBuildHook(e);
+    const buildRunner = await project.requireBuildRunner();
 
     try {
-      await hook.run({ name: hook.name, capacitor: options });
+      await hook.run({
+        name: hook.name,
+        build: buildRunner.createOptionsFromCommandLine(inputs, options),
+        capacitor: this.createOptionsFromCommandLine(inputs, options),
+      });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);

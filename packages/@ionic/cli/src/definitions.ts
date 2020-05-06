@@ -80,11 +80,14 @@ export interface BaseHookContext {
 
 export interface CapacitorRunHookInput {
   readonly name: 'capacitor:run';
+  readonly serve?: AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
+  readonly build?: AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
   readonly capacitor: IonicCapacitorOptions;
 }
 
 export interface CapacitorBuildHookInput {
   readonly name: 'capacitor:build';
+  readonly build: AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
   readonly capacitor: IonicCapacitorOptions;
 }
 
@@ -587,10 +590,12 @@ export interface VueBuildOptions extends BuildOptions<'vue'> {
 }
 
 export interface IonicCapacitorOptions {
-  configuration?: string;
-  platform?: string; // android, ios, etc.
-  project?: string;
   verbose?: boolean;
+  appId?: string;
+  appName?: string;
+  server?: {
+    url?: string;
+  };
   '--': string[];
 }
 

@@ -3,7 +3,7 @@ import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IonicCapacitorOptions } from '../../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IProject, ServeOptions } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
@@ -164,9 +164,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    const hookOptions = this.createOptionsFromCommandLine(inputs, options);
-
-    await this.capacitorRun(hookOptions, {
+    await this.runCapacitorHook(this.project, inputs, options, {
       config: this.env.config,
       project: this.project,
       shell: this.env.shell,
@@ -230,11 +228,28 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     );
   }
 
-  private async capacitorRun(options: IonicCapacitorOptions, e: HookDeps): Promise<void> {
+  private async runCapacitorHook(project: IProject , inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
     const hook = new CapacitorRunHook(e);
+    let serveOptions: ServeOptions | undefined;
+    let buildOptions: any | undefined;
+
+    if (options['livereload']) {
+      const serveRunner = await project.requireServeRunner();
+
+      serveOptions = serveRunner.createOptionsFromCommandLine(inputs, options);
+    } else {
+      const buildRunner = await project.requireBuildRunner();
+
+      buildOptions = buildRunner.createOptionsFromCommandLine(inputs, options);
+    }
 
     try {
-      await hook.run({ name: hook.name, capacitor: options });
+      await hook.run({
+        name: hook.name,
+        serve: serveOptions,
+        build: buildOptions,
+        capacitor: this.createOptionsFromCommandLine(inputs, options),
+      });
     } catch (e) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);

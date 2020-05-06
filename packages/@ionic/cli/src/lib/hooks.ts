@@ -105,17 +105,19 @@ export abstract class Hook {
     debug(`Could not load hook function ${strong(p)}: %o not a function`, module);
   }
 
-  private generateCTXEnvironment(input: HookInput): NodeJS.ProcessEnv {
+  private generateCTXEnvironment(input: HookInput, path: string[] = []): NodeJS.ProcessEnv {
     let environment: NodeJS.ProcessEnv = {};
 
     for (const [key, value] of Object.entries(input)) {
       if (typeof value === 'object') {
         environment = {
           ...environment,
-          ...this.generateCTXEnvironment(value),
+          ...this.generateCTXEnvironment(value, [...path, key]),
         };
       } else {
-        environment[`IONIC_CLI_HOOK_CTX_${lodash.snakeCase(key)}`.toUpperCase()] = value;
+        const name = [path, key].join('_');
+
+        environment[`IONIC_CLI_HOOK_CTX_${lodash.snakeCase(name)}`.toUpperCase()] = value;
       }
     }
 
