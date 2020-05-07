@@ -127,6 +127,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     const host = options['host'] ? String(options['host']) : DEFAULT_ADDRESS;
     const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
+    const [ platform ] = options['platform'] ? [String(options['platform'])] : inputs;
 
     return {
       '--': separatedArgs ? separatedArgs : [],
@@ -140,7 +141,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       labPort,
       livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
       open: !!options['open'],
-      platform: options['platform'] ? String(options['platform']) : undefined,
+      platform,
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       project: options['project'] ? String(options['project']) : undefined,

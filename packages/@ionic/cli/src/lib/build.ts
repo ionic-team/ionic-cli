@@ -49,7 +49,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
 
   createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BaseBuildOptions {
     const separatedArgs = options['--'];
-    const platform = options['platform'] ? String(options['platform']) : undefined;
+    const [ platform ] = options['platform'] ? [String(options['platform'])] : inputs;
     const engine = this.determineEngineFromCommandLine(options);
     const project = options['project'] ? String(options['project']) : undefined;
     const verbose = !!options['verbose'];
