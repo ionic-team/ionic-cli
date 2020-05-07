@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.8.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.7.0...@ionic/cli@6.8.0) (2020-05-06)
+
+
+### Features
+
+* **package:** deployments to destinations (e.g. app stores) ([#4418](https://github.com/ionic-team/ionic-cli/issues/4418)) ([f0314f6](https://github.com/ionic-team/ionic-cli/commit/f0314f64a0a992c6bba9bb46343c1679b8b6521e))
+
+
+
+
+
 # [6.7.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.6.0...@ionic/cli@6.7.0) (2020-04-29)
 
 
