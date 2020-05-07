@@ -3,7 +3,7 @@ import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IProject, ServeOptions } from '../../definitions';
+import { AnyBuildOptions, AnyServeOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IProject } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
@@ -231,9 +231,9 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
   }
 
   private async runCapacitorHook(project: IProject , inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
-    const hook = new CapacitorRunHook(e);
-    let serveOptions: ServeOptions | undefined;
-    let buildOptions: any | undefined;
+    const hook = new CapacitorRunAfterHook(e);
+    let serveOptions: AnyServeOptions | undefined;
+    let buildOptions: AnyBuildOptions | undefined;
 
     if (options['livereload']) {
       const serveRunner = await project.requireServeRunner();
@@ -262,6 +262,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
   }
 }
 
-class CapacitorRunHook extends Hook {
-  readonly name = 'capacitor:run';
+class CapacitorRunAfterHook extends Hook {
+  readonly name = 'capacitor:run:after';
 }
