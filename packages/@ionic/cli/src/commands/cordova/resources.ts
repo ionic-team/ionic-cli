@@ -73,6 +73,6 @@ Cordova reference documentation:
 
     const platform = inputs[0] ? String(inputs[0]) : undefined;
 
-    await runCordovaRes(this.env, createCordovaResArgs({ platform }, options), { cwd: this.project.directory });
+    await runCordovaRes(this.env, createCordovaResArgs({ platform }, options), { cwd: this.integration.root });
   }
 }

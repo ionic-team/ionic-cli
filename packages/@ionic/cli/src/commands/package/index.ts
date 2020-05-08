@@ -9,7 +9,7 @@ export class PackageNamespace extends Namespace {
       name: 'package',
       summary: 'Appflow package functionality',
       description: `
-Interface to execute commands about package builds on Ionic Appflow.
+Interface to execute commands about package builds and deployments on Ionic Appflow.
 
 Appflow package documentation:
 - Overview: ${strong('https://ion.link/appflow-package-docs')}
@@ -21,6 +21,7 @@ Appflow package documentation:
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this); }],
+      ['deploy', async () => { const { DeployCommand } = await import('./deploy'); return new DeployCommand(this); }],
     ]);
   }
 }

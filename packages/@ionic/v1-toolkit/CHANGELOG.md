@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.0...@ionic/v1-toolkit@3.2.1) (2020-05-06)
+
+**Note:** Version bump only for package @ionic/v1-toolkit
+
+
+
+
+
+# [3.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.1.2...@ionic/v1-toolkit@3.2.0) (2020-04-29)
+
+
+### Features
+
+* support gulp v4 ([#4264](https://github.com/ionic-team/ionic-cli/issues/4264)) ([32b85c3](https://github.com/ionic-team/ionic-cli/commit/32b85c3e93a7c4ff77615a8cf627d092019a7033))
+
+
+
+
+
+## [3.1.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.1.1...@ionic/v1-toolkit@3.1.2) (2020-03-30)
+
+**Note:** Version bump only for package @ionic/v1-toolkit
+
+
+
+
+
 ## [3.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.1.0...@ionic/v1-toolkit@3.1.1) (2020-03-03)
 
 **Note:** Version bump only for package @ionic/v1-toolkit

@@ -49,6 +49,10 @@ export class VueProject extends Project {
     return false;
   }
 
+  async getDefaultDistDir(): Promise<string> {
+    return 'dist';
+  }
+
   async requireBuildRunner(): Promise<import('./build').VueBuildRunner> {
     const { VueBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };

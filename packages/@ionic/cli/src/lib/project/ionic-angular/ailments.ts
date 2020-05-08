@@ -111,7 +111,7 @@ export class IonicAngularMajorUpdateAvailable extends IonicAngularAilment {
 
   async getTreatmentSteps() {
     return [
-      { message: `Visit ${strong('https://blog.ionicframework.com')} and ${strong('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
+      { message: `Visit ${strong('https://ionicframework.com/blog')} and ${strong('https://github.com/ionic-team/ionic/releases')} for upgrade instructions` },
     ];
   }
 }

@@ -1,5 +1,6 @@
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as path from 'path';
 
 import { Project } from '../';
 import { IAilmentRegistry, InfoItem } from '../../../definitions';
@@ -100,5 +101,10 @@ export class AngularProject extends Project {
   async registerAilments(registry: IAilmentRegistry): Promise<void> {
     await super.registerAilments(registry);
     // TODO: register angular project ailments
+  }
+
+  setPrimaryTheme(themeColor: string): Promise<void> {
+    const themePath = path.join(this.directory, 'src', 'theme', 'variables.scss');
+    return this.writeThemeColor(themePath, themeColor);
   }
 }

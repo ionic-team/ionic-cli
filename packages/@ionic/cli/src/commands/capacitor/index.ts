@@ -18,6 +18,7 @@ Learn more about Capacitor:
   async getCommands(): Promise<CommandMap> {
     return new CommandMap([
       ['add', async () => { const { AddCommand } = await import('./add'); return new AddCommand(this); }],
+      ['build', async () => { const { BuildCommand } = await import('./build'); return new BuildCommand(this); }],
       ['copy', async () => { const { CopyCommand } = await import('./copy'); return new CopyCommand(this); }],
       ['open', async () => { const { OpenCommand } = await import('./open'); return new OpenCommand(this); }],
       ['run', async () => { const { RunCommand } = await import('./run'); return new RunCommand(this); }],

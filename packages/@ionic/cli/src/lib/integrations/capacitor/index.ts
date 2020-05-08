@@ -1,5 +1,7 @@
 import { PackageJson, parseArgs } from '@ionic/cli-framework';
-import { mkdirp } from '@ionic/utils-fs';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { mkdirp, pathExists } from '@ionic/utils-fs';
+import * as chalk from 'chalk';
 import * as path from 'path';
 
 import { BaseIntegration, IntegrationConfig } from '../';
@@ -10,6 +12,7 @@ import {
   ProjectIntegration,
   ProjectPersonalizationDetails
 } from '../../../definitions';
+import { input, strong } from '../../color';
 import { pkgManagerArgs } from '../../utils/npm';
 
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from './config';
@@ -24,40 +27,58 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
-    let name = this.e.project.config.get('name');
-    let packageId = 'io.ionic.starter';
-    const options: string[] = [];
+    const confPath = this.getCapacitorConfigPath();
 
-    if (this.e.project.type === 'react') {
-      options.push('--web-dir', 'build');
-    } else if (this.e.project.type === 'vue') {
-      options.push('--web-dir', 'dist');
-    }
+    if (await pathExists(confPath)) {
+      this.e.log.nl();
+      this.e.log.warn(
+        `Capacitor already exists in project.\n` +
+        `Since the Capacitor config already exists (${strong(prettyPath(confPath))}), the Capacitor integration has been ${chalk.green('enabled')}.\n\n` +
+        `You can re-integrate this project by doing the following:\n\n` +
+        `- Run ${input(`ionic integrations disable ${this.name}`)}\n` +
+        `- Remove the ${strong(prettyPath(confPath))} file\n` +
+        `- Run ${input(`ionic integrations enable ${this.name} --add`)}\n`
+      );
+    } else {
+      let name = this.e.project.config.get('name');
+      let packageId = 'io.ionic.starter';
+      let webDir = await this.e.project.getDefaultDistDir();
 
-    if (details.enableArgs) {
-      const parsedArgs = parseArgs(details.enableArgs);
+      const options: string[] = [];
 
-      name = parsedArgs._[0] || name;
-      packageId = parsedArgs._[1] || packageId;
-      if (parsedArgs['web-dir']) {
-        options.push('--web-dir', parsedArgs['web-dir']);
+      if (details.enableArgs && details.enableArgs.length > 0) {
+        const parsedArgs = parseArgs(details.enableArgs);
+
+        name = parsedArgs._[0] || name;
+        packageId = parsedArgs._[1] || packageId;
+
+        if (parsedArgs['web-dir']) {
+          webDir = parsedArgs['web-dir'];
+        }
       }
+
+      options.push('--web-dir', webDir);
       options.push('--npm-client', this.e.config.get('npmClient'));
+
+      await this.installCapacitorCore();
+      await this.installCapacitorCLI();
+
+      await mkdirp(details.root);
+      await this.e.shell.run('capacitor', ['init', name, packageId, ...options], { cwd: details.root });
     }
-
-    await this.installCapacitorCore();
-    await this.installCapacitorCLI();
-
-    await mkdirp(details.root);
-    await this.e.shell.run('capacitor', ['init', name, packageId, ...options], { cwd: details.root });
 
     await super.add(details);
   }
 
-  async getConfig(): Promise<CapacitorConfig> {
-    const conf = new CapacitorConfig(path.resolve(this.e.project.directory, CAPACITOR_CONFIG_FILE));
+  async getCapacitorConfig(): Promise<CapacitorConfig> {
+    const confPath = this.getCapacitorConfigPath();
+    const conf = new CapacitorConfig(confPath);
 
     return conf;
+  }
+
+  getCapacitorConfigPath(): string {
+    return path.resolve(this.e.project.directory, CAPACITOR_CONFIG_FILE);
   }
 
   async installCapacitorCore() {
@@ -71,7 +92,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
-    const conf = await this.getConfig();
+    const conf = await this.getCapacitorConfig();
 
     conf.set('appName', name);
 
@@ -81,7 +102,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async getInfo(): Promise<InfoItem[]> {
-    const conf = await this.getConfig();
+    const conf = await this.getCapacitorConfig();
     const bundleId = conf.get('appId');
 
     const [

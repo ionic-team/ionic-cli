@@ -54,7 +54,9 @@ Integrations can be re-added with the ${input('--add')} option.
       throw new FatalException(`Cannot run ${input('ionic integrations enable')} outside a project directory.`);
     }
 
-    const root = options['root'] ? path.resolve(this.project.directory, String(options['root'])) : this.project.directory;
+    const root = options['root']
+      ? path.resolve(this.project.rootDirectory, String(options['root']))
+      : this.project.rootDirectory;
 
     if (!isIntegrationName(name)) {
       throw new FatalException(`Don't know about ${input(name)} integration!`);
