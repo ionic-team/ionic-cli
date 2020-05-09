@@ -124,10 +124,6 @@ To configure your native project, see the common configuration docs[^capacitor-n
 
     await this.runCapacitor(['sync', platform]);
 
-    this.env.log.nl();
-    this.env.log.info(this.getContinueMessage(platform));
-    this.env.log.nl();
-
     const hookDeps: HookDeps = {
       config: this.env.config,
       project: this.project,
@@ -137,6 +133,10 @@ To configure your native project, see the common configuration docs[^capacitor-n
     await this.runCapacitorBuildHook('capacitor:build:before', inputs, options, hookDeps);
 
     if (options['open']) {
+      this.env.log.nl();
+      this.env.log.info(this.getContinueMessage(platform));
+      this.env.log.nl();
+
       await this.runCapacitor(['open', platform]);
     }
 

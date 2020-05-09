@@ -162,10 +162,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     // TODO: native-run
 
-    this.env.log.nl();
-    this.env.log.info(this.getContinueMessage(platform));
-    this.env.log.nl();
-
     const hookDeps: HookDeps = {
       config: this.env.config,
       project: this.project,
@@ -175,6 +171,10 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     await this.runCapacitorRunHook('capacitor:run:before', inputs, options, hookDeps);
 
     if (options['open']) {
+      this.env.log.nl();
+      this.env.log.info(this.getContinueMessage(platform));
+      this.env.log.nl();
+
       await this.runCapacitor(['open', platform]);
     }
 
