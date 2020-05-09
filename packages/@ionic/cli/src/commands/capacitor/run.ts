@@ -3,7 +3,7 @@ import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { AnyBuildOptions, AnyServeOptions, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IProject } from '../../definitions';
+import { AnyBuildOptions, AnyServeOptions, CapacitorRunHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
@@ -166,15 +166,19 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    await this.runCapacitorHook(this.project, inputs, options, {
+    const hookDeps: HookDeps = {
       config: this.env.config,
       project: this.project,
       shell: this.env.shell,
-    });
+    };
+
+    await this.runCapacitorRunHook('capacitor:run:before', inputs, options, hookDeps);
 
     if (options['open']) {
       await this.runCapacitor(['open', platform]);
     }
+
+    await this.runCapacitorRunHook('capacitor:run:after', inputs, options, hookDeps);
 
     if (options['livereload']) {
       this.env.log.nl();
@@ -230,17 +234,17 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     );
   }
 
-  private async runCapacitorHook(project: IProject , inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
-    const hook = new CapacitorRunBeforeHook(e);
+  private async runCapacitorRunHook(name: CapacitorRunHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
+    const hook = new CapacitorRunHook(name, e);
     let serveOptions: AnyServeOptions | undefined;
     let buildOptions: AnyBuildOptions | undefined;
 
     if (options['livereload']) {
-      const serveRunner = await project.requireServeRunner();
+      const serveRunner = await e.project.requireServeRunner();
 
       serveOptions = serveRunner.createOptionsFromCommandLine(inputs, options);
     } else {
-      const buildRunner = await project.requireBuildRunner();
+      const buildRunner = await e.project.requireBuildRunner();
 
       buildOptions = buildRunner.createOptionsFromCommandLine(inputs, options);
     }
@@ -262,6 +266,12 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
   }
 }
 
-class CapacitorRunBeforeHook extends Hook {
-  readonly name = 'capacitor:run:before';
+class CapacitorRunHook extends Hook {
+  readonly name: CapacitorRunHookName;
+
+  constructor(name: CapacitorRunHookName, e: HookDeps) {
+    super(e);
+
+    this.name = name;
+  }
 }

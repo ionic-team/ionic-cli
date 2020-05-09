@@ -1,6 +1,6 @@
 import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IProject } from '../../definitions';
+import { CapacitorBuildHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
@@ -128,15 +128,19 @@ To configure your native project, see the common configuration docs[^capacitor-n
     this.env.log.info(this.getContinueMessage(platform));
     this.env.log.nl();
 
-    await this.runCapacitorHook(this.project, inputs, options, {
+    const hookDeps: HookDeps = {
       config: this.env.config,
       project: this.project,
       shell: this.env.shell,
-    });
+    };
+
+    await this.runCapacitorBuildHook('capacitor:build:before', inputs, options, hookDeps);
 
     if (options['open']) {
       await this.runCapacitor(['open', platform]);
     }
+
+    await this.runCapacitorBuildHook('capacitor:build:after', inputs, options, hookDeps);
   }
 
   protected getContinueMessage(platform: string): string {
@@ -150,9 +154,9 @@ To configure your native project, see the common configuration docs[^capacitor-n
     );
   }
 
-  private async runCapacitorHook(project: IProject, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
-    const hook = new CapacitorBuildBeforeHook(e);
-    const buildRunner = await project.requireBuildRunner();
+  private async runCapacitorBuildHook(name: CapacitorBuildHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
+    const hook = new CapacitorBuildHook(name, e);
+    const buildRunner = await e.project.requireBuildRunner();
 
     try {
       await hook.run({
@@ -170,6 +174,12 @@ To configure your native project, see the common configuration docs[^capacitor-n
   }
 }
 
-class CapacitorBuildBeforeHook extends Hook {
-  readonly name = 'capacitor:build:before';
+class CapacitorBuildHook extends Hook {
+  readonly name: CapacitorBuildHookName;
+
+  constructor(name: CapacitorBuildHookName, e: HookDeps) {
+    super(e);
+
+    this.name = name;
+  }
 }

@@ -66,7 +66,10 @@ export interface Runner<T extends object, U> {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue';
-export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before';
+export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:run:after' | 'capacitor:build:before' | 'capacitor:build:after';
+
+export type CapacitorRunHookName = 'capacitor:run:before' | 'capacitor:run:after';
+export type CapacitorBuildHookName = 'capacitor:build:before' | 'capacitor:build:after';
 
 export interface BaseHookContext {
   project: {
@@ -82,14 +85,14 @@ export type AnyServeOptions = ReactServeOptions | AngularServeOptions | IonicAng
 export type AnyBuildOptions = ReactBuildOptions | AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
 
 export interface CapacitorRunHookInput {
-  readonly name: 'capacitor:run:before';
+  readonly name: CapacitorRunHookName;
   readonly serve?: AnyServeOptions;
   readonly build?: AnyBuildOptions;
   readonly capacitor: IonicCapacitorOptions;
 }
 
 export interface CapacitorBuildHookInput {
-  readonly name: 'capacitor:build:before';
+  readonly name: CapacitorBuildHookName;
   readonly build: AnyBuildOptions;
   readonly capacitor: IonicCapacitorOptions;
 }
