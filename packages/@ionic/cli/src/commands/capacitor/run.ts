@@ -231,7 +231,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
   }
 
   private async runCapacitorHook(project: IProject , inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
-    const hook = new CapacitorRunAfterHook(e);
+    const hook = new CapacitorRunBeforeHook(e);
     let serveOptions: AnyServeOptions | undefined;
     let buildOptions: AnyBuildOptions | undefined;
 
@@ -262,6 +262,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
   }
 }
 
-class CapacitorRunAfterHook extends Hook {
-  readonly name = 'capacitor:run:after';
+class CapacitorRunBeforeHook extends Hook {
+  readonly name = 'capacitor:run:before';
 }

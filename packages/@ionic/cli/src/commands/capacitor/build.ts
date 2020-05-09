@@ -151,7 +151,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
   }
 
   private async runCapacitorHook(project: IProject, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
-    const hook = new CapacitorBuildAfterHook(e);
+    const hook = new CapacitorBuildBeforeHook(e);
     const buildRunner = await project.requireBuildRunner();
 
     try {
@@ -170,6 +170,6 @@ To configure your native project, see the common configuration docs[^capacitor-n
   }
 }
 
-class CapacitorBuildAfterHook extends Hook {
-  readonly name = 'capacitor:build:after';
+class CapacitorBuildBeforeHook extends Hook {
+  readonly name = 'capacitor:build:before';
 }
