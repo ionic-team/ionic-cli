@@ -63,7 +63,7 @@ export function generateOptionsForCordovaBuild(metadata: CommandMetadata, inputs
   return {
     ...results,
     externalAddressRequired,
-    nobrowser: true,
+    open: false,
     engine: 'cordova',
     platform,
     project,
