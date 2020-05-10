@@ -178,8 +178,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       await this.runCapacitor(['open', platform]);
     }
 
-    await this.runCapacitorRunHook('capacitor:run:after', inputs, options, hookDeps);
-
     if (options['livereload']) {
       this.env.log.nl();
       this.env.log.info(

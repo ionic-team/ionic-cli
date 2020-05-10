@@ -139,8 +139,6 @@ To configure your native project, see the common configuration docs[^capacitor-n
 
       await this.runCapacitor(['open', platform]);
     }
-
-    await this.runCapacitorBuildHook('capacitor:build:after', inputs, options, hookDeps);
   }
 
   protected getContinueMessage(platform: string): string {

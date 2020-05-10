@@ -66,10 +66,10 @@ export interface Runner<T extends object, U> {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue';
-export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:run:after' | 'capacitor:build:before' | 'capacitor:build:after';
+export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before';
 
-export type CapacitorRunHookName = 'capacitor:run:before' | 'capacitor:run:after';
-export type CapacitorBuildHookName = 'capacitor:build:before' | 'capacitor:build:after';
+export type CapacitorRunHookName = 'capacitor:run:before';
+export type CapacitorBuildHookName = 'capacitor:build:before';
 
 export interface BaseHookContext {
   project: {
