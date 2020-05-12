@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.0...@ionic/cli@6.9.1) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
 # [6.9.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.8.0...@ionic/cli@6.9.0) (2020-05-11)
 
 
