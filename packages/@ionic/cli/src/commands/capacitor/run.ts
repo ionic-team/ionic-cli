@@ -1,11 +1,12 @@
-import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
+import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { AnyBuildOptions, AnyServeOptions, CapacitorRunHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
+import { Hook, HookDeps } from '../../lib/hooks';
 import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform, getVirtualDeviceNameForPlatform } from '../../lib/integrations/capacitor/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 
@@ -161,11 +162,19 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     // TODO: native-run
 
-    this.env.log.nl();
-    this.env.log.info(this.getContinueMessage(platform));
-    this.env.log.nl();
+    const hookDeps: HookDeps = {
+      config: this.env.config,
+      project: this.project,
+      shell: this.env.shell,
+    };
+
+    await this.runCapacitorRunHook('capacitor:run:before', inputs, options, hookDeps);
 
     if (options['open']) {
+      this.env.log.nl();
+      this.env.log.info(this.getContinueMessage(platform));
+      this.env.log.nl();
+
       await this.runCapacitor(['open', platform]);
     }
 
@@ -221,5 +230,46 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       'Ready for use in your Native IDE!\n' +
       `To continue, run your project on a device or ${getVirtualDeviceNameForPlatform(platform)} using ${getNativeIDEForPlatform(platform)}!`
     );
+  }
+
+  private async runCapacitorRunHook(name: CapacitorRunHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
+    const hook = new CapacitorRunHook(name, e);
+    let serveOptions: AnyServeOptions | undefined;
+    let buildOptions: AnyBuildOptions | undefined;
+
+    if (options['livereload']) {
+      const serveRunner = await e.project.requireServeRunner();
+
+      serveOptions = serveRunner.createOptionsFromCommandLine(inputs, options);
+    } else {
+      const buildRunner = await e.project.requireBuildRunner();
+
+      buildOptions = buildRunner.createOptionsFromCommandLine(inputs, options);
+    }
+
+    try {
+      await hook.run({
+        name: hook.name,
+        serve: serveOptions,
+        build: buildOptions,
+        capacitor: this.createOptionsFromCommandLine(inputs, options),
+      });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+}
+
+class CapacitorRunHook extends Hook {
+  readonly name: CapacitorRunHookName;
+
+  constructor(name: CapacitorRunHookName, e: HookDeps) {
+    super(e);
+
+    this.name = name;
   }
 }

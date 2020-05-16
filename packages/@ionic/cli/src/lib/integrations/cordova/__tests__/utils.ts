@@ -117,7 +117,7 @@ describe('@ionic/cli', () => {
       const options = { _: [] };
 
       const result = generateOptionsForCordovaBuild(buildMetadata, inputs, options);
-      expect(result).toEqual({ '_': [], externalAddressRequired: true, nobrowser: true, engine: 'cordova', platform: 'ios' });
+      expect(result).toEqual({ '_': [], externalAddressRequired: true, open: false, engine: 'cordova', platform: 'ios' });
     });
 
     it('should include the options with app-scripts group or no group, but not cordova-cli group', () => {
@@ -125,7 +125,7 @@ describe('@ionic/cli', () => {
       const options = { _: [], boolopt: false, cdvopt1: null, cdvopt2: false, prod: true, optimizejs: true };
 
       const result = generateOptionsForCordovaBuild(buildMetadata, inputs, options);
-      expect(result).toEqual({ '_': [], boolopt: false, externalAddressRequired: true, nobrowser: true, engine: 'cordova', platform: 'ios', prod: true, optimizejs: true });
+      expect(result).toEqual({ '_': [], boolopt: false, externalAddressRequired: true, open: false, engine: 'cordova', platform: 'ios', prod: true, optimizejs: true });
     });
 
   });

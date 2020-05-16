@@ -3,6 +3,33 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.0...@ionic/cli@6.9.1) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
+# [6.9.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.8.0...@ionic/cli@6.9.0) (2020-05-11)
+
+
+### Bug Fixes
+
+* **capacitor:** do not open browser with `ionic cap run` ([8e3908d](https://github.com/ionic-team/ionic-cli/commit/8e3908d35ba99289e64a268c8a747054afceed92))
+
+
+### Features
+
+* add `capacitor:run:before` and `capacitor:build:before` hooks ([#4417](https://github.com/ionic-team/ionic-cli/issues/4417)) ([28d8540](https://github.com/ionic-team/ionic-cli/commit/28d854041d418fdd4c36233eb47af177506fdbaf))
+
+
+
+
+
 # [6.8.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.7.0...@ionic/cli@6.8.0) (2020-05-06)
 
 
