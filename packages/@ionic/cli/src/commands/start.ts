@@ -256,7 +256,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       await this.startIdStart(inputs, options);
       return;
     }
-    
+
     const cloned = isValidURL(inputs[1]);
 
     if (cloned) {
