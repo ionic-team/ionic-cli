@@ -6,6 +6,7 @@ export function generateOptionsForCapacitorBuild(inputs: CommandLineInputs, opti
   return {
     ...options,
     externalAddressRequired: true,
+    open: false,
     engine: 'capacitor',
     platform: platform ? platform : (options['platform'] ? String(options['platform']) : undefined),
   };

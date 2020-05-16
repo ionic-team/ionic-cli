@@ -66,7 +66,10 @@ export interface Runner<T extends object, U> {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue';
-export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after';
+export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before';
+
+export type CapacitorRunHookName = 'capacitor:run:before';
+export type CapacitorBuildHookName = 'capacitor:build:before';
 
 export interface BaseHookContext {
   project: {
@@ -76,6 +79,22 @@ export interface BaseHookContext {
   };
   argv: string[];
   env: NodeJS.ProcessEnv;
+}
+
+export type AnyServeOptions = ReactServeOptions | AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
+export type AnyBuildOptions = ReactBuildOptions | AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
+
+export interface CapacitorRunHookInput {
+  readonly name: CapacitorRunHookName;
+  readonly serve?: AnyServeOptions;
+  readonly build?: AnyBuildOptions;
+  readonly capacitor: IonicCapacitorOptions;
+}
+
+export interface CapacitorBuildHookInput {
+  readonly name: CapacitorBuildHookName;
+  readonly build: AnyBuildOptions;
+  readonly capacitor: IonicCapacitorOptions;
 }
 
 export interface BuildHookInput {
@@ -93,7 +112,7 @@ export interface ServeAfterHookInput {
   readonly serve: (AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions) & ServeDetails;
 }
 
-export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput;
+export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput | CapacitorRunHookInput | CapacitorBuildHookInput;
 export type HookContext = BaseHookContext & HookInput;
 
 export type HookFn = (ctx: HookContext) => Promise<void>;
@@ -574,6 +593,16 @@ export interface VueBuildOptions extends BuildOptions<'vue'> {
   configuration?: string;
   sourcemaps?: boolean;
   cordovaAssets?: boolean;
+}
+
+export interface IonicCapacitorOptions {
+  verbose?: boolean;
+  appId?: string;
+  appName?: string;
+  server?: {
+    url?: string;
+  };
+  '--': string[];
 }
 
 export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {

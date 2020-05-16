@@ -1,8 +1,9 @@
-import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
+import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { CapacitorBuildHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
+import { Hook, HookDeps } from '../../lib/hooks';
 import { getNativeIDEForPlatform } from '../../lib/integrations/capacitor/utils';
 
 import { CapacitorCommand } from './base';
@@ -123,11 +124,19 @@ To configure your native project, see the common configuration docs[^capacitor-n
 
     await this.runCapacitor(['sync', platform]);
 
-    this.env.log.nl();
-    this.env.log.info(this.getContinueMessage(platform));
-    this.env.log.nl();
+    const hookDeps: HookDeps = {
+      config: this.env.config,
+      project: this.project,
+      shell: this.env.shell,
+    };
+
+    await this.runCapacitorBuildHook('capacitor:build:before', inputs, options, hookDeps);
 
     if (options['open']) {
+      this.env.log.nl();
+      this.env.log.info(this.getContinueMessage(platform));
+      this.env.log.nl();
+
       await this.runCapacitor(['open', platform]);
     }
   }
@@ -141,5 +150,34 @@ To configure your native project, see the common configuration docs[^capacitor-n
       'Ready for use in your Native IDE!\n' +
       `To continue, build your project using ${getNativeIDEForPlatform(platform)}!`
     );
+  }
+
+  private async runCapacitorBuildHook(name: CapacitorBuildHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
+    const hook = new CapacitorBuildHook(name, e);
+    const buildRunner = await e.project.requireBuildRunner();
+
+    try {
+      await hook.run({
+        name: hook.name,
+        build: buildRunner.createOptionsFromCommandLine(inputs, options),
+        capacitor: this.createOptionsFromCommandLine(inputs, options),
+      });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+}
+
+class CapacitorBuildHook extends Hook {
+  readonly name: CapacitorBuildHookName;
+
+  constructor(name: CapacitorBuildHookName, e: HookDeps) {
+    super(e);
+
+    this.name = name;
   }
 }

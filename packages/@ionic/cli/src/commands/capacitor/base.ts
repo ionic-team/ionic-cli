@@ -2,7 +2,7 @@ import { pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
 import * as path from 'path';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, ProjectIntegration } from '../../definitions';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, IonicCapacitorOptions, ProjectIntegration } from '../../definitions';
 import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException, RunnerException } from '../../lib/errors';
@@ -127,6 +127,23 @@ export abstract class CapacitorCommand extends Command {
         await this._runCapacitor(['add', platform]);
       }
     }
+  }
+
+  protected createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicCapacitorOptions {
+    const separatedArgs = options['--'];
+    const verbose = !!options['verbose'];
+    const conf = this.getCapacitorConfig();
+    const server = conf.get('server');
+
+    return {
+      '--': separatedArgs ? separatedArgs : [],
+      appId: conf.get('appId'),
+      appName: conf.get('appName'),
+      server: {
+        url: server?.url,
+      },
+      verbose,
+    };
   }
 
   private async promptToInstallCapacitor(): Promise<boolean> {

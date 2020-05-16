@@ -46,7 +46,7 @@ export class DeployCommand extends Command {
     const dashUrl = this.env.config.getDashUrl();
 
     return {
-      name: 'build',
+      name: 'deploy',
       type: 'project',
       summary: 'Deploys a binary to a destination, such as an app store using Appflow',
       description: `

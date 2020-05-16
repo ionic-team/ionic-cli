@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.1...@ionic/v1-toolkit@3.2.2) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
 ## [3.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.0...@ionic/v1-toolkit@3.2.1) (2020-05-06)
 
 **Note:** Version bump only for package @ionic/v1-toolkit

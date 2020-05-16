@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.14](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.13...cli-scripts@2.1.14) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
+## [2.1.13](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.12...cli-scripts@2.1.13) (2020-05-11)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
 ## [2.1.12](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.11...cli-scripts@2.1.12) (2020-05-06)
 
 **Note:** Version bump only for package cli-scripts
