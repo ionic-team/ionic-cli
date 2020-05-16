@@ -59,8 +59,7 @@ export abstract class OAuth2Flow {
     const authorizationParams = this.generateAuthorizationParameters(challenge);
     const authorizationUrl = `${this.authorizationUrl}?${qs.stringify(authorizationParams)}`;
 
-    // don't doubly encode params, since `stringify` already did it
-    await openUrl(authorizationUrl, { encode: false });
+    await openUrl(authorizationUrl);
 
     const authorizationCode = await this.getAuthorizationCode();
     const token = await this.getAccessToken(authorizationCode, verifier);
