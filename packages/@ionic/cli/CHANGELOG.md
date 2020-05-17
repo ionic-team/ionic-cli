@@ -3,6 +3,19 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.1...@ionic/cli@6.9.2) (2020-05-17)
+
+
+### Bug Fixes
+
+* **link:** fix GitHub OAuth URL on WSL ([#4442](https://github.com/ionic-team/ionic-cli/issues/4442)) ([93c5bf5](https://github.com/ionic-team/ionic-cli/commit/93c5bf5ba0cc0549a4bf61f534ee30d465bfe35e))
+* **package:** fix name of the package deploy name ([#4435](https://github.com/ionic-team/ionic-cli/issues/4435)) ([6f6f9d7](https://github.com/ionic-team/ionic-cli/commit/6f6f9d7540fc064b3ffcbc05b56441f9b5c2efeb))
+* **start:** do not prompt for project type when cloning ([#4427](https://github.com/ionic-team/ionic-cli/issues/4427)) ([4ff1622](https://github.com/ionic-team/ionic-cli/commit/4ff162281e327b4740e92513925b6d37b9dfb71e))
+
+
+
+
+
 ## [6.9.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.0...@ionic/cli@6.9.1) (2020-05-12)
 
 
