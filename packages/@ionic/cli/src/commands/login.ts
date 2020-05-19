@@ -43,14 +43,14 @@ If you are having issues logging in, please get in touch with our Support[^suppo
         {
           name: 'email',
           summary: 'Your email address',
-          validators: [validators.required, validators.email],
+          validators: process.argv.includes('--web') ? [] : [validators.required, validators.email],
           private: true,
         },
         {
           name: 'password',
           summary: 'Your password',
           // this is a hack since sso is hidden, no need to make password not required for it
-          validators: process.argv.includes('--sso') ? [] : [validators.required],
+          validators: process.argv.includes('--sso') || process.argv.includes('--web') ? [] : [validators.required],
           private: true,
         },
       ],
@@ -61,12 +61,19 @@ If you are having issues logging in, please get in touch with our Support[^suppo
           summary: 'Open a window to log in with the SSO provider associated with your email',
           groups: [MetadataGroup.HIDDEN],
         },
+        {
+          name: 'web',
+          type: Boolean,
+          summary: 'Open a window to log in using the Ionic Website',
+          groups: [MetadataGroup.ADVANCED],
+        },
       ],
     };
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const sso = !!options['sso'];
+    const web = !!options['web'];
 
     if (options['email'] || options['password']) {
       throw new FatalException(
@@ -75,8 +82,8 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       );
     }
 
-    const askForEmail = !inputs[0];
-    const askForPassword = !sso && !inputs[1];
+    const askForEmail = !web && !inputs[0];
+    const askForPassword = !web && !sso && !inputs[1];
 
     if (this.env.session.isLoggedIn()) {
       const email = this.env.config.get('user.email');
@@ -151,6 +158,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, password ] = inputs;
     const sso = !!options['sso'];
+    const web = !!options['web'];
 
     if (this.env.session.isLoggedIn()) {
       await this.env.session.logout();
@@ -165,6 +173,14 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       this.env.log.nl();
 
       await this.env.session.ssoLogin(email);
+    } else if (web) {
+      this.env.log.info(
+        `Ionic Web Login\n` +
+        `During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`
+      );
+      this.env.log.nl();
+
+      await this.env.session.webLogin();
     } else {
       await this.env.session.login(email, password);
     }

@@ -133,6 +133,13 @@ export class ProSession extends BaseSession implements ISession {
       throw e;
     }
   }
+
+  async webLogin(): Promise<void> {
+    const { OpenIDFlow } = await import('./login-web');
+    const flow = new OpenIDFlow({ audience: this.e.config.get('urls.api') }, this.e);
+    const token = await flow.run();
+    await this.tokenLogin(token);
+  }
 }
 
 export async function promptToLogin(env: IonicEnvironment): Promise<void> {

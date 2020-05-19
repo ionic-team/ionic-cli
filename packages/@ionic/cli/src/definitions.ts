@@ -387,6 +387,7 @@ export interface ISession {
   login(email: string, password: string): Promise<void>;
   ssoLogin(email: string): Promise<void>;
   tokenLogin(token: string): Promise<void>;
+  webLogin(): Promise<void>;
   logout(): Promise<void>;
 
   isLoggedIn(): boolean;
@@ -509,10 +510,16 @@ export interface APIResponsePageTokenMeta extends APIResponseMeta {
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
+export enum ContentTypes {
+  json = 'application/json',
+  formUrlencoded = 'application/x-www-form-urlencoded',
+  html = 'text/html',
+}
+
 export interface IClient {
   config: IConfig;
 
-  make(method: HttpMethod, path: string): Promise<{ req: SuperAgentRequest; }>;
+  make(method: HttpMethod, path: string, contentType?: ContentTypes): Promise<{ req: SuperAgentRequest; }>;
   do(req: SuperAgentRequest): Promise<APIResponseSuccess>;
   paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T>;
 }

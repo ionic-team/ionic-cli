@@ -2,7 +2,25 @@ import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
-import { APIResponse, APIResponsePageTokenMeta, APIResponseSuccess, HttpMethod, IClient, IConfig, IPaginator, PagePaginatorState, PaginateArgs, PaginatorDeps, PaginatorGuard, PaginatorRequestGenerator, ResourceClientRequestModifiers, Response, SuperAgentError, TokenPaginatorState } from '../definitions';
+import {
+  APIResponse,
+  APIResponsePageTokenMeta,
+  APIResponseSuccess,
+  ContentTypes,
+  HttpMethod,
+  IClient,
+  IConfig,
+  IPaginator,
+  PagePaginatorState,
+  PaginateArgs,
+  PaginatorDeps,
+  PaginatorGuard,
+  PaginatorRequestGenerator,
+  ResourceClientRequestModifiers,
+  Response,
+  SuperAgentError,
+  TokenPaginatorState
+} from '../definitions';
 import { isAPIResponseError, isAPIResponseSuccess } from '../guards';
 
 import { failure, strong } from './color';
@@ -13,7 +31,6 @@ export type SuperAgentRequest = import('superagent').SuperAgentRequest;
 export type SuperAgentResponse = import('superagent').Response;
 
 const FORMAT_ERROR_BODY_MAX_LENGTH = 1000;
-export const CONTENT_TYPE_JSON = 'application/json';
 
 export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
@@ -21,13 +38,13 @@ export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 export class Client implements IClient {
   constructor(public config: IConfig) {}
 
-  async make(method: HttpMethod, path: string): Promise<{ req: SuperAgentRequest; }> {
+  async make(method: HttpMethod, path: string, contentType: ContentTypes = ContentTypes.json): Promise<{ req: SuperAgentRequest; }> {
     const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${this.config.getAPIUrl()}${path}`;
     const { req } = await createRequest(method, url, this.config.getHTTPConfig());
 
     req
-      .set('Content-Type', CONTENT_TYPE_JSON)
-      .set('Accept', CONTENT_TYPE_JSON);
+      .set('Content-Type', contentType)
+      .set('Accept', ContentTypes.json);
 
     return { req };
   }
@@ -212,7 +229,7 @@ export function transformAPIResponse(r: SuperAgentResponse): APIResponse {
     r.body = { meta: { status: 204, version: '', request_id: '' } };
   }
 
-  if (r.status !== 204 && r.type !== CONTENT_TYPE_JSON) {
+  if (r.status !== 204 && r.type !== ContentTypes.json) {
     throw ERROR_UNKNOWN_CONTENT_TYPE;
   }
 

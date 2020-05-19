@@ -6,7 +6,7 @@ import * as path from 'path';
 import * as qs from 'querystring';
 
 import { ASSETS_DIRECTORY } from '../constants';
-import { IClient } from '../definitions';
+import { ContentTypes, IClient } from '../definitions';
 
 import { openUrl } from './open';
 
@@ -27,6 +27,7 @@ export interface OAuth2FlowOptions {
   readonly clientId: string;
   readonly redirectHost?: string;
   readonly redirectPort?: number;
+  readonly accessTokenRequestContentType?: ContentTypes;
 }
 
 export interface OAuth2FlowDeps {
@@ -39,13 +40,15 @@ export abstract class OAuth2Flow {
   readonly clientId: string;
   readonly redirectHost: string;
   readonly redirectPort: number;
+  readonly accessTokenRequestContentType: ContentTypes;
 
-  constructor({ authorizationUrl, tokenUrl, clientId, redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
+  constructor({ authorizationUrl, tokenUrl, clientId, redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT, accessTokenRequestContentType = ContentTypes.json }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
     this.authorizationUrl = authorizationUrl;
     this.tokenUrl = tokenUrl;
     this.clientId = clientId;
     this.redirectHost = redirectHost;
     this.redirectPort = redirectPort;
+    this.accessTokenRequestContentType = accessTokenRequestContentType;
   }
 
   get redirectUrl(): string {
@@ -90,7 +93,7 @@ export abstract class OAuth2Flow {
           const params = qs.parse(req.url.substring(req.url.indexOf('?') + 1));
 
           if (params.code) {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.writeHead(200, { 'Content-Type': ContentTypes.html });
             res.end(successHtml);
             req.socket.destroy();
             server.close();
@@ -108,8 +111,7 @@ export abstract class OAuth2Flow {
 
   protected async getAccessToken(authorizationCode: string, verifier: string): Promise<string> {
     const params = this.generateTokenParameters(authorizationCode, verifier);
-    const { req } = await this.e.client.make('POST', this.tokenUrl);
-
+    const { req } = await this.e.client.make('POST', this.tokenUrl, this.accessTokenRequestContentType);
     const res = await req.send(params);
 
     return res.body.access_token;
