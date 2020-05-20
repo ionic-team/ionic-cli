@@ -6,7 +6,7 @@ import {
   OAuth2FlowDeps,
   OAuth2FlowOptions,
   TokenParameters
-} from './sso';
+} from './oauth';
 
 const AUTHORIZATION_URL = 'https://staging.ionicframework.com/oauth/authorize';
 const TOKEN_URL = 'https://api-staging.ionicjs.com/oauth/token';
