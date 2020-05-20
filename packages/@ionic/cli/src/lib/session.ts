@@ -95,8 +95,8 @@ export class ProSession extends BaseSession implements ISession {
   }
 
   async ssoLogin(email: string): Promise<void> {
-    const { AuthClient } = await import('./auth');
-    const { Auth0OAuth2Flow } = await import('./sso');
+    const { AuthClient } = await import('./oauth/auth');
+    const { Auth0OAuth2Flow } = await import('./oauth/sso');
 
     const authClient = new AuthClient(this.e);
     const { uuid: connection } = await authClient.connections.load(email);
@@ -135,7 +135,7 @@ export class ProSession extends BaseSession implements ISession {
   }
 
   async webLogin(): Promise<void> {
-    const { OpenIDFlow } = await import('./login-web');
+    const { OpenIDFlow } = await import('./oauth/login-web');
     const flow = new OpenIDFlow({ audience: this.e.config.get('urls.api') }, this.e);
     const token = await flow.run();
     await this.tokenLogin(token);

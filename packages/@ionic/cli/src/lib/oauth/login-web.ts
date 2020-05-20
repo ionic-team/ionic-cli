@@ -1,4 +1,4 @@
-import { ContentTypes } from '../definitions';
+import { ContentTypes } from '../../definitions';
 
 import {
   AuthorizationParameters,

@@ -5,10 +5,9 @@ import * as http from 'http';
 import * as path from 'path';
 import * as qs from 'querystring';
 
-import { ASSETS_DIRECTORY } from '../constants';
-import { ContentTypes, IClient } from '../definitions';
-
-import { openUrl } from './open';
+import { ASSETS_DIRECTORY } from '../../constants';
+import { ContentTypes, IClient } from '../../definitions';
+import { openUrl } from '../open';
 
 const REDIRECT_PORT = 8123;
 const REDIRECT_HOST = 'localhost';
