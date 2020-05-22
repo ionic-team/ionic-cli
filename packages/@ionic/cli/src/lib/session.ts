@@ -122,18 +122,7 @@ export class ProSession extends BaseSession implements ISession {
   }
 
   async ssoLogin(email: string): Promise<void> {
-    const { AuthClient } = await import('./oauth/auth');
-    const { Auth0OAuth2Flow } = await import('./oauth/sso');
-
-    const authClient = new AuthClient(this.e);
-    const { uuid: connection } = await authClient.connections.load(email);
-
-    const flow = new Auth0OAuth2Flow({ audience: this.e.config.get('urls.api'), email, connection }, this.e);
-    const token = await flow.run();
-
-    await this.tokenLogin(token);
-
-    this.e.config.set('org.id', connection);
+    await this.webLogin();
   }
 
   async tokenLogin(token: string): Promise<void> {

@@ -43,7 +43,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
         {
           name: 'email',
           summary: 'Your email address',
-          validators: process.argv.includes('--web') ? [] : [validators.required, validators.email],
+          validators: process.argv.includes('--sso') || process.argv.includes('--web') ? [] : [validators.required, validators.email],
           private: true,
         },
         {
@@ -59,7 +59,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
           name: 'sso',
           type: Boolean,
           summary: 'Open a window to log in with the SSO provider associated with your email',
-          groups: [MetadataGroup.HIDDEN],
+          groups: [MetadataGroup.HIDDEN, MetadataGroup.DEPRECATED],
         },
         {
           name: 'web',
@@ -82,7 +82,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       );
     }
 
-    const askForEmail = !web && !inputs[0];
+    const askForEmail = !web && !sso && !inputs[0];
     const askForPassword = !web && !sso && !inputs[1];
 
     if (this.env.session.isLoggedIn()) {
