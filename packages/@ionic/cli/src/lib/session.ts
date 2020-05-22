@@ -121,7 +121,7 @@ export class ProSession extends BaseSession implements ISession {
     }
   }
 
-  async ssoLogin(email: string): Promise<void> {
+  async ssoLogin(email?: string): Promise<void> {
     await this.webLogin();
   }
 

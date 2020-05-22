@@ -43,14 +43,11 @@ If you are having issues logging in, please get in touch with our Support[^suppo
         {
           name: 'email',
           summary: 'Your email address',
-          validators: process.argv.includes('--sso') || process.argv.includes('--web') ? [] : [validators.required, validators.email],
           private: true,
         },
         {
           name: 'password',
           summary: 'Your password',
-          // this is a hack since sso is hidden, no need to make password not required for it
-          validators: process.argv.includes('--sso') || process.argv.includes('--web') ? [] : [validators.required],
           private: true,
         },
       ],
@@ -61,19 +58,12 @@ If you are having issues logging in, please get in touch with our Support[^suppo
           summary: 'Open a window to log in with the SSO provider associated with your email',
           groups: [MetadataGroup.HIDDEN, MetadataGroup.DEPRECATED],
         },
-        {
-          name: 'web',
-          type: Boolean,
-          summary: 'Open a window to log in using the Ionic Website',
-          groups: [MetadataGroup.ADVANCED],
-        },
       ],
     };
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const sso = !!options['sso'];
-    const web = !!options['web'];
 
     if (options['email'] || options['password']) {
       throw new FatalException(
@@ -82,13 +72,14 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       );
     }
 
-    const askForEmail = !web && !sso && !inputs[0];
-    const askForPassword = !web && !sso && !inputs[1];
+    // ask for password only if the user specifies an email
+    const validateEmail = !!inputs[0];
+    const askForPassword = !sso && inputs[0] && !inputs[1];
 
     if (this.env.session.isLoggedIn()) {
       const email = this.env.config.get('user.email');
 
-      const extra = askForEmail || askForPassword
+      const extra = askForPassword
         ? (this.env.flags.interactive ? `Prompting for new credentials.\n\nUse ${chalk.yellow('Ctrl+C')} to cancel and remain logged in.` : '')
         : 'You will be logged out beforehand.';
 
@@ -112,18 +103,23 @@ If you are having issues logging in, please get in touch with our Support[^suppo
     }
 
     // TODO: combine with promptToLogin ?
-
-    if (askForEmail) {
-      const email = await this.env.prompt({
-        type: 'input',
-        name: 'email',
-        message: 'Email:',
-        validate: v => combine(validators.required, validators.email)(v),
-      });
-
-      inputs[0] = email;
+    if (validateEmail) {
+      const validatedEmail = validators.email(inputs[0]);
+      if (validatedEmail !== true) {
+        this.env.log.warn(`${validatedEmail}. \n Please enter a valid email address.`);
+        if (this.env.flags.interactive) {
+          const email = await this.env.prompt({
+            type: 'input',
+            name: 'email',
+            message: 'Email:',
+            validate: v => combine(validators.required, validators.email)(v),
+          });
+          inputs[0] = email;
+        } else {
+          throw new FatalException('Invalid email');
+        }
+      }
     }
-
     if (askForPassword) {
       if (this.env.flags.interactive) {
         const password = await this.env.prompt({
@@ -158,31 +154,31 @@ If you are having issues logging in, please get in touch with our Support[^suppo
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, password ] = inputs;
     const sso = !!options['sso'];
-    const web = !!options['web'];
 
     if (this.env.session.isLoggedIn()) {
       await this.env.session.logout();
       this.env.config.set('tokens.telemetry', generateUUID());
     }
 
-    if (sso) {
+    if (email && password) {
+      await this.env.session.login(email, password);
+    } else if (sso) {
       this.env.log.info(
-        `Ionic SSO Login\n` +
-        `During this process, a browser window will open to authenticate you with the identity provider for ${input(email)}. Please leave this process running until authentication is complete.`
+        `Ionic SSO Login (DEPRECATED)\n` +
+        `Please run ${input('ionic login')} instead.\n` +
+        `During this process, a browser window will open to authenticate you with the identity provider. Please leave this process running until authentication is complete.`
       );
       this.env.log.nl();
 
       await this.env.session.ssoLogin(email);
-    } else if (web) {
+    } else {
       this.env.log.info(
-        `Ionic Web Login\n` +
+        `Ionic Login\n` +
         `During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`
       );
       this.env.log.nl();
 
       await this.env.session.webLogin();
-    } else {
-      await this.env.session.login(email, password);
     }
 
     this.env.log.ok(success(strong('You are logged in!')));
