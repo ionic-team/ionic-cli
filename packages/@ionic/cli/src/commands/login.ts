@@ -15,19 +15,25 @@ export class LoginCommand extends Command implements CommandPreRun {
       type: 'global',
       summary: 'Log in to Ionic',
       description: `
-Authenticate with Ionic and retrieve a user token, which is stored in the CLI config. The most secure way to log in is running ${input('ionic login')} without arguments, which will prompt you for your credentials.
+Authenticate with Ionic and retrieve a user token, which is stored in the CLI config. The most secure way to log in is running ${input('ionic login')} without arguments, which will open a browser where you can submit your credentials.
 
-If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${input('ionic login')}, then print the token by running the ${input('ionic config get -g tokens.user')} command.
+If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you.
+To retrieve your user token, first use ${input('ionic login <email> <password>')}, then print the token by running the ${input('ionic config get -g tokens.user')} command.
+If you logged in using the more secure ${input('ionic login')}, if you retrieve your token using ${input('ionic config get -g tokens.user')} you will get a short lived token.
 
 ${input('ionic login')} will also accept ${input('password')} through stdin, e.g.: ${input('echo "<password>" | ionic login <email>')}.
 
-If you need to create an Ionic account, use ${input('ionic signup')}.
+If you need to create an Ionic account, use ${input('ionic signup')} or the Ionic Website[^signup].
 
 You can reset your password in the Dashboard[^reset-password].
 
 If you are having issues logging in, please get in touch with our Support[^support-request].
       `,
       footnotes: [
+        {
+          id: 'signup',
+          url: 'https://ionicframework.com/signup',
+        },
         {
           id: 'reset-password',
           url: 'https://dashboard.ionicframework.com/reset-password',
@@ -42,12 +48,12 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       inputs: [
         {
           name: 'email',
-          summary: 'Your email address',
+          summary: '[Optional] Your email address',
           private: true,
         },
         {
           name: 'password',
-          summary: 'Your password',
+          summary: '[Optional] Your password',
           private: true,
         },
       ],
