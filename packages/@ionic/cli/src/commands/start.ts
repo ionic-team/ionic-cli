@@ -273,7 +273,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     if (!inputs[0]) {
       if (appflowId) {
         const { AppClient } = await import('../lib/app');
-        const token = this.env.session.getUserToken();
+        const token = await this.env.session.getUserToken();
         const appClient = new AppClient(token, this.env);
         const tasks = this.createTaskChain();
         tasks.next(`Looking up app ${input(appflowId)}`);

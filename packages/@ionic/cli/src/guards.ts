@@ -1,4 +1,34 @@
-import { APIResponse, APIResponseError, APIResponseSuccess, App, AppAssociation, BitbucketCloudRepoAssociation, BitbucketServerRepoAssociation, CommandPreRun, CordovaAndroidBuildOutputEntry, CordovaPackageJson, ExitCodeException, GithubBranch, GithubRepo, GithubRepoAssociation, ICommand, IMultiProjectConfig, IProjectConfig, IntegrationName, Login, Org, Response, SSHKey, SecurityProfile, Snapshot, StarterManifest, SuperAgentError, TreatableAilment, User } from './definitions';
+import {
+  APIResponse,
+  APIResponseError,
+  APIResponseSuccess,
+  App,
+  AppAssociation,
+  BitbucketCloudRepoAssociation,
+  BitbucketServerRepoAssociation,
+  CommandPreRun,
+  CordovaAndroidBuildOutputEntry,
+  CordovaPackageJson,
+  ExitCodeException,
+  GithubBranch,
+  GithubRepo,
+  GithubRepoAssociation,
+  ICommand,
+  IMultiProjectConfig,
+  IProjectConfig,
+  IntegrationName,
+  Login,
+  OpenIdToken,
+  Org,
+  Response,
+  SSHKey,
+  SecurityProfile,
+  Snapshot,
+  StarterManifest,
+  SuperAgentError,
+  TreatableAilment,
+  User
+} from './definitions';
 import { AuthConnection } from './lib/oauth/auth';
 
 export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova', 'enterprise'];
@@ -169,6 +199,20 @@ export function isOAuthLogin(login: any): login is OAuthLogin {
 
 export function isOAuthLoginResponse(res: any): res is Response<OAuthLogin> {
   return isAPIResponseSuccess(res) && isOAuthLogin(res.data);
+}
+
+export function isOpenIDToken(tokenObj: any): tokenObj is OpenIdToken {
+  return tokenObj
+    && typeof tokenObj.access_token === 'string'
+    && typeof tokenObj.expires_in === 'number'
+    && (tokenObj.id_token ? typeof tokenObj.id_token === 'string' : true)
+    && (tokenObj.refresh_token ? typeof tokenObj.refresh_token === 'string' : true)
+    && tokenObj.scope === 'openid profile email offline_access'
+    && tokenObj.token_type === 'Bearer';
+}
+
+export function isOpenIDTokenExchangeResponse(res: any): res is Response<OpenIdToken> {
+  return res && typeof res.body === 'object' && isOpenIDToken(res.body);
 }
 
 export function isSnapshot(snapshot: any): snapshot is Snapshot {

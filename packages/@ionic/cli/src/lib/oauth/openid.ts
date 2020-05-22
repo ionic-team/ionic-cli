@@ -1,4 +1,7 @@
-import { ContentTypes } from '../../definitions';
+import { Response } from 'superagent';
+
+import { ContentTypes, OpenIdToken } from '../../definitions';
+import { isOpenIDTokenExchangeResponse } from '../../guards';
 
 import {
   AuthorizationParameters,
@@ -18,7 +21,8 @@ export interface OpenIDFlowOptions extends Partial<OAuth2FlowOptions> {
   readonly accessTokenRequestContentType?: ContentTypes;
 }
 
-export class OpenIDFlow extends OAuth2Flow {
+export class OpenIDFlow extends OAuth2Flow<OpenIdToken> {
+  readonly flowName = 'open_id';
   readonly audience: string;
 
   constructor({ audience = API_AUDIENCE, accessTokenRequestContentType = ContentTypes.formUrlencoded, authorizationUrl = AUTHORIZATION_URL, tokenUrl = TOKEN_URL, clientId = CLIENT_ID, ...options }: OpenIDFlowOptions, readonly e: OAuth2FlowDeps) {
@@ -47,5 +51,17 @@ export class OpenIDFlow extends OAuth2Flow {
       code,
       redirect_uri: this.redirectUrl,
     };
+  }
+
+  protected generateRefreshTokenParameters(refreshToken: string): TokenParameters {
+    return {
+      refresh_token: refreshToken,
+      grant_type: 'refresh_token',
+      client_id: this.clientId,
+    };
+  }
+
+  protected checkValidExchangeTokenRes(res: Response): boolean {
+    return isOpenIDTokenExchangeResponse(res);
   }
 }

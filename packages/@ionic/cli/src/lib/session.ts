@@ -21,7 +21,12 @@ export class BaseSession {
     this.e.config.unset('user.id');
     this.e.config.unset('user.email');
     this.e.config.unset('tokens.user');
+    this.e.config.unset('tokens.refresh');
+    this.e.config.unset('tokens.expiresInSeconds');
+    this.e.config.unset('tokens.issuedOn');
+    this.e.config.unset('tokens.flowName');
     this.e.config.set('git.setup', false);
+
   }
 
   isLoggedIn(): boolean {
@@ -40,9 +45,12 @@ export class BaseSession {
 
     return { id: userId };
   }
+}
 
-  getUserToken(): string {
-    const userToken = this.e.config.get('tokens.user');
+export class ProSession extends BaseSession implements ISession {
+
+  async getUserToken(): Promise<string> {
+    let userToken = this.e.config.get('tokens.user');
 
     if (!userToken) {
       throw new SessionException(
@@ -51,11 +59,30 @@ export class BaseSession {
       );
     }
 
+    const tokenIssuedOn = this.e.config.get('tokens.issuedOn');
+    const tokenExpirationSeconds = this.e.config.get('tokens.expiresInSeconds');
+    const refreshToken = this.e.config.get('tokens.refresh');
+    const flowName = this.e.config.get('tokens.flowName');
+
+    // if there is the possibility to refresh the token, try to do it
+    if (tokenIssuedOn && tokenExpirationSeconds && refreshToken && flowName) {
+      if (!this.isTokenValid(tokenIssuedOn, tokenExpirationSeconds)) {
+        userToken = await this.refreshLogin(refreshToken, flowName);
+      }
+    }
+
+    // otherwise simply return the token
     return userToken;
   }
-}
 
-export class ProSession extends BaseSession implements ISession {
+  private isTokenValid(tokenIssuedOn: string, tokenExpirationSeconds: number): boolean {
+    const tokenExpirationMilliSeconds = tokenExpirationSeconds * 1000;
+    // 15 minutes in milliseconds of margin
+    const marginExpiration = 15 * 60 * 1000;
+    const tokenValid = new Date() < new Date(new Date(tokenIssuedOn).getTime() + tokenExpirationMilliSeconds - marginExpiration);
+    return tokenValid;
+  }
+
   async login(email: string, password: string): Promise<void> {
     const { req } = await this.e.client.make('POST', '/login');
     req.send({ email, password, source: 'cli' });
@@ -135,10 +162,39 @@ export class ProSession extends BaseSession implements ISession {
   }
 
   async webLogin(): Promise<void> {
-    const { OpenIDFlow } = await import('./oauth/login-web');
+    const { OpenIDFlow } = await import('./oauth/openid');
     const flow = new OpenIDFlow({ audience: this.e.config.get('urls.api') }, this.e);
     const token = await flow.run();
-    await this.tokenLogin(token);
+
+    await this.tokenLogin(token.access_token);
+
+    this.e.config.set('tokens.refresh', token.refresh_token);
+    this.e.config.set('tokens.expiresInSeconds', token.expires_in);
+    this.e.config.set('tokens.issuedOn', (new Date()).toJSON());
+    this.e.config.set('tokens.flowName', flow.flowName);
+  }
+
+  async refreshLogin(refreshToken: string, flowName: string): Promise<string> {
+    let oauthflow;
+    // having a generic way to access the right refresh token flow
+    switch (flowName) {
+      case 'open_id':
+        const { OpenIDFlow } = await import('./oauth/openid');
+        oauthflow = new OpenIDFlow({ audience: this.e.config.get('urls.api') }, this.e);
+        break;
+      default:
+        oauthflow = undefined;
+    }
+    if (!oauthflow) {
+      throw new FatalException('Token cannot be refreshed');
+    }
+
+    const token = await oauthflow.exchangeRefreshToken(refreshToken);
+    await this.tokenLogin(token.access_token);
+    this.e.config.set('tokens.expiresInSeconds', token.expires_in);
+    this.e.config.set('tokens.issuedOn', (new Date()).toJSON());
+
+    return token.access_token;
   }
 }
 

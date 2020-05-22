@@ -230,13 +230,13 @@ If you are having issues linking, please get in touch with our Support[^support-
 
   private async getAppClient() {
     const { AppClient } = await import('../lib/app');
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     return new AppClient(token, this.env);
   }
 
   private async getUserClient() {
     const { UserClient } = await import('../lib/user');
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     return new UserClient(token, this.env);
   }
 

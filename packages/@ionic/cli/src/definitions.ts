@@ -233,6 +233,15 @@ export interface OAuthIdentityDetails {
   html_url: string;
 }
 
+export interface OpenIdToken {
+  access_token: string;
+  expires_in: number;
+  id_token?: string;
+  refresh_token?: string;
+  scope: 'openid profile email offline_access';
+  token_type: 'Bearer';
+}
+
 export interface Snapshot {
   id: string;
   sha: string;
@@ -392,7 +401,7 @@ export interface ISession {
 
   isLoggedIn(): boolean;
   getUser(): { id: number; };
-  getUserToken(): string;
+  getUserToken(): Promise<string>;
 }
 
 export interface IShellSpawnOptions extends SpawnOptions {
@@ -453,6 +462,10 @@ export interface ConfigFile {
   'user.email'?: string;
   'tokens.user'?: string;
   'tokens.telemetry'?: string;
+  'tokens.refresh'?: string;
+  'tokens.issuedOn'?: string;
+  'tokens.expiresInSeconds'?: number;
+  'tokens.flowName'?: string;
 
   // Features
   'features.ssl-commands'?: boolean;

@@ -1,3 +1,5 @@
+import { Response } from 'superagent';
+
 import {
   AuthorizationParameters,
   OAuth2Flow,
@@ -17,7 +19,8 @@ export interface Auth0OAuth2FlowOptions extends Partial<OAuth2FlowOptions> {
   readonly audience?: string;
 }
 
-export class Auth0OAuth2Flow extends OAuth2Flow {
+export class Auth0OAuth2Flow extends OAuth2Flow<any> {
+  readonly flowName = 'sso';
   readonly email: string;
   readonly audience: string;
   readonly connection: string;
@@ -51,4 +54,13 @@ export class Auth0OAuth2Flow extends OAuth2Flow {
       redirect_uri: this.redirectUrl,
     };
   }
+
+  protected generateRefreshTokenParameters(refreshToken: string): TokenParameters {
+    return {};
+  }
+
+  protected checkValidExchangeTokenRes(res: Response): boolean {
+    return true;
+  }
+
 }

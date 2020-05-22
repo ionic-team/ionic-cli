@@ -213,7 +213,7 @@ This can be used only together with build type ${input('release')} for Android a
       throw new FatalException(`Cannot run ${input('ionic package build')} outside a project directory.`);
     }
 
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     const appflowId = await this.project.requireAppflowId();
     const [ platform, buildType ] = inputs;
 

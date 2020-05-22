@@ -45,7 +45,7 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
       throw new FatalException(`Cannot run ${input('ionic monitoring syncmaps')} outside a project directory.`);
     }
 
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     const appflowId = await this.project.requireAppflowId();
 
     const [ snapshotId ] = inputs;

@@ -4,9 +4,12 @@ import * as crypto from 'crypto';
 import * as http from 'http';
 import * as path from 'path';
 import * as qs from 'querystring';
+import { Response } from 'superagent';
 
 import { ASSETS_DIRECTORY } from '../../constants';
 import { ContentTypes, IClient } from '../../definitions';
+import { FatalException } from '../errors';
+import { formatResponseError } from '../http';
 import { openUrl } from '../open';
 
 const REDIRECT_PORT = 8123;
@@ -33,7 +36,8 @@ export interface OAuth2FlowDeps {
   readonly client: IClient;
 }
 
-export abstract class OAuth2Flow {
+export abstract class OAuth2Flow<T> {
+  abstract readonly flowName: string;
   readonly authorizationUrl: string;
   readonly tokenUrl: string;
   readonly clientId: string;
@@ -54,7 +58,7 @@ export abstract class OAuth2Flow {
     return `http://${this.redirectHost}:${this.redirectPort}`;
   }
 
-  async run(): Promise<string> {
+  async run(): Promise<T> {
     const verifier = this.generateVerifier();
     const challenge = this.generateChallenge(verifier);
 
@@ -64,13 +68,35 @@ export abstract class OAuth2Flow {
     await openUrl(authorizationUrl);
 
     const authorizationCode = await this.getAuthorizationCode();
-    const token = await this.getAccessToken(authorizationCode, verifier);
+    const token = await this.exchangeAuthForAccessToken(authorizationCode, verifier);
 
     return token;
   }
 
+  async exchangeRefreshToken(refreshToken: string): Promise<T> {
+    const params = this.generateRefreshTokenParameters(refreshToken);
+    const { req } = await this.e.client.make('POST', this.tokenUrl, this.accessTokenRequestContentType);
+
+    const res = await req.send(params);
+
+    // check the response status code first here
+    if (!res || !res.body || !res.status || res.status < 200 || res.status >= 300) {
+      throw new FatalException(
+        'API request was to refresh token was not successful.\n' +
+        formatResponseError(req, res.status)
+      );
+    }
+
+    if (!this.checkValidExchangeTokenRes(res)) {
+      throw new FatalException('API request was successful, but the refreshed token was unrecognized.\n');
+    }
+    return res.body;
+  }
+
   protected abstract generateAuthorizationParameters(challenge: string): AuthorizationParameters;
   protected abstract generateTokenParameters(authorizationCode: string, verifier: string): TokenParameters;
+  protected abstract generateRefreshTokenParameters(refreshToken: string): TokenParameters;
+  protected abstract checkValidExchangeTokenRes(res: Response): boolean;
 
   protected async getSuccessHtml(): Promise<string> {
     const p = path.resolve(ASSETS_DIRECTORY, 'sso', 'success', 'index.html');
@@ -108,12 +134,18 @@ export abstract class OAuth2Flow {
     });
   }
 
-  protected async getAccessToken(authorizationCode: string, verifier: string): Promise<string> {
+  protected async exchangeAuthForAccessToken(authorizationCode: string, verifier: string): Promise<T> {
     const params = this.generateTokenParameters(authorizationCode, verifier);
     const { req } = await this.e.client.make('POST', this.tokenUrl, this.accessTokenRequestContentType);
-    const res = await req.send(params);
 
-    return res.body.access_token;
+    const res = await req.send(params);
+    if (!this.checkValidExchangeTokenRes(res)) {
+      throw new FatalException(
+        'API request was successful, but the response format was unrecognized.\n' +
+        formatResponseError(req, res.status)
+      );
+    }
+    return res.body;
   }
 
   protected generateVerifier(): string {
