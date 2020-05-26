@@ -184,7 +184,18 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       );
       this.env.log.nl();
 
-      await this.env.session.webLogin();
+      const login = await this.env.prompt({
+        type: 'confirm',
+        name: 'continue',
+        message: 'Open the browser to login to your Ionic account?',
+        default: true,
+      });
+
+      if (login) {
+        await this.env.session.webLogin();
+      } else {
+        return ;
+      }
     }
 
     this.env.log.ok(success(strong('You are logged in!')));

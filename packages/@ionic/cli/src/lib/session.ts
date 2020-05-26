@@ -1,5 +1,3 @@
-import { combine } from '@ionic/cli-framework';
-
 import { IClient, IConfig, ISession, IonicEnvironment } from '../definitions';
 import { isLoginResponse, isSuperAgentError } from '../guards';
 
@@ -188,30 +186,22 @@ export class ProSession extends BaseSession implements ISession {
 }
 
 export async function promptToLogin(env: IonicEnvironment): Promise<void> {
-  const { validators } = await import('@ionic/cli-framework');
-
   env.log.nl();
   env.log.msg(
     `Log in to your Ionic account!\n` +
     `If you don't have one yet, create yours by running: ${input(`ionic signup`)}\n`
   );
 
-  const email = await env.prompt({
-    type: 'input',
-    name: 'email',
-    message: 'Email:',
-    validate: v => combine(validators.required, validators.email)(v),
+  const login = await env.prompt({
+    type: 'confirm',
+    name: 'login',
+    message: 'Open the browser to login to your Ionic account?',
+    default: true,
   });
 
-  const password = await env.prompt({
-    type: 'password',
-    name: 'password',
-    message: 'Password:',
-    mask: '*',
-    validate: v => validators.required(v),
-  });
-
-  await env.session.login(email, password);
+  if (login) {
+    await env.session.webLogin();
+  }
 }
 
 export async function promptToSignup(env: IonicEnvironment): Promise<void> {
