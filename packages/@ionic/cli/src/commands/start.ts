@@ -257,17 +257,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       return;
     }
 
-    const cloned = isValidURL(inputs[1]);
-
-    if (cloned) {
-      if (!options['git']) {
-        this.env.log.warn(`The ${input('--no-git')} option has no effect when cloning apps. Git must be used.`);
-      }
-
-      options['git'] = true;
-    }
-
-    const projectType = cloned ? 'custom' : options['type'] ? String(options['type']) : await this.getProjectType();
+    const projectType = isValidURL(inputs[1]) ? 'custom' : options['type'] ? String(options['type']) : await this.getProjectType();
 
     if (options['cordova']) {
       const { checkForUnsupportedProject } = await import('../lib/integrations/cordova/utils');
@@ -353,6 +343,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       inputs[1] = starterTemplate.repo;
     }
 
+    const cloned = isValidURL(inputs[1]);
+
     if (this.project && this.project.details.context === 'app') {
       const confirm = await this.env.prompt({
         type: 'confirm',
@@ -368,6 +360,14 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     }
 
     await this.validateProjectType(projectType);
+
+    if (cloned) {
+      if (!options['git']) {
+        this.env.log.warn(`The ${input('--no-git')} option has no effect when cloning apps. Git must be used.`);
+      }
+
+      options['git'] = true;
+    }
 
     if (options['v1'] || options['v2']) {
       throw new FatalException(
