@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.9.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.2...@ionic/cli@6.9.3) (2020-05-27)
+
+
+### Bug Fixes
+
+* **start:** fix issue with starting the react conf app ([daf1f72](https://github.com/ionic-team/ionic-cli/commit/daf1f72372ca3966c57c7e32adc38001cf3a5fdb))
+
+
+
+
+
 ## [6.9.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.1...@ionic/cli@6.9.2) (2020-05-17)
 
 
