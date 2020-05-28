@@ -168,21 +168,20 @@ If you are having issues logging in, please get in touch with our Support[^suppo
 
     if (email && password) {
       await this.env.session.login(email, password);
-    } else if (sso) {
-      this.env.log.info(
-        `Ionic SSO Login (DEPRECATED)\n` +
-        `Please run ${input('ionic login')} instead.\n` +
-        `During this process, a browser window will open to authenticate you with the identity provider. Please leave this process running until authentication is complete.`
-      );
-      this.env.log.nl();
-
-      await this.env.session.ssoLogin(email);
     } else {
-      this.env.log.info(
-        `Ionic Login\n` +
-        `During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`
-      );
-      this.env.log.nl();
+      if (sso) {
+        this.env.log.warn(
+          `Ionic SSO Login (DEPRECATED)\n` +
+          `Please run ${input('ionic login')} instead.\n` +
+          `During this process, a browser window will open to authenticate you with the identity provider. Please leave this process running until authentication is complete.`
+        );
+      } else {
+        this.env.log.info(
+          `Ionic Login\n` +
+          `During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`
+        );
+        this.env.log.nl();
+      }
 
       const login = await this.env.prompt({
         type: 'confirm',
@@ -196,6 +195,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       } else {
         return ;
       }
+
     }
 
     this.env.log.ok(success(strong('You are logged in!')));

@@ -150,7 +150,7 @@ export class ProSession extends BaseSession implements ISession {
 
   async webLogin(): Promise<void> {
     const { OpenIDFlow } = await import('./oauth/openid');
-    const flow = new OpenIDFlow({ audience: this.e.config.get('urls.api') }, this.e);
+    const flow = new OpenIDFlow({}, this.e);
     const token = await flow.run();
 
     await this.tokenLogin(token.access_token);
@@ -167,7 +167,7 @@ export class ProSession extends BaseSession implements ISession {
     switch (flowName) {
       case 'open_id':
         const { OpenIDFlow } = await import('./oauth/openid');
-        oauthflow = new OpenIDFlow({ audience: this.e.config.get('urls.api') }, this.e);
+        oauthflow = new OpenIDFlow({}, this.e);
         break;
       default:
         oauthflow = undefined;

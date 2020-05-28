@@ -7,7 +7,7 @@ import * as qs from 'querystring';
 import { Response } from 'superagent';
 
 import { ASSETS_DIRECTORY } from '../../constants';
-import { ContentTypes, IClient } from '../../definitions';
+import { ContentTypes, IClient, IConfig, OAuthServerConfig } from '../../definitions';
 import { FatalException } from '../errors';
 import { formatResponseError } from '../http';
 import { openUrl } from '../open';
@@ -24,9 +24,9 @@ export interface TokenParameters {
 }
 
 export interface OAuth2FlowOptions {
-  readonly authorizationUrl: string;
-  readonly tokenUrl: string;
-  readonly clientId: string;
+  readonly authorizationUrl?: string;
+  readonly tokenUrl?: string;
+  readonly clientId?: string;
   readonly redirectHost?: string;
   readonly redirectPort?: number;
   readonly accessTokenRequestContentType?: ContentTypes;
@@ -34,21 +34,18 @@ export interface OAuth2FlowOptions {
 
 export interface OAuth2FlowDeps {
   readonly client: IClient;
+  readonly config: IConfig;
 }
 
 export abstract class OAuth2Flow<T> {
   abstract readonly flowName: string;
-  readonly authorizationUrl: string;
-  readonly tokenUrl: string;
-  readonly clientId: string;
+  readonly oauthConfig: OAuthServerConfig;
   readonly redirectHost: string;
   readonly redirectPort: number;
   readonly accessTokenRequestContentType: ContentTypes;
 
-  constructor({ authorizationUrl, tokenUrl, clientId, redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT, accessTokenRequestContentType = ContentTypes.json }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
-    this.authorizationUrl = authorizationUrl;
-    this.tokenUrl = tokenUrl;
-    this.clientId = clientId;
+  constructor({ redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT, accessTokenRequestContentType = ContentTypes.json }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
+    this.oauthConfig = this.getAuthConfig();
     this.redirectHost = redirectHost;
     this.redirectPort = redirectPort;
     this.accessTokenRequestContentType = accessTokenRequestContentType;
@@ -63,7 +60,7 @@ export abstract class OAuth2Flow<T> {
     const challenge = this.generateChallenge(verifier);
 
     const authorizationParams = this.generateAuthorizationParameters(challenge);
-    const authorizationUrl = `${this.authorizationUrl}?${qs.stringify(authorizationParams)}`;
+    const authorizationUrl = `${this.oauthConfig.authorizationUrl}?${qs.stringify(authorizationParams)}`;
 
     await openUrl(authorizationUrl);
 
@@ -75,7 +72,7 @@ export abstract class OAuth2Flow<T> {
 
   async exchangeRefreshToken(refreshToken: string): Promise<T> {
     const params = this.generateRefreshTokenParameters(refreshToken);
-    const { req } = await this.e.client.make('POST', this.tokenUrl, this.accessTokenRequestContentType);
+    const { req } = await this.e.client.make('POST', this.oauthConfig.tokenUrl, this.accessTokenRequestContentType);
 
     const res = await req.send(params);
 
@@ -97,6 +94,7 @@ export abstract class OAuth2Flow<T> {
   protected abstract generateTokenParameters(authorizationCode: string, verifier: string): TokenParameters;
   protected abstract generateRefreshTokenParameters(refreshToken: string): TokenParameters;
   protected abstract checkValidExchangeTokenRes(res: Response): boolean;
+  protected abstract getAuthConfig(): OAuthServerConfig;
 
   protected async getSuccessHtml(): Promise<string> {
     const p = path.resolve(ASSETS_DIRECTORY, 'sso', 'success', 'index.html');
@@ -136,7 +134,7 @@ export abstract class OAuth2Flow<T> {
 
   protected async exchangeAuthForAccessToken(authorizationCode: string, verifier: string): Promise<T> {
     const params = this.generateTokenParameters(authorizationCode, verifier);
-    const { req } = await this.e.client.make('POST', this.tokenUrl, this.accessTokenRequestContentType);
+    const { req } = await this.e.client.make('POST', this.oauthConfig.tokenUrl, this.accessTokenRequestContentType);
 
     const res = await req.send(params);
     if (!this.checkValidExchangeTokenRes(res)) {

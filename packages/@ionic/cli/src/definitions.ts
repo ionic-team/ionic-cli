@@ -233,6 +233,13 @@ export interface OAuthIdentityDetails {
   html_url: string;
 }
 
+export interface OAuthServerConfig {
+  authorizationUrl: string;
+  tokenUrl: string;
+  clientId: string;
+  apiAudience: string;
+}
+
 export interface OpenIdToken {
   access_token: string;
   expires_in: number;
@@ -278,6 +285,7 @@ export interface IConfig extends BaseConfig<ConfigFile> {
   getGitHost(): string;
   getGitPort(): number;
   getHTTPConfig(): CreateRequestOptions;
+  getOpenIDOAuthConfig(): OAuthServerConfig;
 }
 
 export interface ProjectPersonalizationDetails {
@@ -466,6 +474,12 @@ export interface ConfigFile {
   'tokens.issuedOn'?: string;
   'tokens.expiresInSeconds'?: number;
   'tokens.flowName'?: string;
+
+  // oauth configs
+  'oauth.openid.authorization_url'?: string;
+  'oauth.openid.token_url'?: string;
+  'oauth.openid.client_id'?: string;
+  'oauth.openid.api_audience'?: string;
 
   // Features
   'features.ssl-commands'?: boolean;
