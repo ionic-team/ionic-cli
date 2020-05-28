@@ -24,9 +24,6 @@ export interface TokenParameters {
 }
 
 export interface OAuth2FlowOptions {
-  readonly authorizationUrl?: string;
-  readonly tokenUrl?: string;
-  readonly clientId?: string;
   readonly redirectHost?: string;
   readonly redirectPort?: number;
   readonly accessTokenRequestContentType?: ContentTypes;
