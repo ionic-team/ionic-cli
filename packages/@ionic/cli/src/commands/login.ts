@@ -48,12 +48,12 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       inputs: [
         {
           name: 'email',
-          summary: '[Optional] Your email address',
+          summary: 'Your email address',
           private: true,
         },
         {
           name: 'password',
-          summary: '[Optional] Your password',
+          summary: 'Your password',
           private: true,
         },
       ],
