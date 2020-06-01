@@ -4,7 +4,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   CommandMetadata as FrameworkCommandMetadata,
-  CommandMetadataInput,
+  CommandMetadataInput as FrameworkCommandMetadataInput,
   CommandMetadataOption as FrameworkCommandMetadataOption,
   HydratedCommandMetadata as FrameworkHydratedCommandMetadata,
   ICommand as FrameworkCommand,
@@ -22,7 +22,6 @@ import * as fs from 'fs';
 export {
   CommandLineInputs,
   CommandLineOptions,
-  CommandMetadataInput,
   NamespaceMetadata,
 } from '@ionic/cli-framework';
 
@@ -361,6 +360,10 @@ export interface IIntegration<T extends ProjectIntegration> {
 
 export interface PackageVersions {
   [key: string]: string;
+}
+
+export interface CommandMetadataInput extends FrameworkCommandMetadataInput {
+  private?: boolean;
 }
 
 export interface CommandMetadataOption extends FrameworkCommandMetadataOption {

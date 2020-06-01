@@ -1,4 +1,4 @@
-import { Footnote, MetadataGroup } from '@ionic/cli-framework';
+import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -149,6 +149,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
         {
           name: 'platform',
           summary: `The platform to run (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
+          validators: [validators.required],
         },
       ],
       options,
@@ -213,7 +214,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
     const [ platform ] = inputs;
 
-    if (options['native-run'] && !SUPPORTED_PLATFORMS.includes(platform)) {
+    if (platform && options['native-run'] && !SUPPORTED_PLATFORMS.includes(platform)) {
       this.env.log.warn(`${input(platform)} is not supported by ${input('native-run')}. Using Cordova to run the app.`);
       options['native-run'] = false;
     }
