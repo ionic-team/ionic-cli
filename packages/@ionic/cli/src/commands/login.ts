@@ -17,9 +17,7 @@ export class LoginCommand extends Command implements CommandPreRun {
       description: `
 Authenticate with Ionic and retrieve a user token, which is stored in the CLI config. The most secure way to log in is running ${input('ionic login')} without arguments, which will open a browser where you can submit your credentials.
 
-If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you.
-To retrieve your user token, first use ${input('ionic login <email> <password>')}, then print the token by running the ${input('ionic config get -g tokens.user')} command.
-If you logged in using the more secure ${input('ionic login')}, if you retrieve your token using ${input('ionic config get -g tokens.user')} you will get a short lived token.
+If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${input('ionic login <email> <password>')} to log in, then use ${input('ionic config get -g tokens.user')} to print the token. (${strong('Note')}: Tokens retrieved from the browser login are short-lived and not recommended for use with ${input('IONIC_TOKEN')}.)
 
 ${input('ionic login')} will also accept ${input('password')} through stdin, e.g.: ${input('echo "<password>" | ionic login <email>')}.
 
@@ -172,7 +170,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       const login = await this.env.prompt({
         type: 'confirm',
         name: 'continue',
-        message: 'Open the browser to login to your Ionic account?',
+        message: 'Open the browser to log in to your Ionic account?',
         default: true,
       });
 
