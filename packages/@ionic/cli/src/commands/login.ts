@@ -164,6 +164,13 @@ If you are having issues logging in, please get in touch with our Support[^suppo
     if (email && password) {
       await this.env.session.login(email, password);
     } else {
+      if (!this.env.flags.interactive) {
+        throw new FatalException(
+          'Refusing to attempt browser login in non-interactive mode.\n' +
+          `If you are attempting to log in, make sure you are using a modern, interactive terminal. Otherwise, you can log in using inline username and password with ${input('ionic login <email> <password>')}. See ${input('ionic login --help')} for more details.`
+        );
+      }
+
       this.env.log.info(`During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`);
       this.env.log.nl();
 
