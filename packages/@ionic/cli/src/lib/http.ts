@@ -6,7 +6,7 @@ import {
   APIResponse,
   APIResponsePageTokenMeta,
   APIResponseSuccess,
-  ContentTypes,
+  ContentType,
   HttpMethod,
   IClient,
   IConfig,
@@ -38,13 +38,13 @@ export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 export class Client implements IClient {
   constructor(public config: IConfig) {}
 
-  async make(method: HttpMethod, path: string, contentType: ContentTypes = ContentTypes.json): Promise<{ req: SuperAgentRequest; }> {
+  async make(method: HttpMethod, path: string, contentType: ContentType = ContentType.JSON): Promise<{ req: SuperAgentRequest; }> {
     const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${this.config.getAPIUrl()}${path}`;
     const { req } = await createRequest(method, url, this.config.getHTTPConfig());
 
     req
       .set('Content-Type', contentType)
-      .set('Accept', ContentTypes.json);
+      .set('Accept', ContentType.JSON);
 
     return { req };
   }
@@ -229,7 +229,7 @@ export function transformAPIResponse(r: SuperAgentResponse): APIResponse {
     r.body = { meta: { status: 204, version: '', request_id: '' } };
   }
 
-  if (r.status !== 204 && r.type !== ContentTypes.json) {
+  if (r.status !== 204 && r.type !== ContentType.JSON) {
     throw ERROR_UNKNOWN_CONTENT_TYPE;
   }
 

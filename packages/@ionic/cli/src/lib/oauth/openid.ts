@@ -1,6 +1,6 @@
 import { Response } from 'superagent';
 
-import { ContentTypes, OAuthServerConfig, OpenIdToken } from '../../definitions';
+import { ContentType, OAuthServerConfig, OpenIdToken } from '../../definitions';
 import { isOpenIDTokenExchangeResponse } from '../../guards';
 
 import {
@@ -12,13 +12,13 @@ import {
 } from './oauth';
 
 export interface OpenIDFlowOptions extends Partial<OAuth2FlowOptions> {
-  readonly accessTokenRequestContentType?: ContentTypes;
+  readonly accessTokenRequestContentType?: ContentType;
 }
 
 export class OpenIDFlow extends OAuth2Flow<OpenIdToken> {
   readonly flowName = 'open_id';
 
-  constructor({ accessTokenRequestContentType = ContentTypes.formUrlencoded, ...options }: OpenIDFlowOptions, readonly e: OAuth2FlowDeps) {
+  constructor({ accessTokenRequestContentType = ContentType.FORM_URLENCODED, ...options }: OpenIDFlowOptions, readonly e: OAuth2FlowDeps) {
     super({ accessTokenRequestContentType, ...options }, e);
   }
 

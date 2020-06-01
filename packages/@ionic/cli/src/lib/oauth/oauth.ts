@@ -7,7 +7,7 @@ import * as qs from 'querystring';
 import { Response } from 'superagent';
 
 import { ASSETS_DIRECTORY } from '../../constants';
-import { ContentTypes, IClient, IConfig, OAuthServerConfig } from '../../definitions';
+import { ContentType, IClient, IConfig, OAuthServerConfig } from '../../definitions';
 import { FatalException } from '../errors';
 import { formatResponseError } from '../http';
 import { openUrl } from '../open';
@@ -26,7 +26,7 @@ export interface TokenParameters {
 export interface OAuth2FlowOptions {
   readonly redirectHost?: string;
   readonly redirectPort?: number;
-  readonly accessTokenRequestContentType?: ContentTypes;
+  readonly accessTokenRequestContentType?: ContentType;
 }
 
 export interface OAuth2FlowDeps {
@@ -39,9 +39,9 @@ export abstract class OAuth2Flow<T> {
   readonly oauthConfig: OAuthServerConfig;
   readonly redirectHost: string;
   readonly redirectPort: number;
-  readonly accessTokenRequestContentType: ContentTypes;
+  readonly accessTokenRequestContentType: ContentType;
 
-  constructor({ redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT, accessTokenRequestContentType = ContentTypes.json }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
+  constructor({ redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT, accessTokenRequestContentType = ContentType.JSON }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
     this.oauthConfig = this.getAuthConfig();
     this.redirectHost = redirectHost;
     this.redirectPort = redirectPort;
@@ -113,7 +113,7 @@ export abstract class OAuth2Flow<T> {
           const params = qs.parse(req.url.substring(req.url.indexOf('?') + 1));
 
           if (params.code) {
-            res.writeHead(200, { 'Content-Type': ContentTypes.html });
+            res.writeHead(200, { 'Content-Type': ContentType.HTML });
             res.end(successHtml);
             req.socket.destroy();
             server.close();

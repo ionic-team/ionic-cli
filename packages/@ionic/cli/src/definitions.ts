@@ -537,16 +537,16 @@ export interface APIResponsePageTokenMeta extends APIResponseMeta {
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
-export enum ContentTypes {
-  json = 'application/json',
-  formUrlencoded = 'application/x-www-form-urlencoded',
-  html = 'text/html',
+export enum ContentType {
+  JSON = 'application/json',
+  FORM_URLENCODED = 'application/x-www-form-urlencoded',
+  HTML = 'text/html',
 }
 
 export interface IClient {
   config: IConfig;
 
-  make(method: HttpMethod, path: string, contentType?: ContentTypes): Promise<{ req: SuperAgentRequest; }>;
+  make(method: HttpMethod, path: string, contentType?: ContentType): Promise<{ req: SuperAgentRequest; }>;
   do(req: SuperAgentRequest): Promise<APIResponseSuccess>;
   paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T>;
 }
