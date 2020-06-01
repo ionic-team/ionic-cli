@@ -156,12 +156,8 @@ If you are having issues logging in, please get in touch with our Support[^suppo
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, password ] = inputs;
 
-    if (this.env.session.isLoggedIn()) {
-      await this.env.session.logout();
-      this.env.config.set('tokens.telemetry', generateUUID());
-    }
-
     if (email && password) {
+      await this.logout();
       await this.env.session.login(email, password);
     } else {
       if (!this.env.flags.interactive) {
@@ -182,6 +178,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       });
 
       if (login) {
+        await this.logout();
         await this.env.session.webLogin();
       } else {
         return ;
@@ -190,5 +187,12 @@ If you are having issues logging in, please get in touch with our Support[^suppo
     }
 
     this.env.log.ok(success(strong('You are logged in!')));
+  }
+
+  async logout() {
+    if (this.env.session.isLoggedIn()) {
+      await this.env.session.logout();
+      this.env.config.set('tokens.telemetry', generateUUID());
+    }
   }
 }
