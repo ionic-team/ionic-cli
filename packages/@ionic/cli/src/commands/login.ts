@@ -1,4 +1,4 @@
-import { MetadataGroup, combine, validators } from '@ionic/cli-framework';
+import { combine, validators } from '@ionic/cli-framework';
 import * as chalk from 'chalk';
 import * as readline from 'readline';
 
@@ -57,20 +57,10 @@ If you are having issues logging in, please get in touch with our Support[^suppo
           private: true,
         },
       ],
-      options: [
-        {
-          name: 'sso',
-          type: Boolean,
-          summary: 'Open a window to log in with the SSO provider associated with your email',
-          groups: [MetadataGroup.HIDDEN, MetadataGroup.DEPRECATED],
-        },
-      ],
     };
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const sso = !!options['sso'];
-
     if (options['email'] || options['password']) {
       throw new FatalException(
         `${input('email')} and ${input('password')} are command arguments, not options. Please try this:\n` +
@@ -78,9 +68,17 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       );
     }
 
+    if (options['sso']) {
+      this.env.log.warn(
+        `The ${strong('--sso')} flag is no longer necessary.\n` +
+        `SSO login has been upgraded to OpenID login, which is now the new default authentication flow of ${input('ionic login')}. Refresh tokens are used to automatically re-authenticate sessions.`
+      );
+      this.env.log.nl();
+    }
+
     // ask for password only if the user specifies an email
     const validateEmail = !!inputs[0];
-    const askForPassword = !sso && inputs[0] && !inputs[1];
+    const askForPassword = inputs[0] && !inputs[1];
 
     if (this.env.session.isLoggedIn()) {
       const email = this.env.config.get('user.email');
@@ -159,7 +157,6 @@ If you are having issues logging in, please get in touch with our Support[^suppo
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ email, password ] = inputs;
-    const sso = !!options['sso'];
 
     if (this.env.session.isLoggedIn()) {
       await this.env.session.logout();
@@ -169,19 +166,8 @@ If you are having issues logging in, please get in touch with our Support[^suppo
     if (email && password) {
       await this.env.session.login(email, password);
     } else {
-      if (sso) {
-        this.env.log.warn(
-          `Ionic SSO Login (DEPRECATED)\n` +
-          `Please run ${input('ionic login')} instead.\n` +
-          `During this process, a browser window will open to authenticate you with the identity provider. Please leave this process running until authentication is complete.`
-        );
-      } else {
-        this.env.log.info(
-          `Ionic Login\n` +
-          `During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`
-        );
-        this.env.log.nl();
-      }
+      this.env.log.info(`During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`);
+      this.env.log.nl();
 
       const login = await this.env.prompt({
         type: 'confirm',
