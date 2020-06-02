@@ -98,7 +98,7 @@ export abstract class OAuth2Flow<T> {
   protected abstract getAuthConfig(): OAuthServerConfig;
 
   protected async getSuccessHtml(): Promise<string> {
-    const p = path.resolve(ASSETS_DIRECTORY, 'sso', 'success', 'index.html');
+    const p = path.resolve(ASSETS_DIRECTORY, 'oauth', 'success', 'index.html');
     const contents = await readFile(p, { encoding: 'utf8' });
 
     return contents;
