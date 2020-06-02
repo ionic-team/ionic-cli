@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.5...@ionic/cli-framework@4.2.0) (2020-06-02)
+
+
+### Features
+
+* **help:** formatBeforeInputSummary and formatAfterInputSummary ([70ac3ab](https://github.com/ionic-team/ionic-cli/commit/70ac3ab633dc7dd65a2ac344c81a01f7914597b8))
+
+
+
+
+
 ## [4.1.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.4...@ionic/cli-framework@4.1.5) (2020-05-12)
 
 

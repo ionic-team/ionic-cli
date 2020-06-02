@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.10.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.3...@ionic/cli@6.10.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* **cordova:** platform is a required input ([1bd3087](https://github.com/ionic-team/ionic-cli/commit/1bd30874f46d89248193c959dd8d769dd99503cf))
+
+
+### Features
+
+* **login:** default to browser login ([#4451](https://github.com/ionic-team/ionic-cli/issues/4451)) ([0738abd](https://github.com/ionic-team/ionic-cli/commit/0738abd4123b6b5e078cd7ff2f76ed1a26474cf0))
+
+
+
+
+
 ## [6.9.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.2...@ionic/cli@6.9.3) (2020-05-27)
 
 
