@@ -4,9 +4,27 @@
     <meta charset="utf-8"/>
     <title>Success</title>
     <style>
-    @font-face {font-family: 'AvenirNextLTPro-Regular';src: url('https://code.ionicframework.com/assets/fonts/28882F_0_0.eot');src: url('https://code.ionicframework.com/assets/fonts/28882F_0_0.eot?#iefix') format('embedded-opentype'),url('https://code.ionicframework.com/assets/fonts/28882F_0_0.woff') format('woff'),url('https://code.ionicframework.com/assets/fonts/28882F_0_0.ttf') format('truetype');}
-    @font-face {font-family: 'AvenirNextLTPro-Medium';src: url('https://code.ionicframework.com/assets/fonts/28882F_1_0.eot');src: url('https://code.ionicframework.com/assets/fonts/28882F_1_0.eot?#iefix') format('embedded-opentype'),url('https://code.ionicframework.com/assets/fonts/28882F_1_0.woff') format('woff'),url('https://code.ionicframework.com/assets/fonts/28882F_1_0.ttf') format('truetype');}
-    @font-face {font-family: 'AvenirNextLTPro-UltLt';src: url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.eot');src: url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.eot?#iefix') format('embedded-opentype'),url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.woff') format('woff'),url('https://code.ionicframework.com/assets/fonts/29CC36_0_0.ttf') format('truetype');}
+    @font-face {
+      font-family: Eina;
+      font-display: swap;
+      src: url(https://ionicframework.com/fonts/eina/eina-01-bold.woff2) format("woff2"),
+        url(https://ionicframework.com/fonts/eina/eina-01-bold.woff) format("woff"),
+        url(https://ionicframework.com/fonts/eina/eina-01-bold.ttf) format("ttf");
+      font-weight: 700;
+      unicode-range: U+000-5FF;
+    }
+
+    @font-face {
+      font-family: Inter;
+      font-display: swap;
+      font-style: normal;
+      font-weight: 400;
+      unicode-range: U+000-5FF;
+      src: local("Inter Regular"),
+        url(https://code.ionicframework.com/assets/fonts/inter/Inter-variable-ASCII-subset.woff2) format("woff2-variations"),
+        url(https://code.ionicframework.com/assets/fonts/inter/Inter-Regular.woff2) format("woff2"),
+        url(https://code.ionicframework.com/assets/fonts/inter/Inter-Regular.woff) format("woff");
+    }
 
     *, *::before, *::after {
       box-sizing: border-box;
@@ -20,32 +38,66 @@
 
     body {
       display: flex;
-      background-color: #242a31;
-      color: #a2a9b4;
-      font-family: 'AvenirNextLTPro-Regular', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+      flex-direction: column;
+      background-color: #fff;
+      color: #434f5e; /* Carbon / 70 */
+      font-family: 'Inter', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 56px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
       align-items: center;
       justify-content: center;
     }
 
-    div {
-      background-color: #151a21;
+    main > div {
       text-align: center;
       padding: 2em;
+      margin-top: -76px;
     }
 
     h1, p {
       margin: 0;
+      padding: 0;
+      line-height: 1;
+      font-style: normal;
+    }
+
+    h1 {
+      color: #03060b; /* Carbon / 100 */
+      font-size: 64px;
+      letter-spacing: -0.04em;
+      font-family: 'Eina', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+      font-weight: 700;
     }
 
     p {
       margin-top: 1em;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      font-weight: 400;
     }
     </style>
   </head>
   <body>
-    <div>
-      <h1>You are authenticated.</h1>
-      <p>Please return to your terminal. You may close this window.</p>
-    </div>
+    <header>
+      <a href="https://ionicframework.com">
+        <img src="./logo.svg" width="80" height="28" />
+      </a>
+    </header>
+    <main>
+      <div>
+        <h1>You are authenticated.</h1>
+        <p>Please return to your terminal. You may close this window.</p>
+      </div>
+    </main>
   </body>
 </html>
