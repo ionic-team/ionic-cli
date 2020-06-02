@@ -233,6 +233,22 @@ export interface OAuthIdentityDetails {
   html_url: string;
 }
 
+export interface OAuthServerConfig {
+  authorizationUrl: string;
+  tokenUrl: string;
+  clientId: string;
+  apiAudience: string;
+}
+
+export interface OpenIdToken {
+  access_token: string;
+  expires_in: number;
+  id_token?: string;
+  refresh_token?: string;
+  scope: 'openid profile email offline_access';
+  token_type: 'Bearer';
+}
+
 export interface Snapshot {
   id: string;
   sha: string;
@@ -269,6 +285,7 @@ export interface IConfig extends BaseConfig<ConfigFile> {
   getGitHost(): string;
   getGitPort(): number;
   getHTTPConfig(): CreateRequestOptions;
+  getOpenIDOAuthConfig(): OAuthServerConfig;
 }
 
 export interface ProjectPersonalizationDetails {
@@ -387,11 +404,12 @@ export interface ISession {
   login(email: string, password: string): Promise<void>;
   ssoLogin(email: string): Promise<void>;
   tokenLogin(token: string): Promise<void>;
+  webLogin(): Promise<void>;
   logout(): Promise<void>;
 
   isLoggedIn(): boolean;
   getUser(): { id: number; };
-  getUserToken(): string;
+  getUserToken(): Promise<string>;
 }
 
 export interface IShellSpawnOptions extends SpawnOptions {
@@ -452,6 +470,16 @@ export interface ConfigFile {
   'user.email'?: string;
   'tokens.user'?: string;
   'tokens.telemetry'?: string;
+  'tokens.refresh'?: string;
+  'tokens.issuedOn'?: string;
+  'tokens.expiresInSeconds'?: number;
+  'tokens.flowName'?: string;
+
+  // oauth configs
+  'oauth.openid.authorization_url'?: string;
+  'oauth.openid.token_url'?: string;
+  'oauth.openid.client_id'?: string;
+  'oauth.openid.api_audience'?: string;
 
   // Features
   'features.ssl-commands'?: boolean;
@@ -509,10 +537,16 @@ export interface APIResponsePageTokenMeta extends APIResponseMeta {
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
+export const enum ContentType {
+  JSON = 'application/json',
+  FORM_URLENCODED = 'application/x-www-form-urlencoded',
+  HTML = 'text/html',
+}
+
 export interface IClient {
   config: IConfig;
 
-  make(method: HttpMethod, path: string): Promise<{ req: SuperAgentRequest; }>;
+  make(method: HttpMethod, path: string, contentType?: ContentType): Promise<{ req: SuperAgentRequest; }>;
   do(req: SuperAgentRequest): Promise<APIResponseSuccess>;
   paginate<T extends Response<object[]>>(args: PaginateArgs<T>): IPaginator<T>;
 }

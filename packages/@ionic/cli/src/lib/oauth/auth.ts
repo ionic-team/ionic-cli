@@ -1,7 +1,6 @@
-import { IClient, ResourceClientLoad } from '../definitions';
-import { isAuthConnectionResponse } from '../guards';
-
-import { ResourceClient, createFatalAPIFormat } from './http';
+import { IClient, ResourceClientLoad } from '../../definitions';
+import { isAuthConnectionResponse } from '../../guards';
+import { ResourceClient, createFatalAPIFormat } from '../http';
 
 export interface AuthConnection {
   readonly uuid: string;

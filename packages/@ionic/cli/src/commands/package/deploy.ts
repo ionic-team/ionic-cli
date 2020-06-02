@@ -115,7 +115,7 @@ Both can be retrieved from the Dashboard[^dashboard].
       );
     }
 
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     const appflowId = await this.project.requireAppflowId();
     const [buildId, destination] = inputs;
 

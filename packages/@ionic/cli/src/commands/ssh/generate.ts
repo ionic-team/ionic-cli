@@ -50,7 +50,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     await this.checkForOpenSSH();
 
-    this.env.session.getUserToken();
+    await this.env.session.getUserToken();
 
     if (!options['annotation']) {
       options['annotation'] = this.env.config.get('user.email');

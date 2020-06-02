@@ -33,7 +33,7 @@ ${input('ionic git remote')} will check the local repository for whether or not 
       throw new FatalException(`Cannot run ${input('ionic git remote')} outside a project directory.`);
     }
 
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     const id = await this.project.requireAppflowId();
     const appClient = new AppClient(token, this.env);
     const app = await appClient.load(id);

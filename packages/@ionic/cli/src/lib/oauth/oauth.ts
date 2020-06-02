@@ -4,11 +4,13 @@ import * as crypto from 'crypto';
 import * as http from 'http';
 import * as path from 'path';
 import * as qs from 'querystring';
+import { Response } from 'superagent';
 
-import { ASSETS_DIRECTORY } from '../constants';
-import { IClient } from '../definitions';
-
-import { openUrl } from './open';
+import { ASSETS_DIRECTORY } from '../../constants';
+import { ContentType, IClient, IConfig, OAuthServerConfig } from '../../definitions';
+import { FatalException } from '../errors';
+import { formatResponseError } from '../http';
+import { openUrl } from '../open';
 
 const REDIRECT_PORT = 8123;
 const REDIRECT_HOST = 'localhost';
@@ -22,56 +24,81 @@ export interface TokenParameters {
 }
 
 export interface OAuth2FlowOptions {
-  readonly authorizationUrl: string;
-  readonly tokenUrl: string;
-  readonly clientId: string;
   readonly redirectHost?: string;
   readonly redirectPort?: number;
+  readonly accessTokenRequestContentType?: ContentType;
 }
 
 export interface OAuth2FlowDeps {
   readonly client: IClient;
+  readonly config: IConfig;
 }
 
-export abstract class OAuth2Flow {
-  readonly authorizationUrl: string;
-  readonly tokenUrl: string;
-  readonly clientId: string;
+export abstract class OAuth2Flow<T> {
+  abstract readonly flowName: string;
+  readonly oauthConfig: OAuthServerConfig;
   readonly redirectHost: string;
   readonly redirectPort: number;
+  readonly accessTokenRequestContentType: ContentType;
 
-  constructor({ authorizationUrl, tokenUrl, clientId, redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
-    this.authorizationUrl = authorizationUrl;
-    this.tokenUrl = tokenUrl;
-    this.clientId = clientId;
+  constructor({ redirectHost = REDIRECT_HOST, redirectPort = REDIRECT_PORT, accessTokenRequestContentType = ContentType.JSON }: OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
+    this.oauthConfig = this.getAuthConfig();
     this.redirectHost = redirectHost;
     this.redirectPort = redirectPort;
+    this.accessTokenRequestContentType = accessTokenRequestContentType;
   }
 
   get redirectUrl(): string {
     return `http://${this.redirectHost}:${this.redirectPort}`;
   }
 
-  async run(): Promise<string> {
+  async run(): Promise<T> {
     const verifier = this.generateVerifier();
     const challenge = this.generateChallenge(verifier);
 
     const authorizationParams = this.generateAuthorizationParameters(challenge);
-    const authorizationUrl = `${this.authorizationUrl}?${qs.stringify(authorizationParams)}`;
+    const authorizationUrl = `${this.oauthConfig.authorizationUrl}?${qs.stringify(authorizationParams)}`;
 
     await openUrl(authorizationUrl);
 
     const authorizationCode = await this.getAuthorizationCode();
-    const token = await this.getAccessToken(authorizationCode, verifier);
+    const token = await this.exchangeAuthForAccessToken(authorizationCode, verifier);
 
     return token;
   }
 
+  async exchangeRefreshToken(refreshToken: string): Promise<T> {
+    const params = this.generateRefreshTokenParameters(refreshToken);
+    const { req } = await this.e.client.make('POST', this.oauthConfig.tokenUrl, this.accessTokenRequestContentType);
+
+    const res = await req.send(params);
+
+    // check the response status code first here
+    if (!res.ok) {
+      throw new FatalException(
+        'API request to refresh token was not successful.\n' +
+        'Please try to login again.\n' +
+        formatResponseError(req, res.status)
+      );
+    }
+
+    if (!this.checkValidExchangeTokenRes(res)) {
+      throw new FatalException(
+        'API request was successful, but the refreshed token was unrecognized.\n' +
+        'Please try to login again.\n'
+      );
+    }
+    return res.body;
+  }
+
   protected abstract generateAuthorizationParameters(challenge: string): AuthorizationParameters;
   protected abstract generateTokenParameters(authorizationCode: string, verifier: string): TokenParameters;
+  protected abstract generateRefreshTokenParameters(refreshToken: string): TokenParameters;
+  protected abstract checkValidExchangeTokenRes(res: Response): boolean;
+  protected abstract getAuthConfig(): OAuthServerConfig;
 
   protected async getSuccessHtml(): Promise<string> {
-    const p = path.resolve(ASSETS_DIRECTORY, 'sso', 'success', 'index.html');
+    const p = path.resolve(ASSETS_DIRECTORY, 'oauth', 'success', 'index.html');
     const contents = await readFile(p, { encoding: 'utf8' });
 
     return contents;
@@ -90,7 +117,7 @@ export abstract class OAuth2Flow {
           const params = qs.parse(req.url.substring(req.url.indexOf('?') + 1));
 
           if (params.code) {
-            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.writeHead(200, { 'Content-Type': ContentType.HTML });
             res.end(successHtml);
             req.socket.destroy();
             server.close();
@@ -106,13 +133,18 @@ export abstract class OAuth2Flow {
     });
   }
 
-  protected async getAccessToken(authorizationCode: string, verifier: string): Promise<string> {
+  protected async exchangeAuthForAccessToken(authorizationCode: string, verifier: string): Promise<T> {
     const params = this.generateTokenParameters(authorizationCode, verifier);
-    const { req } = await this.e.client.make('POST', this.tokenUrl);
+    const { req } = await this.e.client.make('POST', this.oauthConfig.tokenUrl, this.accessTokenRequestContentType);
 
     const res = await req.send(params);
-
-    return res.body.access_token;
+    if (!this.checkValidExchangeTokenRes(res)) {
+      throw new FatalException(
+        'API request was successful, but the response format was unrecognized.\n' +
+        formatResponseError(req, res.status)
+      );
+    }
+    return res.body;
   }
 
   protected generateVerifier(): string {
@@ -128,52 +160,5 @@ export abstract class OAuth2Flow {
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=/g, '');
-  }
-}
-
-const AUTHORIZATION_URL = 'https://auth.ionicframework.com/authorize';
-const TOKEN_URL = 'https://auth.ionicframework.com/oauth/token';
-const CLIENT_ID = '0kTF4wm74vppjImr11peCjQo2PIQDS3m';
-const API_AUDIENCE = 'https://api.ionicjs.com';
-
-export interface Auth0OAuth2FlowOptions extends Partial<OAuth2FlowOptions> {
-  readonly email: string;
-  readonly connection: string;
-  readonly audience?: string;
-}
-
-export class Auth0OAuth2Flow extends OAuth2Flow {
-  readonly email: string;
-  readonly audience: string;
-  readonly connection: string;
-
-  constructor({ email, connection, audience = API_AUDIENCE, authorizationUrl = AUTHORIZATION_URL, tokenUrl = TOKEN_URL, clientId = CLIENT_ID, ...options }: Auth0OAuth2FlowOptions, readonly e: OAuth2FlowDeps) {
-    super({ authorizationUrl, tokenUrl, clientId, ...options }, e);
-    this.email = email;
-    this.connection = connection;
-    this.audience = audience;
-  }
-
-  protected generateAuthorizationParameters(challenge: string): AuthorizationParameters {
-    return {
-      audience: this.audience,
-      scope: 'openid profile email offline_access',
-      response_type: 'code',
-      connection: this.connection,
-      client_id: this.clientId,
-      code_challenge: challenge,
-      code_challenge_method: 'S256',
-      redirect_uri: this.redirectUrl,
-    };
-  }
-
-  protected generateTokenParameters(code: string, verifier: string): TokenParameters {
-    return {
-      grant_type: 'authorization_code',
-      client_id: this.clientId,
-      code_verifier: verifier,
-      code,
-      redirect_uri: this.redirectUrl,
-    };
   }
 }

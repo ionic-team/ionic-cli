@@ -115,7 +115,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
   }
 
   protected async registerKey(key: ProductKey, appId: string) {
-    const token = this.e.session.getUserToken();
+    const token = await this.e.session.getUserToken();
     const { req } = await this.e.client.make('PATCH', `/orgs/${key.org.id}/keys/${key.id}`);
     req.set('Authorization', `Bearer ${token}`);
     req.send({ app_id: appId });
@@ -138,7 +138,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
 
   protected async getAppClient() {
     const { AppClient } = await import('../../../lib/app');
-    const token = this.e.session.getUserToken();
+    const token = await this.e.session.getUserToken();
     return new AppClient(token, this.e);
   }
 
@@ -184,7 +184,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
   }
 
   protected async getPK(pk: string): Promise<ProductKey> {
-    const token = this.e.session.getUserToken();
+    const token = await this.e.session.getUserToken();
     const { req } = await this.e.client.make('GET', '/keys/self');
     req.set('Authorization', `Bearer ${token}`).set('Product-Key-ID', pk);
 

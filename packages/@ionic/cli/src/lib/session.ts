@@ -1,5 +1,3 @@
-import { combine } from '@ionic/cli-framework';
-
 import { IClient, IConfig, ISession, IonicEnvironment } from '../definitions';
 import { isLoginResponse, isSuperAgentError } from '../guards';
 
@@ -21,7 +19,12 @@ export class BaseSession {
     this.e.config.unset('user.id');
     this.e.config.unset('user.email');
     this.e.config.unset('tokens.user');
+    this.e.config.unset('tokens.refresh');
+    this.e.config.unset('tokens.expiresInSeconds');
+    this.e.config.unset('tokens.issuedOn');
+    this.e.config.unset('tokens.flowName');
     this.e.config.set('git.setup', false);
+
   }
 
   isLoggedIn(): boolean {
@@ -40,9 +43,12 @@ export class BaseSession {
 
     return { id: userId };
   }
+}
 
-  getUserToken(): string {
-    const userToken = this.e.config.get('tokens.user');
+export class ProSession extends BaseSession implements ISession {
+
+  async getUserToken(): Promise<string> {
+    let userToken = this.e.config.get('tokens.user');
 
     if (!userToken) {
       throw new SessionException(
@@ -51,11 +57,30 @@ export class BaseSession {
       );
     }
 
+    const tokenIssuedOn = this.e.config.get('tokens.issuedOn');
+    const tokenExpirationSeconds = this.e.config.get('tokens.expiresInSeconds');
+    const refreshToken = this.e.config.get('tokens.refresh');
+    const flowName = this.e.config.get('tokens.flowName');
+
+    // if there is the possibility to refresh the token, try to do it
+    if (tokenIssuedOn && tokenExpirationSeconds && refreshToken && flowName) {
+      if (!this.isTokenValid(tokenIssuedOn, tokenExpirationSeconds)) {
+        userToken = await this.refreshLogin(refreshToken, flowName);
+      }
+    }
+
+    // otherwise simply return the token
     return userToken;
   }
-}
 
-export class ProSession extends BaseSession implements ISession {
+  private isTokenValid(tokenIssuedOn: string, tokenExpirationSeconds: number): boolean {
+    const tokenExpirationMilliSeconds = tokenExpirationSeconds * 1000;
+    // 15 minutes in milliseconds of margin
+    const marginExpiration = 15 * 60 * 1000;
+    const tokenValid = new Date() < new Date(new Date(tokenIssuedOn).getTime() + tokenExpirationMilliSeconds - marginExpiration);
+    return tokenValid;
+  }
+
   async login(email: string, password: string): Promise<void> {
     const { req } = await this.e.client.make('POST', '/login');
     req.send({ email, password, source: 'cli' });
@@ -94,19 +119,8 @@ export class ProSession extends BaseSession implements ISession {
     }
   }
 
-  async ssoLogin(email: string): Promise<void> {
-    const { AuthClient } = await import('./auth');
-    const { Auth0OAuth2Flow } = await import('./sso');
-
-    const authClient = new AuthClient(this.e);
-    const { uuid: connection } = await authClient.connections.load(email);
-
-    const flow = new Auth0OAuth2Flow({ audience: this.e.config.get('urls.api'), email, connection }, this.e);
-    const token = await flow.run();
-
-    await this.tokenLogin(token);
-
-    this.e.config.set('org.id', connection);
+  async ssoLogin(email?: string): Promise<void> {
+    await this.webLogin();
   }
 
   async tokenLogin(token: string): Promise<void> {
@@ -133,33 +147,61 @@ export class ProSession extends BaseSession implements ISession {
       throw e;
     }
   }
+
+  async webLogin(): Promise<void> {
+    const { OpenIDFlow } = await import('./oauth/openid');
+    const flow = new OpenIDFlow({}, this.e);
+    const token = await flow.run();
+
+    await this.tokenLogin(token.access_token);
+
+    this.e.config.set('tokens.refresh', token.refresh_token);
+    this.e.config.set('tokens.expiresInSeconds', token.expires_in);
+    this.e.config.set('tokens.issuedOn', (new Date()).toJSON());
+    this.e.config.set('tokens.flowName', flow.flowName);
+  }
+
+  async refreshLogin(refreshToken: string, flowName: string): Promise<string> {
+    let oauthflow;
+    // having a generic way to access the right refresh token flow
+    switch (flowName) {
+      case 'open_id':
+        const { OpenIDFlow } = await import('./oauth/openid');
+        oauthflow = new OpenIDFlow({}, this.e);
+        break;
+      default:
+        oauthflow = undefined;
+    }
+    if (!oauthflow) {
+      throw new FatalException('Token cannot be refreshed');
+    }
+
+    const token = await oauthflow.exchangeRefreshToken(refreshToken);
+    await this.tokenLogin(token.access_token);
+    this.e.config.set('tokens.expiresInSeconds', token.expires_in);
+    this.e.config.set('tokens.issuedOn', (new Date()).toJSON());
+
+    return token.access_token;
+  }
 }
 
 export async function promptToLogin(env: IonicEnvironment): Promise<void> {
-  const { validators } = await import('@ionic/cli-framework');
-
   env.log.nl();
   env.log.msg(
     `Log in to your Ionic account!\n` +
     `If you don't have one yet, create yours by running: ${input(`ionic signup`)}\n`
   );
 
-  const email = await env.prompt({
-    type: 'input',
-    name: 'email',
-    message: 'Email:',
-    validate: v => combine(validators.required, validators.email)(v),
+  const login = await env.prompt({
+    type: 'confirm',
+    name: 'login',
+    message: 'Open the browser to log in to your Ionic account?',
+    default: true,
   });
 
-  const password = await env.prompt({
-    type: 'password',
-    name: 'password',
-    message: 'Password:',
-    mask: '*',
-    validate: v => validators.required(v),
-  });
-
-  await env.session.login(email, password);
+  if (login) {
+    await env.session.webLogin();
+  }
 }
 
 export async function promptToSignup(env: IonicEnvironment): Promise<void> {
