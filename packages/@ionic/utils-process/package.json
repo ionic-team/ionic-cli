@@ -49,6 +49,6 @@
     "rimraf": "^3.0.0",
     "ts-jest": "~25.4.0",
     "tslint": "^5.9.1",
-    "typescript": "~3.8.2"
+    "typescript": "~3.9.3"
   }
 }
