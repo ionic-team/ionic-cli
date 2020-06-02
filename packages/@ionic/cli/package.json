@@ -66,7 +66,7 @@
     "tar": "^6.0.1",
     "through2": "^3.0.0",
     "tslib": "1.11.2",
-    "uuid": "^7.0.1"
+    "uuid": "^8.1.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",
