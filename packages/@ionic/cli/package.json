@@ -83,7 +83,7 @@
     "@types/superagent-proxy": "^2.0.0",
     "@types/tar": "^4.0.0",
     "@types/through2": "^2.0.33",
-    "@types/uuid": "^7.0.0",
+    "@types/uuid": "^8.0.0",
     "jest": "^25.1.0",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",
