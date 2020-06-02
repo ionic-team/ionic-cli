@@ -195,7 +195,7 @@ export async function promptToLogin(env: IonicEnvironment): Promise<void> {
   const login = await env.prompt({
     type: 'confirm',
     name: 'login',
-    message: 'Open the browser to login to your Ionic account?',
+    message: 'Open the browser to log in to your Ionic account?',
     default: true,
   });
 

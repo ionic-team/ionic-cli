@@ -537,7 +537,7 @@ export interface APIResponsePageTokenMeta extends APIResponseMeta {
 
 export type HttpMethod = 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE' | 'PURGE' | 'HEAD' | 'OPTIONS';
 
-export enum ContentType {
+export const enum ContentType {
   JSON = 'application/json',
   FORM_URLENCODED = 'application/x-www-form-urlencoded',
   HTML = 'text/html',

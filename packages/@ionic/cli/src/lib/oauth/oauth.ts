@@ -74,15 +74,19 @@ export abstract class OAuth2Flow<T> {
     const res = await req.send(params);
 
     // check the response status code first here
-    if (!res || !res.body || !res.status || res.status < 200 || res.status >= 300) {
+    if (!res.ok) {
       throw new FatalException(
-        'API request was to refresh token was not successful.\n' +
+        'API request to refresh token was not successful.\n' +
+        'Please try to login again.\n' +
         formatResponseError(req, res.status)
       );
     }
 
     if (!this.checkValidExchangeTokenRes(res)) {
-      throw new FatalException('API request was successful, but the refreshed token was unrecognized.\n');
+      throw new FatalException(
+        'API request was successful, but the refreshed token was unrecognized.\n' +
+        'Please try to login again.\n'
+      );
     }
     return res.body;
   }
