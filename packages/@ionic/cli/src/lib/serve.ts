@@ -104,7 +104,20 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   abstract modifyOpenUrl(url: string, options: T): string;
 
   getPkgManagerServeCLI(): PkgManagerServeCLI {
-    return this.e.config.get('npmClient') === 'npm' ? new NpmServeCLI(this.e) : new YarnServeCLI(this.e);
+    const pkgManagerCLIs = {
+      npm: NpmServeCLI,
+      pnpm: PnpmServeCLI,
+      yarn: YarnServeCLI,
+    };
+
+    const client = this.e.config.get('npmClient');
+    const CLI = pkgManagerCLIs[client];
+
+    if (CLI) {
+      return new CLI(this.e);
+    }
+
+    throw new ServeCLIProgramNotFoundException('Unknown CLI client: ' + client);
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
@@ -617,6 +630,13 @@ export class NpmServeCLI extends PkgManagerServeCLI {
   readonly pkg = 'npm';
   readonly program = 'npm';
   readonly prefix = 'npm';
+}
+
+export class PnpmServeCLI extends PkgManagerServeCLI {
+  readonly name = 'pnpm CLI';
+  readonly pkg = 'pnpm';
+  readonly program = 'pnpm';
+  readonly prefix = 'pnpm';
 }
 
 export class YarnServeCLI extends PkgManagerServeCLI {
