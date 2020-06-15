@@ -2,12 +2,12 @@ import {
   APIResponse,
   APIResponseError,
   APIResponseSuccess,
+  AndroidBuildOutput,
   App,
   AppAssociation,
   BitbucketCloudRepoAssociation,
   BitbucketServerRepoAssociation,
   CommandPreRun,
-  CordovaAndroidBuildOutputEntry,
   CordovaPackageJson,
   ExitCodeException,
   GithubBranch,
@@ -17,6 +17,7 @@ import {
   IMultiProjectConfig,
   IProjectConfig,
   IntegrationName,
+  LegacyAndroidBuildOutputEntry,
   Login,
   OpenIdToken,
   Org,
@@ -55,7 +56,7 @@ export function isCordovaPackageJson(obj: any): obj is CordovaPackageJson {
     typeof obj.cordova.plugins === 'object';
 }
 
-export function isCordovaAndroidBuildOutputFile(obj: any): obj is CordovaAndroidBuildOutputEntry[] {
+export function isLegacyAndroidBuildOutputFile(obj: any): obj is LegacyAndroidBuildOutputEntry[] {
   if (!Array.isArray(obj)) {
     return false;
   }
@@ -68,6 +69,13 @@ export function isCordovaAndroidBuildOutputFile(obj: any): obj is CordovaAndroid
     && typeof obj[0].path === 'string'
     && typeof obj[0].outputType === 'object'
     && typeof obj[0].outputType.type === 'string';
+}
+
+export function isAndroidBuildOutputFile(obj: any): obj is AndroidBuildOutput {
+  return obj &&
+    typeof obj.artifactType === 'object' &&
+    typeof obj.artifactType.type === 'string' &&
+    Array.isArray(obj.elements);
 }
 
 export function isExitCodeException(err: any): err is ExitCodeException {

@@ -29,6 +29,96 @@ describe('@ionic/cli', () => {
 
     });
 
+    describe('getAndroidBuildOutputJson', () => {
+
+      it('should throw for fs error', () => {
+        spyOn(fsSpy, 'readJson').and.callFake(async () => { throw new Error('error') });
+
+        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
+        expect(p).rejects.toThrowError('Could not parse build output file');
+      });
+
+      it('should throw for unrecognized format', () => {
+        spyOn(fsSpy, 'readJson').and.callFake(async () => ({ foo: 'bar' }));
+
+        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
+        expect(p).rejects.toThrowError('Could not parse build output file');
+      });
+
+      it('should parse legacy output.json', () => {
+        const file = [
+          {
+            outputType: {
+              type: 'APK',
+            },
+            path: 'app-debug.apk',
+          },
+        ];
+
+        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+
+        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
+        expect(p).resolves.toEqual(file);
+      });
+
+      it('should parse output.json', () => {
+        const file = {
+          artifactType: {
+            type: 'APK',
+          },
+          elements: [
+            {
+              outputFile: 'app-debug.apk',
+            }
+          ],
+        };
+
+        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+
+        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
+        expect(p).resolves.toEqual(file);
+      });
+
+    });
+
+    describe('getAndroidPackageFilePath', () => {
+
+      it('should get file path from legacy output.json', () => {
+        const file = [
+          {
+            outputType: {
+              type: 'APK',
+            },
+            path: 'foo-debug.apk',
+          },
+        ];
+
+        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+
+        const p = project.getAndroidPackageFilePath('/path/to/proj', { release: false });
+        expect(p).resolves.toEqual('platforms/android/app/build/outputs/apk/debug/foo-debug.apk');
+      });
+
+      it('should get file path from output.json', () => {
+        const file = {
+          artifactType: {
+            type: 'APK',
+          },
+          elements: [
+            {
+              outputFile: 'bar-debug.apk',
+            }
+          ],
+        };
+
+        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+
+        const p = project.getAndroidPackageFilePath('/path/to/proj', { release: false });
+        expect(p).resolves.toEqual('platforms/android/app/build/outputs/apk/debug/bar-debug.apk');
+      });
+
+    });
+
   });
 
 });
