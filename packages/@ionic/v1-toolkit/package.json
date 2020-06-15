@@ -43,7 +43,7 @@
     "debug": "^4.0.0",
     "express": "^4.16.2",
     "gulp": "^3.9.1",
-    "http-proxy-middleware": "^0.20.0",
+    "http-proxy-middleware": "^1.0.4",
     "tiny-lr": "^1.1.0",
     "tslib": "1.11.2",
     "ws": "^7.0.0"
