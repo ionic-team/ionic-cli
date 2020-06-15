@@ -3,8 +3,8 @@ import { readJson, readdirSafe, statSafe } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as path from 'path';
 
-import { CordovaAndroidBuildOutputEntry } from '../../../definitions';
-import { isCordovaAndroidBuildOutputFile } from '../../../guards';
+import { AndroidBuildOutput, LegacyAndroidBuildOutputEntry } from '../../../definitions';
+import { isAndroidBuildOutputFile, isLegacyAndroidBuildOutputFile } from '../../../guards';
 import { input } from '../../color';
 import { FatalException } from '../../errors';
 
@@ -25,11 +25,13 @@ export async function getPlatforms(projectDir: string): Promise<string[]> {
   return platforms;
 }
 
-export async function getAndroidBuildOutputJson(p: string): Promise<CordovaAndroidBuildOutputEntry[]> {
+export async function getAndroidBuildOutputJson(p: string): Promise<LegacyAndroidBuildOutputEntry[] | AndroidBuildOutput> {
   try {
     const json = await readJson(p);
 
-    if (isCordovaAndroidBuildOutputFile(json)) {
+    if (isAndroidBuildOutputFile(json)) {
+      return json;
+    } else if (isLegacyAndroidBuildOutputFile(json)) {
       return json;
     } else {
       debug('Output file does not match expected format: %O', json);
@@ -39,6 +41,19 @@ export async function getAndroidBuildOutputJson(p: string): Promise<CordovaAndro
   }
 
   throw new FatalException(`Could not parse build output file: ${p}`);
+}
+
+export async function getAndroidPackageFilePath(root: string, { release = false }: GetPackagePathOptions): Promise<string> {
+  const outputPath = path.resolve(root, CORDOVA_ANDROID_PACKAGE_PATH, release ? 'release' : 'debug');
+  const outputJsonPath = path.resolve(outputPath, 'output.json');
+  const outputJson = await getAndroidBuildOutputJson(outputJsonPath);
+
+  const p = 'elements' in outputJson
+    ? outputJson.elements[0].outputFile
+    : outputJson[0].path;
+
+  // TODO: handle multiple files from output.json, prompt to select?
+  return path.relative(root, path.resolve(outputPath, p));
 }
 
 export interface GetPackagePathOptions {
@@ -51,12 +66,7 @@ export interface GetPackagePathOptions {
  */
 export async function getPackagePath(root: string, appName: string, platform: string, { emulator = false, release = false }: GetPackagePathOptions = {}): Promise<string> {
   if (platform === 'android') {
-    const outputPath = path.resolve(root, CORDOVA_ANDROID_PACKAGE_PATH, release ? 'release' : 'debug');
-    const outputJsonPath = path.resolve(outputPath, 'output.json');
-    const outputJson = await getAndroidBuildOutputJson(outputJsonPath);
-
-    // TODO: handle multiple files from output.json, prompt to select?
-    return path.relative(root, path.resolve(outputPath, outputJson[0].path));
+    return getAndroidPackageFilePath(root, { emulator, release });
   } else if (platform === 'ios') {
     if (emulator) {
       return path.join(CORDOVA_IOS_SIMULATOR_PACKAGE_PATH, `${appName}.app`);

@@ -53,11 +53,20 @@ export interface CordovaPackageJson extends PackageJson {
   };
 }
 
-export interface CordovaAndroidBuildOutputEntry {
+export interface LegacyAndroidBuildOutputEntry {
   outputType: {
     type: string;
   };
   path: string;
+}
+
+export interface AndroidBuildOutput {
+  artifactType: {
+    type: string;
+  };
+  elements: {
+    outputFile: string;
+  }[];
 }
 
 export interface Runner<T extends object, U> {
