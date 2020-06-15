@@ -7,7 +7,7 @@ issues on GitHub should be reserved for bug reports and feature requests.
 ### Branches
 
 * [`develop`](https://github.com/ionic-team/ionic-cli/tree/develop): **development** branch
-* [`master`](https://github.com/ionic-team/ionic-cli/tree/master): **stable** version
+* [`stable`](https://github.com/ionic-team/ionic-cli/tree/stable): **stable** version
 
 ##### Version Branches
 
@@ -140,23 +140,23 @@ Guide](https://nodejs.org/en/docs/guides/debugging-getting-started/).
 
 ##### Publishing
 
-CI automatically publishes the next version semantically from analyzing commits in `master`. To maintain a shared history between `develop` and `master`, the branches must be rebased with each other locally.
+CI automatically publishes the next version semantically from analyzing commits in `stable`. To maintain a shared history between `develop` and `stable`, the branches must be rebased with each other locally.
 
 * When it's time to cut a release from `develop`:
 
     ```
-    git checkout master
+    git checkout stable
     git rebase develop
-    git push origin master
+    git push origin stable
     ```
 
-* Await successful publish in CI. Ionitron will push the updated versions and tags to `master`.
-* Sync `develop` with `master`.
+* Await successful publish in CI. Ionitron will push the updated versions and tags to `stable`.
+* Sync `develop` with `stable`.
 
   ```
-  git pull origin master
+  git pull origin stable
   git checkout develop
-  git rebase master
+  git rebase stable
   git push origin develop
   ```
 
