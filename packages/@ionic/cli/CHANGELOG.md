@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.0...@ionic/cli@6.10.1) (2020-06-15)
+
+
+### Bug Fixes
+
+* **cordova:** handle new format of output.json files for Android builds ([#4470](https://github.com/ionic-team/ionic-cli/issues/4470)) ([689b886](https://github.com/ionic-team/ionic-cli/commit/689b886a4a1395aa8bf3c6b0da21bde4a41e0de1))
+* use pnpm if configured in build/serve commands ([#4459](https://github.com/ionic-team/ionic-cli/issues/4459)) ([174985f](https://github.com/ionic-team/ionic-cli/commit/174985fca87322d4b52929ae44e93f639665bdf8))
+
+
+
+
+
 # [6.10.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.3...@ionic/cli@6.10.0) (2020-06-02)
 
 
