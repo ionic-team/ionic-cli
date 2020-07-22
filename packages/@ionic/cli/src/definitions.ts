@@ -74,10 +74,11 @@ export interface Runner<T extends object, U> {
 }
 
 export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue';
-export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before';
+export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before' | 'capacitor:sync:after';
 
 export type CapacitorRunHookName = 'capacitor:run:before';
 export type CapacitorBuildHookName = 'capacitor:build:before';
+export type CapacitorSyncHookName = 'capacitor:sync:after';
 
 export interface BaseHookContext {
   project: {
@@ -92,6 +93,11 @@ export interface BaseHookContext {
 export type AnyServeOptions = ReactServeOptions | AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
 export type AnyBuildOptions = ReactBuildOptions | AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
 
+export interface CapacitorSyncHookInput {
+  readonly name: CapacitorSyncHookName;
+  readonly build?: AnyBuildOptions;
+  readonly capacitor: IonicCapacitorOptions;
+}
 export interface CapacitorRunHookInput {
   readonly name: CapacitorRunHookName;
   readonly serve?: AnyServeOptions;
@@ -120,7 +126,7 @@ export interface ServeAfterHookInput {
   readonly serve: (AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions) & ServeDetails;
 }
 
-export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput | CapacitorRunHookInput | CapacitorBuildHookInput;
+export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput | CapacitorRunHookInput | CapacitorBuildHookInput | CapacitorSyncHookInput;
 export type HookContext = BaseHookContext & HookInput;
 
 export type HookFn = (ctx: HookContext) => Promise<void>;
