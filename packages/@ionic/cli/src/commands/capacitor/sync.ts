@@ -78,7 +78,7 @@ ${input('ionic capacitor sync')} will do the following:
       project: this.project,
       shell: this.env.shell,
     };
-    this.env.log.info('About to run sync after script');
+
     await this.runCapacitorSyncHook('capacitor:sync:after', inputs, options, hookDeps);
   }
 
