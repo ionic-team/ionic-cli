@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.10.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.1...@ionic/cli@6.10.2) (2020-07-27)
+
+
+### Bug Fixes
+
+* use inline uuid v4 function ([#4501](https://github.com/ionic-team/ionic-cli/issues/4501)) ([3743d7b](https://github.com/ionic-team/ionic-cli/commit/3743d7b3e01166dd70716558d55a500419a8bb13))
+
+
+
+
+
 ## [6.10.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.0...@ionic/cli@6.10.1) (2020-06-15)
 
 
