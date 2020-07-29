@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.11.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.2...@ionic/cli@6.11.0) (2020-07-29)
+
+
+### Features
+
+* add `capacitor:sync:after` hook ([#4496](https://github.com/ionic-team/ionic-cli/issues/4496)) ([c63d4e1](https://github.com/ionic-team/ionic-cli/commit/c63d4e1957f36549142275c11f7198c68874cef1))
+
+
+
+
+
 ## [6.10.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.1...@ionic/cli@6.10.2) (2020-07-27)
 
 
