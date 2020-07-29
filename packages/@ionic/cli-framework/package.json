@@ -35,7 +35,7 @@
     "slice-ansi": "^4.0.0",
     "string-width": "^4.1.0",
     "strip-ansi": "^6.0.0",
-    "tslib": "1.11.2",
+    "tslib": "2.0.0",
     "untildify": "^4.0.0",
     "wrap-ansi": "^7.0.0",
     "write-file-atomic": "^3.0.0"
