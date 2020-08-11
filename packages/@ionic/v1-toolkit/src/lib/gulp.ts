@@ -1,10 +1,9 @@
-import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { promisify } from '@ionic/cli-framework/utils/promise';
+import {prettyPath} from '@ionic/cli-framework/utils/format';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
-import { timestamp } from './log';
+import {timestamp} from './log';
 
 const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
@@ -57,16 +56,7 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
               debug(` - task ${key}`);
 
               // Declare using gulp.task()
-              _gulpInst.task(key, [] /*no dependencies*/, done => {
-                return new Promise(resolve => {
-                  // Execute the task.
-                  // Do NOT pass done function to the task, because 'watch' can never finished
-                  task.call(gulpFile);
-
-                  // Finish, to let ionic-cli start to serve
-                  done();
-                });
-              });
+              _gulpInst.task(key, task);
             }
           });
       } catch (e) {
@@ -100,11 +90,11 @@ export async function runTask(name: string): Promise<void> {
 
   try {
     const gulp = await loadGulp();
-    const boundStart = gulp.start.bind(gulp);
-    const gulpStart = promisify<void, string>(boundStart as any);
-
+    // Load the task (gulp v4 return an executable wrapper)
+    const taskWrapper = gulp.task(name);
     process.stdout.write(`${timestamp()} Invoking ${chalk.cyan(name)} gulp task.\n`);
-    await gulpStart(name);
+    // Execute as promise
+    await new Promise(done => taskWrapper(done));
   } catch (e) {
     process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n`);
   }
