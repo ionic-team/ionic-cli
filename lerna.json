@@ -6,6 +6,9 @@
   "command": {
     "bootstrap": {
       "hoist": true
+    },
+    "version": {
+      "allowBranch": "stable"
     }
   }
 }

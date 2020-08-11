@@ -15,7 +15,6 @@ export interface CommandMetadataInput {
   name: string;
   summary: string;
   validators?: Validator[];
-  private?: boolean;
 }
 
 export interface TextFootnote {

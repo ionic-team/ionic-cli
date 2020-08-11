@@ -1,5 +1,36 @@
-import { APIResponse, APIResponseError, APIResponseSuccess, App, AppAssociation, BitbucketCloudRepoAssociation, BitbucketServerRepoAssociation, CommandPreRun, CordovaPackageJson, ExitCodeException, GithubBranch, GithubRepo, GithubRepoAssociation, ICommand, IMultiProjectConfig, IProjectConfig, IntegrationName, Login, Org, Response, SSHKey, SecurityProfile, Snapshot, StarterManifest, SuperAgentError, TreatableAilment, User } from './definitions';
-import { AuthConnection } from './lib/auth';
+import {
+  APIResponse,
+  APIResponseError,
+  APIResponseSuccess,
+  AndroidBuildOutput,
+  App,
+  AppAssociation,
+  BitbucketCloudRepoAssociation,
+  BitbucketServerRepoAssociation,
+  CommandPreRun,
+  CordovaPackageJson,
+  ExitCodeException,
+  GithubBranch,
+  GithubRepo,
+  GithubRepoAssociation,
+  ICommand,
+  IMultiProjectConfig,
+  IProjectConfig,
+  IntegrationName,
+  LegacyAndroidBuildOutputEntry,
+  Login,
+  OpenIdToken,
+  Org,
+  Response,
+  SSHKey,
+  SecurityProfile,
+  Snapshot,
+  StarterManifest,
+  SuperAgentError,
+  TreatableAilment,
+  User
+} from './definitions';
+import { AuthConnection } from './lib/oauth/auth';
 
 export const INTEGRATION_NAMES: IntegrationName[] = ['capacitor', 'cordova', 'enterprise'];
 
@@ -23,6 +54,28 @@ export function isCordovaPackageJson(obj: any): obj is CordovaPackageJson {
     typeof obj.cordova === 'object' &&
     Array.isArray(obj.cordova.platforms) &&
     typeof obj.cordova.plugins === 'object';
+}
+
+export function isLegacyAndroidBuildOutputFile(obj: any): obj is LegacyAndroidBuildOutputEntry[] {
+  if (!Array.isArray(obj)) {
+    return false;
+  }
+
+  if (obj.length === 0) {
+    return true;
+  }
+
+  return obj[0]
+    && typeof obj[0].path === 'string'
+    && typeof obj[0].outputType === 'object'
+    && typeof obj[0].outputType.type === 'string';
+}
+
+export function isAndroidBuildOutputFile(obj: any): obj is AndroidBuildOutput {
+  return obj &&
+    typeof obj.artifactType === 'object' &&
+    typeof obj.artifactType.type === 'string' &&
+    Array.isArray(obj.elements);
 }
 
 export function isExitCodeException(err: any): err is ExitCodeException {
@@ -154,6 +207,20 @@ export function isOAuthLogin(login: any): login is OAuthLogin {
 
 export function isOAuthLoginResponse(res: any): res is Response<OAuthLogin> {
   return isAPIResponseSuccess(res) && isOAuthLogin(res.data);
+}
+
+export function isOpenIDToken(tokenObj: any): tokenObj is OpenIdToken {
+  return tokenObj
+    && typeof tokenObj.access_token === 'string'
+    && typeof tokenObj.expires_in === 'number'
+    && (tokenObj.id_token ? typeof tokenObj.id_token === 'string' : true)
+    && (tokenObj.refresh_token ? typeof tokenObj.refresh_token === 'string' : true)
+    && tokenObj.scope === 'openid profile email offline_access'
+    && tokenObj.token_type === 'Bearer';
+}
+
+export function isOpenIDTokenExchangeResponse(res: any): res is Response<OpenIdToken> {
+  return res && typeof res.body === 'object' && isOpenIDToken(res.body);
 }
 
 export function isSnapshot(snapshot: any): snapshot is Snapshot {

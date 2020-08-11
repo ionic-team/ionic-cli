@@ -87,7 +87,7 @@ Apart from ${input('--commit')}, every option can be specified using the full na
       throw new FatalException(`Cannot run ${input('ionic deploy build')} outside a project directory.`);
     }
 
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     const appflowId = await this.project.requireAppflowId();
 
     if (!options.commit) {

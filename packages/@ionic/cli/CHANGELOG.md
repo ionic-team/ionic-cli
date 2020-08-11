@@ -3,6 +3,232 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.11.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.2...@ionic/cli@6.11.0) (2020-07-29)
+
+
+### Features
+
+* add `capacitor:sync:after` hook ([#4496](https://github.com/ionic-team/ionic-cli/issues/4496)) ([c63d4e1](https://github.com/ionic-team/ionic-cli/commit/c63d4e1957f36549142275c11f7198c68874cef1))
+
+
+
+
+
+## [6.10.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.1...@ionic/cli@6.10.2) (2020-07-27)
+
+
+### Bug Fixes
+
+* use inline uuid v4 function ([#4501](https://github.com/ionic-team/ionic-cli/issues/4501)) ([3743d7b](https://github.com/ionic-team/ionic-cli/commit/3743d7b3e01166dd70716558d55a500419a8bb13))
+
+
+
+
+
+## [6.10.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.0...@ionic/cli@6.10.1) (2020-06-15)
+
+
+### Bug Fixes
+
+* **cordova:** handle new format of output.json files for Android builds ([#4470](https://github.com/ionic-team/ionic-cli/issues/4470)) ([689b886](https://github.com/ionic-team/ionic-cli/commit/689b886a4a1395aa8bf3c6b0da21bde4a41e0de1))
+* use pnpm if configured in build/serve commands ([#4459](https://github.com/ionic-team/ionic-cli/issues/4459)) ([174985f](https://github.com/ionic-team/ionic-cli/commit/174985fca87322d4b52929ae44e93f639665bdf8))
+
+
+
+
+
+# [6.10.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.3...@ionic/cli@6.10.0) (2020-06-02)
+
+
+### Bug Fixes
+
+* **cordova:** platform is a required input ([1bd3087](https://github.com/ionic-team/ionic-cli/commit/1bd30874f46d89248193c959dd8d769dd99503cf))
+
+
+### Features
+
+* **login:** default to browser login ([#4451](https://github.com/ionic-team/ionic-cli/issues/4451)) ([0738abd](https://github.com/ionic-team/ionic-cli/commit/0738abd4123b6b5e078cd7ff2f76ed1a26474cf0))
+
+
+
+
+
+## [6.9.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.2...@ionic/cli@6.9.3) (2020-05-27)
+
+
+### Bug Fixes
+
+* **start:** fix issue with starting the react conf app ([daf1f72](https://github.com/ionic-team/ionic-cli/commit/daf1f72372ca3966c57c7e32adc38001cf3a5fdb))
+
+
+
+
+
+## [6.9.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.1...@ionic/cli@6.9.2) (2020-05-17)
+
+
+### Bug Fixes
+
+* **link:** fix GitHub OAuth URL on WSL ([#4442](https://github.com/ionic-team/ionic-cli/issues/4442)) ([93c5bf5](https://github.com/ionic-team/ionic-cli/commit/93c5bf5ba0cc0549a4bf61f534ee30d465bfe35e))
+* **package:** fix name of the package deploy name ([#4435](https://github.com/ionic-team/ionic-cli/issues/4435)) ([6f6f9d7](https://github.com/ionic-team/ionic-cli/commit/6f6f9d7540fc064b3ffcbc05b56441f9b5c2efeb))
+* **start:** do not prompt for project type when cloning ([#4427](https://github.com/ionic-team/ionic-cli/issues/4427)) ([4ff1622](https://github.com/ionic-team/ionic-cli/commit/4ff162281e327b4740e92513925b6d37b9dfb71e))
+
+
+
+
+
+## [6.9.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.9.0...@ionic/cli@6.9.1) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
+# [6.9.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.8.0...@ionic/cli@6.9.0) (2020-05-11)
+
+
+### Bug Fixes
+
+* **capacitor:** do not open browser with `ionic cap run` ([8e3908d](https://github.com/ionic-team/ionic-cli/commit/8e3908d35ba99289e64a268c8a747054afceed92))
+
+
+### Features
+
+* add `capacitor:run:before` and `capacitor:build:before` hooks ([#4417](https://github.com/ionic-team/ionic-cli/issues/4417)) ([28d8540](https://github.com/ionic-team/ionic-cli/commit/28d854041d418fdd4c36233eb47af177506fdbaf))
+
+
+
+
+
+# [6.8.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.7.0...@ionic/cli@6.8.0) (2020-05-06)
+
+
+### Features
+
+* **package:** deployments to destinations (e.g. app stores) ([#4418](https://github.com/ionic-team/ionic-cli/issues/4418)) ([f0314f6](https://github.com/ionic-team/ionic-cli/commit/f0314f64a0a992c6bba9bb46343c1679b8b6521e))
+
+
+
+
+
+# [6.7.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.6.0...@ionic/cli@6.7.0) (2020-04-29)
+
+
+### Features
+
+* **capacitor:** add `--no-open` option for run and build ([#4403](https://github.com/ionic-team/ionic-cli/issues/4403)) ([977811e](https://github.com/ionic-team/ionic-cli/commit/977811e652f96aa4f5b4de92a80d9c25ae693d15))
+
+
+
+
+
+# [6.6.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.5.0...@ionic/cli@6.6.0) (2020-04-14)
+
+
+### Bug Fixes
+
+* **capacitor:** restore capacitor config after livereload ([cdc0190](https://github.com/ionic-team/ionic-cli/commit/cdc0190eaef38f5a5f1dad79c0953bfd8fa08c57))
+
+
+### Features
+
+* **capacitor:** warn about server.url during capacitor builds ([5f6b5dd](https://github.com/ionic-team/ionic-cli/commit/5f6b5dd46e0206c7de51a518a1e463a921d85217))
+* `ionic capacitor build` command ([#4254](https://github.com/ionic-team/ionic-cli/issues/4254)) ([906fa96](https://github.com/ionic-team/ionic-cli/commit/906fa96ddca7e0156f22d94af3029b29306a6d3a))
+
+
+
+
+
+# [6.5.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.3...@ionic/cli@6.5.0) (2020-04-07)
+
+
+### Features
+
+* **start:** Default to Capacitor for React ([#4383](https://github.com/ionic-team/ionic-cli/issues/4383)) ([3fd72ec](https://github.com/ionic-team/ionic-cli/commit/3fd72ec828a1a30ddb8439bb9c7123bdcc88e46a))
+* **start:** icon/splash from start wizard ([#4376](https://github.com/ionic-team/ionic-cli/issues/4376)) ([bb4c12b](https://github.com/ionic-team/ionic-cli/commit/bb4c12b569685dad228ff7a5588a19ba22c06278))
+
+
+
+
+
+## [6.4.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.2...@ionic/cli@6.4.3) (2020-04-05)
+
+
+### Bug Fixes
+
+* **cordova:** make sure build is complete before reading output.json ([f1abe83](https://github.com/ionic-team/ionic-cli/commit/f1abe8392a6f2eaf910d23558b26228affd467bb))
+* **cordova:** use relative path for ipa files ([4831758](https://github.com/ionic-team/ionic-cli/commit/4831758ed12982a1dd4a4cd30f447a304abc4140))
+
+
+
+
+
+## [6.4.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.1...@ionic/cli@6.4.2) (2020-04-05)
+
+
+### Bug Fixes
+
+* **cordova:** use integration root path for file read ([79dc0b1](https://github.com/ionic-team/ionic-cli/commit/79dc0b10a9ff68e0b4a29e826ef95891b0129b8e))
+
+
+
+
+
+## [6.4.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.4.0...@ionic/cli@6.4.1) (2020-04-02)
+
+
+### Bug Fixes
+
+* **cordova:** use output.json to deploy correct apk ([#4377](https://github.com/ionic-team/ionic-cli/issues/4377)) ([3f09331](https://github.com/ionic-team/ionic-cli/commit/3f09331daa38f1ebe9eae79831e9d1fe7f28c1a2))
+
+
+
+
+
+# [6.4.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.3.0...@ionic/cli@6.4.0) (2020-03-30)
+
+
+### Bug Fixes
+
+* **angular:** convert `--no-<opt>` to `--<opt>=false` for ng ([176ff4b](https://github.com/ionic-team/ionic-cli/commit/176ff4b960c883950f7247120f776ee110816f88))
+* **capacitor:** check for capacitor.config.json before integrating ([2d7992c](https://github.com/ionic-team/ionic-cli/commit/2d7992cf2093e671a4d10243bf959a2e0f917b60))
+
+
+### Features
+
+* **package:** add functionality to deploy to app store ([#4366](https://github.com/ionic-team/ionic-cli/issues/4366)) ([cdd87ac](https://github.com/ionic-team/ionic-cli/commit/cdd87ac795f22d82401f79abb97bef65d8dd1e33))
+
+
+
+
+
+# [6.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.2...@ionic/cli@6.3.0) (2020-03-18)
+
+
+### Features
+
+* **start:** online start experience ([#4356](https://github.com/ionic-team/ionic-cli/issues/4356)) ([fcc5a75](https://github.com/ionic-team/ionic-cli/commit/fcc5a75a11291d069dae123b9d331ecae2d2ac2a))
+
+
+
+
+
+## [6.2.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.1...@ionic/cli@6.2.2) (2020-03-16)
+
+
+### Bug Fixes
+
+* **angular:** always provide the project name fallback ([#4349](https://github.com/ionic-team/ionic-cli/issues/4349)) ([c498f59](https://github.com/ionic-team/ionic-cli/commit/c498f598dac54e8050f041401648efba0597ec3a))
+* **multi-app:** use proper paths for integration root ([d53cee3](https://github.com/ionic-team/ionic-cli/commit/d53cee3def8dab8dd3e76c643d73c7c134b327fa))
+
+
+
+
+
 ## [6.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.2.0...@ionic/cli@6.2.1) (2020-03-09)
 
 

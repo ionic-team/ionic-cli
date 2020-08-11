@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@3.1.2...@ionic/utils-fs@3.1.3) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
+## [3.1.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@3.1.1...@ionic/utils-fs@3.1.2) (2020-05-06)
+
+**Note:** Version bump only for package @ionic/utils-fs
+
+
+
+
+
 ## [3.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@3.1.0...@ionic/utils-fs@3.1.1) (2020-03-03)
 
 **Note:** Version bump only for package @ionic/utils-fs

@@ -122,7 +122,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     await super.add(details);
   }
 
-  async getConfig(): Promise<configlib.CordovaConfig | undefined> {
+  async getCordovaConfig(): Promise<configlib.CordovaConfig | undefined> {
     try {
       return await this.requireConfig();
     } catch (e) {
@@ -181,7 +181,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       info.push({ group: 'system', name: 'Android SDK Tools', key: 'android_sdk_version', value: androidSdkToolsVersion });
     }
 
-    const conf = await this.getConfig();
+    const conf = await this.getCordovaConfig();
 
     if (conf) {
       const bundleId = conf.getBundleId();

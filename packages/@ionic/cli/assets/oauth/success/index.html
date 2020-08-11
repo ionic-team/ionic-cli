@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8"/>
+    <title>Success</title>
+    <style>
+    @font-face {
+      font-family: Eina;
+      font-display: swap;
+      src: local("Eina Bold"),
+        url(https://ionicframework.com/fonts/eina/eina-01-bold.woff2) format("woff2"),
+        url(https://ionicframework.com/fonts/eina/eina-01-bold.woff) format("woff"),
+        url(https://ionicframework.com/fonts/eina/eina-01-bold.ttf) format("ttf");
+      font-weight: 700;
+      unicode-range: U+000-5FF;
+    }
+
+    @font-face {
+      font-family: Inter;
+      font-display: swap;
+      font-style: normal;
+      font-weight: 400;
+      unicode-range: U+000-5FF;
+      src: local("Inter Regular"),
+        url(https://code.ionicframework.com/assets/fonts/inter/Inter-variable-ASCII-subset.woff2) format("woff2-variations"),
+        url(https://code.ionicframework.com/assets/fonts/inter/Inter-Regular.woff2) format("woff2"),
+        url(https://code.ionicframework.com/assets/fonts/inter/Inter-Regular.woff) format("woff");
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #fff;
+      color: #434f5e; /* Carbon / 70 */
+      font-family: 'Inter', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 56px;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    main > div {
+      text-align: center;
+      padding: 2em;
+      margin-top: -76px;
+    }
+
+    h1, p {
+      margin: 0;
+      padding: 0;
+      line-height: 1;
+      font-style: normal;
+    }
+
+    h1 {
+      color: #03060b; /* Carbon / 100 */
+      font-size: 64px;
+      letter-spacing: -0.04em;
+      font-family: 'Eina', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+      font-weight: 700;
+    }
+
+    p {
+      margin-top: 1em;
+      font-size: 20px;
+      letter-spacing: -0.02em;
+      font-weight: 400;
+    }
+    </style>
+  </head>
+  <body>
+    <header>
+      <a href="https://ionicframework.com">
+        <svg width="80" height="28" viewBox="0 0 80 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path fill-rule="evenodd" clip-rule="evenodd" d="M26.6286 7.92381L26.7429 8.19048C27.581 10.0381 28 11.981 28 14C28 21.7143 21.7143 28 14 28C6.28571 28 0 21.7143 0 14C0 6.28571 6.28571 0 14 0C16.2667 0 18.419 0.533333 20.4 1.52381L20.6667 1.65714L20.4381 1.84762C19.8667 2.30476 19.4286 2.87619 19.1429 3.54286L19.0667 3.73333L18.8952 3.65714C17.3524 2.93333 15.7143 2.55238 14 2.55238C7.67619 2.55238 2.55238 7.67619 2.55238 14C2.55238 20.3238 7.67619 25.4476 14 25.4476C20.3238 25.4476 25.4476 20.3048 25.4476 14C25.4476 12.4952 25.1619 11.0095 24.5714 9.61905L24.4952 9.42857L24.6857 9.35238C25.3524 9.10476 25.9619 8.68571 26.4381 8.15238L26.6286 7.92381ZM23.1618 8.1905C24.7714 8.1905 26.0761 6.88573 26.0761 5.27622C26.0761 3.6667 24.7714 2.36193 23.1618 2.36193C21.5523 2.36193 20.2476 3.6667 20.2476 5.27622C20.2476 6.88573 21.5523 8.1905 23.1618 8.1905ZM7.61914 14.0001C7.61914 10.4763 10.4763 7.61918 14.0001 7.61918C17.5239 7.61918 20.381 10.4763 20.381 14.0001C20.381 17.5239 17.5239 20.3811 14.0001 20.3811C10.4763 20.3811 7.61914 17.5239 7.61914 14.0001ZM71.1047 14.4375C71.1047 16.5226 72.5125 18.2018 74.6517 18.2018C76.4618 18.2018 77.5771 16.4119 77.5771 16.3935L79.6248 17.7774C79.0398 18.7 78.345 19.2536 77.4125 19.8256C76.7178 20.25 75.7853 20.6006 74.7431 20.6006C71.1961 20.6006 68.4901 17.9066 68.4719 14.4191C68.4901 10.9316 71.1961 8.23752 74.7431 8.23752C75.7853 8.23752 76.7178 8.58812 77.4125 9.01252C78.345 9.58455 79.0398 10.1381 79.6248 11.0607L77.5771 12.4447C77.5771 12.4447 76.4618 10.6732 74.6517 10.6732C72.5125 10.6732 71.1047 12.3524 71.1047 14.4375ZM57.8303 8.256C55.8374 8.256 54.3016 9.47386 53.9542 9.806L53.7714 8.53279H51.4128V20.3423H54.2467V13.2012C54.2467 11.7989 56.1299 10.6548 57.5195 10.6548C58.8725 10.6548 59.9329 11.9834 59.9329 13.5703V20.3608H62.7669V13.8471C62.7486 10.7471 61.4322 8.256 57.8303 8.256ZM33.7876 8.53273H36.6216V20.3423H33.7876V8.53273ZM64.3765 8.53273H67.2104V20.3423H64.3765V8.53273ZM44.0265 8.256C40.4613 8.256 37.9016 11.0792 37.9016 14.3822C37.9016 17.7405 40.3881 20.6191 44.0814 20.6191C47.4273 20.6191 50.1515 18.0358 50.1515 14.456C50.1333 10.3596 46.9519 8.256 44.0265 8.256ZM44.0631 10.6917C45.8183 10.6917 47.4821 12.131 47.4821 14.456C47.4821 16.7256 45.8183 18.2018 44.0448 18.2018C42.1068 18.2018 40.5709 16.6149 40.5709 14.4375C40.5709 12.2786 42.0885 10.6917 44.0631 10.6917Z" fill="#001A3A"/>
+        </svg>
+      </a>
+    </header>
+    <main>
+      <div>
+        <h1>You are authenticated.</h1>
+        <p>Please return to your terminal. You may close this window.</p>
+      </div>
+    </main>
+  </body>
+</html>

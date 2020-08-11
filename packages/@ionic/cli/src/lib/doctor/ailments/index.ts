@@ -157,7 +157,7 @@ export class GitConfigInvalid extends Ailment {
       return true;
     }
 
-    const token = this.session.getUserToken();
+    const token = await this.session.getUserToken();
     const appClient = new AppClient(token, { client: this.client });
     const app = await appClient.load(appflowId);
 
@@ -269,7 +269,7 @@ export class ViewportFitNotSet extends Ailment {
   async getMessage() {
     return (
       `${strong('viewport-fit=cover')} not set in ${strong('index.html')}\n` +
-      `iOS 11 introduces new "safe regions" for webviews, which can throw off component sizing, squish the header into the status bar, letterbox the app on iPhone X, etc. Fixing this issue will ensure the webview takes up the full size of the screen. See ${strong('https://blog.ionicframework.com/ios-11-checklist')} for more information.`
+      `iOS 11 introduces new "safe regions" for webviews, which can throw off component sizing, squish the header into the status bar, letterbox the app on iPhone X, etc. Fixing this issue will ensure the webview takes up the full size of the screen. See ${strong('https://ionicframework.com/blog/ios-11-checklist/')} for more information.`
     ).trim();
   }
 

@@ -1,10 +1,13 @@
+import { MetadataGroup } from '@ionic/cli-framework';
+
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class GitNamespace extends Namespace {
   async getMetadata() {
     return {
       name: 'git',
-      summary: 'Commands relating to git',
+      summary: 'Commands relating to managing Appflow git',
+      groups: [MetadataGroup.PAID],
     };
   }
 

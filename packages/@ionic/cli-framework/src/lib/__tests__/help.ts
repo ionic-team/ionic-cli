@@ -147,8 +147,8 @@ describe('@ionic/cli-framework', () => {
 
   Inputs:
 
-    input1 .......................... input1 summary
-    input2 .......................... input2 summary
+    input1 .......................... (optional) input1 summary
+    input2 .......................... (optional) input2 summary
 
   Options:
 

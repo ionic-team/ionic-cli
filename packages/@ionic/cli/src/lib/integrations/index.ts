@@ -97,6 +97,7 @@ export abstract class BaseIntegration<T extends ProjectIntegration> implements I
     const config = details.root !== this.e.project.directory ?
       { root: path.relative(this.e.project.rootDirectory, details.root) } :
       undefined;
+
     await this.enable(config);
   }
 }

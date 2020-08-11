@@ -104,7 +104,20 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
   abstract modifyOpenUrl(url: string, options: T): string;
 
   getPkgManagerServeCLI(): PkgManagerServeCLI {
-    return this.e.config.get('npmClient') === 'npm' ? new NpmServeCLI(this.e) : new YarnServeCLI(this.e);
+    const pkgManagerCLIs = {
+      npm: NpmServeCLI,
+      pnpm: PnpmServeCLI,
+      yarn: YarnServeCLI,
+    };
+
+    const client = this.e.config.get('npmClient');
+    const CLI = pkgManagerCLIs[client];
+
+    if (CLI) {
+      return new CLI(this.e);
+    }
+
+    throw new ServeCLIProgramNotFoundException('Unknown CLI client: ' + client);
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): ServeOptions {
@@ -127,6 +140,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     const host = options['host'] ? String(options['host']) : DEFAULT_ADDRESS;
     const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
+    const [ platform ] = options['platform'] ? [String(options['platform'])] : inputs;
 
     return {
       '--': separatedArgs ? separatedArgs : [],
@@ -140,7 +154,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       labPort,
       livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
       open: !!options['open'],
-      platform: options['platform'] ? String(options['platform']) : undefined,
+      platform,
       port,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       project: options['project'] ? String(options['project']) : undefined,
@@ -616,6 +630,13 @@ export class NpmServeCLI extends PkgManagerServeCLI {
   readonly pkg = 'npm';
   readonly program = 'npm';
   readonly prefix = 'npm';
+}
+
+export class PnpmServeCLI extends PkgManagerServeCLI {
+  readonly name = 'pnpm CLI';
+  readonly pkg = 'pnpm';
+  readonly program = 'pnpm';
+  readonly prefix = 'pnpm';
 }
 
 export class YarnServeCLI extends PkgManagerServeCLI {

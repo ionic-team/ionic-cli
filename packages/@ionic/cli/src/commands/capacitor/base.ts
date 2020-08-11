@@ -2,11 +2,12 @@ import { pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
 import * as path from 'path';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, ProjectIntegration } from '../../definitions';
-import { input } from '../../lib/color';
+import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, IonicCapacitorOptions, ProjectIntegration } from '../../definitions';
+import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
+import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 
 export abstract class CapacitorCommand extends Command {
@@ -22,6 +23,14 @@ export abstract class CapacitorCommand extends Command {
     }
 
     return this._integration;
+  }
+
+  getCapacitorConfig(): CapacitorConfig {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    return new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
   }
 
   async checkCapacitor(runinfo: CommandInstanceInfo) {
@@ -75,6 +84,18 @@ export abstract class CapacitorCommand extends Command {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
+    const conf = this.getCapacitorConfig();
+    const serverConfig = conf.get('server');
+
+    if (serverConfig && serverConfig.url) {
+      this.env.log.warn(
+        `Capacitor server URL is in use.\n` +
+        `This may result in unexpected behavior for this build, where an external server is used in the Web View instead of your app. This likely occurred because of ${input('--livereload')} usage in the past and the CLI improperly exiting without cleaning up.\n\n` +
+        `Delete the ${input('server')} key in the ${strong(CAPACITOR_CONFIG_FILE)} file if you did not intend to use an external server.`
+      );
+      this.env.log.nl();
+    }
+
     if (options['build']) {
       try {
         const runner = await this.project.requireBuildRunner();
@@ -106,6 +127,23 @@ export abstract class CapacitorCommand extends Command {
         await this._runCapacitor(['add', platform]);
       }
     }
+  }
+
+  protected createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicCapacitorOptions {
+    const separatedArgs = options['--'];
+    const verbose = !!options['verbose'];
+    const conf = this.getCapacitorConfig();
+    const server = conf.get('server');
+
+    return {
+      '--': separatedArgs ? separatedArgs : [],
+      appId: conf.get('appId'),
+      appName: conf.get('appName'),
+      server: {
+        url: server?.url,
+      },
+      verbose,
+    };
   }
 
   private async promptToInstallCapacitor(): Promise<boolean> {

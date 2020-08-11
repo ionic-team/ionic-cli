@@ -26,6 +26,9 @@ export interface NewAppSchema extends BaseAppSchema {
   name: string;
   type: ProjectType;
   template: string;
+  themeColor?: string;
+  appIcon?: Buffer;
+  splash?: Buffer;
 }
 
 export interface ClonedAppSchema extends BaseAppSchema {

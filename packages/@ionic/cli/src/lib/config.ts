@@ -2,7 +2,7 @@ import { BaseConfig, BaseConfigOptions, MetadataGroup, ParsedArgs, metadataOptio
 import * as os from 'os';
 import * as path from 'path';
 
-import { CommandMetadataOption, ConfigFile, CreateRequestOptions, IConfig } from '../definitions';
+import { CommandMetadataOption, ConfigFile, CreateRequestOptions, IConfig, OAuthServerConfig } from '../definitions';
 
 export const GLOBAL_OPTIONS: readonly CommandMetadataOption[] = [
   {
@@ -114,6 +114,15 @@ export class Config extends BaseConfig<ConfigFile> implements IConfig {
         keyfile: c['ssl.keyfile'],
       },
       proxy: c['proxy'],
+    };
+  }
+
+  getOpenIDOAuthConfig(): OAuthServerConfig {
+    return {
+      authorizationUrl: this.get('oauth.openid.authorization_url', 'https://ionicframework.com/oauth/authorize'),
+      tokenUrl: this.get('oauth.openid.token_url', 'https://api.ionicjs.com/oauth/token'),
+      clientId: this.get('oauth.openid.client_id', 'cli'),
+      apiAudience: this.get('oauth.openid.api_audience', 'https://api.ionicjs.com'),
     };
   }
 }

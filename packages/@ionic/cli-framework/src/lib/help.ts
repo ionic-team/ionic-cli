@@ -492,7 +492,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   }
 
   async formatInputs(): Promise<string> {
-    const { help: { title }, weak, input } = this.colors;
+    const { help: { title } } = this.colors;
     const metadata = await this.getCommandMetadata();
     const inputs = metadata.inputs ? metadata.inputs : [];
 
@@ -500,19 +500,28 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
       return '';
     }
 
-    const fillStrings = generateFillSpaceStringList(inputs.map(i => i.name), this.dotswidth, weak('.'));
-
-    const inputLineFn = ({ name, summary }: I, index: number) => {
-      const optionList = input(`${name}`);
-      const wrappedSummary = wordWrap(summary, { indentation: this.dotswidth + 6 });
-
-      return `${optionList} ${fillStrings[index]} ${wrappedSummary}`;
-    };
+    const formattedInputs = await Promise.all(inputs.map(input => this.formatInput(input)));
 
     return (
       `\n  ${title('Inputs')}:` +
-      `\n\n    ${inputs.map(inputLineFn).join('\n    ')}\n`
+      `\n\n    ${formattedInputs.join('\n    ')}\n`
     );
+  }
+
+  async formatInput(i: I): Promise<string> {
+    const { input, weak } = this.colors;
+    const inputName = input(i.name);
+    const inputNameLength = stringWidth(inputName);
+    const fullLength = inputNameLength > this.dotswidth ? inputNameLength + 1 : this.dotswidth;
+    const fullDescription = (
+      (await this.formatBeforeInputSummary(i)) +
+      i.summary +
+      (await this.formatAfterInputSummary(i))
+    );
+
+    const wrappedDescription = wordWrap(fullDescription, { indentation: this.dotswidth + 6 });
+
+    return `${inputName} ${weak('.').repeat(fullLength - inputNameLength)} ${wrappedDescription}`;
   }
 
   async formatOptionLine(opt: O) {
@@ -534,7 +543,7 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   }
 
   /**
-   * Insert text before the command's summary.
+   * Insert text that appears before the command's summary.
    *
    * @param meta The metadata of the command.
    */
@@ -543,11 +552,32 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
   }
 
   /**
-   * Insert text after the command's summary.
+   * Insert text that appears after the command's summary.
    *
    * @param meta The metadata of the command.
    */
   async formatAfterSummary(meta: M): Promise<string> {
+    return '';
+  }
+
+  /**
+   * Insert text that appears before the input's summary.
+   *
+   * @param input The metadata of the input.
+   */
+  async formatBeforeInputSummary(input: I): Promise<string> {
+    const { weak } = this.colors;
+    const required = input.validators && input.validators.includes(validators.required) ? true : false;
+
+    return required ? '' : `${weak('(optional)')} `;
+  }
+
+  /**
+   * Insert text that appears after the input's summary.
+   *
+   * @param input The metadata of the input.
+   */
+  async formatAfterInputSummary(input: I): Promise<string> {
     return '';
   }
 
@@ -560,6 +590,11 @@ export class CommandStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N ext
     return formatHelpGroups(opt.groups, this.colors);
   }
 
+  /**
+   * Insert text that appears after the option's summary.
+   *
+   * @param opt The metadata of the option.
+   */
   async formatAfterOptionSummary(opt: O): Promise<string> {
     return this.formatOptionDefault(opt);
   }

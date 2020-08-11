@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as path from 'path';
 
 import { Project } from '../';
 import { InfoItem } from '../../../definitions';
@@ -49,6 +50,10 @@ export class ReactProject extends Project {
     return false;
   }
 
+  async getDefaultDistDir(): Promise<string> {
+    return 'build';
+  }
+
   async requireBuildRunner(): Promise<import('./build').ReactBuildRunner> {
     const { ReactBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };
@@ -66,5 +71,10 @@ export class ReactProject extends Project {
       `Cannot perform generate for React projects.\n` +
       `Since you're using the ${chalk.bold('React')} project type, this command won't work. The Ionic CLI doesn't know how to generate framework components for React projects.`
     );
+  }
+
+  setPrimaryTheme(themeColor: string): Promise<void> {
+    const themePath = path.join(this.directory, 'src', 'theme', 'variables.css');
+    return this.writeThemeColor(themePath, themeColor);
   }
 }

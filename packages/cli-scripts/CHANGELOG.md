@@ -3,6 +3,153 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.20](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.19...cli-scripts@2.1.20) (2020-07-29)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.19](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.18...cli-scripts@2.1.19) (2020-07-27)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.18](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.17...cli-scripts@2.1.18) (2020-06-15)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.17](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.16...cli-scripts@2.1.17) (2020-06-02)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.16](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.15...cli-scripts@2.1.16) (2020-05-27)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.15](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.14...cli-scripts@2.1.15) (2020-05-17)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.14](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.13...cli-scripts@2.1.14) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
+## [2.1.13](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.12...cli-scripts@2.1.13) (2020-05-11)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.12](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.11...cli-scripts@2.1.12) (2020-05-06)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.11](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.10...cli-scripts@2.1.11) (2020-04-29)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.10](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.9...cli-scripts@2.1.10) (2020-04-14)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.9](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.8...cli-scripts@2.1.9) (2020-04-07)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.8](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.7...cli-scripts@2.1.8) (2020-04-05)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.7](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.6...cli-scripts@2.1.7) (2020-04-05)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.6](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.5...cli-scripts@2.1.6) (2020-04-02)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.5](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.4...cli-scripts@2.1.5) (2020-03-30)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.4](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.3...cli-scripts@2.1.4) (2020-03-18)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.3](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.2...cli-scripts@2.1.3) (2020-03-16)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
 ## [2.1.2](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.1...cli-scripts@2.1.2) (2020-03-09)
 
 **Note:** Version bump only for package cli-scripts

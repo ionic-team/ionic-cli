@@ -104,7 +104,7 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
       const isLoggedIn = session.isLoggedIn();
 
       if (isLoggedIn) {
-        const token = session.getUserToken();
+        const token = await session.getUserToken();
         req.set('Authorization', `Bearer ${token}`);
       }
 

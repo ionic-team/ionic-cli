@@ -1,4 +1,4 @@
-import { Footnote, MetadataGroup } from '@ionic/cli-framework';
+import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
@@ -149,6 +149,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
         {
           name: 'platform',
           summary: `The platform to run (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
+          validators: [validators.required],
         },
       ],
       options,
@@ -213,7 +214,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
     const [ platform ] = inputs;
 
-    if (options['native-run'] && !SUPPORTED_PLATFORMS.includes(platform)) {
+    if (platform && options['native-run'] && !SUPPORTED_PLATFORMS.includes(platform)) {
       this.env.log.warn(`${input(platform)} is not supported by ${input('native-run')}. Using Cordova to run the app.`);
       options['native-run'] = false;
     }
@@ -297,10 +298,12 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
     if (options['native-run']) {
       const [ platform ] = inputs;
-      const packagePath = await getPackagePath(conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
-      const forwardedPorts = details ? runner.getUsedPorts(runnerOpts, details) : [];
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), buildOpts);
+
+      const packagePath = await getPackagePath(this.integration.root, conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
+      const forwardedPorts = details ? runner.getUsedPorts(runnerOpts, details) : [];
+
       await this.runNativeRun(createNativeRunArgs({ packagePath, platform, forwardedPorts }, options));
     } else {
       await this.runCordova(filterArgumentsForCordova(metadata, options), buildOpts);
@@ -333,9 +336,11 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
     if (options['native-run']) {
       const [ platform ] = inputs;
-      const packagePath = await getPackagePath(conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), { stdio: 'inherit' });
+
+      const packagePath = await getPackagePath(this.integration.root, conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
+
       await this.runNativeRun(createNativeRunArgs({ packagePath, platform }, { ...options, connect: false }));
     } else {
       await this.runCordova(filterArgumentsForCordova(metadata, options), { stdio: 'inherit' });

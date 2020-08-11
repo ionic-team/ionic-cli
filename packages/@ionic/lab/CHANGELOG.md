@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.6...@ionic/lab@3.1.7) (2020-06-02)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.1.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.5...@ionic/lab@3.1.6) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
+## [3.1.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.4...@ionic/lab@3.1.5) (2020-05-06)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.3...@ionic/lab@3.1.4) (2020-04-29)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.1.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.2...@ionic/lab@3.1.3) (2020-03-30)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
 ## [3.1.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.1...@ionic/lab@3.1.2) (2020-03-09)
 
 **Note:** Version bump only for package @ionic/lab

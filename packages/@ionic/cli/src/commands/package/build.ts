@@ -19,10 +19,11 @@ const PLATFORMS = ['android', 'ios'];
 
 const ANDROID_BUILD_TYPES = ['debug', 'release'];
 const IOS_BUILD_TYPES = ['development', 'ad-hoc', 'app-store', 'enterprise'];
+const APP_STORE_COMPATIBLE_TYPES = ['release', 'app-store', 'enterprise'];
 const BUILD_TYPES = ANDROID_BUILD_TYPES.concat(IOS_BUILD_TYPES);
-const TARGET_PLATFORM = ['Android', 'iOS - Xcode 10 (Preferred)', 'iOS - Xcode 9', 'iOS - Xcode 8'];
+const TARGET_PLATFORM = ['Android', 'iOS - Xcode 11 (Preferred)', 'iOS - Xcode 10'];
 
-interface PackageBuild {
+export interface PackageBuild {
   job_id: number;
   id: string;
   caller_id: number;
@@ -40,7 +41,9 @@ interface PackageBuild {
   automation_name: string;
   environment_name: string;
   native_config_name: string;
+  distribution_credential_name: string;
   job: any;
+  distribution_trace: string;
 }
 
 interface DownloadUrl {
@@ -65,6 +68,10 @@ The ${input('--security-profile')} option is mandatory for any iOS build but not
 Customizing the build:
 - The ${input('--environment')} and ${input('--native-config')} options can be used to customize the groups of values exposed to the build.
 - Override the preferred platform with ${input('--target-platform')}. This is useful for building older iOS apps.
+
+Deploying the build to an App Store:
+- The ${input('--destination')} option can be used to deliver the app created by the build to the configured App Store. \
+This can be used only together with build type ${input('release')} for Android and build types ${input('app-store')} or ${input('enterprise')} for iOS.
 `,
       footnotes: [
         {
@@ -80,6 +87,7 @@ Customizing the build:
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
         'ios development --security-profile="iOS Security Profile Name" --target-platform="iOS - Xcode 9"',
         'ios development --security-profile="iOS Security Profile Name" --build-file-name=my_custom_file_name.ipa',
+        'ios app-store --security-profile="iOS Security Profile Name" --destination="Apple App Store Destination"',
       ],
       inputs: [
         {
@@ -109,6 +117,12 @@ Customizing the build:
         {
           name: 'native-config',
           summary: 'The group of native config variables exposed to your build',
+          type: String,
+          spec: { value: 'name' },
+        },
+        {
+          name: 'destination',
+          summary: 'The configuration to deploy the build artifact to the app store',
           type: String,
           spec: { value: 'name' },
         },
@@ -187,6 +201,11 @@ Customizing the build:
 
       options['security-profile'] = securityProfileOption;
     }
+
+    // if destination is present, validate that a proper build type has been been specified
+    if (options['destination'] && !APP_STORE_COMPATIBLE_TYPES.includes(inputs[1])) {
+      throw new FatalException(`Build with type ${strong(String(inputs[1]))} cannot be deployed to App Store`);
+    }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -194,7 +213,7 @@ Customizing the build:
       throw new FatalException(`Cannot run ${input('ionic package build')} outside a project directory.`);
     }
 
-    const token = this.env.session.getUserToken();
+    const token = await this.env.session.getUserToken();
     const appflowId = await this.project.requireAppflowId();
     const [ platform, buildType ] = inputs;
 
@@ -223,6 +242,7 @@ Customizing the build:
       ['Security Profile', build.profile_tag ? strong(build.profile_tag) : weak('not set')],
       ['Environment', build.environment_name ? strong(build.environment_name) : weak('not set')],
       ['Native Config', build.native_config_name ? strong(build.native_config_name) : weak('not set')],
+      ['Destination', build.distribution_credential_name ? strong(build.distribution_credential_name) : weak('not set')],
     ], { vsep: ':' });
 
     this.env.log.ok(
@@ -254,6 +274,7 @@ Customizing the build:
       profile_name: options['security-profile'],
       environment_name: options.environment,
       native_config_name: options['native-config'],
+      distribution_credential_name: options.destination,
     });
 
     try {

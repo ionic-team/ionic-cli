@@ -3,6 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [4.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.5...@ionic/cli-framework@4.2.0) (2020-06-02)
+
+
+### Features
+
+* **help:** formatBeforeInputSummary and formatAfterInputSummary ([70ac3ab](https://github.com/ionic-team/ionic-cli/commit/70ac3ab633dc7dd65a2ac344c81a01f7914597b8))
+
+
+
+
+
+## [4.1.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.4...@ionic/cli-framework@4.1.5) (2020-05-12)
+
+
+### Bug Fixes
+
+* pin tslib to avoid "Cannot set property pathExists" error ([689e1f0](https://github.com/ionic-team/ionic-cli/commit/689e1f038b907356ef855a067a76d4822e7072a8))
+
+
+
+
+
+## [4.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.3...@ionic/cli-framework@4.1.4) (2020-05-06)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
+## [4.1.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.2...@ionic/cli-framework@4.1.3) (2020-04-29)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
+## [4.1.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.1...@ionic/cli-framework@4.1.2) (2020-03-30)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
 ## [4.1.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@4.1.0...@ionic/cli-framework@4.1.1) (2020-03-03)
 
 **Note:** Version bump only for package @ionic/cli-framework

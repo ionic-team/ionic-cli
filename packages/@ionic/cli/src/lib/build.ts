@@ -44,12 +44,25 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
   abstract buildProject(options: T): Promise<void>;
 
   getPkgManagerBuildCLI(): PkgManagerBuildCLI {
-    return this.e.config.get('npmClient') === 'npm' ? new NpmBuildCLI(this.e) : new YarnBuildCLI(this.e);
+    const pkgManagerCLIs = {
+      npm: NpmBuildCLI,
+      pnpm: PnpmBuildCLI,
+      yarn: YarnBuildCLI,
+    };
+
+    const client = this.e.config.get('npmClient');
+    const CLI = pkgManagerCLIs[client];
+
+    if (CLI) {
+      return new CLI(this.e);
+    }
+
+    throw new BuildCLIProgramNotFoundException('Unknown CLI client: ' + client);
   }
 
   createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BaseBuildOptions {
     const separatedArgs = options['--'];
-    const platform = options['platform'] ? String(options['platform']) : undefined;
+    const [ platform ] = options['platform'] ? [String(options['platform'])] : inputs;
     const engine = this.determineEngineFromCommandLine(options);
     const project = options['project'] ? String(options['project']) : undefined;
     const verbose = !!options['verbose'];
@@ -280,6 +293,12 @@ export class NpmBuildCLI extends PkgManagerBuildCLI {
   readonly name = 'npm CLI';
   readonly pkg = 'npm';
   readonly program = 'npm';
+}
+
+export class PnpmBuildCLI extends PkgManagerBuildCLI {
+  readonly name = 'pnpm CLI';
+  readonly pkg = 'pnpm';
+  readonly program = 'pnpm';
 }
 
 export class YarnBuildCLI extends PkgManagerBuildCLI {

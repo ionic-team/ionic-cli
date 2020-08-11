@@ -1,14 +1,13 @@
-import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
+import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
-import * as path from 'path';
 
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
+import { AnyBuildOptions, AnyServeOptions, CapacitorRunHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
-import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
+import { Hook, HookDeps } from '../../lib/hooks';
+import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform, getVirtualDeviceNameForPlatform } from '../../lib/integrations/capacitor/utils';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
 
 import { CapacitorCommand } from './base';
@@ -19,8 +18,8 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
     const exampleCommands = [
       '',
       'android',
-      'android -l',
-      'ios --livereload',
+      'android -l --external',
+      'ios --livereload --external',
       'ios --livereload-url=http://localhost:8100',
     ].sort();
 
@@ -29,6 +28,12 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       {
         name: 'build',
         summary: 'Do not invoke Ionic build',
+        type: Boolean,
+        default: true,
+      },
+      {
+        name: 'open',
+        summary: 'Do not invoke Capacitor open',
         type: Boolean,
         default: true,
       },
@@ -84,6 +89,8 @@ ${input('ionic capacitor run')} will do the following:
 - Perform ${input('ionic build')} (or run the dev server from ${input('ionic serve')} with the ${input('--livereload')} option)
 - Copy web assets into the specified native platform
 - Open the IDE for your native project (Xcode for iOS, Android Studio for Android)
+
+When using the ${input('--livereload')} option and need to serve to your LAN, a device, or an emulator, use the ${input('--external')} option also. Otherwise, the web view tries to access ${input('localhost')}.
 
 Once the web assets and configuration are copied into your native project, the app can run on devices and emulators/simulators using the native IDE. Unfortunately, programmatically building and launching the native project is not yet supported.
 
@@ -155,15 +162,21 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     // TODO: native-run
 
-    this.env.log.nl();
-    this.env.log.info(
-      'Ready for use in your Native IDE!\n' +
-      `To continue, run your project on a device or ${platform === 'ios' ? 'simulator' : 'emulator'} using ${platform === 'ios' ? 'Xcode' : 'Android Studio'}!`
-    );
+    const hookDeps: HookDeps = {
+      config: this.env.config,
+      project: this.project,
+      shell: this.env.shell,
+    };
 
-    this.env.log.nl();
+    await this.runCapacitorRunHook('capacitor:run:before', inputs, options, hookDeps);
 
-    await this.runCapacitor(['open', platform]);
+    if (options['open']) {
+      this.env.log.nl();
+      this.env.log.info(this.getContinueMessage(platform));
+      this.env.log.nl();
+
+      await this.runCapacitor(['open', platform]);
+    }
 
     if (options['livereload']) {
       this.env.log.nl();
@@ -179,6 +192,8 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic capacitor run/emulate')} outside a project directory.`);
     }
+
+    const [ platform ] = inputs;
 
     const runner = await this.project.requireServeRunner();
     const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
@@ -196,12 +211,65 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
     }
 
-    const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+    const conf = this.getCapacitorConfig();
 
     onBeforeExit(async () => {
       conf.resetServerUrl();
+      await this.runCapacitor(['copy', platform]);
     });
 
     conf.setServerUrl(serverUrl);
+  }
+
+  protected getContinueMessage(platform: string): string {
+    if (platform === 'electron') {
+      return 'Ready to be used in Electron!';
+    }
+
+    return (
+      'Ready for use in your Native IDE!\n' +
+      `To continue, run your project on a device or ${getVirtualDeviceNameForPlatform(platform)} using ${getNativeIDEForPlatform(platform)}!`
+    );
+  }
+
+  private async runCapacitorRunHook(name: CapacitorRunHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
+    const hook = new CapacitorRunHook(name, e);
+    let serveOptions: AnyServeOptions | undefined;
+    let buildOptions: AnyBuildOptions | undefined;
+
+    if (options['livereload']) {
+      const serveRunner = await e.project.requireServeRunner();
+
+      serveOptions = serveRunner.createOptionsFromCommandLine(inputs, options);
+    } else {
+      const buildRunner = await e.project.requireBuildRunner();
+
+      buildOptions = buildRunner.createOptionsFromCommandLine(inputs, options);
+    }
+
+    try {
+      await hook.run({
+        name: hook.name,
+        serve: serveOptions,
+        build: buildOptions,
+        capacitor: this.createOptionsFromCommandLine(inputs, options),
+      });
+    } catch (e) {
+      if (e instanceof BaseError) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+}
+
+class CapacitorRunHook extends Hook {
+  readonly name: CapacitorRunHookName;
+
+  constructor(name: CapacitorRunHookName, e: HookDeps) {
+    super(e);
+
+    this.name = name;
   }
 }
