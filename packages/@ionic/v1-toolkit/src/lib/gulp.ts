@@ -63,9 +63,13 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
         throw new Error(`Cannot declare gulp v4 task: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
           chalk.red(e.stack ? e.stack : e));
       }
+      debug('Loaded gulp tasks: %o', _gulpInst.tree().nodes);
     }
 
-    debug('Loaded gulp tasks: %o', _gulpInst.tasks);
+    // V3 gulp file: failed
+    else {
+      throw new Error(`Your gulpfile.js is not compatible with Gulp v4:\n- Upgrade to gulp v4 (see https://zzz.buzz/2016/11/19/gulp-4-0-upgrade-guide/)\n- Or downgrade @ionic/v1-toolkit to <= 3.2.0.`);
+    }
   }
 
   return _gulpInst;
@@ -74,9 +78,10 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
 export async function hasTask(name: string): Promise<boolean> {
   try {
     const gulp = await loadGulp();
-    return gulp.hasTask(name);
+    return (gulp.tree().nodes).includes(name);
   } catch (e) {
-    process.stderr.write(`${timestamp()} Cannot load gulp: ${String(e)}\n`);
+    process.stderr.write(`${log_1.timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n`+
+      chalk.red(e.stack ? e.stack : e));
   }
 
   return false;
@@ -96,6 +101,7 @@ export async function runTask(name: string): Promise<void> {
     // Execute as promise
     await new Promise(done => taskWrapper(done));
   } catch (e) {
-    process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n`);
+    process.stderr.write(`${log_1.timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n` +
+      chalk.red(e.stack ? e.stack : e));
   }
 }
