@@ -7,9 +7,9 @@ import {timestamp} from './log';
 
 const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
-let _gulpInst: typeof import('gulp');
+let _gulpInst: typeof import('gulp') & typeof import('undertaker');
 
-export async function loadGulp(): Promise<typeof import('gulp')> {
+export async function loadGulp(): Promise<typeof import('gulp') & typeof import('undertaker')> {
   if (!_gulpInst) {
     const gulpFilePath = path.resolve('gulpfile.js');
     debug(`Using gulpfile: ${gulpFilePath}`);
@@ -74,11 +74,25 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
 
   return _gulpInst;
 }
+export async function tasks(): Promise<string[]> {
+  try {
+    const gulp = await loadGulp();
+    const tree = gulp.tree();
+    return tree && (tree.nodes || [])
+      // Use node.label is exists (@types/gulp >= 4.0.5)
+      .map(node => node as any)
+      .map(node => (node && node.label || node) as string);
+
+  } catch (e) {
+    process.stderr.write(`${timestamp()} Cannot load gulp tasks: ${chalk.bold(String(e))}\n`+
+      chalk.red(e.stack ? e.stack : e));
+    return [];
+  }
+}
 
 export async function hasTask(name: string): Promise<boolean> {
   try {
-    const gulp = await loadGulp();
-    return (gulp.tree().nodes).includes(name);
+    return (await tasks()).includes(name);
   } catch (e) {
     process.stderr.write(`${timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n`+
       chalk.red(e.stack ? e.stack : e));
