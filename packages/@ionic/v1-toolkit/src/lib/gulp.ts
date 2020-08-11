@@ -78,7 +78,7 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
 export async function hasTask(name: string): Promise<boolean> {
   try {
     const gulp = await loadGulp();
-    return (gulp.tree().nodes).includes(name);
+    return (_gulpInst.tree().nodes).includes(name);
   } catch (e) {
     process.stderr.write(`${log_1.timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n`+
       chalk.red(e.stack ? e.stack : e));
@@ -96,12 +96,12 @@ export async function runTask(name: string): Promise<void> {
   try {
     const gulp = await loadGulp();
     // Load the task (gulp v4 return an executable wrapper)
-    const taskWrapper = gulp.task(name);
+    const taskWrapper = gulp.task(name) as any;
     process.stdout.write(`${timestamp()} Invoking ${chalk.cyan(name)} gulp task.\n`);
     // Execute as promise
     await new Promise(done => taskWrapper(done));
   } catch (e) {
-    process.stderr.write(`${log_1.timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n` +
+    process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n` +
       chalk.red(e.stack ? e.stack : e));
   }
 }
