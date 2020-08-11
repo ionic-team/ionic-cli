@@ -78,9 +78,9 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
 export async function hasTask(name: string): Promise<boolean> {
   try {
     const gulp = await loadGulp();
-    return (_gulpInst.tree().nodes).includes(name);
+    return (gulp.tree().nodes).includes(name);
   } catch (e) {
-    process.stderr.write(`${log_1.timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n`+
+    process.stderr.write(`${timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n`+
       chalk.red(e.stack ? e.stack : e));
   }
 
