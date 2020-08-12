@@ -33,7 +33,7 @@
   --section-bg: #151a21;
   --font-color: #a2a9b4;
 
-  --frame-ratio: .562; /* width/height */
-  --frame-default-width: 375px;
+  --frame-ratio: .488; /* width/height */
+  --frame-default-width: 344px;
   --frame-default-height: calc(var(--frame-default-width) / var(--frame-ratio));
 }
