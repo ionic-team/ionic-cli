@@ -66,17 +66,26 @@ ionlab-device-frame .frame-container iframe {
   height: 100%;
 }
 
-#device-ios .frame-container .statusbar {
-  background-image: url('/assets/ios-statusbar.png');
+.statusbar-md {
+  display: none;
 }
 
-#device-android .frame-container .statusbar {
-  background-image: url('/assets/android-statusbar.png');
+#device-android .statusbar-md {
+  display: block;
+  fill: rgba(125, 125, 125, 0.3);
+  padding: .5rem 1.6rem;
+  position: relative;
+  width: 100%;
+  z-index: 2;
+  top: 0;
 }
 
-#device-windows .frame-container .statusbar {
-  background-image: url('/assets/wp-statusbar.png');
-  background-color: #fff;
+#device-ios .frame-container {
+  border-radius: 32px;
+}
+
+#device-android .frame-container {
+  border-radius: 38px;
 }
 
 @media only screen and (max-height: 850px) {
