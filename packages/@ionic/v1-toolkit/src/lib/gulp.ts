@@ -1,5 +1,4 @@
 import { prettyPath } from '@ionic/cli-framework/utils/format';
-import { promisify } from '@ionic/cli-framework/utils/promise';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
@@ -8,9 +7,9 @@ import { timestamp } from './log';
 
 const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
-let _gulpInst: typeof import('gulp');
+let _gulpInst: typeof import('gulp') & typeof import('undertaker');
 
-export async function loadGulp(): Promise<typeof import('gulp')> {
+export async function loadGulp(): Promise<typeof import('gulp') & typeof import('undertaker')> {
   if (!_gulpInst) {
     const gulpFilePath = path.resolve('gulpfile.js');
     debug(`Using gulpfile: ${gulpFilePath}`);
@@ -57,36 +56,44 @@ export async function loadGulp(): Promise<typeof import('gulp')> {
               debug(` - task ${key}`);
 
               // Declare using gulp.task()
-              _gulpInst.task(key, [] /*no dependencies*/, done => {
-                return new Promise(resolve => {
-                  // Execute the task.
-                  // Do NOT pass done function to the task, because 'watch' can never finished
-                  task.call(gulpFile);
-
-                  // Finish, to let ionic-cli start to serve
-                  done();
-                });
-              });
+              _gulpInst.task(key, task);
             }
           });
       } catch (e) {
         throw new Error(`Cannot declare gulp v4 task: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
           chalk.red(e.stack ? e.stack : e));
       }
+      debug('Loaded gulp tasks: %o', _gulpInst.tree().nodes);
+    } else {
+      // V3 gulp file: failed
+      throw new Error(`Your gulpfile.js is not compatible with Gulp v4:\n- Upgrade to gulp v4 (see https://zzz.buzz/2016/11/19/gulp-4-0-upgrade-guide/)\n- Or downgrade @ionic/v1-toolkit to <= 3.2.0.`);
     }
-
-    debug('Loaded gulp tasks: %o', _gulpInst.tasks);
   }
 
   return _gulpInst;
 }
+export async function tasks(): Promise<string[]> {
+  try {
+    const gulp = await loadGulp();
+    const tree = gulp.tree();
+    return tree && (tree.nodes || [])
+      // Use node.label is exists (@types/gulp >= 4.0.5)
+      .map(node => node as any)
+      .map(node => (node && node.label || node) as string);
+
+  } catch (e) {
+    process.stderr.write(`${timestamp()} Cannot load gulp tasks: ${chalk.bold(String(e))}\n` +
+      chalk.red(e.stack ? e.stack : e));
+    return [];
+  }
+}
 
 export async function hasTask(name: string): Promise<boolean> {
   try {
-    const gulp = await loadGulp();
-    return gulp.hasTask(name);
+    return (await tasks()).includes(name);
   } catch (e) {
-    process.stderr.write(`${timestamp()} Cannot load gulp: ${String(e)}\n`);
+    process.stderr.write(`${timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n` +
+      chalk.red(e.stack ? e.stack : e));
   }
 
   return false;
@@ -100,12 +107,13 @@ export async function runTask(name: string): Promise<void> {
 
   try {
     const gulp = await loadGulp();
-    const boundStart = gulp.start.bind(gulp);
-    const gulpStart = promisify<void, string>(boundStart as any);
-
+    // Load the task (gulp v4 return an executable wrapper)
+    const taskWrapper = gulp.task(name) as any;
     process.stdout.write(`${timestamp()} Invoking ${chalk.cyan(name)} gulp task.\n`);
-    await gulpStart(name);
+    // Execute as promise
+    await new Promise(done => taskWrapper(done));
   } catch (e) {
-    process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n`);
+    process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n` +
+      chalk.red(e.stack ? e.stack : e));
   }
 }
