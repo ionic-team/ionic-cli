@@ -37,6 +37,9 @@ export class DeviceFrame {
       <h2><i class={ ['icon', this.icon].join(' ') } />{ this.platformName }</h2>,
       <div class="frame-container">
         <div class="statusbar">
+         <svg class="statusbar-ios" viewBox="0 0 219 31">
+            <path d="M0 1V0h219v1a5 5 0 0 0-5 5v3c0 12.15-9.85 22-22 22H27C14.85 31 5 21.15 5 9V6a5 5 0 0 0-5-5z" fill-rule="evenodd"/>
+          </svg>
           <svg class="statusbar-md" viewBox="0 0 1384.3 40.3">
             <path class="st0" d="M1343 5l18.8 32.3c.8 1.3 2.7 1.3 3.5 0L1384 5c.8-1.3-.2-3-1.7-3h-37.6c-1.5 0-2.5 1.7-1.7 3z"/>
             <circle class="st0" cx="1299" cy="20.2" r="20"/>

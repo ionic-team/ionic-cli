@@ -36,4 +36,6 @@
   --frame-ratio: .488; /* width/height */
   --frame-default-width: 344px;
   --frame-default-height: calc(var(--frame-default-width) / var(--frame-ratio));
+
+  --device-frame-width: 12px;
 }
