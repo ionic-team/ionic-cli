@@ -1,3 +1,5 @@
+const { dirname } = require('path');
+
 exports.config = {
   srcDir: 'src/stencil',
   outputTargets: [
@@ -8,6 +10,7 @@ exports.config = {
   ],
   copy: [
     { src: 'assets' },
+    { src: dirname(require.resolve('@ionic-internal/ionic-ds/package')) + '/www/assets/fonts', dest: 'assets/fonts' },
   ],
 };
 
