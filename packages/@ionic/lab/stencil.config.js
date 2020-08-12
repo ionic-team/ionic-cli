@@ -8,7 +8,7 @@ exports.config = {
   ],
   copy: [
     { src: 'assets' },
-    { src: '../../node_modules/@ionic-internal/ionic-ds/www/assets/fonts', dest: 'assets/fonts' },
+    { src: '../../../../../node_modules/@ionic-internal/ionic-ds/www/assets/fonts', dest: 'assets/fonts' },
   ],
 };
 
