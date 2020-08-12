@@ -1,9 +1,9 @@
-import {prettyPath} from '@ionic/cli-framework/utils/format';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
-import {timestamp} from './log';
+import { timestamp } from './log';
 
 const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
@@ -64,10 +64,8 @@ export async function loadGulp(): Promise<typeof import('gulp') & typeof import(
           chalk.red(e.stack ? e.stack : e));
       }
       debug('Loaded gulp tasks: %o', _gulpInst.tree().nodes);
-    }
-
-    // V3 gulp file: failed
-    else {
+    } else {
+      // V3 gulp file: failed
       throw new Error(`Your gulpfile.js is not compatible with Gulp v4:\n- Upgrade to gulp v4 (see https://zzz.buzz/2016/11/19/gulp-4-0-upgrade-guide/)\n- Or downgrade @ionic/v1-toolkit to <= 3.2.0.`);
     }
   }
@@ -84,7 +82,7 @@ export async function tasks(): Promise<string[]> {
       .map(node => (node && node.label || node) as string);
 
   } catch (e) {
-    process.stderr.write(`${timestamp()} Cannot load gulp tasks: ${chalk.bold(String(e))}\n`+
+    process.stderr.write(`${timestamp()} Cannot load gulp tasks: ${chalk.bold(String(e))}\n` +
       chalk.red(e.stack ? e.stack : e));
     return [];
   }
@@ -94,7 +92,7 @@ export async function hasTask(name: string): Promise<boolean> {
   try {
     return (await tasks()).includes(name);
   } catch (e) {
-    process.stderr.write(`${timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n`+
+    process.stderr.write(`${timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n` +
       chalk.red(e.stack ? e.stack : e));
   }
 
