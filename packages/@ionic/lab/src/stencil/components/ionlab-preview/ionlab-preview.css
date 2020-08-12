@@ -22,7 +22,7 @@ ionlab-preview > div {
   ionlab-preview {
     overflow: hidden;
 
-    --frame-ratio: .562;
+    --frame-width: 300px;
     --frame-height: calc(var(--frame-width) / var(--frame-ratio));
   }
 

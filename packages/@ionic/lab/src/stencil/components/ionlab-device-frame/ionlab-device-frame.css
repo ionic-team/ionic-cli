@@ -139,4 +139,8 @@ ionlab-device-frame .frame-container iframe {
   ionlab-device-frame h2 {
     display: none;
   }
+
+  #device-ios .statusbar-ios {
+    top: 10px;
+  }
 }
