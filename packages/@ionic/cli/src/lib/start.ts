@@ -199,6 +199,11 @@ export const SUPPORTED_FRAMEWORKS: readonly SupportedFramework[] = [
     type: 'react',
     description: 'https://reactjs.org',
   },
+  {
+    name: 'Vue',
+    type: 'vue',
+    description: 'https://vuejs.org',
+  },
 ];
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
