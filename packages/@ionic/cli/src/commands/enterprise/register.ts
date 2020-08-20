@@ -1,3 +1,5 @@
+import { MetadataGroup } from '@ionic/cli-framework';
+
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
@@ -9,6 +11,7 @@ export class RegisterCommand extends Command {
     return {
       name: 'register',
       type: 'project',
+      groups: [MetadataGroup.PAID],
       summary: 'Register your Product Key with this app',
       options: [
         {

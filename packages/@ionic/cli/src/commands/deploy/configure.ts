@@ -11,7 +11,7 @@ export class ConfigureCommand extends DeployConfCommand {
     return {
       name: 'configure',
       type: 'project',
-      groups: [MetadataGroup.HIDDEN],
+      groups: [MetadataGroup.PAID],
       summary: 'Overrides Appflow Deploy configuration',
       description: `
 This command overrides configuration for the Appflow Deploy plugin (${input('cordova-plugin-ionic')}) in Capacitor projects.

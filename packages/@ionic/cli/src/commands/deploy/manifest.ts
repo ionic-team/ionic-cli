@@ -24,7 +24,7 @@ export class DeployManifestCommand extends DeployCoreCommand {
       name: 'manifest',
       type: 'project',
       summary: 'Generates a manifest file for the deploy service from a built app directory',
-      groups: [MetadataGroup.HIDDEN],
+      groups: [MetadataGroup.PAID],
     };
   }
 

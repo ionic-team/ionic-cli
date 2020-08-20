@@ -13,6 +13,7 @@ export class AddCommand extends DeployConfCommand {
     return {
       name: 'add',
       type: 'project',
+      groups: [MetadataGroup.PAID],
       summary: 'Adds Appflow Deploy to the project',
       description: `
 This command adds the Appflow Deploy plugin (${input('cordova-plugin-ionic')}) for both Capacitor and Cordova projects.
