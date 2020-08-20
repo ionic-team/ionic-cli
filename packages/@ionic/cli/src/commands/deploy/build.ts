@@ -36,6 +36,7 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
+      groups: [MetadataGroup.PAID],
       summary: 'Create a deploy build on Appflow',
       description: `
 This command creates a deploy build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal.

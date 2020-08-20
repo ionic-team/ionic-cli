@@ -57,6 +57,7 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
+      groups: [MetadataGroup.PAID],
       summary: 'Create a package build on Appflow',
       description: `
 This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory.

@@ -2,6 +2,7 @@ import {
   CommandLineInputs,
   CommandLineOptions,
   LOGGER_LEVELS,
+  MetadataGroup,
   combine,
   validators,
 } from '@ionic/cli-framework';
@@ -48,6 +49,7 @@ export class DeployCommand extends Command {
     return {
       name: 'deploy',
       type: 'project',
+      groups: [MetadataGroup.PAID],
       summary: 'Deploys a binary to a destination, such as an app store using Appflow',
       description: `
 This command deploys a binary to a destination using Ionic Appflow. While running, the remote log is printed to the terminal.
