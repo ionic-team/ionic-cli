@@ -177,11 +177,11 @@ Apart from ${input('--commit')}, every option can be specified using the full na
       } catch (e) {
         // Retry up to 3 times in the case of an error.
         errorsEncountered++;
+        ws.write(chalk.yellow(`Encountered error: ${e} while fetching build data retrying.`));
         if (errorsEncountered >= 3) {
           ws.write(chalk.red(`Encountered ${errorsEncountered} errors in a row. Job will now fail.`));
           throw e;
         }
-        ws.write(chalk.yellow(`Encountered error: ${e} while fetching build data retrying.`));
       }
     }
     ws.end();
