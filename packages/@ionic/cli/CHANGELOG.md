@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.11.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.0...@ionic/cli@6.11.1) (2020-08-20)
+
+
+### Bug Fixes
+
+* **appflow:** fix an issue where a network connectivity issue could c… ([#4520](https://github.com/ionic-team/ionic-cli/issues/4520)) ([8634fde](https://github.com/ionic-team/ionic-cli/commit/8634fde68bdfa8f4af724e4a86bb285c44924f37))
+
+
+
+
+
 # [6.11.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.10.2...@ionic/cli@6.11.0) (2020-07-29)
 
 
