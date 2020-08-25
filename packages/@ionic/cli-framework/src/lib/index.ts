@@ -1,6 +1,7 @@
 import { Logger } from '@ionic/cli-framework-output';
 
 export {
+  CreateTaggedFormatterOptions,
   DEFAULT_LOGGER_HANDLERS,
   ICON_FAILURE,
   ICON_SUCCESS,
@@ -26,6 +27,8 @@ export {
   TaskChain,
   TaskChainOptions,
   TaskOptions,
+  createPrefixedFormatter,
+  createTaggedFormatter,
   getLoggerLevelColor,
   getLoggerLevelName,
 } from '@ionic/cli-framework-output';
@@ -36,7 +39,6 @@ export * from './completion';
 export * from './config';
 export * from './executor';
 export * from './help';
-export * from './logger';
 export * from './options';
 export * from './validators';
 

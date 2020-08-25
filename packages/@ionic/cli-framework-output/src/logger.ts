@@ -1,8 +1,9 @@
 import { Writable } from 'stream';
 import * as util from 'util';
 
-import { ColorFunction, Colors } from './colors';
-import { enforceLF } from './utils';
+import { ColorFunction, Colors, NO_COLORS } from './colors';
+import { WordWrapOptions, stringWidth, wordWrap } from './format';
+import { dropWhile, enforceLF } from './utils';
 
 export interface LogRecord {
   msg: string;
@@ -210,4 +211,53 @@ export class Logger {
       }
     }();
   }
+}
+
+export interface CreateTaggedFormatterOptions {
+  prefix?: string | (() => string);
+  titleize?: boolean;
+  wrap?: boolean | WordWrapOptions;
+  colors?: Colors;
+}
+
+export function createTaggedFormatter({ colors = NO_COLORS, prefix = '', titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
+  return ({ msg, level, format }) => {
+    if (format === false) {
+      return msg;
+    }
+
+    const { strong, weak } = colors;
+
+    const [ firstLine, ...lines ] = msg.split('\n');
+
+    const levelName = getLoggerLevelName(level);
+    const levelColor = getLoggerLevelColor(colors, level);
+
+    const tag = (
+      (typeof prefix === 'function' ? prefix() : prefix) +
+      (levelName ? `${weak('[')}\x1b[40m${strong(levelColor ? levelColor(levelName) : levelName)}\x1b[49m${weak(']')}` : '')
+    );
+
+    const title = titleize && lines.length > 0 ? `${strong(levelColor ? levelColor(firstLine) : firstLine)}\n` : firstLine;
+    const indentation = tag ? stringWidth(tag) + 1 : 0;
+    const pulledLines = dropWhile(lines, l => l === '');
+
+    return (
+      (tag ? `${tag} ` : '') +
+      (wrap
+        ? wordWrap([title, ...pulledLines].join('\n'), { indentation, ...(typeof wrap === 'object' ? wrap : {}) })
+        : [title, ...pulledLines.map(l => l ? ' '.repeat(indentation) + l : '')].join('\n')
+      )
+    );
+  };
+}
+
+export function createPrefixedFormatter(prefix: string | (() => string)): LoggerFormatter {
+  return ({ msg, format }) => {
+    if (format === false) {
+      return msg;
+    }
+
+    return `${typeof prefix === 'function' ? prefix() : prefix} ${msg}`;
+  };
 }

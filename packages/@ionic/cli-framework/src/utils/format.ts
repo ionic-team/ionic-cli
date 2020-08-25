@@ -1,17 +1,10 @@
+import { sliceAnsi, stringWidth } from '@ionic/cli-framework-output';
 import * as chalk from 'chalk';
 import * as os from 'os';
 import * as path from 'path';
-import sliceAnsi = require('slice-ansi');
-import stringWidth = require('string-width');
-import stripAnsi = require('strip-ansi');
 import untildify = require('untildify');
-import wrapAnsi = require('wrap-ansi');
 
-export { stringWidth, stripAnsi };
-
-const MIN_TTY_WIDTH = 80;
-const MAX_TTY_WIDTH = 120;
-export const TTY_WIDTH = process.stdout.columns ? Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns, MAX_TTY_WIDTH)) : Infinity;
+export { TTY_WIDTH, WordWrapOptions, indent, sliceAnsi, stringWidth, stripAnsi, wordWrap } from '@ionic/cli-framework-output';
 
 export function prettyPath(p: string): string {
   p = expandPath(p);
@@ -38,20 +31,6 @@ export function prettyPath(p: string): string {
 
 export function expandPath(p: string): string {
   return path.resolve(untildify(p));
-}
-
-export function indent(n = 4): string {
-  return ' '.repeat(n);
-}
-
-export interface WordWrapOptions {
-  width?: number;
-  indentation?: number;
-  append?: string;
-}
-
-export function wordWrap(msg: string, { width = TTY_WIDTH, indentation = 0, append = '' }: WordWrapOptions) {
-  return wrapAnsi(msg, width - indentation - append.length, { trim: true }).split('\n').join(`${append}\n${indent(indentation)}`);
 }
 
 export function generateFillSpaceStringList(list: string[], optimalLength = 1, fillCharacter = ' '): string[] {

@@ -1,8 +1,44 @@
-import { enforceLF } from '../utils';
+import { dropWhile, enforceLF } from '../utils';
 
 describe('@ionic/cli-framework-output', () => {
 
   describe('utils', () => {
+
+    describe('dropWhile', () => {
+
+      it('should not return the original array', () => {
+        const input: string[] = [];
+        const result = dropWhile(input);
+        expect(result).not.toBe(input);
+        expect(result).toEqual([]);
+      });
+
+      it('should filter truthy with default predicate', () => {
+        const result = dropWhile([1, 2, 3]);
+        expect(result).toEqual([]);
+      });
+
+      it('should filter truthy elements with default predicate', () => {
+        const result = dropWhile([2, 1, 0]);
+        expect(result).toEqual([0]);
+      });
+
+      it('should only filter truthy elements from the beginning with default predicate', () => {
+        const result = dropWhile([1, 0, 1]);
+        expect(result).toEqual([0, 1]);
+      });
+
+      it('should only filter elements from the beginning', () => {
+        const result = dropWhile(['a', 'b', 'c', 'b', 'a'], item => item === 'a');
+        expect(result).toEqual(['b', 'c', 'b', 'a']);
+      });
+
+      it('should filter elements from the beginning by type', () => {
+        const result = dropWhile(['a', 'b', 0, 'c', 'd', 1], item => typeof item === 'string');
+        expect(result).toEqual([0, 'c', 'd', 1]);
+      });
+
+    });
 
     describe('enforceLF', () => {
 
