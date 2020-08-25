@@ -1,7 +1,7 @@
 import logUpdate = require('log-update');
 import { LogUpdate } from 'log-update';
 
-import { Colors, DEFAULT_COLORS } from './colors';
+import { Colors, NO_COLORS } from './colors';
 import { ICON_FAILURE, ICON_SUCCESS, Spinner, TaskChain } from './tasks';
 
 export interface OutputStrategy {
@@ -23,7 +23,7 @@ export class StreamOutputStrategy implements OutputStrategy {
 
   protected readonly colors: Colors;
 
-  constructor({ stream = process.stdout, colors = DEFAULT_COLORS }: StreamOutputStrategyOptions) {
+  constructor({ stream = process.stdout, colors = NO_COLORS }: StreamOutputStrategyOptions) {
     this.stream = stream;
     this.colors = colors;
   }
@@ -57,7 +57,7 @@ export class LogUpdateOutputStrategy implements OutputStrategy, RedrawLine {
   protected readonly colors: Colors;
   protected readonly logUpdate: LogUpdate;
 
-  constructor({ stream = process.stdout, colors = DEFAULT_COLORS }: LogUpdateOutputStrategyOptions = {}) {
+  constructor({ stream = process.stdout, colors = NO_COLORS }: LogUpdateOutputStrategyOptions = {}) {
     this.stream = stream;
     this.colors = colors;
     this.logUpdate = logUpdate.create(stream);

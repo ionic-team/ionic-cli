@@ -1,8 +1,8 @@
 import { Task, TaskChain } from '../tasks';
 
-describe('@ionic/cli-framework', () => {
+describe('@ionic/cli-framework-output', () => {
 
-  describe('lib/tasks', () => {
+  describe('tasks', () => {
 
     describe('Task', () => {
 
