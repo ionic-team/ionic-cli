@@ -1,12 +1,9 @@
-import * as chalk from 'chalk';
-import * as lodash from 'lodash';
 import { Writable } from 'stream';
 import * as util from 'util';
 
-import { WordWrapOptions, stringWidth, wordWrap } from '../utils/format';
-import { enforceLF } from '../utils/string';
-
-import { ColorFunction, Colors, DEFAULT_COLORS } from './colors';
+import { ColorFunction, Colors, NO_COLORS } from './colors';
+import { WordWrapOptions, stringWidth, wordWrap } from './format';
+import { dropWhile, enforceLF } from './utils';
 
 export interface LogRecord {
   msg: string;
@@ -223,7 +220,7 @@ export interface CreateTaggedFormatterOptions {
   colors?: Colors;
 }
 
-export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
+export function createTaggedFormatter({ colors = NO_COLORS, prefix = '', titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
   return ({ msg, level, format }) => {
     if (format === false) {
       return msg;
@@ -238,12 +235,12 @@ export function createTaggedFormatter({ colors = DEFAULT_COLORS, prefix = '', ti
 
     const tag = (
       (typeof prefix === 'function' ? prefix() : prefix) +
-      (levelName ? `${weak('[')}${chalk.bgBlack(strong(levelColor ? levelColor(levelName) : levelName))}${weak(']')}` : '')
+      (levelName ? `${weak('[')}\x1b[40m${strong(levelColor ? levelColor(levelName) : levelName)}\x1b[49m${weak(']')}` : '')
     );
 
     const title = titleize && lines.length > 0 ? `${strong(levelColor ? levelColor(firstLine) : firstLine)}\n` : firstLine;
     const indentation = tag ? stringWidth(tag) + 1 : 0;
-    const pulledLines = lodash.dropWhile(lines, l => l === '');
+    const pulledLines = dropWhile(lines, l => l === '');
 
     return (
       (tag ? `${tag} ` : '') +
