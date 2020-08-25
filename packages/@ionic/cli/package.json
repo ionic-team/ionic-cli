@@ -64,7 +64,7 @@
     "superagent": "^5.2.1",
     "superagent-proxy": "^2.0.0",
     "tar": "^6.0.1",
-    "through2": "^3.0.0",
+    "through2": "^4.0.2",
     "tslib": "1.11.2"
   },
   "devDependencies": {
