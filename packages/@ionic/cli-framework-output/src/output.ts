@@ -1,17 +1,12 @@
-import logUpdate = require('log-update');
-import { LogUpdate } from 'log-update';
+import { Cursor, EscapeCode } from '@ionic/utils-terminal';
 
 import { Colors, NO_COLORS } from './colors';
 import { ICON_FAILURE, ICON_SUCCESS, Spinner, TaskChain } from './tasks';
-import { formatHrTime } from './utils';
+import { enforceSingleLF, formatHrTime } from './utils';
 
 export interface OutputStrategy {
   readonly stream: NodeJS.WritableStream;
   createTaskChain(): TaskChain;
-}
-
-export interface RedrawLine {
-  redrawLine(msg?: string): void;
 }
 
 export interface StreamOutputStrategyOptions {
@@ -47,25 +42,21 @@ export class StreamOutputStrategy implements OutputStrategy {
   }
 }
 
-export interface LogUpdateOutputStrategyOptions {
-  readonly stream?: NodeJS.WritableStream;
+export interface TTYOutputStrategyOptions {
+  readonly stream?: NodeJS.WriteStream;
   readonly colors?: Colors;
 }
 
-export class LogUpdateOutputStrategy implements OutputStrategy, RedrawLine {
-  readonly stream: NodeJS.WritableStream;
+export class TTYOutputStrategy implements OutputStrategy {
+  readonly stream: NodeJS.WriteStream;
 
   protected readonly colors: Colors;
-  protected readonly logUpdate: LogUpdate;
+  protected readonly redrawer: TTYOutputRedrawer;
 
-  constructor({ stream = process.stdout, colors = NO_COLORS }: LogUpdateOutputStrategyOptions = {}) {
+  constructor({ stream = process.stdout, colors = NO_COLORS }: TTYOutputStrategyOptions = {}) {
     this.stream = stream;
     this.colors = colors;
-    this.logUpdate = logUpdate.create(stream);
-  }
-
-  redrawLine(msg = ''): void {
-    this.logUpdate(msg);
+    this.redrawer = new TTYOutputRedrawer({ stream });
   }
 
   createTaskChain(): TaskChain {
@@ -87,18 +78,47 @@ export class LogUpdateOutputStrategy implements OutputStrategy, RedrawLine {
         const progress = task.progressRatio ? (task.progressRatio * 100).toFixed(2) : '';
         const frame = spinner.frame();
 
-        this.redrawLine(`${strong(frame)} ${task.msg}${progress ? ' (' + strong(String(progress) + '%') + ')' : ''} `);
+        this.redrawer.redraw(`${strong(frame)} ${task.msg}${progress ? ' (' + strong(String(progress) + '%') + ')' : ''} `);
       });
 
       task.on('clear', () => {
-        this.logUpdate.clear();
+        this.redrawer.clear();
       });
     });
 
     chain.on('end', () => {
-      this.logUpdate.done();
+      this.redrawer.end();
     });
 
     return chain;
+  }
+}
+
+export interface TTYOutputRedrawerOptions {
+  readonly stream?: NodeJS.WriteStream;
+}
+
+export class TTYOutputRedrawer {
+  readonly stream: NodeJS.WriteStream;
+
+  constructor({ stream = process.stdout }: TTYOutputRedrawerOptions) {
+    this.stream = stream;
+  }
+
+  get width(): number {
+    return this.stream.columns || 80;
+  }
+
+  redraw(msg: string) {
+    Cursor.hide();
+    this.stream.write(EscapeCode.eraseLines(1) + enforceSingleLF(msg));
+  }
+
+  clear() {
+    this.stream.write(EscapeCode.eraseLines(1));
+  }
+
+  end() {
+    Cursor.show();
   }
 }

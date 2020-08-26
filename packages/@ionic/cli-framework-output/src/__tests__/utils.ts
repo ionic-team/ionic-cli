@@ -1,4 +1,4 @@
-import { dropWhile, enforceLF } from '../utils';
+import { dropWhile, enforceLF, enforceSingleLF } from '../utils';
 
 describe('@ionic/cli-framework-output', () => {
 
@@ -47,6 +47,11 @@ describe('@ionic/cli-framework-output', () => {
         expect(result).toBe('\n');
       });
 
+      it('should keep multiple newlines', () => {
+        const result = enforceLF('\n\n\n');
+        expect(result).toBe('\n\n\n');
+      });
+
       it('should do nothing to a single newline', () => {
         const result = enforceLF('\n');
         expect(result).toBe('\n');
@@ -64,6 +69,40 @@ describe('@ionic/cli-framework-output', () => {
 
       it('should add newline to multiline text without newline at end', () => {
         const result = enforceLF('some text\nsome more');
+        expect(result).toBe('some text\nsome more\n');
+      });
+
+    });
+
+    describe('enforceSingleLF', () => {
+
+      it('should convert empty string to newline', () => {
+        const result = enforceSingleLF('');
+        expect(result).toBe('\n');
+      });
+
+      it('should strip multiple newlines', () => {
+        const result = enforceSingleLF('\n\n\n');
+        expect(result).toBe('\n');
+      });
+
+      it('should do nothing to a single newline', () => {
+        const result = enforceSingleLF('\n');
+        expect(result).toBe('\n');
+      });
+
+      it('should add newline to text without newline', () => {
+        const result = enforceSingleLF('some text');
+        expect(result).toBe('some text\n');
+      });
+
+      it('should do nothing to multiline text with newline at end', () => {
+        const result = enforceSingleLF('some text\nsome more\n');
+        expect(result).toBe('some text\nsome more\n');
+      });
+
+      it('should add newline to multiline text without newline at end', () => {
+        const result = enforceSingleLF('some text\nsome more');
         expect(result).toBe('some text\nsome more\n');
       });
 
