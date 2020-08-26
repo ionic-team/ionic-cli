@@ -3,6 +3,7 @@ import { LogUpdate } from 'log-update';
 
 import { Colors, NO_COLORS } from './colors';
 import { ICON_FAILURE, ICON_SUCCESS, Spinner, TaskChain } from './tasks';
+import { formatHrTime } from './utils';
 
 export interface OutputStrategy {
   readonly stream: NodeJS.WritableStream;
@@ -29,16 +30,16 @@ export class StreamOutputStrategy implements OutputStrategy {
   }
 
   createTaskChain(): TaskChain {
-    const { failure, success } = this.colors;
+    const { failure, success, weak } = this.colors;
     const chain = new TaskChain();
 
     chain.on('next', task => {
-      task.on('success', () => {
-        this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} - done!`);
-      });
-
-      task.on('failure', () => {
-        this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} - failed!`);
+      task.on('end', result => {
+        if (result.success) {
+          this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}`);
+        } else {
+          this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}`);
+        }
       });
     });
 
@@ -68,16 +69,16 @@ export class LogUpdateOutputStrategy implements OutputStrategy, RedrawLine {
   }
 
   createTaskChain(): TaskChain {
-    const { failure, strong, success } = this.colors;
+    const { failure, strong, success, weak } = this.colors;
     const chain = new TaskChain({ taskOptions: { tickInterval: 50 } });
 
     chain.on('next', task => {
-      task.on('success', () => {
-        this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} - done!\n`);
-      });
-
-      task.on('failure', () => {
-        this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} - failed!\n`);
+      task.on('end', result => {
+        if (result.success) {
+          this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}\n`);
+        } else {
+          this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}\n`);
+        }
       });
 
       const spinner = new Spinner();
