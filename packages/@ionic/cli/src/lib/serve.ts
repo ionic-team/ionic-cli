@@ -1,4 +1,5 @@
-import { BaseError, LOGGER_LEVELS, MetadataGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
+import { BaseError, MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework-output';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';

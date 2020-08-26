@@ -1,4 +1,5 @@
-import { BaseCommand, DEFAULT_COLORS, LOGGER_LEVELS, LogUpdateOutputStrategy, OutputStrategy, StreamHandler, StreamOutputStrategy, TaskChain, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
+import { BaseCommand, DEFAULT_COLORS, generateCommandPath, unparseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, OutputStrategy, StreamHandler, StreamOutputStrategy, TTYOutputStrategy, TaskChain } from '@ionic/cli-framework-output';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, IProject, IonicEnvironment } from '../definitions';
@@ -28,7 +29,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
     const formatter = createFormatter();
 
     if (this.env.flags.interactive) {
-      output = new LogUpdateOutputStrategy({ stream: process.stdout, colors: DEFAULT_COLORS });
+      output = new TTYOutputStrategy({ stream: process.stdout, colors: DEFAULT_COLORS });
       this.env.log.handlers = new Set([new StreamHandler({ stream: output.stream, formatter })]);
     } else {
       this.env.log.handlers = createDefaultLoggerHandlers();

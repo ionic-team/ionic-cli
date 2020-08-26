@@ -1,4 +1,5 @@
-import { CreateTaggedFormatterOptions, DEFAULT_COLORS, DEFAULT_LOGGER_HANDLERS, LOGGER_LEVELS, Logger as BaseLogger, LoggerFormatter, LoggerLevelWeight, createPrefixedFormatter, createTaggedFormatter } from '@ionic/cli-framework';
+import { DEFAULT_COLORS } from '@ionic/cli-framework';
+import { CreateTaggedFormatterOptions, DEFAULT_LOGGER_HANDLERS, LOGGER_LEVELS, Logger as BaseLogger, LoggerFormatter, LoggerLevelWeight, createPrefixedFormatter, createTaggedFormatter } from '@ionic/cli-framework-output';
 import * as chalk from 'chalk';
 
 import { ILogger } from '../../definitions';

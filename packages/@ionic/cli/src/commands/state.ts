@@ -1,5 +1,6 @@
 import { MetadataGroup } from '@ionic/cli-framework';
-import { columnar, indent } from '@ionic/cli-framework/utils/format';
+import { indent } from '@ionic/cli-framework-output';
+import { columnar } from '@ionic/cli-framework/utils/format';
 
 import { CommandMetadata } from '../definitions';
 import { input, strong } from '../lib/color';

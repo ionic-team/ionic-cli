@@ -1,5 +1,5 @@
 import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
-import { stripAnsi } from '@ionic/cli-framework/utils/format';
+import { stripAnsi } from '@ionic/cli-framework-output';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { findClosestOpenPort } from '@ionic/utils-network';
 import * as chalk from 'chalk';

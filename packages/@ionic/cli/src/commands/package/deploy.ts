@@ -1,11 +1,11 @@
 import {
   CommandLineInputs,
   CommandLineOptions,
-  LOGGER_LEVELS,
   MetadataGroup,
   combine,
   validators,
 } from '@ionic/cli-framework';
+import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { sleep } from '@ionic/utils-process';
 import * as chalk from 'chalk';
