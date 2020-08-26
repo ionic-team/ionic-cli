@@ -3,6 +3,7 @@ import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as pathlib from 'path';
+import * as onSignalExit from 'signal-exit';
 import * as kill from 'tree-kill';
 
 const debug = Debug('ionic:utils-process');
@@ -85,7 +86,7 @@ export async function sleepForever(): Promise<never> {
  * Register a synchronous function to be called once the process exits.
  */
 export function onExit(fn: () => void) {
-  process.on('exit', () => {
+  onSignalExit(() => {
     debug('onExit: process.exit/normal shutdown');
     fn();
   });
