@@ -4,8 +4,6 @@ import * as os from 'os';
 import * as path from 'path';
 import untildify = require('untildify');
 
-export { TTY_WIDTH, WordWrapOptions, indent, sliceAnsi, stringWidth, stripAnsi, wordWrap } from '@ionic/cli-framework-output';
-
 export function prettyPath(p: string): string {
   p = expandPath(p);
   const cwd = process.cwd();

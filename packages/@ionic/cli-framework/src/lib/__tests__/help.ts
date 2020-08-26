@@ -1,7 +1,8 @@
+import { stripAnsi } from '@ionic/cli-framework-output';
+
 import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap } from '../command';
 import { CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';
 import { MetadataGroup } from '../../definitions';
-import { stripAnsi } from '../../utils/format';
 
 class MyNamespace extends Namespace {
   async getMetadata() {
