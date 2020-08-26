@@ -15,7 +15,7 @@ export interface RedrawLine {
 }
 
 export interface StreamOutputStrategyOptions {
-  readonly stream: NodeJS.WritableStream;
+  readonly stream?: NodeJS.WritableStream;
   readonly colors?: Colors;
 }
 
