@@ -36,9 +36,9 @@ export class StreamOutputStrategy implements OutputStrategy {
     chain.on('next', task => {
       task.on('end', result => {
         if (result.success) {
-          this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}`);
+          this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}\n`);
         } else {
-          this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}`);
+          this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}\n`);
         }
       });
     });
