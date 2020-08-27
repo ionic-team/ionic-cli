@@ -1,4 +1,5 @@
-import * as fsSpy from '@ionic/utils-fs';
+import * as fsExtraSpy from 'fs-extra';
+import * as fsSafeSpy from '@ionic/utils-fs/dist/safe';
 import * as project from '../project';
 
 describe('@ionic/cli', () => {
@@ -8,21 +9,21 @@ describe('@ionic/cli', () => {
     describe('getPlatforms', () => {
 
       it('should filter out files and hidden files/folders', async () => {
-        const files = [['.DS_Store', false], ['.dir', true], ['android', true], ['ios', true], ['platforms.json', false]];
-        spyOn(fsSpy, 'readdirSafe').and.callFake(async () => files.map(([f]) => f));
-        spyOn(fsSpy, 'statSafe').and.callFake(async (p) => ({
+        const files: [string, boolean][] = [['.DS_Store', false], ['.dir', true], ['android', true], ['ios', true], ['platforms.json', false]];
+        jest.spyOn(fsSafeSpy, 'readdir').mockImplementation(async () => files.map(([f]) => f));
+        jest.spyOn(fsSafeSpy, 'stat').mockImplementation(async (p) => ({
           isDirectory: () => {
             const file = files.find(([f]) => p.endsWith(f));
             return typeof file !== 'undefined' && file[1];
           },
-        }));
+        } as any));
 
         const platforms = await project.getPlatforms('/path/to/proj');
         expect(platforms).toEqual(['android', 'ios']);
       });
 
       it('should not error if directory empty', async () => {
-        spyOn(fsSpy, 'readdirSafe').and.callFake(async () => []);
+        jest.spyOn(fsSafeSpy, 'readdir').mockImplementation(async () => []);
         const platforms = await project.getPlatforms('/path/to/proj');
         expect(platforms).toEqual([]);
       });
@@ -32,14 +33,14 @@ describe('@ionic/cli', () => {
     describe('getAndroidBuildOutputJson', () => {
 
       it('should throw for fs error', () => {
-        spyOn(fsSpy, 'readJson').and.callFake(async () => { throw new Error('error') });
+        jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => { throw new Error('error') });
 
         const p = project.getAndroidBuildOutputJson('/path/to/output.json');
         expect(p).rejects.toThrowError('Could not parse build output file');
       });
 
       it('should throw for unrecognized format', () => {
-        spyOn(fsSpy, 'readJson').and.callFake(async () => ({ foo: 'bar' }));
+        jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => ({ foo: 'bar' }));
 
         const p = project.getAndroidBuildOutputJson('/path/to/output.json');
         expect(p).rejects.toThrowError('Could not parse build output file');
@@ -55,7 +56,7 @@ describe('@ionic/cli', () => {
           },
         ];
 
-        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+        jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
         const p = project.getAndroidBuildOutputJson('/path/to/output.json');
         expect(p).resolves.toEqual(file);
@@ -73,7 +74,7 @@ describe('@ionic/cli', () => {
           ],
         };
 
-        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+        jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
         const p = project.getAndroidBuildOutputJson('/path/to/output.json');
         expect(p).resolves.toEqual(file);
@@ -93,7 +94,7 @@ describe('@ionic/cli', () => {
           },
         ];
 
-        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+        jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
         const p = project.getAndroidPackageFilePath('/path/to/proj', { release: false });
         expect(p).resolves.toEqual('platforms/android/app/build/outputs/apk/debug/foo-debug.apk');
@@ -111,7 +112,7 @@ describe('@ionic/cli', () => {
           ],
         };
 
-        spyOn(fsSpy, 'readJson').and.callFake(async () => file);
+        jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
         const p = project.getAndroidPackageFilePath('/path/to/proj', { release: false });
         expect(p).resolves.toEqual('platforms/android/app/build/outputs/apk/debug/bar-debug.apk');

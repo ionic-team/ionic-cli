@@ -93,7 +93,7 @@ export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, arg
   // should also connect the Ionic CLI with the running `native-run` process.
   // This will exit the Ionic CLI when `native-run` exits.
   if (connect) {
-    processExit(0); // tslint:disable-line:no-floating-promises
+    processExit(0);
   }
 }
 

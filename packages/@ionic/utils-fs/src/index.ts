@@ -198,7 +198,7 @@ export async function getFileChecksum(filePath: string): Promise<string> {
  * @return Promise<[true checksum, cached checksum or undefined if cache file missing]>
  */
 export async function getFileChecksums(p: string): Promise<[string, string | undefined]> {
-  return Promise.all([
+  return Promise.all<string, string | undefined>([
     getFileChecksum(p),
     (async () => {
       try {
@@ -210,7 +210,7 @@ export async function getFileChecksums(p: string): Promise<[string, string | und
         }
       }
     })(),
-  ]) as Promise<[string, string | undefined]>; // TODO: https://github.com/microsoft/TypeScript/issues/33752
+  ]);
 }
 
 /**
@@ -260,10 +260,10 @@ export async function pathExecutable(filePath: string): Promise<boolean> {
 }
 
 export async function isExecutableFile(filePath: string): Promise<boolean> {
-  const [ stats, executable ] = await (Promise.all([
+  const [ stats, executable ] = await (Promise.all<fs.Stats | undefined, boolean>([
     safe.stat(filePath),
     pathExecutable(filePath),
-  ]) as Promise<[fs.Stats, boolean]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
+  ]));
 
   return !!stats && (stats.isFile() || stats.isSymbolicLink()) && executable;
 }
@@ -363,7 +363,7 @@ export class Walker extends stream.Readable {
     const { pathFilter } = this.options;
 
     if (!p) {
-      this.push(null); // tslint:disable-line:no-null-keyword
+      this.push(null);
       return;
     }
 

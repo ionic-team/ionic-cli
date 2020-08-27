@@ -178,7 +178,7 @@ The default directory for ${input('--key-path')} and ${input('--cert-path')} is 
 
   private async ensureDirectory(p: string) {
     if (!(await pathExists(p))) {
-      await mkdirp(p, 0o700 as any); // tslint:disable-line
+      await mkdirp(p, 0o700 as any);
       this.env.log.msg(`Created ${strong(prettyPath(p))} directory for you.`);
     }
   }
