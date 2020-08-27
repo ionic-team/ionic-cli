@@ -59,7 +59,7 @@ export abstract class BaseConfigCommand extends Command {
     try {
       const serialized = JSON.stringify(v);
 
-      if (typeof serialized === 'undefined') { // tslint:disable-line:strict-type-predicates
+      if (typeof serialized === 'undefined') {
         throw new FatalException(`Cannot serialize value: ${strong(v)}`);
       }
 

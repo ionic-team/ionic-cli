@@ -508,7 +508,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       };
 
       const closeHandler = (code: number | null) => {
-        if (code !== null) { // tslint:disable-line:no-null-keyword
+        if (code !== null) {
           debug('received unexpected close for %s (code: %d)', this.resolvedProgram, code);
 
           this.e.log.nl();
@@ -517,7 +517,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
             'The Ionic CLI will exit. Please check any output above for error details.'
           );
 
-          processExit(1); // tslint:disable-line:no-floating-promises
+          processExit(1);
         }
       };
 

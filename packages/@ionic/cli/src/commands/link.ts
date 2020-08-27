@@ -476,7 +476,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       name: strong('Nevermind'),
       id: CHOICE_NEVERMIND,
       value: CHOICE_NEVERMIND,
-      org: null, // tslint:disable-line
+      org: null,
     };
 
     const linkedApp = await this.env.prompt({

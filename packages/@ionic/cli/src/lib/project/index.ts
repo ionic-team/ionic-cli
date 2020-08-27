@@ -275,13 +275,13 @@ export class ProjectDetails {
       if (isProjectConfig(config)) {
         const r = await this.determineSingleApp(config);
         errors.push(...r.errors);
-        return { configPath, errors, ...r };
+        return { ...r, configPath, errors };
       }
 
       if (isMultiProjectConfig(config)) {
         const r = await this.determineMultiApp(config);
         errors.push(...r.errors);
-        return { configPath, errors, ...r };
+        return { ...r, configPath, errors };
       }
 
       throw new ProjectDetailsError('Unknown project file structure', 'ERR_INVALID_PROJECT_FILE');
@@ -596,7 +596,6 @@ export abstract class Project implements IProject {
   }
 
   // Empty to avoid sub-classes having to implement
-  // tslint:disable-next-line:no-empty
   async setPrimaryTheme(_themeColor: string): Promise<void> { }
 
   async writeThemeColor(variablesPath: string, themeColor: string): Promise<void> {

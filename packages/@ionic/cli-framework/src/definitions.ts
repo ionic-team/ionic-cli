@@ -56,8 +56,6 @@ export interface CommandMetadataOption extends Metadata {
   };
 }
 
-export type HydratedCommandMetadataOption<O extends CommandMetadataOption> = Readonly<Required<O>>;
-
 export { ParseArgsOptions };
 
 export interface HydratedParseArgsOptions extends ParseArgsOptions {

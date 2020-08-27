@@ -42,10 +42,10 @@ export class Ionic1Project extends Project {
     const [
       ionic1Version,
       [ v1ToolkitPkg ],
-    ] = await (Promise.all([
+    ] = await (Promise.all<string | undefined, [PackageJson | undefined, string | undefined]>([
       this.getFrameworkVersion(),
       this.getPackageJson('@ionic/v1-toolkit'),
-    ]) as Promise<[string | undefined, [PackageJson | undefined, string]]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
+    ]));
 
     return [
       ...(await super.getInfo()),
