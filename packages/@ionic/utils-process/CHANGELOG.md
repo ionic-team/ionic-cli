@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-process@2.1.4...@ionic/utils-process@2.1.5) (2020-08-27)
+
+
+### Bug Fixes
+
+* **onExit:** switch to signal-exit implementation ([95521e2](https://github.com/ionic-team/ionic-cli/commit/95521e2d4d47795020dc20b53bd4ce99e87e4f73))
+
+
+
+
+
 ## [2.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-process@2.1.3...@ionic/utils-process@2.1.4) (2020-08-25)
 
 **Note:** Version bump only for package @ionic/utils-process

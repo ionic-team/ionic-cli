@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@1.1.0...@ionic/cli-framework-output@2.0.0) (2020-08-27)
+
+
+### Bug Fixes
+
+* **output:** newlines in stream output strategy ([4f9a7c9](https://github.com/ionic-team/ionic-cli/commit/4f9a7c988a0a63b21bf2a80eef065155c78545d0))
+* **output:** stream is optional ([df3e949](https://github.com/ionic-team/ionic-cli/commit/df3e949ebb092c92b84717a83bd662e283463e37))
+
+
+### Code Refactoring
+
+* **output:** replace log-update ([a90005c](https://github.com/ionic-team/ionic-cli/commit/a90005cd048a68252456da8409dedacaab54b505))
+
+
+### BREAKING CHANGES
+
+* **output:** `LogUpdateOutputStrategy` removed in favor of `TTYOutputStrategy`
+
+
+
+
+
 # [1.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@1.0.1...@ionic/cli-framework-output@1.1.0) (2020-08-26)
 
 

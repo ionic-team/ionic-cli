@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.6...@ionic/v1-toolkit@3.2.7) (2020-08-27)
+
+**Note:** Version bump only for package @ionic/v1-toolkit
+
+
+
+
+
 ## [3.2.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.5...@ionic/v1-toolkit@3.2.6) (2020-08-26)
 
 **Note:** Version bump only for package @ionic/v1-toolkit

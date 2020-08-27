@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.1.4...@ionic/utils-terminal@2.2.0) (2020-08-27)
+
+
+### Features
+
+* add some ansi escape codes + cursor wrapper ([edbdb57](https://github.com/ionic-team/ionic-cli/commit/edbdb572bfe2fb5710eff7e49a483c86601ba425))
+
+
+
+
+
 ## [2.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.1.3...@ionic/utils-terminal@2.1.4) (2020-08-25)
 
 **Note:** Version bump only for package @ionic/utils-terminal
