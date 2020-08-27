@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.25](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.24...cli-scripts@2.1.25) (2020-08-27)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
 ## [2.1.24](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.23...cli-scripts@2.1.24) (2020-08-27)
 
 **Note:** Version bump only for package cli-scripts

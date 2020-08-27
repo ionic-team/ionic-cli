@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.0.0...@ionic/cli-framework-output@2.0.1) (2020-08-27)
+
+
+### Bug Fixes
+
+* strip newlines when redrawing ([d13085f](https://github.com/ionic-team/ionic-cli/commit/d13085f8bdf372cd761f30ba97d9551721a26396))
+
+
+
+
+
 # [2.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@1.1.0...@ionic/cli-framework-output@2.0.0) (2020-08-27)
 
 

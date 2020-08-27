@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "cli-scripts",
-  "version": "2.1.24",
+  "version": "2.1.25",
   "bin": {
     "ionic-cli-scripts": "./bin/ionic-cli-scripts"
   },
@@ -16,8 +16,8 @@
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "dependencies": {
-    "@ionic/cli": "6.11.4",
-    "@ionic/cli-framework": "5.0.0",
+    "@ionic/cli": "6.11.5",
+    "@ionic/cli-framework": "5.0.1",
     "@ionic/utils-fs": "3.1.4",
     "ansi-styles": "^4.0.0",
     "chalk": "^4.0.0",
