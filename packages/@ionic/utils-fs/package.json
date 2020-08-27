@@ -33,7 +33,6 @@
   "dependencies": {
     "debug": "^4.0.0",
     "fs-extra": "^9.0.0",
-    "through2": "^4.0.2",
     "tslib": "1.11.2"
   },
   "devDependencies": {
@@ -41,7 +40,6 @@
     "@types/fs-extra": "^8.0.0",
     "@types/jest": "^26.0.10",
     "@types/node": "~10.17.13",
-    "@types/through2": "^2.0.33",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",

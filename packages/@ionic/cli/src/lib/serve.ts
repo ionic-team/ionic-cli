@@ -10,7 +10,6 @@ import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
 import * as split2 from 'split2';
 import * as stream from 'stream';
-import * as through2 from 'through2';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 
@@ -564,14 +563,16 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
   }
 
   protected createStreamFilter(filter: (line: string) => boolean): stream.Transform {
-    return through2(function(chunk, enc, callback) {
-      const str = chunk.toString();
+    return new stream.Transform({
+      transform(chunk, enc, callback) {
+        const str = chunk.toString();
 
-      if (filter(str)) {
-        this.push(chunk);
-      }
+        if (filter(str)) {
+          this.push(chunk);
+        }
 
-      callback();
+        callback();
+      },
     });
   }
 
