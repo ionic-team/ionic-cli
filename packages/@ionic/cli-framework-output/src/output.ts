@@ -111,7 +111,7 @@ export class TTYOutputRedrawer {
 
   redraw(msg: string) {
     Cursor.hide();
-    this.stream.write(EscapeCode.eraseLines(1) + enforceSingleLF(msg));
+    this.stream.write(EscapeCode.eraseLines(1) + msg.replace(/[\r\n]+$/, ''));
   }
 
   clear() {

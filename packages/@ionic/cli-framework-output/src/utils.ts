@@ -6,10 +6,6 @@ export function enforceLF(str: string): string {
   return str.match(/[\r\n]$/) ? str : str + '\n';
 }
 
-export function enforceSingleLF(str: string): string {
-  return str.replace(/[\r\n]+$/, '') + '\n';
-}
-
 export function dropWhile<T>(array: readonly T[], predicate: (item: T) => boolean = v => !!v): T[] {
   let done = false;
 
