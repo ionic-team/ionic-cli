@@ -44,7 +44,7 @@
     "rimraf": "^3.0.0",
     "stream-combiner2": "^1.1.1",
     "ts-jest": "~26.2.0",
-    "tslint": "^5.9.1",
+    "tslint": "^6.1.3",
     "typescript": "~3.8.2"
   }
 }
