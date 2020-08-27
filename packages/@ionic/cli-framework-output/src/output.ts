@@ -2,7 +2,7 @@ import { Cursor, EscapeCode } from '@ionic/utils-terminal';
 
 import { Colors, NO_COLORS } from './colors';
 import { ICON_FAILURE, ICON_SUCCESS, Spinner, TaskChain } from './tasks';
-import { enforceSingleLF, formatHrTime } from './utils';
+import { formatHrTime } from './utils';
 
 export interface OutputStrategy {
   readonly stream: NodeJS.WritableStream;
@@ -111,7 +111,7 @@ export class TTYOutputRedrawer {
 
   redraw(msg: string) {
     Cursor.hide();
-    this.stream.write(EscapeCode.eraseLines(1) + enforceSingleLF(msg));
+    this.stream.write(EscapeCode.eraseLines(1) + msg.replace(/[\r\n]+$/, ''));
   }
 
   clear() {
