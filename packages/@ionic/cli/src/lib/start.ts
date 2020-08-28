@@ -209,6 +209,34 @@ export const SUPPORTED_FRAMEWORKS: readonly SupportedFramework[] = [
 export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'tabs',
+    projectType: 'vue',
+    type: 'managed',
+    description: 'A starting project with a simple tabbed interface',
+    id: 'vue-official-tabs',
+  },
+  {
+    name: 'sidemenu',
+    projectType: 'vue',
+    type: 'managed',
+    description: 'A starting project with a side menu with navigation in the content area',
+    id: 'vue-official-sidemenu',
+  },
+  {
+    name: 'blank',
+    projectType: 'vue',
+    type: 'managed',
+    description: 'A blank starter project',
+    id: 'vue-official-blank',
+  },
+  {
+    name: 'list',
+    projectType: 'vue',
+    type: 'managed',
+    description: 'A starting project with a list',
+    id: 'vue-official-list',
+  },
+  {
+    name: 'tabs',
     projectType: 'angular',
     type: 'managed',
     description: 'A starting project with a simple tabbed interface',

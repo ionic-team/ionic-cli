@@ -1,4 +1,4 @@
-import { stripAnsi } from '@ionic/cli-framework/utils/format';
+import { stripAnsi } from '@ionic/cli-framework-output';
 import { findClosestOpenPort } from '@ionic/utils-network';
 
 import { CommandMetadata, ServeDetails, VueServeOptions } from '../../../definitions';
@@ -14,7 +14,7 @@ export class VueServeRunner extends ServeRunner<VueServeOptions> {
     return {};
   }
 
-  modifyOpenUrl(url: string, options: VueServeOptions): string {
+  modifyOpenUrl(url: string, _options: VueServeOptions): string {
     return url;
   }
 
@@ -98,7 +98,7 @@ export class VueServeCLI extends ServeCLI<VueServeOptions> {
 
   }
 
-  protected async buildArgs(options: VueServeOptions): Promise<string[]> {
+  protected async buildArgs(_options: VueServeOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
     if (this.resolvedProgram === this.program) {
