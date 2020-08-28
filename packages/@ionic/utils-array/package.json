@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-array",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Array utils",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
