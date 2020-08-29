@@ -6,6 +6,7 @@ import { formatHrTime } from './utils';
 
 export interface OutputStrategy {
   readonly stream: NodeJS.WritableStream;
+  readonly colors: Colors;
   createTaskChain(): TaskChain;
 }
 
@@ -16,8 +17,7 @@ export interface StreamOutputStrategyOptions {
 
 export class StreamOutputStrategy implements OutputStrategy {
   readonly stream: NodeJS.WritableStream;
-
-  protected readonly colors: Colors;
+  readonly colors: Colors;
 
   constructor({ stream = process.stdout, colors = NO_COLORS }: StreamOutputStrategyOptions) {
     this.stream = stream;
@@ -49,8 +49,8 @@ export interface TTYOutputStrategyOptions {
 
 export class TTYOutputStrategy implements OutputStrategy {
   readonly stream: NodeJS.WriteStream;
+  readonly colors: Colors;
 
-  protected readonly colors: Colors;
   protected readonly redrawer: TTYOutputRedrawer;
 
   constructor({ stream = process.stdout, colors = NO_COLORS }: TTYOutputStrategyOptions = {}) {

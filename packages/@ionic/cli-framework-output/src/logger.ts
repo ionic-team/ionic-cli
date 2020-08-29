@@ -218,26 +218,44 @@ export interface CreateTaggedFormatterOptions {
   titleize?: boolean;
   wrap?: boolean | WordWrapOptions;
   colors?: Colors;
+  tags?: ReadonlyMap<LoggerLevelWeight, string>;
 }
 
-export function createTaggedFormatter({ colors = NO_COLORS, prefix = '', titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
+export function createTaggedFormatter({ colors = NO_COLORS, prefix = '', tags, titleize, wrap }: CreateTaggedFormatterOptions = {}): LoggerFormatter {
+  const { strong, weak } = colors;
+
+  const getLevelTag = (level?: LoggerLevelWeight): string => {
+    if (!level) {
+      return '';
+    }
+
+    if (tags) {
+      const tag = tags.get(level);
+
+      return tag ? tag : '';
+    }
+
+    const levelName = getLoggerLevelName(level);
+
+    if (!levelName) {
+      return '';
+    }
+
+    const levelColor = getLoggerLevelColor(colors, level);
+
+    return `${weak('[')}\x1b[40m${strong(levelColor ? levelColor(levelName) : levelName)}\x1b[49m${weak(']')}`;
+  };
+
   return ({ msg, level, format }) => {
     if (format === false) {
       return msg;
     }
 
-    const { strong, weak } = colors;
-
     const [ firstLine, ...lines ] = msg.split('\n');
 
-    const levelName = getLoggerLevelName(level);
     const levelColor = getLoggerLevelColor(colors, level);
 
-    const tag = (
-      (typeof prefix === 'function' ? prefix() : prefix) +
-      (levelName ? `${weak('[')}\x1b[40m${strong(levelColor ? levelColor(levelName) : levelName)}\x1b[49m${weak(']')}` : '')
-    );
-
+    const tag = (typeof prefix === 'function' ? prefix() : prefix) + getLevelTag(level);
     const title = titleize && lines.length > 0 ? `${strong(levelColor ? levelColor(firstLine) : firstLine)}\n` : firstLine;
     const indentation = tag ? stringWidth(tag) + 1 : 0;
     const pulledLines = dropWhile(lines, l => l === '');
