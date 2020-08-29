@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.0.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.0.2...@ionic/cli-framework@5.0.3) (2020-08-29)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
 ## [5.0.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.0.1...@ionic/cli-framework@5.0.2) (2020-08-28)
 
 **Note:** Version bump only for package @ionic/cli-framework

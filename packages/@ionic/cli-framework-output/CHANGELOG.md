@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.0.2...@ionic/cli-framework-output@2.1.0) (2020-08-29)
+
+
+### Features
+
+* **logger:** add createDefaultLogger helper ([6961c33](https://github.com/ionic-team/ionic-cli/commit/6961c3377e88498d86eb0a39e5aef3f776fb3fd3))
+* **logger:** add tags option for tagged formatter ([6957104](https://github.com/ionic-team/ionic-cli/commit/695710462178f109d10504e6d9d8b0870eb0541c))
+
+
+
+
+
 ## [2.0.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.0.1...@ionic/cli-framework-output@2.0.2) (2020-08-28)
 
 **Note:** Version bump only for package @ionic/cli-framework-output
