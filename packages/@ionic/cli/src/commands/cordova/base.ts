@@ -99,6 +99,16 @@ export abstract class CordovaCommand extends Command {
     const cordova = this.project.getIntegration('cordova');
 
     if (!cordova) {
+      const capacitor = this.project.getIntegration('capacitor');
+
+      if (capacitor && capacitor.enabled) {
+        throw new FatalException(
+          `Refusing to use Cordova inside a Capacitor project.\n` +
+          `Are you looking for the ${input('ionic capacitor')} commands? See ${input('ionic capacitor --help')}\n\n` +
+          `If you are switching from Capacitor to Cordova, run: ${input('ionic integrations disable capacitor')}\n`
+        );
+      }
+
       const { confirmCordovaUsage } = await import('../../lib/integrations/cordova/utils');
       const confirm = await confirmCordovaUsage(this.env);
 
