@@ -1,7 +1,7 @@
 :root {
-  --font-family-sans-serif: 'AvenirNextLTPro-Regular', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+  --font-family-sans-serif: 'Inter', 'Inter UI', Helvetica, Arial, sans-serif;
   --font-family-base: var(--font-family-sans-serif);
-  --font-family-medium: 'AvenirNextLTPro-Medium', 'Helvetica Neue', 'Helvetica', Arial, sans-serif;
+  --font-family-medium: 'Inter', 'Inter UI', Helvetica, Arial, sans-serif;
 
   --font-size-base: 1rem;
   --font-size-lg: calc(var(--font-size-base) * 1.25);
@@ -9,7 +9,7 @@
 
   --font-weight-light: 300;
   --font-weight-normal: 400;
-  --font-weight-bold: 700;
+  --font-weight-bold: 500;
 
   --font-weight-base: var(--font-weight-normal);
   --line-height-base: 1.5;
@@ -33,7 +33,9 @@
   --section-bg: #151a21;
   --font-color: #a2a9b4;
 
-  --frame-ratio: .562; /* width/height */
-  --frame-default-width: 375px;
+  --frame-ratio: .488; /* width/height */
+  --frame-default-width: 344px;
   --frame-default-height: calc(var(--frame-default-width) / var(--frame-ratio));
+
+  --device-frame-width: 12px;
 }

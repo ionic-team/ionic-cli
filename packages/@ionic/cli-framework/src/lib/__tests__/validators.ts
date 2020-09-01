@@ -1,6 +1,6 @@
-import { contains, validators } from '../validators';
+import { stripAnsi } from '@ionic/cli-framework-output';
 
-import stripAnsi = require('strip-ansi');
+import { contains, validators } from '../validators';
 
 describe('@ionic/cli-framework', () => {
 

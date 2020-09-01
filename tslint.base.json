@@ -1,8 +1,0 @@
-{
-  "extends": "tslint-ionic-rules/strict",
-  "rules": {
-    "forin": false,
-    "no-empty-interface": false,
-    "strict-boolean-conditions": false
-  }
-}

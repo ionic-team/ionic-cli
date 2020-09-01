@@ -1,7 +1,8 @@
 import { BaseConfig, BaseConfigOptions, PackageJson, ParsedArgs } from '@ionic/cli-framework';
+import { TTY_WIDTH, wordWrap } from '@ionic/cli-framework-output';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
-import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/cli-framework/utils/format';
+import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { ensureDir, findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import * as Debug from 'debug';
@@ -274,13 +275,13 @@ export class ProjectDetails {
       if (isProjectConfig(config)) {
         const r = await this.determineSingleApp(config);
         errors.push(...r.errors);
-        return { configPath, errors, ...r };
+        return { ...r, configPath, errors };
       }
 
       if (isMultiProjectConfig(config)) {
         const r = await this.determineMultiApp(config);
         errors.push(...r.errors);
-        return { configPath, errors, ...r };
+        return { ...r, configPath, errors };
       }
 
       throw new ProjectDetailsError('Unknown project file structure', 'ERR_INVALID_PROJECT_FILE');
@@ -595,7 +596,6 @@ export abstract class Project implements IProject {
   }
 
   // Empty to avoid sub-classes having to implement
-  // tslint:disable-next-line:no-empty
   async setPrimaryTheme(_themeColor: string): Promise<void> { }
 
   async writeThemeColor(variablesPath: string, themeColor: string): Promise<void> {

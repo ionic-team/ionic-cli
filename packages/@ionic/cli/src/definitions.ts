@@ -9,10 +9,10 @@ import {
   HydratedCommandMetadata as FrameworkHydratedCommandMetadata,
   ICommand as FrameworkCommand,
   INamespace as FrameworkNamespace,
-  Logger,
   NamespaceLocateResult as FrameworkNamespaceLocateResult,
   PackageJson,
 } from '@ionic/cli-framework';
+import { Logger } from '@ionic/cli-framework-output';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { NetworkInterface } from '@ionic/utils-network';
 import { Subprocess, SubprocessOptions, WhichOptions } from '@ionic/utils-subprocess';

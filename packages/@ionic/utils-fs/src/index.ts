@@ -2,7 +2,6 @@ import * as fs from 'fs-extra';
 import * as os from 'os';
 import * as path from 'path';
 import * as stream from 'stream';
-import * as through2 from 'through2';
 
 import * as safe from './safe';
 
@@ -34,12 +33,15 @@ export async function readdirp(dir: string, { filter, onError, walkerOptions }: 
     let rs: NodeJS.ReadableStream = walk(dir, walkerOptions);
 
     if (filter) {
-      rs = rs.pipe(through2.obj(function(obj: WalkerItem, enc, cb) {
-        if (!filter || filter(obj)) {
-          this.push(obj);
-        }
+      rs = rs.pipe(new stream.Transform({
+        objectMode: true,
+        transform(obj: WalkerItem, enc, cb) {
+          if (!filter || filter(obj)) {
+            this.push(obj);
+          }
 
-        cb();
+          cb();
+        },
       }));
     }
 
@@ -196,7 +198,7 @@ export async function getFileChecksum(filePath: string): Promise<string> {
  * @return Promise<[true checksum, cached checksum or undefined if cache file missing]>
  */
 export async function getFileChecksums(p: string): Promise<[string, string | undefined]> {
-  return Promise.all([
+  return Promise.all<string, string | undefined>([
     getFileChecksum(p),
     (async () => {
       try {
@@ -208,7 +210,7 @@ export async function getFileChecksums(p: string): Promise<[string, string | und
         }
       }
     })(),
-  ]) as Promise<[string, string | undefined]>; // TODO: https://github.com/microsoft/TypeScript/issues/33752
+  ]);
 }
 
 /**
@@ -258,10 +260,10 @@ export async function pathExecutable(filePath: string): Promise<boolean> {
 }
 
 export async function isExecutableFile(filePath: string): Promise<boolean> {
-  const [ stats, executable ] = await (Promise.all([
+  const [ stats, executable ] = await (Promise.all<fs.Stats | undefined, boolean>([
     safe.stat(filePath),
     pathExecutable(filePath),
-  ]) as Promise<[fs.Stats, boolean]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
+  ]));
 
   return !!stats && (stats.isFile() || stats.isSymbolicLink()) && executable;
 }
@@ -361,7 +363,7 @@ export class Walker extends stream.Readable {
     const { pathFilter } = this.options;
 
     if (!p) {
-      this.push(null); // tslint:disable-line:no-null-keyword
+      this.push(null);
       return;
     }
 

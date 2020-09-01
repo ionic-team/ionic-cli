@@ -1,4 +1,5 @@
-import { CreateTaggedFormatterOptions, DEFAULT_LOGGER_HANDLERS, LOGGER_LEVELS, Logger as BaseLogger, LoggerFormatter, LoggerLevelWeight, createPrefixedFormatter, createTaggedFormatter } from '@ionic/cli-framework';
+import { DEFAULT_COLORS } from '@ionic/cli-framework';
+import { CreateTaggedFormatterOptions, DEFAULT_LOGGER_HANDLERS, LOGGER_LEVELS, Logger as BaseLogger, LoggerFormatter, LoggerLevelWeight, createPrefixedFormatter, createTaggedFormatter } from '@ionic/cli-framework-output';
 import * as chalk from 'chalk';
 
 import { ILogger } from '../../definitions';
@@ -17,7 +18,7 @@ export class Logger extends BaseLogger implements ILogger {
 export function createFormatter(options: CreateTaggedFormatterOptions = {}): LoggerFormatter {
   const prefix = process.argv.includes('--log-timestamps') ? () => `${weak('[' + new Date().toISOString() + ']')}` : '';
 
-  return createTaggedFormatter({ prefix, titleize: true, wrap: true, ...options });
+  return createTaggedFormatter({ colors: DEFAULT_COLORS, prefix, titleize: true, wrap: true, ...options });
 }
 
 export function createDefaultLoggerHandlers(formatter = createFormatter()) {

@@ -1,4 +1,5 @@
-import { BaseError, LOGGER_LEVELS, MetadataGroup, ParsedArgs, createPrefixedFormatter, unparseArgs } from '@ionic/cli-framework';
+import { BaseError, MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
+import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework-output';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
@@ -9,7 +10,6 @@ import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
 import * as split2 from 'split2';
 import * as stream from 'stream';
-import * as through2 from 'through2';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 
@@ -508,7 +508,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       };
 
       const closeHandler = (code: number | null) => {
-        if (code !== null) { // tslint:disable-line:no-null-keyword
+        if (code !== null) {
           debug('received unexpected close for %s (code: %d)', this.resolvedProgram, code);
 
           this.e.log.nl();
@@ -517,7 +517,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
             'The Ionic CLI will exit. Please check any output above for error details.'
           );
 
-          processExit(1); // tslint:disable-line:no-floating-promises
+          processExit(1);
         }
       };
 
@@ -563,14 +563,16 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
   }
 
   protected createStreamFilter(filter: (line: string) => boolean): stream.Transform {
-    return through2(function(chunk, enc, callback) {
-      const str = chunk.toString();
+    return new stream.Transform({
+      transform(chunk, enc, callback) {
+        const str = chunk.toString();
 
-      if (filter(str)) {
-        this.push(chunk);
-      }
+        if (filter(str)) {
+          this.push(chunk);
+        }
 
-      callback();
+        callback();
+      },
     });
   }
 

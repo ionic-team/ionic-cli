@@ -1,4 +1,4 @@
-import { LOGGER_LEVELS } from '@ionic/cli-framework';
+import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { createPromptModule } from '@ionic/cli-framework-prompts';
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';

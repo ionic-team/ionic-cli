@@ -1,4 +1,5 @@
-import { CommandLineInputs, CommandLineOptions, LOGGER_LEVELS, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
+import { CommandLineInputs, CommandLineOptions, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
+import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { columnar } from '@ionic/cli-framework/utils/format';
 import { tmpfilepath } from '@ionic/utils-fs';
 import { sleep } from '@ionic/utils-process';
@@ -57,6 +58,7 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
+      groups: [MetadataGroup.PAID],
       summary: 'Create a package build on Appflow',
       description: `
 This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory.
@@ -339,17 +341,29 @@ This can be used only together with build type ${input('release')} for Android a
     const ws = this.env.log.createWriteStream(LOGGER_LEVELS.INFO, false);
 
     let isCreatedMessage = false;
+    let errorsEncountered = 0;
     while (!(build && (build.state === 'success' || build.state === 'failed'))) {
-      await sleep(5000);
-      build = await this.getPackageBuild(appflowId, buildId, token);
-      if (build && build.state === 'created' && !isCreatedMessage) {
-        ws.write(chalk.yellow('Concurrency limit reached: build will start as soon as other builds finish.'));
-        isCreatedMessage = true;
-      }
-      const trace = build.job.trace;
-      if (trace.length > start) {
-        ws.write(trace.substring(start));
-        start = trace.length;
+      try {
+        await sleep(5000);
+        build = await this.getPackageBuild(appflowId, buildId, token);
+        if (build && build.state === 'created' && !isCreatedMessage) {
+          ws.write(chalk.yellow('Concurrency limit reached: build will start as soon as other builds finish.'));
+          isCreatedMessage = true;
+        }
+        const trace = build.job.trace;
+        if (trace.length > start) {
+          ws.write(trace.substring(start));
+          start = trace.length;
+        }
+        errorsEncountered = 0;
+      } catch (e) {
+        // Retry up to 3 times in the case of an error.
+        errorsEncountered++;
+        ws.write(chalk.yellow(`Encountered error: ${e} while fetching build data retrying.`));
+        if (errorsEncountered >= 3) {
+          ws.write(chalk.red(`Encountered ${errorsEncountered} errors in a row. Job will now fail.`));
+          throw e;
+        }
       }
     }
     ws.end();
