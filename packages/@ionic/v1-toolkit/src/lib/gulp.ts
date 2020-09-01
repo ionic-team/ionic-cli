@@ -1,15 +1,49 @@
+'use strict';
+
 import { prettyPath } from '@ionic/cli-framework/utils/format';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
+import * as fs from 'fs';
+import * as gulp from 'gulp';
+import * as undertaker from 'undertaker';
+import * as vm from "vm";
 
 import { timestamp } from './log';
+import {Context} from "vm";
+
+declare type GulpInst = typeof gulp & typeof undertaker;
 
 const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
-let _gulpInst: typeof import('gulp') & typeof import('undertaker');
+let _gulpInst: GulpInst;
 
-export async function loadGulp(): Promise<typeof import('gulp') & typeof import('undertaker')> {
+/**
+ * Include a script, resolving dependencies from the file directory.
+ *
+ * @param scriptFile
+ */
+function include(scriptFile: string) {
+  debug(`Reading file ${scriptFile}...`);
+
+  // Override the default require() function, to use script directory as base path for resolution
+  const scriptDir = path.parse(scriptFile).dir;
+  const context: Context = {
+    require: (module: string) => {
+      // If gulp, use our instance.
+      // This is required to be sure gulp.task() will be register on the right instance
+      if (module === 'gulp' && _gulpInst) return _gulpInst;
+
+      const absolutePath = require.resolve(module, {paths: [scriptDir]});
+      debug(` - resolved module '${module}' => '${absolutePath}'`);
+      return require(absolutePath);
+    }
+  }
+  const script = fs.readFileSync(scriptFile, 'utf-8');
+  vm.runInContext(script, vm.createContext(context));
+}
+
+export async function loadGulp(): Promise<GulpInst> {
   if (!_gulpInst) {
     const gulpFilePath = path.resolve('gulpfile.js');
     debug(`Using gulpfile: ${gulpFilePath}`);
@@ -28,7 +62,7 @@ export async function loadGulp(): Promise<typeof import('gulp') & typeof import(
 
     let gulpFile: any;
     try {
-      gulpFile = require(gulpFilePath); // requiring the gulp file sets up the gulp instance with local gulp task definitions
+      gulpFile = require(gulpFilePath); // requiring the gulp file
 
     } catch (e) {
       if (e.code !== 'MODULE_NOT_FOUND') {
@@ -41,10 +75,10 @@ export async function loadGulp(): Promise<typeof import('gulp') & typeof import(
       );
     }
 
-    // Add gulp file v4 compatibility - fix #4114
-    const isGulpV4File = gulpFile && Object.keys(gulpFile)
+    // If gulpfile exports some function, then declare this functions as Gulp tasks - Fix #4114
+    const hasExportedFunctions = gulpFile && Object.keys(gulpFile)
       .findIndex(key => typeof gulpFile[key] === 'function') !== -1;
-    if (isGulpV4File) {
+    if (hasExportedFunctions) {
       try {
         debug(`Declaring gulp v4 tasks...`);
         Object.keys(gulpFile)
@@ -60,26 +94,40 @@ export async function loadGulp(): Promise<typeof import('gulp') & typeof import(
             }
           });
       } catch (e) {
-        throw new Error(`Cannot declare gulp v4 task: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
+        throw new Error(`Cannot declare gulp v4 task, using exports: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
           chalk.red(e.stack ? e.stack : e));
       }
-      debug('Loaded gulp tasks: %o', _gulpInst.tree().nodes);
-    } else {
-      // V3 gulp file: failed
-      throw new Error(`Your gulpfile.js is not compatible with Gulp v4:\n- Upgrade to gulp v4 (see https://zzz.buzz/2016/11/19/gulp-4-0-upgrade-guide/)\n- Or downgrade @ionic/v1-toolkit to <= 3.2.0.`);
     }
+
+    // No exported function: try to include the file, to be able to access to tasks declared inside the file - Fix #4516
+    else {
+      try {
+        include(gulpFilePath);
+
+      } catch (e) {
+        throw new Error(
+          `Error in module: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
+          chalk.red(e.stack ? e.stack : e)
+        );
+      }
+    }
+
+    const gulpTasks = await tasks(_gulpInst);
+    if (!gulpTasks.length) {
+      // Incompatible gulp file (e.g. when using gulp v3): failed
+      throw new Error(`No task found in your gulpfile.js\n- Make sure your gulpfile.js is compatible with Gulp v4, and upgrade if not (see https://zzz.buzz/2016/11/19/gulp-4-0-upgrade-guide/)\n- Or downgrade @ionic/v1-toolkit to <= 3.2.0.`);
+    }
+
+    debug('Loaded gulp tasks: %o', gulpTasks);
   }
 
   return _gulpInst;
 }
-export async function tasks(): Promise<string[]> {
+export async function tasks(gulpInst?: GulpInst): Promise<string[]> {
   try {
-    const gulp = await loadGulp();
-    const tree = gulp.tree();
-    return tree && (tree.nodes || [])
-      // Use node.label is exists (@types/gulp >= 4.0.5)
-      .map(node => node as any)
-      .map(node => (node && node.label || node) as string);
+    const gulp = gulpInst || await loadGulp();
+    const registry = gulp.registry();
+    return registry && Object.keys(registry.tasks()) || [];
 
   } catch (e) {
     process.stderr.write(`${timestamp()} Cannot load gulp tasks: ${chalk.bold(String(e))}\n` +
