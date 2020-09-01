@@ -108,10 +108,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     const [
       [ capacitorCorePkg, capacitorCorePkgPath ],
       capacitorCLIVersion,
-    ] = await (Promise.all([
+    ] = await (Promise.all<[PackageJson | undefined, string | undefined], string | undefined>([
       this.e.project.getPackageJson('@capacitor/core'),
       this.getCapacitorCLIVersion(),
-    ]) as Promise<[[PackageJson | undefined, string], string | undefined]>); // TODO: https://github.com/microsoft/TypeScript/issues/33752
+    ]));
 
     const info: InfoItem[] = [
       {

@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.2.5...@ionic/lab@3.2.6) (2020-08-29)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.2.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.2.4...@ionic/lab@3.2.5) (2020-08-28)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.2.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.2.3...@ionic/lab@3.2.4) (2020-08-27)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.2.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.2.2...@ionic/lab@3.2.3) (2020-08-27)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.2.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.2.1...@ionic/lab@3.2.2) (2020-08-26)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+## [3.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.2.0...@ionic/lab@3.2.1) (2020-08-25)
+
+**Note:** Version bump only for package @ionic/lab
+
+
+
+
+
+# [3.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.7...@ionic/lab@3.2.0) (2020-08-12)
+
+
+### Features
+
+* **lab:** improvements to the lab design ([#4511](https://github.com/ionic-team/ionic-cli/issues/4511)) ([625fe7b](https://github.com/ionic-team/ionic-cli/commit/625fe7b894a47837c33dfe2b8363a491f57ecbda))
+
+
+
+
+
 ## [3.1.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/lab@3.1.6...@ionic/lab@3.1.7) (2020-06-02)
 
 **Note:** Version bump only for package @ionic/lab

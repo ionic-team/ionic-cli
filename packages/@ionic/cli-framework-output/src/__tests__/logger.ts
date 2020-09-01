@@ -1,13 +1,11 @@
 import { WritableStreamBuffer } from '@ionic/utils-stream';
-import stripAnsi = require('strip-ansi');
-
-import { wordWrap } from '../../utils/format';
 
 import { LOGGER_LEVELS, Logger, LoggerHandler, StreamHandler, createPrefixedFormatter, createTaggedFormatter } from '../logger';
+import { stripAnsi, wordWrap } from '../format';
 
-describe('@ionic/cli-framework', () => {
+describe('@ionic/cli-framework-output', () => {
 
-  describe('lib/logger', () => {
+  describe('logger', () => {
 
     describe('Logger', () => {
 

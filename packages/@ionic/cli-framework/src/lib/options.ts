@@ -1,7 +1,7 @@
 import * as lodash from 'lodash';
 import * as minimist from 'minimist';
 
-import { CommandLineOptions, CommandMetadataOption, HydratedCommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
+import { CommandLineOptions, CommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
 
 import { Colors, DEFAULT_COLORS } from './colors';
 
@@ -56,12 +56,12 @@ export function separateArgv(pargv: readonly string[]): [string[], string[]] {
 /**
  * Takes a Minimist command option and normalizes its values.
  */
-export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(option: O): HydratedCommandMetadataOption<O> {
+export function hydrateCommandMetadataOption<O extends CommandMetadataOption>(option: O): O {
   const type = option.type ? option.type : String;
 
   return lodash.assign({}, option, {
     type,
-    default: typeof option.default !== 'undefined' ? option.default : null, // tslint:disable-line:no-null-keyword
+    default: typeof option.default !== 'undefined' ? option.default : null,
     aliases: Array.isArray(option.aliases) ? option.aliases : [],
   });
 }
@@ -116,8 +116,13 @@ export function metadataOptionsToParseArgsOptions(commandOptions: readonly Comma
       options.boolean.push(opt.name);
     }
 
-    options.default[opt.name] = opt.default;
-    options.alias[opt.name] = opt.aliases;
+    if (typeof opt.default !== 'undefined') {
+      options.default[opt.name] = opt.default;
+    }
+
+    if (typeof opt.aliases !== 'undefined') {
+      options.alias[opt.name] = opt.aliases;
+    }
   }
 
   return options;

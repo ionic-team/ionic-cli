@@ -1,5 +1,5 @@
 import { PackageJson } from '@ionic/cli-framework';
-import { stringWidth } from '@ionic/cli-framework/utils/format';
+import { stringWidth } from '@ionic/cli-framework-output';
 import { readJson, writeJson } from '@ionic/utils-fs';
 import * as path from 'path';
 import * as semver from 'semver';

@@ -67,7 +67,7 @@ export class ReadableStreamBuffer extends Readable {
     this._stopped = true;
 
     if (this._size === 0) {
-      this.push(null); // tslint:disable-line:no-null-keyword
+      this.push(null);
     }
   }
 
@@ -84,7 +84,7 @@ export class ReadableStreamBuffer extends Readable {
     }
 
     if (this._size === 0 && this._stopped) {
-      this.push(null); // tslint:disable-line:no-null-keyword
+      this.push(null);
     }
 
     if (!done) {

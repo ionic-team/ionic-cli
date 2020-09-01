@@ -1,3 +1,5 @@
+import { MetadataGroup } from '@ionic/cli-framework';
+
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
@@ -10,6 +12,7 @@ export class GitRemoteCommand extends Command {
     return {
       name: 'remote',
       type: 'project',
+      groups: [MetadataGroup.PAID],
       summary: 'Adds/updates the Ionic Appflow git remote to your local Ionic app',
       description: `
 This command is used by ${input('ionic link')} when Ionic Appflow is used as the git host.

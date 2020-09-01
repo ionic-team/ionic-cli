@@ -49,7 +49,6 @@ function hslToRGB({ h, s, l }: HSL): RGB {
     };
   }
 
-  // tslint:disable-next-line:no-shadowed-variable
   const hue2rgb = (p: number, q: number, t: number) => {
     if (t < 0) { t += 1; }
     if (t > 1) { t -= 1; }

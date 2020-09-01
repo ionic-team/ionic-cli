@@ -24,17 +24,29 @@ export interface TaskOptions {
   readonly tickInterval?: number;
 }
 
+export interface TaskResult {
+  /**
+   * Elapsed time from process.hrtime()
+   */
+  elapsedTime: [number, number];
+
+  /**
+   * Whether the task succeeded or not
+   */
+  success: boolean;
+}
+
 export interface Task extends EventEmitter {
   on(name: 'success', handler: () => void): this;
   on(name: 'failure', handler: () => void): this;
   on(name: 'clear', handler: () => void): this;
   on(name: 'tick', handler: () => void): this;
-  on(name: 'end', handler: () => void): this;
+  on(name: 'end', handler: (result: TaskResult) => void): this;
   emit(name: 'success'): boolean;
   emit(name: 'failure'): boolean;
   emit(name: 'clear'): boolean;
   emit(name: 'tick'): boolean;
-  emit(name: 'end'): boolean;
+  emit(name: 'end', result: TaskResult): boolean;
 }
 
 export class Task extends EventEmitter {
@@ -45,6 +57,8 @@ export class Task extends EventEmitter {
   progressRatio?: number;
 
   protected _msg = '';
+  protected _startTime?: [number, number]; // hrtime
+  protected _success = false;
 
   constructor({ msg = '', tickInterval }: TaskOptions = {}) {
     super();
@@ -67,6 +81,7 @@ export class Task extends EventEmitter {
     }
 
     this.running = true;
+    this._startTime = process.hrtime();
 
     return this;
   }
@@ -98,13 +113,17 @@ export class Task extends EventEmitter {
     this.running = false;
     this.tick();
     this.clear();
-    this.emit('end');
+    this.emit('end', {
+      elapsedTime: process.hrtime(this._startTime),
+      success: this._success,
+    });
 
     return this;
   }
 
   succeed(): this {
     if (this.running) {
+      this._success = true;
       this.end();
       this.emit('success');
     }
@@ -114,6 +133,7 @@ export class Task extends EventEmitter {
 
   fail(): this {
     if (this.running) {
+      this._success = false;
       this.end();
       this.emit('failure');
     }

@@ -1,8 +1,8 @@
 import { createCaseInsensitiveObject } from '@ionic/utils-object';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
-import * as lodash from 'lodash';
 import * as pathlib from 'path';
+import * as onSignalExit from 'signal-exit';
 import * as kill from 'tree-kill';
 
 const debug = Debug('ionic:utils-process');
@@ -31,7 +31,7 @@ export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'
  * type that works for all platforms.
  */
 export function createProcessEnv(...sources: { [key: string]: string | undefined; }[]): NodeJS.ProcessEnv {
-  return lodash.assign(TERMINAL_INFO.windows ? createCaseInsensitiveObject() : {}, ...sources);
+  return Object.assign(TERMINAL_INFO.windows ? createCaseInsensitiveObject() : {}, ...sources);
 }
 
 /**
@@ -85,7 +85,7 @@ export async function sleepForever(): Promise<never> {
  * Register a synchronous function to be called once the process exits.
  */
 export function onExit(fn: () => void) {
-  process.on('exit', () => {
+  onSignalExit(() => {
     debug('onExit: process.exit/normal shutdown');
     fn();
   });
@@ -117,7 +117,18 @@ export function offBeforeExit(fn: ExitFn): void {
 
 type BeforeExitSignal = 'SIGINT' | 'SIGTERM' | 'SIGHUP' | 'SIGBREAK';
 
-const beforeExitHandlerWrapper = (signal: 'process.exit' | BeforeExitSignal) => lodash.once(async () => {
+const once = (fn: () => Promise<void>) => {
+  let called = false;
+
+  return async (): Promise<void> => {
+    if (!called) {
+      await fn();
+      called = true;
+    }
+  };
+};
+
+const beforeExitHandlerWrapper = (signal: 'process.exit' | BeforeExitSignal) => once(async () => {
   debug('onBeforeExit handler: %O received', signal);
   debug('onBeforeExit handler: running %O functions', exitFns.size);
 
@@ -146,7 +157,7 @@ const BEFORE_EXIT_SIGNAL_LISTENERS: BeforeExitSignalListeners = {
   SIGBREAK: beforeExitHandlerWrapper('SIGBREAK'),
 };
 
-for (const [ signal, fn ] of lodash.entries(BEFORE_EXIT_SIGNAL_LISTENERS)) {
+for (const [ signal, fn ] of Object.entries(BEFORE_EXIT_SIGNAL_LISTENERS)) {
   process.on(signal as BeforeExitSignal, fn);
 }
 
