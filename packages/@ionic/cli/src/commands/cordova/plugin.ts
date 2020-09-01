@@ -4,6 +4,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 import { filterArgumentsForCordova } from '../../lib/integrations/cordova/utils';
+import { pkgManagerArgs } from '../../lib/utils/npm';
 
 import { CordovaCommand } from './base';
 
@@ -45,6 +46,25 @@ Like running ${input('cordova plugin')} directly, but provides friendly checks.
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    if (!this.project) {
+      throw new FatalException('Cannot use Cordova outside a project directory.');
+    }
+
+    const capacitor = this.project.getIntegration('capacitor');
+
+    if (capacitor && capacitor.enabled) {
+      const pkg = inputs[1] ? inputs[1] : '<package>';
+      const installArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg, save: false, saveExact: false });
+      const uninstallArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'uninstall', pkg, save: false });
+
+      throw new FatalException(
+        `Refusing to run ${input('ionic cordova plugin')} inside a Capacitor project.\n` +
+        `In Capacitor projects, Cordova plugins are just regular npm dependencies.\n\n` +
+        `- To add a plugin, use ${input(installArgs.join(' '))}\n` +
+        `- To remove, use ${input(uninstallArgs.join(' '))}\n`
+      );
+    }
+
     await this.preRunChecks(runinfo);
 
     inputs[0] = !inputs[0] ? 'ls' : inputs[0];
