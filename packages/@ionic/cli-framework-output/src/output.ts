@@ -42,20 +42,18 @@ export class StreamOutputStrategy implements OutputStrategy {
   }
 }
 
-export interface TTYOutputStrategyOptions {
+export interface TTYOutputStrategyOptions extends StreamOutputStrategyOptions {
   readonly stream?: NodeJS.WriteStream;
-  readonly colors?: Colors;
 }
 
-export class TTYOutputStrategy implements OutputStrategy {
+export class TTYOutputStrategy extends StreamOutputStrategy implements OutputStrategy {
   readonly stream: NodeJS.WriteStream;
-  readonly colors: Colors;
 
   protected readonly redrawer: TTYOutputRedrawer;
 
   constructor({ stream = process.stdout, colors = NO_COLORS }: TTYOutputStrategyOptions = {}) {
+    super({ stream, colors });
     this.stream = stream;
-    this.colors = colors;
     this.redrawer = new TTYOutputRedrawer({ stream });
   }
 
