@@ -7,6 +7,7 @@ import { formatHrTime } from './utils';
 export interface OutputStrategy {
   readonly stream: NodeJS.WritableStream;
   readonly colors: Colors;
+  write(msg: string): boolean;
   createTaskChain(): TaskChain;
 }
 
@@ -24,6 +25,10 @@ export class StreamOutputStrategy implements OutputStrategy {
     this.colors = colors;
   }
 
+  write(msg: string): boolean {
+    return this.stream.write(msg);
+  }
+
   createTaskChain(): TaskChain {
     const { failure, success, weak } = this.colors;
     const chain = new TaskChain();
@@ -31,9 +36,9 @@ export class StreamOutputStrategy implements OutputStrategy {
     chain.on('next', task => {
       task.on('end', result => {
         if (result.success) {
-          this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}\n`);
+          this.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}\n`);
         } else {
-          this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}\n`);
+          this.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}\n`);
         }
       });
     });
@@ -64,9 +69,9 @@ export class TTYOutputStrategy extends StreamOutputStrategy implements OutputStr
     chain.on('next', task => {
       task.on('end', result => {
         if (result.success) {
-          this.stream.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}\n`);
+          this.write(`${success(ICON_SUCCESS)} ${task.msg} ${weak(`in ${formatHrTime(result.elapsedTime)}`)}\n`);
         } else {
-          this.stream.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}\n`);
+          this.write(`${failure(ICON_FAILURE)} ${task.msg} ${failure(weak('- failed!'))}\n`);
         }
       });
 
