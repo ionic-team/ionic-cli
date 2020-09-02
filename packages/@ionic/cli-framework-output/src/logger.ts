@@ -258,7 +258,7 @@ export function createTaggedFormatter({ colors = NO_COLORS, prefix = '', tags, t
     const tag = (typeof prefix === 'function' ? prefix() : prefix) + getLevelTag(level);
     const title = titleize && lines.length > 0 ? `${strong(levelColor ? levelColor(firstLine) : firstLine)}\n` : firstLine;
     const indentation = tag ? stringWidth(tag) + 1 : 0;
-    const pulledLines = dropWhile(lines, l => l === '');
+    const pulledLines = titleize ? dropWhile(lines, l => l === '') : lines;
 
     return (
       (tag ? `${tag} ` : '') +

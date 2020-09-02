@@ -314,6 +314,18 @@ describe('@ionic/cli-framework-output', () => {
         expect(stripAnsi(result)).toEqual(`[INFO] Hello!\n\n       This is a message.\n       Here's another.`);
       });
 
+      it('should strip the first newlines with a titleized message', () => {
+        const formatter = createTaggedFormatter({ titleize: true });
+        const result = formatter({ msg: 'hello world!\n\n\nThis is a message.', logger });
+        expect(result).toEqual('hello world!\n\nThis is a message.');
+      });
+
+      it('should not strip the first newlines with a non-titleized message', () => {
+        const formatter = createTaggedFormatter({ titleize: false });
+        const result = formatter({ msg: 'hello world!\n\n\nThis is a message.', logger });
+        expect(result).toEqual('hello world!\n\n\nThis is a message.');
+      });
+
       it('should work with wrap and titleize', () => {
         const wordWrapOpts = { width: 50 };
         const formatter = createTaggedFormatter({ titleize: true, wrap: wordWrapOpts });
