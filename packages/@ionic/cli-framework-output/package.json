@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-framework-output",
-  "version": "2.1.0",
+  "version": "2.2.0",
   "description": "The log/tasks/spinners portion of Ionic CLI Framework",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com)",

@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [2.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.1.0...@ionic/cli-framework-output@2.2.0) (2020-09-02)
+
+
+### Bug Fixes
+
+* **formatter:** do not strip newlines when not titleizing ([3e38cd8](https://github.com/ionic-team/ionic-cli/commit/3e38cd891d0b914e03ea06d57cbb6ab067d43ac2))
+
+
+### Features
+
+* **output:** write method shortcut ([ca89ee9](https://github.com/ionic-team/ionic-cli/commit/ca89ee92a99a52bd4abd8a1cb97ba3087ec8c4e0))
+
+
+
+
+
 # [2.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.0.2...@ionic/cli-framework-output@2.1.0) (2020-08-29)
 
 
