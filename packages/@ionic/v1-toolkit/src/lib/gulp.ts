@@ -12,7 +12,7 @@ import * as vm from "vm";
 import { timestamp } from './log';
 import {Context} from "vm";
 
-declare type GulpInst = typeof gulp & typeof undertaker;
+type GulpInst = typeof gulp & typeof undertaker;
 
 const debug = Debug('ionic:v1-toolkit:lib:gulp');
 
