@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.12](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.11...@ionic/v1-toolkit@3.2.12) (2020-09-10)
+
+
+### Bug Fixes
+
+* **gulp:** accept `exports` OR `gulp.task()` tasks ([#4539](https://github.com/ionic-team/ionic-cli/issues/4539)) ([f05d962](https://github.com/ionic-team/ionic-cli/commit/f05d9621f26c13bc11b52bddfc85bcc91a5702aa))
+
+
+
+
+
 ## [3.2.11](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.10...@ionic/v1-toolkit@3.2.11) (2020-09-02)
 
 **Note:** Version bump only for package @ionic/v1-toolkit
