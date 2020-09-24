@@ -35,15 +35,15 @@ describe('@ionic/cli', () => {
       it('should throw for fs error', () => {
         jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => { throw new Error('error') });
 
-        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
-        expect(p).rejects.toThrowError('Could not parse build output file');
+        const p = project.getAndroidBuildOutputJson(['/path/to/output.json']);
+        expect(p).rejects.toThrowError('Could not find or parse valid build output file');
       });
 
       it('should throw for unrecognized format', () => {
         jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => ({ foo: 'bar' }));
 
-        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
-        expect(p).rejects.toThrowError('Could not parse build output file');
+        const p = project.getAndroidBuildOutputJson(['/path/to/output.json']);
+        expect(p).rejects.toThrowError('Could not find or parse valid build output file');
       });
 
       it('should parse legacy output.json', () => {
@@ -58,7 +58,7 @@ describe('@ionic/cli', () => {
 
         jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
-        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
+        const p = project.getAndroidBuildOutputJson(['/path/to/output.json']);
         expect(p).resolves.toEqual(file);
       });
 
@@ -76,7 +76,7 @@ describe('@ionic/cli', () => {
 
         jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
-        const p = project.getAndroidBuildOutputJson('/path/to/output.json');
+        const p = project.getAndroidBuildOutputJson(['/path/to/output.json']);
         expect(p).resolves.toEqual(file);
       });
 
