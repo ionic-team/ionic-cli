@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-prompts@2.1.6...@ionic/cli-framework-prompts@2.1.7) (2020-09-24)
+
+**Note:** Version bump only for package @ionic/cli-framework-prompts
+
+
+
+
+
 ## [2.1.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-prompts@2.1.5...@ionic/cli-framework-prompts@2.1.6) (2020-08-28)
 
 **Note:** Version bump only for package @ionic/cli-framework-prompts

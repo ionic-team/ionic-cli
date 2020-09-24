@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.11.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.8...@ionic/cli@6.11.9) (2020-09-24)
+
+
+### Bug Fixes
+
+* **cordova:** handle output-metadata.json files during android run ([5905cc1](https://github.com/ionic-team/ionic-cli/commit/5905cc1a9cd75b1a2bb8343da2fbc7146322ad28))
+
+
+
+
+
 ## [6.11.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.7...@ionic/cli@6.11.8) (2020-09-02)
 
 **Note:** Version bump only for package @ionic/cli
