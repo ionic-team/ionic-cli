@@ -1,6 +1,6 @@
 import { CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
-import { stripAnsi } from '@ionic/cli-framework-output';
 import { findClosestOpenPort } from '@ionic/utils-network';
+import { stripAnsi } from '@ionic/utils-terminal';
 
 import { CommandMetadata, ReactServeOptions, ServeDetails } from '../../../definitions';
 import { input, strong, weak } from '../../color';

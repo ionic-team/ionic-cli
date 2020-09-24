@@ -1,4 +1,4 @@
-import { stripAnsi } from '@ionic/cli-framework-output';
+import { stripAnsi } from '@ionic/utils-terminal';
 
 import { Command, CommandMap, CommandMapDefault, Namespace, NamespaceMap } from '../command';
 import { CommandStringHelpFormatter, NamespaceStringHelpFormatter, NamespaceSchemaHelpFormatter } from '../help';

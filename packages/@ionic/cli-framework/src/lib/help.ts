@@ -1,5 +1,5 @@
-import { stringWidth, wordWrap } from '@ionic/cli-framework-output';
 import { filter, map } from '@ionic/utils-array';
+import { stringWidth, wordWrap } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 

@@ -1,4 +1,4 @@
-import { stripAnsi } from '@ionic/cli-framework-output';
+import { stripAnsi } from '@ionic/utils-terminal';
 
 import * as os from 'os';
 import * as path from 'path';

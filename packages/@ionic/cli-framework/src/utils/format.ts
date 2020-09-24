@@ -1,4 +1,4 @@
-import { sliceAnsi, stringWidth } from '@ionic/cli-framework-output';
+import { sliceAnsi, stringWidth } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as os from 'os';
 import * as path from 'path';
