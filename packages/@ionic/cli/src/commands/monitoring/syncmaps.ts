@@ -1,5 +1,5 @@
-import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { pathExists, readFile, readdirSafe } from '@ionic/utils-fs';
+import { columnar, prettyPath } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as path from 'path';
 

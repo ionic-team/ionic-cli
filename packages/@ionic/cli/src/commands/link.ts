@@ -1,6 +1,6 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { createPromptChoiceSeparator } from '@ionic/cli-framework-prompts';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 
 import { PROJECT_FILE } from '../constants';

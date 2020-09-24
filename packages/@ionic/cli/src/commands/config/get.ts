@@ -1,11 +1,11 @@
 import { MetadataGroup } from '@ionic/cli-framework';
-import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
+import { columnar, prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
-import { PROJECT_FILE } from '../../constants';
+import { COLUMNAR_OPTIONS, PROJECT_FILE } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
 
@@ -83,7 +83,7 @@ This command will sanitize config output for known sensitive fields (disabled wh
 
         columns.sort((a, b) => strcmp(a[0], b[0]));
 
-        this.env.log.rawmsg(columnar(columns, {}));
+        this.env.log.rawmsg(columnar(columns, COLUMNAR_OPTIONS));
       } else {
         this.env.log.rawmsg(util.inspect(v, { depth: Infinity, colors: chalk.level > 0 }));
       }

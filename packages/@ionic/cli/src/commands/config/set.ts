@@ -1,5 +1,5 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { prettyPath } from '@ionic/utils-terminal';
 
 import { PROJECT_FILE } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';

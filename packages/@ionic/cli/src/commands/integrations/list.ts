@@ -1,4 +1,4 @@
-import { columnar } from '@ionic/cli-framework/utils/format';
+import { columnar } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IntegrationName } from '../../definitions';

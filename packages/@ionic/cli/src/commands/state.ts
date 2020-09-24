@@ -1,7 +1,7 @@
 import { MetadataGroup } from '@ionic/cli-framework';
-import { columnar } from '@ionic/cli-framework/utils/format';
-import { indent } from '@ionic/utils-terminal';
+import { columnar, indent } from '@ionic/utils-terminal';
 
+import { COLUMNAR_OPTIONS } from '../constants';
 import { CommandMetadata } from '../definitions';
 import { input, strong } from '../lib/color';
 import { Command } from '../lib/command';
@@ -30,7 +30,7 @@ export class StateCommand extends Command {
       `${input('ionic state')} has been removed.\n\n` +
       `We recommend using Cordova directly to manage Cordova plugins and platforms.\n` +
       `The following commands fulfill the old ${input('ionic state')} functionality:\n\n` +
-      `${columnar(data, {})}\n\n` +
+      `${columnar(data, COLUMNAR_OPTIONS)}\n\n` +
       `See ${strong('https://cordova.apache.org/docs/en/latest/platform_plugin_versioning_ref/')} for detailed information.\n`
     );
   }

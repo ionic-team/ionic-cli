@@ -1,11 +1,10 @@
 import { filter, map } from '@ionic/utils-array';
-import { stringWidth, wordWrap } from '@ionic/utils-terminal';
+import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, Footnote, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, LinkFootnote, MetadataGroup, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 import { isHydratedCommandMetadata, isLinkFootnote } from '../guards';
-import { generateFillSpaceStringList } from '../utils/format';
 
 import { ColorFunction, Colors, DEFAULT_COLORS } from './colors';
 import { formatOptionName, hydrateOptionSpec } from './options';

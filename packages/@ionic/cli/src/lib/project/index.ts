@@ -1,10 +1,9 @@
 import { BaseConfig, BaseConfigOptions, PackageJson, ParsedArgs } from '@ionic/cli-framework';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { ensureDir, findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
-import { TTY_WIDTH, wordWrap } from '@ionic/utils-terminal';
+import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';

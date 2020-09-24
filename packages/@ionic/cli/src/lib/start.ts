@@ -1,8 +1,8 @@
-import { columnar } from '@ionic/cli-framework/utils/format';
 import { readJson } from '@ionic/utils-fs';
+import { columnar } from '@ionic/utils-terminal';
 import * as lodash from 'lodash';
 
-import { PROJECT_TYPES } from '../constants';
+import { COLUMNAR_OPTIONS, PROJECT_TYPES } from '../constants';
 import { CommandLineOptions, IConfig, ILogger, ProjectType, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
 
@@ -41,7 +41,6 @@ export type AppSchema = NewAppSchema | ClonedAppSchema;
 export function verifyOptions(options: CommandLineOptions, { log }: { log: ILogger; }): void {
   // If the action is list then lets just end here.
   if (options['list']) {
-    const headers = ['name', 'description'];
     const typeOption = options['type'] ? String(options['type']) : undefined;
 
     if (typeOption && !PROJECT_TYPES.includes(typeOption as ProjectType)) {
@@ -51,13 +50,14 @@ export function verifyOptions(options: CommandLineOptions, { log }: { log: ILogg
       );
     }
 
+    const headers = ['name', 'description'].map(h => strong(h));
     const starterTypes = typeOption ? [typeOption] : getStarterProjectTypes();
 
     for (const starterType of starterTypes) {
       const starters = STARTER_TEMPLATES.filter(template => template.projectType === starterType);
 
       log.rawmsg(`\n${strong(`Starters for ${prettyProjectName(starterType)}`)} (${input(`--type=${starterType}`)})\n\n`);
-      log.rawmsg(columnar(starters.map(({ name, description }) => [input(name), description || '']), { headers }));
+      log.rawmsg(columnar(starters.map(({ name, description }) => [input(name), description || '']), { ...COLUMNAR_OPTIONS, headers }));
       log.rawmsg('\n');
     }
 

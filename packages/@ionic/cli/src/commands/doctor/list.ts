@@ -1,6 +1,7 @@
-import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
+import { columnar } from '@ionic/utils-terminal';
 
+import { COLUMNAR_OPTIONS } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { isTreatableAilment } from '../../guards';
 import { input, strong } from '../../lib/color';
@@ -52,6 +53,6 @@ You can flip whether an issue is ignored or not by using ${input('ionic config s
 
     rows.sort((row1, row2) => strcmp(row1[0], row2[0]));
 
-    this.env.log.rawmsg(columnar(rows, { headers: ['id', 'affected projects', 'tags'] }));
+    this.env.log.rawmsg(columnar(rows, { ...COLUMNAR_OPTIONS, headers: ['id', 'affected projects', 'tags'].map(h => strong(h)) }));
   }
 }

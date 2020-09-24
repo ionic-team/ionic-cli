@@ -1,6 +1,6 @@
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { readFile, writeFile } from '@ionic/utils-fs';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as et from 'elementtree';
 import * as path from 'path';

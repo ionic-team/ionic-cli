@@ -1,6 +1,6 @@
 import { MetadataGroup, contains, validate } from '@ionic/cli-framework';
-import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists, unlink } from '@ionic/utils-fs';
+import { expandPath, prettyPath } from '@ionic/utils-terminal';
 import * as path from 'path';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';

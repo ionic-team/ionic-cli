@@ -1,6 +1,6 @@
 import { validators } from '@ionic/cli-framework';
-import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { fileToString, writeFile } from '@ionic/utils-fs';
+import { expandPath, prettyPath } from '@ionic/utils-terminal';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input, strong } from '../../lib/color';

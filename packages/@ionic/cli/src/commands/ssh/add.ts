@@ -1,6 +1,6 @@
 import { validators } from '@ionic/cli-framework';
-import { expandPath, prettyPath } from '@ionic/cli-framework/utils/format';
 import { pathAccessible, pathExists } from '@ionic/utils-fs';
+import { expandPath, prettyPath } from '@ionic/utils-terminal';
 import * as fs from 'fs';
 import * as os from 'os';
 import * as path from 'path';

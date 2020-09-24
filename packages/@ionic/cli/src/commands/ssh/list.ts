@@ -1,5 +1,6 @@
-import { columnar } from '@ionic/cli-framework/utils/format';
+import { columnar } from '@ionic/utils-terminal';
 
+import { COLUMNAR_OPTIONS } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input, strong } from '../../lib/color';
 
@@ -78,7 +79,8 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
       });
 
       const table = columnar(keysMatrix, {
-        headers: ['fingerprint', 'name', 'annotation'],
+        ...COLUMNAR_OPTIONS,
+        headers: ['fingerprint', 'name', 'annotation'].map(h => strong(h)),
       });
 
       if (foundActiveKey) {
