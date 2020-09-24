@@ -36,6 +36,7 @@
     "string-width": "^4.1.0",
     "strip-ansi": "^6.0.0",
     "tslib": "^2.0.1",
+    "untildify": "^4.0.0",
     "wrap-ansi": "^7.0.0"
   },
   "devDependencies": {
