@@ -27,12 +27,16 @@
     "lint": "true",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
-    "test": "echo 'no tests yet'",
+    "test": "jest --maxWorkers=4",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "debug": "^4.0.0",
-    "tslib": "^2.0.1"
+    "slice-ansi": "^4.0.0",
+    "string-width": "^4.1.0",
+    "strip-ansi": "^6.0.0",
+    "tslib": "^2.0.1",
+    "wrap-ansi": "^7.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",
