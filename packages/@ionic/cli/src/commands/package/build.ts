@@ -83,13 +83,13 @@ This can be used only together with build type ${input('release')} for Android a
       ],
       exampleCommands: [
         'android debug',
-        'ios development --security-profile="iOS Security Profile Name"',
+        'ios development --security-profile="iOS Signing Certificate Name"',
         'android debug --environment="My Custom Environment Name"',
         'android debug --native-config="My Custom Native Config Name"',
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
-        'ios development --security-profile="iOS Security Profile Name" --target-platform="iOS - Xcode 9"',
-        'ios development --security-profile="iOS Security Profile Name" --build-file-name=my_custom_file_name.ipa',
-        'ios app-store --security-profile="iOS Security Profile Name" --destination="Apple App Store Destination"',
+        'ios development --security-profile="iOS Signing Certificate Name" --target-platform="iOS - Xcode 9"',
+        'ios development --security-profile="iOS Signing Certificate Name" --build-file-name=my_custom_file_name.ipa',
+        'ios app-store --security-profile="iOS Signing Certificate Name" --destination="Apple App Store Destination"',
       ],
       inputs: [
         {
