@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.2.1...@ionic/cli-framework-output@2.2.2) (2020-09-29)
+
+
+### Bug Fixes
+
+* add signal-exit dependency in correct place ([178e5e5](https://github.com/ionic-team/ionic-cli/commit/178e5e51cdc3593e3d096a5197e1dc0e17292bbd))
+
+
+
+
+
 ## [2.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.2.0...@ionic/cli-framework-output@2.2.1) (2020-09-24)
 
 **Note:** Version bump only for package @ionic/cli-framework-output

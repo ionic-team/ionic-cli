@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.3.0...@ionic/utils-terminal@2.3.1) (2020-09-29)
+
+
+### Bug Fixes
+
+* add signal-exit dependency in correct place ([178e5e5](https://github.com/ionic-team/ionic-cli/commit/178e5e51cdc3593e3d096a5197e1dc0e17292bbd))
+
+
+
+
+
 # [2.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.2.1...@ionic/utils-terminal@2.3.0) (2020-09-24)
 
 
