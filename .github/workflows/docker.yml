@@ -4,10 +4,13 @@ name: Docker
 on: workflow_dispatch
 
 jobs:
-  build:
+  build-docker-container:
     name: Build and Deploy Docker Container with latest CLI
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/setup-node@v1
+        with:
+          node-version: 14.x
       - name: GitHub Container Registry Login
         run: echo ${GH_TOKEN} | docker login ghcr.io -u ionitron --password-stdin
         env:
