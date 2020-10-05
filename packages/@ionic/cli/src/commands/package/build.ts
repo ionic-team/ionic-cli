@@ -384,8 +384,8 @@ This can be used only together with build type ${input('release')} for Android a
     const tmpFile = tmpfilepath('ionic-package-build');
     const ws = fs.createWriteStream(tmpFile);
     await download(req, ws, {});
-    fs.renameSync(tmpFile, filename);
-
+    fs.copyFileSync(tmpFile, filename);
+    fs.unlinkSync(tmpFile);
     return filename;
   }
 }
