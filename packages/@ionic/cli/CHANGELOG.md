@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.11.11](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.10...@ionic/cli@6.11.11) (2020-10-05)
+
+
+### Bug Fixes
+
+* **Appflow:** fix bug where appflow build would fail to copy IPA/APK if tmp dir was mounted on a different filesystem ([#4578](https://github.com/ionic-team/ionic-cli/issues/4578)) ([65c740d](https://github.com/ionic-team/ionic-cli/commit/65c740d8ef3195e63d026ac229b7fe8bf1187da6))
+
+
+
+
+
 ## [6.11.10](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.9...@ionic/cli@6.11.10) (2020-09-29)
 
 **Note:** Version bump only for package @ionic/cli
