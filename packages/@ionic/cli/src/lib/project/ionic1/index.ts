@@ -1,6 +1,6 @@
 import { PackageJson } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { readJson } from '@ionic/utils-fs';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';

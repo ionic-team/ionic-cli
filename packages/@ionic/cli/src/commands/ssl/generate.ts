@@ -1,6 +1,6 @@
 import { MetadataGroup } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists, tmpfilepath, unlink, writeFile } from '@ionic/utils-fs';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as lodash from 'lodash';
 import * as path from 'path';
 

@@ -1,8 +1,31 @@
-import { sliceAnsi, stringWidth } from '@ionic/cli-framework-output';
-import * as chalk from 'chalk';
 import * as os from 'os';
 import * as path from 'path';
+
+import sliceAnsi = require('slice-ansi');
+import stringWidth = require('string-width');
+import stripAnsi = require('strip-ansi');
+import wrapAnsi = require('wrap-ansi');
 import untildify = require('untildify');
+
+export { sliceAnsi, stringWidth, stripAnsi };
+
+const MIN_TTY_WIDTH = 80;
+const MAX_TTY_WIDTH = 120;
+export const TTY_WIDTH = process.stdout.columns ? Math.max(MIN_TTY_WIDTH, Math.min(process.stdout.columns, MAX_TTY_WIDTH)) : Infinity;
+
+export function indent(n = 4): string {
+  return ' '.repeat(n);
+}
+
+export interface WordWrapOptions {
+  width?: number;
+  indentation?: number;
+  append?: string;
+}
+
+export function wordWrap(msg: string, { width = TTY_WIDTH, indentation = 0, append = '' }: WordWrapOptions) {
+  return wrapAnsi(msg, width - indentation - append.length, { trim: true }).split('\n').join(`${append}\n${indent(indentation)}`);
+}
 
 export function prettyPath(p: string): string {
   p = expandPath(p);
@@ -63,7 +86,7 @@ export interface ColumnarOptions {
  *                     separator altogether.
  * @param options.headers An array of header cells.
  */
-export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk.dim('|'), headers }: ColumnarOptions): string {
+export function columnar(rows: string[][], { hsep = '-', vsep = '|', headers }: ColumnarOptions): string {
   const includeHeaders = headers ? true : false;
 
   if (!rows[0]) {
@@ -72,7 +95,7 @@ export function columnar(rows: string[][], { hsep = chalk.dim('-'), vsep = chalk
 
   const columnCount = headers ? headers.length : rows[0].length;
   const columns = headers ?
-    headers.map(header => [chalk.bold(header)]) :
+    headers.map(header => [header]) :
     rows[0].map(() => []);
 
   for (const row of rows) {

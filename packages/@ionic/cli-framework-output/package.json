@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-framework-output",
-  "version": "2.2.0",
+  "version": "2.2.2",
   "description": "The log/tasks/spinners portion of Ionic CLI Framework",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com)",
@@ -24,14 +24,9 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/utils-terminal": "2.2.1",
+    "@ionic/utils-terminal": "2.3.1",
     "debug": "^4.0.0",
-    "signal-exit": "^3.0.3",
-    "slice-ansi": "^4.0.0",
-    "string-width": "^4.1.0",
-    "strip-ansi": "^6.0.0",
-    "tslib": "^2.0.1",
-    "wrap-ansi": "^7.0.0"
+    "tslib": "^2.0.1"
   },
   "devDependencies": {
     "@ionic/utils-stream": "3.1.5",
@@ -39,7 +34,6 @@
     "@types/inquirer": "0.0.43",
     "@types/jest": "^26.0.10",
     "@types/node": "~10.17.13",
-    "@types/signal-exit": "^3.0.0",
     "@types/slice-ansi": "^4.0.0",
     "@types/wrap-ansi": "^3.0.0",
     "jest": "^26.4.2",

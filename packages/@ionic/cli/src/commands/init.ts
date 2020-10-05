@@ -1,6 +1,6 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { slugify } from '@ionic/cli-framework/utils/string';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as path from 'path';
 
 import { MODERN_PROJECT_TYPES, PROJECT_FILE } from '../constants';

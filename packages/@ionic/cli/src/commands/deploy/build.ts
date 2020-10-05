@@ -1,7 +1,7 @@
 import { CommandLineInputs, CommandLineOptions, MetadataGroup } from '@ionic/cli-framework';
 import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
-import { columnar } from '@ionic/cli-framework/utils/format';
 import { sleep } from '@ionic/utils-process';
+import { columnar } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 

@@ -1,6 +1,6 @@
 import { PackageJson, parseArgs } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as path from 'path';
 

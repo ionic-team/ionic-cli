@@ -1,5 +1,5 @@
-import { columnar } from '@ionic/cli-framework/utils/format';
 import { strcmp } from '@ionic/cli-framework/utils/string';
+import { columnar } from '@ionic/utils-terminal';
 import * as lodash from 'lodash';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoItemGroup } from '../definitions';

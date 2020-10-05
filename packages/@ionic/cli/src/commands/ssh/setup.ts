@@ -1,5 +1,5 @@
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { pathExists } from '@ionic/utils-fs';
+import { prettyPath } from '@ionic/utils-terminal';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input, strong } from '../../lib/color';

@@ -1,7 +1,7 @@
 import { CommandLineInputs, CommandLineOptions, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
 import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
-import { columnar } from '@ionic/cli-framework/utils/format';
 import { tmpfilepath } from '@ionic/utils-fs';
+import { columnar } from '@ionic/utils-terminal';
 import { sleep } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
@@ -83,13 +83,13 @@ This can be used only together with build type ${input('release')} for Android a
       ],
       exampleCommands: [
         'android debug',
-        'ios development --security-profile="iOS Security Profile Name"',
+        'ios development --security-profile="iOS Signing Certificate Name"',
         'android debug --environment="My Custom Environment Name"',
         'android debug --native-config="My Custom Native Config Name"',
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
-        'ios development --security-profile="iOS Security Profile Name" --target-platform="iOS - Xcode 9"',
-        'ios development --security-profile="iOS Security Profile Name" --build-file-name=my_custom_file_name.ipa',
-        'ios app-store --security-profile="iOS Security Profile Name" --destination="Apple App Store Destination"',
+        'ios development --security-profile="iOS Signing Certificate Name" --target-platform="iOS - Xcode 9"',
+        'ios development --security-profile="iOS Signing Certificate Name" --build-file-name=my_custom_file_name.ipa',
+        'ios app-store --security-profile="iOS Signing Certificate Name" --destination="Apple App Store Destination"',
       ],
       inputs: [
         {
@@ -384,8 +384,8 @@ This can be used only together with build type ${input('release')} for Android a
     const tmpFile = tmpfilepath('ionic-package-build');
     const ws = fs.createWriteStream(tmpFile);
     await download(req, ws, {});
-    fs.renameSync(tmpFile, filename);
-
+    fs.copyFileSync(tmpFile, filename);
+    fs.unlinkSync(tmpFile);
     return filename;
   }
 }

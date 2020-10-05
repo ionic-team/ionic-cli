@@ -1,8 +1,8 @@
+import { WordWrapOptions, stringWidth, wordWrap } from '@ionic/utils-terminal';
 import { Writable } from 'stream';
 import * as util from 'util';
 
 import { ColorFunction, Colors, NO_COLORS } from './colors';
-import { WordWrapOptions, stringWidth, wordWrap } from './format';
 import { dropWhile, enforceLF } from './utils';
 
 export interface LogRecord {

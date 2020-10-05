@@ -1,4 +1,4 @@
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';

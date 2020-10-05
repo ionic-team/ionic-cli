@@ -1,4 +1,4 @@
-import { prettyPath } from '@ionic/cli-framework/utils/format';
+import { prettyPath } from '@ionic/utils-terminal';
 
 import { PROJECT_FILE } from '../../constants';
 import { input, strong } from '../../lib/color';

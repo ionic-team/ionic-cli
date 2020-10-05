@@ -1,12 +1,12 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
-import { columnar, prettyPath } from '@ionic/cli-framework/utils/format';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
+import { columnar, prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
-import { PROJECT_FILE } from '../constants';
+import { COLUMNAR_OPTIONS, PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, IShellRunOptions, ProjectType, ResolvedStarterTemplate, StarterManifest } from '../definitions';
 import { failure, input, strong } from '../lib/color';
 import { Command } from '../lib/command';
@@ -318,7 +318,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         message: 'Starter template:',
         choices: () => {
           const starterTemplateList = STARTER_TEMPLATES.filter(st => st.projectType === projectType);
-          const cols = columnar(starterTemplateList.map(({ name, description }) => [input(name), description || '']), {}).split('\n');
+          const cols = columnar(starterTemplateList.map(({ name, description }) => [input(name), description || '']), COLUMNAR_OPTIONS).split('\n');
 
           if (starterTemplateList.length === 0) {
             throw new FatalException(`No starter templates found for project type: ${input(projectType)}.`);
@@ -441,7 +441,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       message: 'Framework:',
       default: 'angular',
       choices: () => {
-        const cols = columnar(SUPPORTED_FRAMEWORKS.map(({ name, description }) => [input(name), description]), {}).split('\n');
+        const cols = columnar(SUPPORTED_FRAMEWORKS.map(({ name, description }) => [input(name), description]), COLUMNAR_OPTIONS).split('\n');
         return SUPPORTED_FRAMEWORKS.map((starterTemplate, i) => {
           return {
             name: cols[i],

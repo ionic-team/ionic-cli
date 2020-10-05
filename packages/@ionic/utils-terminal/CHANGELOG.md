@@ -3,6 +3,29 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.3.0...@ionic/utils-terminal@2.3.1) (2020-09-29)
+
+
+### Bug Fixes
+
+* add signal-exit dependency in correct place ([178e5e5](https://github.com/ionic-team/ionic-cli/commit/178e5e51cdc3593e3d096a5197e1dc0e17292bbd))
+
+
+
+
+
+# [2.3.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.2.1...@ionic/utils-terminal@2.3.0) (2020-09-24)
+
+
+### Features
+
+* **format:** add more formatting utilities ([d30f099](https://github.com/ionic-team/ionic-cli/commit/d30f099f50df18816fb1d3064c434f1b318518a2))
+* **format:** terminal prose formatting utils ([8912348](https://github.com/ionic-team/ionic-cli/commit/8912348ca348ae6192ddfff1af88f9c9443d205d))
+
+
+
+
+
 ## [2.2.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.2.0...@ionic/utils-terminal@2.2.1) (2020-08-28)
 
 **Note:** Version bump only for package @ionic/utils-terminal

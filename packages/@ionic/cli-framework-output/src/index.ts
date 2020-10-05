@@ -1,9 +1,12 @@
+import { TTY_WIDTH, indent, sliceAnsi, stringWidth, stripAnsi, wordWrap } from '@ionic/utils-terminal';
+
 import { NO_COLORS } from './colors';
 import { Logger, createTaggedFormatter, StreamHandler, CreateTaggedFormatterOptions } from './logger';
 import { OutputStrategy, StreamOutputStrategy } from './output';
 
+export { TTY_WIDTH, indent, sliceAnsi, stringWidth, stripAnsi, wordWrap };
+
 export * from './colors';
-export * from './format';
 export * from './logger';
 export * from './output';
 export * from './tasks';

@@ -1,7 +1,7 @@
 import { MetadataGroup } from '@ionic/cli-framework';
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { map } from '@ionic/utils-array';
 import { readdirp, stat, writeFile } from '@ionic/utils-fs';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as crypto from 'crypto';
 import * as fs from 'fs';
 import * as path from 'path';

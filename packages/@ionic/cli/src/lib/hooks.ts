@@ -1,5 +1,5 @@
-import { prettyPath } from '@ionic/cli-framework/utils/format';
 import { conform } from '@ionic/utils-array';
+import { prettyPath } from '@ionic/utils-terminal';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';

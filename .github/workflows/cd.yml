@@ -32,3 +32,18 @@ jobs:
           GIT_AUTHOR_EMAIL: hi@ionicframework.com
           GIT_COMMITTER_NAME: Ionitron
           GIT_COMMITTER_EMAIL: hi@ionicframework.com
+      - name: GitHub Container Registry Login
+        run: echo ${GH_TOKEN} | docker login ghcr.io -u ionitron --password-stdin
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
+      - name: Build Container
+        run: |
+            docker build \
+              --build-arg IONIC_CLI_VERSION=$(npm info @ionic/cli dist-tags.latest) \
+              --tag ghcr.io/${{ github.repository }}:latest \
+              --tag ghcr.io/${{ github.repository}}:$(npm info @ionic/cli dist-tags.latest) \
+              .
+      - name: Push Container as latest
+        run: docker push ghcr.io/${{ github.repository }}:latest
+      - name: Push Container as version
+        run: docker push ghcr.io/${{ github.repository }}:$(npm info @ionic/cli dist-tags.latest)

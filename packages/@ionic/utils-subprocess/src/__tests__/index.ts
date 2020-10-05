@@ -73,7 +73,7 @@ describe('@ionic/utils-subprocess', () => {
     const mockCrossSpawn = jest.fn();
     jest.mock('cross-spawn', () => mockCrossSpawn);
     jest.mock('os', () => ({ ...mock_os, homedir: () => '/home/me' }));
-    const { Subprocess, SubprocessError } = require('../');
+    const { Subprocess, SubprocessError, convertPATH } = require('../');
 
     beforeEach(() => {
       jest.resetAllMocks();
@@ -99,11 +99,11 @@ describe('@ionic/utils-subprocess', () => {
 
     it('should provide default env option', async () => {
       const cmd = new Subprocess('cmd', []);
-      expect(cmd.options).toEqual({ env: createProcessEnv(process.env) });
+      expect(cmd.options).toEqual({ env: createProcessEnv({ ...process.env, PATH: convertPATH(process.env.PATH) }) });
     });
 
     it('should provide only PATH with empty env', async () => {
-      const PATH = process.env.PATH;
+      const PATH = convertPATH(process.env.PATH);
       const cmd = new Subprocess('cmd', [], { env: {} });
       expect(cmd.options).toEqual({ env: createProcessEnv({ PATH }) });
     });

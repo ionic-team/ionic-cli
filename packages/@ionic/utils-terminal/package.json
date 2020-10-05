@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-terminal",
-  "version": "2.2.1",
+  "version": "2.3.1",
   "description": "Terminal utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -27,17 +27,24 @@
     "lint": "true",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
-    "test": "echo 'no tests yet'",
+    "test": "jest --maxWorkers=4",
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "debug": "^4.0.0",
-    "tslib": "^2.0.1"
+    "signal-exit": "^3.0.3",
+    "slice-ansi": "^4.0.0",
+    "string-width": "^4.1.0",
+    "strip-ansi": "^6.0.0",
+    "tslib": "^2.0.1",
+    "untildify": "^4.0.0",
+    "wrap-ansi": "^7.0.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",
     "@types/jest": "^26.0.10",
     "@types/node": "~10.17.13",
+    "@types/signal-exit": "^3.0.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",
