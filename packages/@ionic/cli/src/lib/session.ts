@@ -15,6 +15,16 @@ export class BaseSession {
   constructor(readonly e: SessionDeps) {}
 
   async logout(): Promise<void> {
+    const activeToken = this.e.config.get('tokens.user');
+    if (activeToken) {
+      // invalidate the token
+      const { req } = await this.e.client.make('POST', '/logout');
+      req.set('Authorization', `Bearer ${activeToken}`)
+      .send({});
+      try {
+        await this.e.client.do(req);
+      } catch (e) {}
+    }
     this.e.config.unset('org.id');
     this.e.config.unset('user.id');
     this.e.config.unset('user.email');
