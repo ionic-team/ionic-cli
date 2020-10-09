@@ -117,7 +117,13 @@ export abstract class CapacitorCommand extends Command {
     }
 
     if (platform) {
-      const integrationRoot = this.project.directory;
+      const capacitor = this.project.getIntegration('capacitor');
+
+      if (!capacitor) {
+        throw new FatalException('Cannot check platform installations--Capacitor not yet integrated.');
+      }
+
+      const integrationRoot = capacitor.root;
       const platformsToCheck = ['android', 'ios', 'electron'];
       const platforms = (await Promise.all(platformsToCheck.map(async (p): Promise<[string, boolean]> => [p, await pathExists(path.resolve(integrationRoot, p))])))
         .filter(([, e]) => e)
