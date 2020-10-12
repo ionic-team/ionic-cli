@@ -255,7 +255,6 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
   protected async runServeDeploy(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
-    const conf = await loadCordovaConfig(this.integration);
     const metadata = await this.getMetadata();
 
     if (!this.project) {
@@ -282,6 +281,8 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
       serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
     }
+
+    const conf = await loadCordovaConfig(this.integration);
 
     onBeforeExit(async () => {
       conf.resetContentSrc();
@@ -313,7 +314,6 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
   protected async runBuildDeploy(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
-    const conf = await loadCordovaConfig(this.integration);
     const metadata = await this.getMetadata();
 
     if (!this.project) {
@@ -335,6 +335,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     }
 
     if (options['native-run']) {
+      const conf = await loadCordovaConfig(this.integration);
       const [ platform ] = inputs;
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), { stdio: 'inherit' });
