@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.11.12](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.11...@ionic/cli@6.11.12) (2020-10-12)
+
+
+### Bug Fixes
+
+* **capacitor:** use correct root when checking platforms ([e243357](https://github.com/ionic-team/ionic-cli/commit/e2433573bae66210d7ef29d6a2c170faa8abe408))
+* **cordova:** load config.xml after serve/build hooks ([9867ada](https://github.com/ionic-team/ionic-cli/commit/9867adafbdd200712a35b38d39c54af6f809c987))
+
+
+
+
+
 ## [6.11.11](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.10...@ionic/cli@6.11.11) (2020-10-05)
 
 
