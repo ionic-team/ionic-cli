@@ -45,7 +45,7 @@
     "express": "^4.16.2",
     "gulp": "^4.0.2",
     "http-proxy-middleware": "^0.20.0",
-    "tiny-lr": "^1.1.0",
+    "tiny-lr": "^2.0.0",
     "tslib": "^2.0.1",
     "ws": "^7.0.0"
   },
