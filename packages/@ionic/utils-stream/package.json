@@ -43,7 +43,7 @@
     "lint-staged": "^10.0.2",
     "rimraf": "^3.0.0",
     "stream-combiner2": "^1.1.1",
-    "ts-jest": "~26.3.0",
+    "ts-jest": "~26.4.1",
     "typescript": "~4.0.2"
   }
 }
