@@ -1,6 +1,7 @@
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as lodash from 'lodash';
+import * as path from 'path';
 
 import { Project } from '../';
 import { InfoItem } from '../../../definitions';
@@ -13,7 +14,7 @@ export class VueProject extends Project {
 
   async getInfo(): Promise<InfoItem[]> {
     const [
-      [ ionicVuePkg, ionicVuePkgPath ],
+      [ionicVuePkg, ionicVuePkgPath],
     ] = await Promise.all([
       this.getPackageJson('@ionic/vue'),
     ]);
@@ -70,5 +71,10 @@ export class VueProject extends Project {
       `Cannot perform generate for Vue projects.\n` +
       `Since you're using the ${chalk.bold('Vue')} project type, this command won't work. The Ionic CLI doesn't know how to generate framework components for Vue projects.`
     );
+  }
+
+  setPrimaryTheme(themeColor: string): Promise<void> {
+    const themePath = path.join(this.directory, 'src', 'theme', 'variables.css');
+    return this.writeThemeColor(themePath, themeColor);
   }
 }

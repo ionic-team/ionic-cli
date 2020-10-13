@@ -539,9 +539,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     this.env.shell.alterPath = p => prependNodeModulesBinToPath(projectDir, p);
 
     if (!this.schema.cloned) {
-      if (this.schema.type === 'react') {
-        options['capacitor'] = true;
-      }
+      // Default to capacitor always
+      options['capacitor'] = true;
 
       if (options['cordova']) {
         const { confirmCordovaUsage } = await import('../lib/integrations/cordova/utils');
