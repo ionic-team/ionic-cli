@@ -540,7 +540,10 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     if (!this.schema.cloned) {
       // Default to capacitor always
-      options['capacitor'] = true;
+      if (this.schema.type === 'react' || this.schema.type === 'vue') {
+         options['capacitor'] = true;
+       }
+
 
       if (options['cordova']) {
         const { confirmCordovaUsage } = await import('../lib/integrations/cordova/utils');

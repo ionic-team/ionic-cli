@@ -722,8 +722,8 @@ export interface ReactServeOptions extends ServeOptions {
 }
 
 export interface VueServeOptions extends ServeOptions {
-  https: any;
-  ssl?: boolean;
+  https: boolean;
+  mode: string;
   configuration?: string;
   sourcemaps?: boolean;
 }
