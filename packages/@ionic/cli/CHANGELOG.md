@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.12.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.12...@ionic/cli@6.12.0) (2020-10-15)
+
+
+### Features
+
+* support vue projects ([#4515](https://github.com/ionic-team/ionic-cli/issues/4515)) ([ad6c483](https://github.com/ionic-team/ionic-cli/commit/ad6c483bd59b4f5e70acac22f456b0b062f4d39c))
+
+
+
+
+
 ## [6.11.12](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.11...@ionic/cli@6.11.12) (2020-10-12)
 
 
