@@ -644,7 +644,6 @@ export interface ReactBuildOptions extends BuildOptions<'react'> {
 export interface VueBuildOptions extends BuildOptions<'vue'> {
   configuration?: string;
   sourcemaps?: boolean;
-  cordovaAssets?: boolean;
 }
 
 export interface IonicCapacitorOptions {
@@ -723,7 +722,8 @@ export interface ReactServeOptions extends ServeOptions {
 }
 
 export interface VueServeOptions extends ServeOptions {
-  ssl?: boolean;
+  https: boolean;
+  mode: string;
   configuration?: string;
   sourcemaps?: boolean;
 }

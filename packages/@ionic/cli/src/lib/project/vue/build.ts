@@ -1,11 +1,13 @@
-import * as chalk from 'chalk';
-
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, VueBuildOptions } from '../../../definitions';
-import { BuildRunner, BuildRunnerDeps } from '../../build';
-import { RunnerException } from '../../errors';
+import { BUILD_SCRIPT, BuildCLI, BuildRunner, BuildRunnerDeps } from '../../build';
 
+import { VueProject } from './';
+
+export interface VueBuildRunnerDeps extends BuildRunnerDeps {
+  readonly project: VueProject;
+}
 export class VueBuildRunner extends BuildRunner<VueBuildOptions> {
-  constructor(protected readonly e: BuildRunnerDeps) {
+  constructor(protected readonly e: VueBuildRunnerDeps) {
     super();
   }
 
@@ -23,15 +25,31 @@ export class VueBuildRunner extends BuildRunner<VueBuildOptions> {
   }
 
   async buildProject(options: VueBuildOptions): Promise<void> {
-    const cli = this.getPkgManagerBuildCLI();
+    const vueScripts = new VueBuildCLI(this.e);
+    await vueScripts.build(options);
+  }
+}
 
-    if (!await cli.resolveScript()) {
-      throw new RunnerException(
-        `Cannot perform build.\n` +
-        `Since you're using the ${chalk.bold('Vue')} project type, you must provide the ${chalk.green(cli.script)} npm script so the Ionic CLI can build your project.`
-      );
+export class VueBuildCLI extends BuildCLI<VueBuildOptions> {
+  readonly name = 'Vue CLI Service';
+  readonly pkg = '@vue/cli-service';
+  readonly program = 'vue-cli-service';
+  readonly prefix = 'vue-cli-service';
+  readonly script = BUILD_SCRIPT;
+
+  protected async buildArgs(options: VueBuildOptions): Promise<string[]> {
+    const { pkgManagerArgs } = await import('../../utils/npm');
+
+    if (this.resolvedProgram === this.program) {
+      return ['build'];
+    } else {
+      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
+      return pkgArgs;
     }
+  }
 
-    await cli.build(options);
+  protected async buildEnvVars(options: VueBuildOptions): Promise<NodeJS.ProcessEnv> {
+    const env: NodeJS.ProcessEnv = {};
+    return { ...await super.buildEnvVars(options), ...env };
   }
 }
