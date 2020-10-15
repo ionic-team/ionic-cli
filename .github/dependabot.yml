@@ -4,31 +4,3 @@ updates:
   directory: "/"
   schedule:
     interval: daily
-    time: "10:00"
-  open-pull-requests-limit: 10
-  ignore:
-  - dependency-name: gulp
-    versions:
-    - "> 3.9.1"
-  - dependency-name: lerna
-    versions:
-    - "> 2.9.1"
-  - dependency-name: ssh-config
-    versions:
-    - "> 1.1.6"
-  - dependency-name: tslint
-    versions:
-    - "> 5.20.1"
-  - dependency-name: "@types/gulp"
-    versions:
-    - "> 3.8.36"
-  - dependency-name: "@types/inquirer"
-    versions:
-    - "> 0.0.43"
-  - dependency-name: "@types/inquirer"
-    versions:
-    - ">= 6.a"
-    - "< 7"
-  - dependency-name: "@types/node"
-    versions:
-    - "> 6.0.101"
