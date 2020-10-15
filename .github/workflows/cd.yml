@@ -32,6 +32,8 @@ jobs:
           GIT_AUTHOR_EMAIL: hi@ionicframework.com
           GIT_COMMITTER_NAME: Ionitron
           GIT_COMMITTER_EMAIL: hi@ionicframework.com
+      - name: Sleep while npm takes its time
+        run: sleep 20
       - name: GitHub Container Registry Login
         run: echo ${GH_TOKEN} | docker login ghcr.io -u ionitron --password-stdin
         env:
