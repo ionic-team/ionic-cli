@@ -69,7 +69,7 @@ The ${input('--signing-certificate')} option is mandatory for any iOS build but 
 
 Customizing the build:
 - The ${input('--environment')} and ${input('--native-config')} options can be used to customize the groups of values exposed to the build.
-- Override the preferred platform with ${input('--target-platform')}. This is useful for building older iOS apps.
+- Override the preferred platform with ${input('--build-stack')}. This is useful for building older iOS apps.
 
 Deploying the build to an App Store:
 - The ${input('--destination')} option can be used to deliver the app created by the build to the configured App Store. \
@@ -87,7 +87,7 @@ This can be used only together with build type ${input('release')} for Android a
         'android debug --environment="My Custom Environment Name"',
         'android debug --native-config="My Custom Native Config Name"',
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
-        'ios development --signing-certificate="iOS Signing Certificate Name" --target-platform="iOS - Xcode 9"',
+        'ios development --signing-certificate="iOS Signing Certificate Name" --build-stack="iOS - Xcode 9"',
         'ios development --signing-certificate="iOS Signing Certificate Name" --build-file-name=my_custom_file_name.ipa',
         'ios app-store --signing-certificate="iOS Signing Certificate Name" --destination="Apple App Store Destination"',
       ],
@@ -136,7 +136,7 @@ This can be used only together with build type ${input('release')} for Android a
           spec: { value: 'sha1' },
         },
         {
-          name: 'target-platform',
+          name: 'build-stack',
           summary: `Target platform (${TARGET_PLATFORM.map(v => input(`"${v}"`)).join(', ')})`,
           type: String,
           groups: [MetadataGroup.ADVANCED],
@@ -186,6 +186,11 @@ This can be used only together with build type ${input('release')} for Android a
       });
 
       inputs[1] = typeInput;
+    }
+
+    if (options['target-platform']) {
+      this.env.log.warn(`The ${input('--target-platform')} option has been deprecated. Please use ${input('--build-stack')}.`);
+      options['build-stack'] = options['target-platform'];
     }
 
     if (options['security-profile']) {
@@ -277,7 +282,7 @@ This can be used only together with build type ${input('release')} for Android a
       platform,
       build_type: buildType,
       commit_sha: options.commit,
-      stack_name: options['target-platform'],
+      stack_name: options['build-stack'],
       profile_name: options['signing-certificate'],
       environment_name: options.environment,
       native_config_name: options['native-config'],
