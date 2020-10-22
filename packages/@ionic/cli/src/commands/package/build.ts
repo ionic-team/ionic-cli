@@ -65,11 +65,11 @@ This command creates a package build on Ionic Appflow. While the build is runnin
 
 Apart from ${input('--commit')}, every option can be specified using the full name setup within the Dashboard[^dashboard].
 
-The ${input('--security-profile')} option is mandatory for any iOS build but not for Android debug builds.
+The ${input('--signing-certificate')} option is mandatory for any iOS build but not for Android debug builds.
 
 Customizing the build:
 - The ${input('--environment')} and ${input('--native-config')} options can be used to customize the groups of values exposed to the build.
-- Override the preferred platform with ${input('--target-platform')}. This is useful for building older iOS apps.
+- Override the preferred platform with ${input('--build-stack')}. This is useful for building older iOS apps.
 
 Deploying the build to an App Store:
 - The ${input('--destination')} option can be used to deliver the app created by the build to the configured App Store. \
@@ -83,13 +83,13 @@ This can be used only together with build type ${input('release')} for Android a
       ],
       exampleCommands: [
         'android debug',
-        'ios development --security-profile="iOS Signing Certificate Name"',
+        'ios development --signing-certificate="iOS Signing Certificate Name"',
         'android debug --environment="My Custom Environment Name"',
         'android debug --native-config="My Custom Native Config Name"',
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
-        'ios development --security-profile="iOS Signing Certificate Name" --target-platform="iOS - Xcode 9"',
-        'ios development --security-profile="iOS Signing Certificate Name" --build-file-name=my_custom_file_name.ipa',
-        'ios app-store --security-profile="iOS Signing Certificate Name" --destination="Apple App Store Destination"',
+        'ios development --signing-certificate="iOS Signing Certificate Name" --build-stack="iOS - Xcode 9"',
+        'ios development --signing-certificate="iOS Signing Certificate Name" --build-file-name=my_custom_file_name.ipa',
+        'ios app-store --signing-certificate="iOS Signing Certificate Name" --destination="Apple App Store Destination"',
       ],
       inputs: [
         {
@@ -105,8 +105,8 @@ This can be used only together with build type ${input('release')} for Android a
       ],
       options: [
         {
-          name: 'security-profile',
-          summary: 'Security profile',
+          name: 'signing-certificate',
+          summary: 'Signing certificate',
           type: String,
           spec: { value: 'name' },
         },
@@ -136,7 +136,7 @@ This can be used only together with build type ${input('release')} for Android a
           spec: { value: 'sha1' },
         },
         {
-          name: 'target-platform',
+          name: 'build-stack',
           summary: `Target platform (${TARGET_PLATFORM.map(v => input(`"${v}"`)).join(', ')})`,
           type: String,
           groups: [MetadataGroup.ADVANCED],
@@ -188,20 +188,30 @@ This can be used only together with build type ${input('release')} for Android a
       inputs[1] = typeInput;
     }
 
-    // the security profile is mandatory for iOS packages, so prompting if it is missing
-    if (inputs[0] === 'ios' && !options['security-profile']) {
+    if (options['target-platform']) {
+      this.env.log.warn(`The ${input('--target-platform')} option has been deprecated. Please use ${input('--build-stack')}.`);
+      options['build-stack'] = options['target-platform'];
+    }
+
+    if (options['security-profile']) {
+      this.env.log.warn(`The ${input('--security-profile')} option has been deprecated. Please use ${input('--signing-certificate')}.`);
+      options['signing-certificate'] = options['security-profile'];
+    }
+
+    // the signing certificate is mandatory for iOS packages, so prompting if it is missing
+    if (inputs[0] === 'ios' && !options['signing-certificate']) {
       if (this.env.flags.interactive) {
         this.env.log.nl();
-        this.env.log.warn(`A security profile is mandatory to build an iOS package`);
+        this.env.log.warn(`A signing certificate is mandatory to build an iOS package`);
       }
 
       const securityProfileOption = await this.env.prompt({
         type: 'input',
-        name: 'security-profile',
-        message: `Security Profile Name:`,
+        name: 'signing-certificate',
+        message: `Signing Certificate Name:`,
       });
 
-      options['security-profile'] = securityProfileOption;
+      options['signing-certificate'] = securityProfileOption;
     }
 
     // if destination is present, validate that a proper build type has been been specified
@@ -272,8 +282,8 @@ This can be used only together with build type ${input('release')} for Android a
       platform,
       build_type: buildType,
       commit_sha: options.commit,
-      stack_name: options['target-platform'],
-      profile_name: options['security-profile'],
+      stack_name: options['build-stack'],
+      profile_name: options['signing-certificate'],
       environment_name: options.environment,
       native_config_name: options['native-config'],
       distribution_credential_name: options.destination,
