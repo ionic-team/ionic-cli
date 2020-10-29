@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.12.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.0...@ionic/cli@6.12.1) (2020-10-29)
+
+
+### Bug Fixes
+
+* **Appflow:** fixes bug when a build that gets cancelled on the dashboard is not recognized as a final state in the CLI ([#4598](https://github.com/ionic-team/ionic-cli/issues/4598)) ([51eab00](https://github.com/ionic-team/ionic-cli/commit/51eab00105a7616df869cd82eea54f1a55b7ab44))
+
+
+
+
+
 # [6.12.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.11.12...@ionic/cli@6.12.0) (2020-10-15)
 
 
