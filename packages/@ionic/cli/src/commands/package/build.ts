@@ -264,7 +264,7 @@ This can be used only together with build type ${input('release')} for Android a
 
     build = await this.tailBuildLog(appflowId, buildId, token);
     if (build.state !== 'success') {
-      throw new Error('Build failed');
+      throw new Error(`Build ${build.state}`);
     }
 
     const url = await this.getDownloadUrl(appflowId, buildId, token);
@@ -352,7 +352,7 @@ This can be used only together with build type ${input('release')} for Android a
 
     let isCreatedMessage = false;
     let errorsEncountered = 0;
-    while (!(build && (build.state === 'success' || build.state === 'failed'))) {
+    while (!(build && ['success', 'failed', 'canceled'].includes(build.state))) {
       try {
         await sleep(5000);
         build = await this.getPackageBuild(appflowId, buildId, token);
