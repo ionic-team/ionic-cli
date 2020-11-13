@@ -14,7 +14,7 @@ import * as stream from 'stream';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 
 import { ancillary, input, strong, weak } from './color';
-import { FatalException, ServeCLIArgumentsException, ServeCLIProgramNotFoundException } from './errors';
+import { FatalException, ServeCLIUndefinedException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
 import { openUrl } from './open';
@@ -467,11 +467,12 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       if (!(e instanceof ServeCLIProgramNotFoundException)) {
         throw e;
       }
-
+      
       if (this.global) {
         this.e.log.nl();
         throw new FatalException(`${input(this.pkg)} is required for this command to work properly.`);
       }
+
 
       this.e.log.nl();
       this.e.log.info(
@@ -515,7 +516,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
           validationProcess.on('close', (code: number) => {
             if (code == 0) {
               // Validation closes successfully with code 0 --> error within arguments.
-              reject(new ServeCLIArgumentsException(`${strong(this.resolvedProgram)} error within arguments.`));
+              reject(new ServeCLIUndefinedException(`${input(this.pkg)} was found. Error while executing command.`));
             } else {
               reject(rootErr);
             }
