@@ -14,7 +14,7 @@ import * as stream from 'stream';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 
 import { ancillary, input, strong, weak } from './color';
-import { FatalException, ServeCLIProgramNotFoundException } from './errors';
+import { FatalException, ServeCLIArgumentsException, ServeCLIProgramNotFoundException } from './errors';
 import { emit } from './events';
 import { Hook } from './hooks';
 import { openUrl } from './open';
@@ -496,14 +496,33 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
     const p = await this.e.shell.spawn(this.resolvedProgram, args, { stdio: 'pipe', cwd: this.e.project.directory, env: createProcessEnv(env) });
 
     return new Promise<void>((resolve, reject) => {
-      const errorHandler = (err: NodeJS.ErrnoException) => {
-        debug('received error for %s: %o', this.resolvedProgram, err);
+      const errorHandler = async (rootErr: NodeJS.ErrnoException) => {
+        debug('received error for %s: %o', this.resolvedProgram, rootErr);
 
-        if (this.resolvedProgram === this.program && err.code === 'ENOENT') {
-          p.removeListener('close', closeHandler); // do not exit Ionic CLI, we can gracefully ask to install this CLI
-          reject(new ServeCLIProgramNotFoundException(`${strong(this.resolvedProgram)} command not found.`));
+        if (this.resolvedProgram === this.program) {
+          p.removeListener('close', closeHandler); // Do not close the cli until the error is specified.
+
+          // Try to validate the cli tool by executing it.
+          const validationProcess = await this.e.shell.spawn(this.resolvedProgram, [], { showCommand: false });
+          validationProcess.on('error', (validationError: NodeJS.ErrnoException) => {
+            // Validation also throws an error --> normal error handling with rootErr.
+            if (validationError.code === 'ENOENT') {
+              reject(new ServeCLIProgramNotFoundException(`${strong(this.resolvedProgram)} command not found.`));
+            } else {
+              reject(rootErr);
+            }
+          });
+          validationProcess.on('close', (code: number) => {
+            if (code == 0) {
+              // Validation closes successfully with code 0 --> error within arguments.
+              reject(new ServeCLIArgumentsException(`${strong(this.resolvedProgram)} error within arguments.`));
+            } else {
+              reject(rootErr);
+            }
+          });
+
         } else {
-          reject(err);
+          reject(rootErr);
         }
       };
 
