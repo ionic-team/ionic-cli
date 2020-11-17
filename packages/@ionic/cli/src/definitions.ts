@@ -19,6 +19,10 @@ import { Subprocess, SubprocessOptions, WhichOptions } from '@ionic/utils-subpro
 import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
 
+import type { Integration as CapacitorIntegration } from './lib/integrations/capacitor';
+import type { Integration as CordovaIntegration } from './lib/integrations/cordova';
+import type { Integration as EnterpriseIntegration } from './lib/integrations/enterprise';
+
 export {
   CommandLineInputs,
   CommandLineOptions,
@@ -348,6 +352,9 @@ export interface IProject {
   getDistDir(): Promise<string>;
   getInfo(): Promise<InfoItem[]>;
   detected(): Promise<boolean>;
+  createIntegration(name: 'capacitor'): Promise<CapacitorIntegration>;
+  createIntegration(name: 'cordova'): Promise<CordovaIntegration>;
+  createIntegration(name: 'enterprise'): Promise<EnterpriseIntegration>;
   createIntegration(name: IntegrationName): Promise<IIntegration<ProjectIntegration>>;
   getIntegration(name: IntegrationName): Required<ProjectIntegration> | undefined;
   requireIntegration(name: IntegrationName): Required<ProjectIntegration>;

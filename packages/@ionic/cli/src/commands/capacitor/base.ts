@@ -1,6 +1,7 @@
 import { pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
 import * as path from 'path';
+import * as semver from 'semver';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, IonicCapacitorOptions, ProjectIntegration } from '../../definitions';
 import { input, strong } from '../../lib/color';
@@ -31,6 +32,21 @@ export abstract class CapacitorCommand extends Command {
     }
 
     return new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+  }
+
+  async getCapacitorVersion(): Promise<semver.SemVer> {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory..`);
+    }
+
+    const capacitor = await this.project.createIntegration('capacitor');
+    const version = semver.parse(await capacitor.getCapacitorCLIVersion());
+
+    if (!version) {
+      throw new FatalException('Error while getting Capacitor CLI version. Is Capacitor installed?');
+    }
+
+    return version;
   }
 
   async checkCapacitor(runinfo: CommandInstanceInfo) {

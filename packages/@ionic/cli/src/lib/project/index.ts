@@ -16,6 +16,9 @@ import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotF
 import { BaseIntegration } from '../integrations';
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../integrations/capacitor/config';
 import { Color } from '../utils/color';
+import type { Integration as CapacitorIntegration } from '../integrations/capacitor';
+import type { Integration as CordovaIntegration } from '../integrations/cordova';
+import type { Integration as EnterpriseIntegration } from '../integrations/enterprise';
 
 const debug = Debug('ionic:lib:project');
 
@@ -717,7 +720,11 @@ export abstract class Project implements IProject {
     registry.register(new ailments.CordovaPlatformsCommitted(deps));
   }
 
-  async createIntegration(name: IntegrationName): Promise<IIntegration<ProjectIntegration>> {
+  async createIntegration(name: 'capacitor'): Promise<CapacitorIntegration>;
+  async createIntegration(name: 'cordova'): Promise<CordovaIntegration>;
+  async createIntegration(name: 'enterprise'): Promise<EnterpriseIntegration>;
+  async createIntegration(name: IntegrationName): Promise<CapacitorIntegration | CordovaIntegration | EnterpriseIntegration>;
+  async createIntegration(name: IntegrationName): Promise<CapacitorIntegration | CordovaIntegration | EnterpriseIntegration> {
     return BaseIntegration.createFromName({
       client: this.e.client,
       config: this.e.config,
