@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.12.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.1...@ionic/cli@6.12.2) (2020-11-17)
+
+
+### Bug Fixes
+
+* **react:** fix stdin to unblock react-scripts>3.4.0 ([#4609](https://github.com/ionic-team/ionic-cli/issues/4609)) ([47631f5](https://github.com/ionic-team/ionic-cli/commit/47631f5a9331f3bc428933da68c82176221746c6))
+
+
+
+
+
 ## [6.12.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.0...@ionic/cli@6.12.1) (2020-10-29)
 
 
