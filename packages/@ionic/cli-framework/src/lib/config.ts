@@ -6,6 +6,11 @@ import * as writeFileAtomic from 'write-file-atomic';
 
 export interface BaseConfigOptions {
   /**
+   * The number of spaces to use when writing the JSON file.
+   */
+  spaces?: string | number;
+
+  /**
    * If specified, the class will operate on a nested object within the config
    * file navigated to by this path prefix, an array of object path keys.
    *
@@ -16,9 +21,11 @@ export interface BaseConfigOptions {
 }
 
 export abstract class BaseConfig<T extends object> {
+  protected readonly spaces: string | number;
   protected readonly pathPrefix: readonly string[];
 
-  constructor(readonly p: string, { pathPrefix = [] }: BaseConfigOptions = {}) {
+  constructor(readonly p: string, { spaces = 2, pathPrefix = [] }: BaseConfigOptions = {}) {
+    this.spaces = spaces;
     this.pathPrefix = pathPrefix;
   }
 
@@ -87,6 +94,6 @@ export abstract class BaseConfig<T extends object> {
 
   private _setFile(value: any): void {
     mkdirpSync(path.dirname(this.p));
-    writeFileAtomic.sync(this.p, JSON.stringify(value, undefined, 2) + '\n');
+    writeFileAtomic.sync(this.p, JSON.stringify(value, undefined, this.spaces) + '\n');
   }
 }
