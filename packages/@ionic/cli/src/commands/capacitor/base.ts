@@ -8,11 +8,14 @@ import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
+import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '../../lib/integrations/capacitor'
+import { CAPACITOR_CONFIG_FILE, CapacitorConfig, CapacitorConfigFile } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 
 export abstract class CapacitorCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
+  private _integrationObject?: CapacitorIntegration;
+  private _cliconfig?: CapacitorCLIConfig;
 
   get integration(): Required<ProjectIntegration> {
     if (!this.project) {
@@ -26,20 +29,83 @@ export abstract class CapacitorCommand extends Command {
     return this._integration;
   }
 
-  getCapacitorConfig(): CapacitorConfig {
+  async getGeneratedConfig(platform: string): Promise<CapacitorConfig> {
     if (!this.project) {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    return new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+    const p = await this.getGeneratedConfigPath(platform);
+
+    return new CapacitorConfig(p);
+  }
+
+  async getGeneratedConfigPath(platform: string): Promise<string> {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    const p = await this.getGeneratedConfigDir(platform);
+
+    return path.resolve(this.project.directory, p, CAPACITOR_CONFIG_FILE);
+  }
+
+  async getGeneratedConfigDir(platform: string): Promise<string> {
+    const cli = await this.getCapacitorCLIConfig();
+
+    switch (platform) {
+      case 'android':
+        return cli?.android.assetsDirAbs ?? 'android/app/src/main/assets';
+      case 'ios':
+        return cli?.ios.nativeTargetDirAbs ?? 'ios/App/App';
+    }
+
+    throw new FatalException(`Could not determine generated Capacitor config path for ${input(platform)} platform.`);
+  }
+
+  async getCapacitorConfig(): Promise<CapacitorConfigFile | undefined> {
+    // try using `capacitor config --json`
+    const cli = await this.getCapacitorCLIConfig();
+
+    if (cli) {
+      return cli.app.extConfig;
+    }
+
+    if (!this.project) {
+      return;
+    }
+
+    try {
+      // fallback to reading capacitor.config.json if it exists
+      const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+      return conf.c;
+    } catch (e) {
+      // ignore
+    }
+  }
+
+  async getCapacitorCLIConfig(): Promise<CapacitorCLIConfig | undefined> {
+    if (!this._cliconfig) {
+      const capacitor = await this.getCapacitorIntegration();
+      this._cliconfig = await capacitor.getCapacitorCLIConfig();
+    }
+
+    return this._cliconfig;
+  }
+
+  async getCapacitorIntegration() {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    if (!this._integrationObject) {
+      this._integrationObject = await this.project.createIntegration('capacitor');
+    }
+
+    return this._integrationObject;
   }
 
   async getCapacitorVersion(): Promise<semver.SemVer> {
-    if (!this.project) {
-      throw new FatalException(`Cannot use Capacitor outside a project directory..`);
-    }
-
-    const capacitor = await this.project.createIntegration('capacitor');
+    const capacitor = await this.getCapacitorIntegration();
     const version = semver.parse(await capacitor.getCapacitorCLIVersion());
 
     if (!version) {
@@ -100,10 +166,9 @@ export abstract class CapacitorCommand extends Command {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    const conf = this.getCapacitorConfig();
-    const serverConfig = conf.get('server');
+    const cli = await this.getCapacitorCLIConfig();
 
-    if (serverConfig && serverConfig.url) {
+    if (cli?.app.extConfig.server?.url) {
       this.env.log.warn(
         `Capacitor server URL is in use.\n` +
         `This may result in unexpected behavior for this build, where an external server is used in the Web View instead of your app. This likely occurred because of ${input('--livereload')} usage in the past and the CLI improperly exiting without cleaning up.\n\n` +
@@ -151,20 +216,15 @@ export abstract class CapacitorCommand extends Command {
     }
   }
 
-  protected createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicCapacitorOptions {
+  protected async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicCapacitorOptions> {
     const separatedArgs = options['--'];
     const verbose = !!options['verbose'];
-    const conf = this.getCapacitorConfig();
-    const server = conf.get('server');
+    const conf = await this.getCapacitorConfig();
 
     return {
       '--': separatedArgs ? separatedArgs : [],
-      appId: conf.get('appId'),
-      appName: conf.get('appName'),
-      server: {
-        url: server?.url,
-      },
       verbose,
+      ...conf,
     };
   }
 

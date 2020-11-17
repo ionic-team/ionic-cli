@@ -90,7 +90,7 @@ ${input('ionic capacitor sync')} will do the following:
       await hook.run({
         name: hook.name,
         build: buildRunner.createOptionsFromCommandLine(inputs, options),
-        capacitor: this.createOptionsFromCommandLine(inputs, options),
+        capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
     } catch (e) {
       if (e instanceof BaseError) {

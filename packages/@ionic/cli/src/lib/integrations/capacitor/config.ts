@@ -16,6 +16,10 @@ export interface CapacitorConfigFile {
 }
 
 export class CapacitorConfig extends BaseConfig<CapacitorConfigFile> {
+  constructor(p: string) {
+    super(p, { spaces: '\t' });
+  }
+
   provideDefaults(config: CapacitorConfigFile): CapacitorConfigFile {
     return config;
   }

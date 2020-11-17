@@ -15,7 +15,21 @@ import {
 import { input, strong } from '../../color';
 import { pkgManagerArgs } from '../../utils/npm';
 
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from './config';
+import { CAPACITOR_CONFIG_FILE, CapacitorConfig, CapacitorConfigFile } from './config';
+
+export interface CapacitorCLIConfig {
+  android: {
+    platformDirAbs: string;
+    assetsDirAbs: string;
+  };
+  ios: {
+    platformDirAbs: string;
+    nativeTargetDirAbs: string;
+  };
+  app: {
+    extConfig: CapacitorConfigFile;
+  }
+}
 
 export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly name: IntegrationName = 'capacitor';
@@ -141,5 +155,13 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   async getCapacitorCLIVersion(): Promise<string | undefined> {
     return this.e.shell.cmdinfo('capacitor', ['--version'], { cwd: this.e.project.directory });
+  }
+
+  async getCapacitorCLIConfig(): Promise<CapacitorCLIConfig | undefined> {
+    const output = await this.e.shell.cmdinfo('capacitor', ['config', '--json'], { cwd: this.e.project.directory });
+
+    if (output) {
+      return JSON.parse(output);
+    }
   }
 }

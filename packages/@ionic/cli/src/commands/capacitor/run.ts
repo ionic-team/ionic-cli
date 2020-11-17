@@ -177,6 +177,8 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       );
     }
 
+    await this.runCapacitor(['sync', platform]);
+
     try {
       if (options['livereload']) {
         await this.runServe(inputs, options);
@@ -231,11 +233,10 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
     }
 
-    const conf = this.getCapacitorConfig();
+    const conf = await this.getGeneratedConfig(platform);
 
     onBeforeExit(async () => {
       conf.resetServerUrl();
-      await this.runCapacitor(['copy', platform]);
     });
 
     conf.setServerUrl(serverUrl);
@@ -248,7 +249,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     const [ platform ] = inputs;
 
-    await this.runCapacitor(['copy', platform]);
     await this.runCapacitorRunHook('capacitor:run:before', inputs, options, { ...this.env, project: this.project });
 
     if (options['open'] !== false) {
@@ -279,7 +279,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     const [ platform ] = inputs;
 
     await this.runCapacitorRunHook('capacitor:run:before', inputs, options, { ...this.env, project: this.project });
-    await this.runCapacitor(['run', platform, ...(typeof options['target'] === 'string' ? ['--target', options['target']] : [])]);
+    await this.runCapacitor(['run', platform, '--no-sync', ...(typeof options['target'] === 'string' ? ['--target', options['target']] : [])]);
   }
 
   protected async runCapacitorRunHook(name: CapacitorRunHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
@@ -302,7 +302,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
         name: hook.name,
         serve: serveOptions,
         build: buildOptions,
-        capacitor: this.createOptionsFromCommandLine(inputs, options),
+        capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
     } catch (e) {
       if (e instanceof BaseError) {

@@ -160,7 +160,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
       await hook.run({
         name: hook.name,
         build: buildRunner.createOptionsFromCommandLine(inputs, options),
-        capacitor: this.createOptionsFromCommandLine(inputs, options),
+        capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
     } catch (e) {
       if (e instanceof BaseError) {
