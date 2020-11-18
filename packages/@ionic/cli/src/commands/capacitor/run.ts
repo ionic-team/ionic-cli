@@ -2,6 +2,7 @@ import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-frame
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as lodash from 'lodash';
+import * as semver from 'semver';
 
 import { AnyBuildOptions, AnyServeOptions, CapacitorRunHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { ancillary, input, strong, weak } from '../../lib/color';
@@ -167,7 +168,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     }
 
     const version = await this.getCapacitorVersion();
-    const isOldCapacitor = version.major < 3;
+    const isOldCapacitor = semver.lt(version, '3.0.0-alpha.7');
 
     if (isOldCapacitor) {
       this.env.log.warn(
