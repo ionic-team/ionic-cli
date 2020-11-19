@@ -166,7 +166,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       const platform = await this.env.prompt({
         type: 'list',
         name: 'platform',
-        message: 'What platform would you like to run?',
+        message: options['list'] ? 'What platform targets would you like to list?' : 'What platform would you like to run?',
         choices: PLATFORMS,
       });
 
