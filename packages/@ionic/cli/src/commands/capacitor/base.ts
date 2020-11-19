@@ -1,5 +1,5 @@
 import { pathExists } from '@ionic/utils-fs';
-import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
+import * as lodash from 'lodash';
 import * as path from 'path';
 import * as semver from 'semver';
 
@@ -15,7 +15,6 @@ import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacit
 
 export abstract class CapacitorCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
-  private _integrationObject?: CapacitorIntegration;
 
   get integration(): Required<ProjectIntegration> {
     if (!this.project) {
@@ -81,17 +80,13 @@ export abstract class CapacitorCommand extends Command {
     return capacitor.getCapacitorCLIConfig();
   }
 
-  async getCapacitorIntegration() {
+  getCapacitorIntegration = lodash.memoize(async (): Promise<CapacitorIntegration> => {
     if (!this.project) {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    if (!this._integrationObject) {
-      this._integrationObject = await this.project.createIntegration('capacitor');
-    }
-
-    return this._integrationObject;
-  }
+    return this.project.createIntegration('capacitor');
+  });
 
   async getCapacitorVersion(): Promise<semver.SemVer> {
     const capacitor = await this.getCapacitorIntegration();
@@ -120,34 +115,12 @@ export abstract class CapacitorCommand extends Command {
     await this.checkCapacitor(runinfo);
   }
 
-  async runCapacitor(argList: string[]): Promise<void> {
-    try {
-      return await this._runCapacitor(argList);
-    } catch (e) {
-      if (e instanceof SubprocessError) {
-        if (e.code === ERROR_COMMAND_NOT_FOUND) {
-          const pkg = '@capacitor/cli';
-          const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
-          this.env.log.nl();
-          this.env.log.info(`Looks like ${input(pkg)} isn't installed in this project.\n` + requiredMsg);
-          this.env.log.nl();
-
-          const installed = await this.promptToInstallCapacitor();
-
-          if (!installed) {
-            throw new FatalException(`${input(pkg)} is required for Capacitor projects.`);
-          }
-
-          return this.runCapacitor(argList);
-        }
-
-        if (e.code === ERROR_SIGNAL_EXIT) {
-          return;
-        }
-      }
-
-      throw e;
+  async runCapacitor(argList: string[]) {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
+
+    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit', cwd: this.integration.root });
   }
 
   async runBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -200,7 +173,7 @@ export abstract class CapacitorCommand extends Command {
         .map(([p]) => p);
 
       if (!platforms.includes(platform)) {
-        await this._runCapacitor(['add', platform]);
+        await this.runCapacitor(['add', platform]);
       }
     }
   }
@@ -216,39 +189,5 @@ export abstract class CapacitorCommand extends Command {
       verbose,
       ...conf,
     };
-  }
-
-  private async promptToInstallCapacitor(): Promise<boolean> {
-    if (!this.project) {
-      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
-    }
-
-    const { pkgManagerArgs } = await import('../../lib/utils/npm');
-
-    const pkg = '@capacitor/cli';
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { pkg, command: 'install', saveDev: true });
-
-    const confirm = await this.env.prompt({
-      name: 'confirm',
-      message: `Install ${input(pkg)}?`,
-      type: 'confirm',
-    });
-
-    if (!confirm) {
-      this.env.log.warn(`Not installing--here's how to install manually: ${input(`${manager} ${managerArgs.join(' ')}`)}`);
-      return false;
-    }
-
-    await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
-
-    return true;
-  }
-
-  private async _runCapacitor(argList: string[]) {
-    if (!this.project) {
-      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
-    }
-
-    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit', cwd: this.integration.root });
   }
 }
