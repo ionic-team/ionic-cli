@@ -147,10 +147,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     return semver.lt(version, '3.0.0-alpha.7');
   });
 
-  async shouldRunCapacitorOpenFlow(inputs: CommandLineInputs, options: CommandLineOptions) {
-    return (await this.isOldCapacitor()) || options['open'] === true;
-  }
-
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
     await this.preRunChecks(runinfo);
 
@@ -192,7 +188,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     await this.checkForPlatformInstallation(inputs[0]);
 
-    if (!(await this.shouldRunCapacitorOpenFlow(inputs, options))) {
+    if (!(await this.isOldCapacitor())) {
       const targets = inputs[0] ? await this.getNativeTargets(inputs[0]) : [];
 
       if (options['list']) {
@@ -210,29 +206,31 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
         throw new FatalException('', 0);
       }
 
-      const target = options['target'];
+      if (!options['open']) {
+        const target = options['target'];
 
-      if (typeof target === 'string') {
-        if (!targets.map(t => t.id).find(t => t === target)) {
-          throw new FatalException(
-            `${input(target)} is not a valid Target ID.\n` +
-            `Use the ${input('--list')} option to list all targets.\n`
-          );
-        }
-      } else {
-        options['target'] = await this.env.prompt({
-          type: 'list',
-          name: 'target',
-          message: 'Which device would you like to target?',
-          choices: targets.map(t => ({ name: `${t.name} (${t.id})`, value: t.id })),
-        });
+        if (typeof target === 'string') {
+          if (!targets.map(t => t.id).find(t => t === target)) {
+            throw new FatalException(
+              `${input(target)} is not a valid Target ID.\n` +
+              `Use the ${input('--list')} option to list all targets.\n`
+            );
+          }
+        } else {
+          options['target'] = await this.env.prompt({
+            type: 'list',
+            name: 'target',
+            message: 'Which device would you like to target?',
+            choices: targets.map(t => ({ name: `${t.name} (${t.id})`, value: t.id })),
+          });
 
-        if (!inputs[0]) {
-          throw new FatalException(`The ${input('platform')} argument is required.`);
-        }
+          if (!inputs[0]) {
+            throw new FatalException(`The ${input('platform')} argument is required.`);
+          }
 
-        if (!options['target']) {
-          throw new FatalException(`The ${input('--target')} option is required.`);
+          if (!options['target']) {
+            throw new FatalException(`The ${input('--target')} option is required.`);
+          }
         }
       }
     }
@@ -251,7 +249,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       await this.runBuild(inputs, options);
     }
 
-    if (await this.shouldRunCapacitorOpenFlow(inputs, options)) {
+    if ((await this.isOldCapacitor()) || options['open'] === true) {
       await this.runCapacitor(['sync', platform]);
       await this.runCapacitorOpenFlow(inputs, options);
     } else {
