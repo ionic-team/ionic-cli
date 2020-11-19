@@ -42,7 +42,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
-    const confPath = this.getCapacitorConfigPath();
+    const confPath = this.getCapacitorConfigJsonPath();
 
     if (await pathExists(confPath)) {
       this.e.log.nl();
@@ -85,15 +85,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     await super.add(details);
   }
 
-  async getCapacitorConfig(): Promise<CapacitorConfig> {
-    const confPath = this.getCapacitorConfigPath();
-    const conf = new CapacitorConfig(confPath);
-
-    return conf;
-  }
-
-  getCapacitorConfigPath(): string {
-    return path.resolve(this.e.project.directory, CAPACITOR_CONFIG_FILE);
+  protected getCapacitorConfigJsonPath(): string {
+    return path.resolve(this.config.get('root', this.e.project.directory), CAPACITOR_CONFIG_FILE);
   }
 
   async installCapacitorCore() {
@@ -107,7 +100,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
-    const conf = await this.getCapacitorConfig();
+    const confPath = this.getCapacitorConfigJsonPath();
+    const conf = new CapacitorConfig(confPath);
 
     conf.set('appName', name);
 
@@ -118,7 +112,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   async getInfo(): Promise<InfoItem[]> {
     const conf = await this.getCapacitorConfig();
-    const bundleId = conf.get('appId');
+    const bundleId = conf?.appId;
 
     const [
       [ capacitorCorePkg, capacitorCorePkgPath ],
@@ -163,6 +157,23 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
     if (output) {
       return JSON.parse(output);
+    }
+  }
+
+  async getCapacitorConfig(): Promise<CapacitorConfigFile | undefined> {
+    // try using `capacitor config --json`
+    const cli = await this.getCapacitorCLIConfig();
+
+    if (cli) {
+      return cli.app.extConfig;
+    }
+
+    const confPath = this.getCapacitorConfigJsonPath();
+
+      // fallback to reading capacitor.config.json if it exists
+    if (await pathExists(confPath)) {
+      const conf = new CapacitorConfig(confPath);
+      return conf.c;
     }
   }
 }

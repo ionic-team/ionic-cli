@@ -10,7 +10,7 @@ import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '../../lib/integrations/capacitor'
 import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integrations/capacitor/android';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig, CapacitorConfigFile } from '../../lib/integrations/capacitor/config';
+import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 
 export abstract class CapacitorCommand extends Command {
@@ -74,27 +74,6 @@ export abstract class CapacitorCommand extends Command {
     }
 
     throw new FatalException(`Could not determine generated Capacitor config path for ${input(platform)} platform.`);
-  }
-
-  async getCapacitorConfig(): Promise<CapacitorConfigFile | undefined> {
-    // try using `capacitor config --json`
-    const cli = await this.getCapacitorCLIConfig();
-
-    if (cli) {
-      return cli.app.extConfig;
-    }
-
-    if (!this.project) {
-      return;
-    }
-
-    const configPath = path.resolve(this.integration.root, CAPACITOR_CONFIG_FILE);
-
-      // fallback to reading capacitor.config.json if it exists
-    if (await pathExists(configPath)) {
-      const conf = new CapacitorConfig(configPath);
-      return conf.c;
-    }
   }
 
   async getCapacitorCLIConfig(): Promise<CapacitorCLIConfig | undefined> {
@@ -233,7 +212,8 @@ export abstract class CapacitorCommand extends Command {
   protected async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicCapacitorOptions> {
     const separatedArgs = options['--'];
     const verbose = !!options['verbose'];
-    const conf = await this.getCapacitorConfig();
+    const capacitor = await this.getCapacitorIntegration();
+    const conf = await capacitor.getCapacitorConfig();
 
     return {
       '--': separatedArgs ? separatedArgs : [],
