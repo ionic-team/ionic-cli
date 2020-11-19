@@ -5,7 +5,7 @@ import * as path from 'path';
 import * as semver from 'semver';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, IonicCapacitorOptions, ProjectIntegration } from '../../definitions';
-import { input } from '../../lib/color';
+import { input, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
@@ -13,6 +13,7 @@ import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '..
 import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integrations/capacitor/android';
 import { CAPACITOR_CONFIG_JSON_FILE, CapacitorJSONConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
+import { createPrefixedWriteStream } from '../../lib/utils/logger';
 
 export abstract class CapacitorCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
@@ -121,7 +122,9 @@ export abstract class CapacitorCommand extends Command {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit', cwd: this.integration.root });
+    const stream = createPrefixedWriteStream(this.env.log, weak(`[capacitor]`));
+
+    await this.env.shell.run('capacitor', argList, { stream, fatalOnNotFound: false, truncateErrorOutput: 5000, cwd: this.integration.root });
   }
 
   async runBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
