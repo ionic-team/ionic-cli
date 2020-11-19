@@ -47,7 +47,7 @@ export abstract class CapacitorCommand extends Command {
 
     const p = await this.getGeneratedConfigDir(platform);
 
-    return path.resolve(this.project.directory, p, CAPACITOR_CONFIG_FILE);
+    return path.resolve(this.integration.root, p, CAPACITOR_CONFIG_FILE);
   }
 
   async getAndroidManifest(): Promise<CapacitorAndroidManifest> {
@@ -88,12 +88,12 @@ export abstract class CapacitorCommand extends Command {
       return;
     }
 
-    try {
+    const configPath = path.resolve(this.integration.root, CAPACITOR_CONFIG_FILE);
+
       // fallback to reading capacitor.config.json if it exists
-      const conf = new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+    if (await pathExists(configPath)) {
+      const conf = new CapacitorConfig(configPath);
       return conf.c;
-    } catch (e) {
-      // ignore
     }
   }
 
@@ -263,7 +263,7 @@ export abstract class CapacitorCommand extends Command {
       return false;
     }
 
-    await this.env.shell.run(manager, managerArgs, { cwd: this.project.directory });
+    await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
 
     return true;
   }
