@@ -58,7 +58,7 @@ export abstract class CapacitorCommand extends Command {
 
   async getAndroidManifestPath(): Promise<string> {
     const cli = await this.getCapacitorCLIConfig();
-    const srcDir = cli?.android.srcDirAbs ?? 'android/app/src/main';
+    const srcDir = cli?.android.srcMainDirAbs ?? 'android/app/src/main';
 
     return path.resolve(this.integration.root, srcDir, ANDROID_MANIFEST_FILE);
   }

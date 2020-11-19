@@ -20,7 +20,7 @@ import { CapacitorJSONConfig, CapacitorConfig } from './config';
 export interface CapacitorCLIConfig {
   android: {
     platformDirAbs: string;
-    srcDirAbs: string;
+    srcMainDirAbs: string;
     assetsDirAbs: string;
   };
   ios: {
