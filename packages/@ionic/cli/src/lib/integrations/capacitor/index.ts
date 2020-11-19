@@ -15,7 +15,7 @@ import {
 import { input, strong } from '../../color';
 import { pkgManagerArgs } from '../../utils/npm';
 
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig, CapacitorConfigFile } from './config';
+import { CapacitorJSONConfig, CapacitorConfig } from './config';
 
 export interface CapacitorCLIConfig {
   android: {
@@ -28,7 +28,7 @@ export interface CapacitorCLIConfig {
     nativeTargetDirAbs: string;
   };
   app: {
-    extConfig: CapacitorConfigFile;
+    extConfig: CapacitorConfig;
   }
 }
 
@@ -86,7 +86,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   protected getCapacitorConfigJsonPath(): string {
-    return path.resolve(this.config.get('root', this.e.project.directory), CAPACITOR_CONFIG_FILE);
+    return path.resolve(this.config.get('root', this.e.project.directory), 'capacitor.config.json');
   }
 
   async installCapacitorCore() {
@@ -101,7 +101,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
     const confPath = this.getCapacitorConfigJsonPath();
-    const conf = new CapacitorConfig(confPath);
+    const conf = new CapacitorJSONConfig(confPath);
 
     conf.set('appName', name);
 
@@ -160,7 +160,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     }
   }
 
-  async getCapacitorConfig(): Promise<CapacitorConfigFile | undefined> {
+  async getCapacitorConfig(): Promise<CapacitorConfig | undefined> {
     // try using `capacitor config --json`
     const cli = await this.getCapacitorCLIConfig();
 
@@ -172,7 +172,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
       // fallback to reading capacitor.config.json if it exists
     if (await pathExists(confPath)) {
-      const conf = new CapacitorConfig(confPath);
+      const conf = new CapacitorJSONConfig(confPath);
       return conf.c;
     }
   }

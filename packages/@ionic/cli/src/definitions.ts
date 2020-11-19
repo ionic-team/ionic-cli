@@ -20,7 +20,7 @@ import { ChildProcess, SpawnOptions } from 'child_process';
 import * as fs from 'fs';
 
 import type { Integration as CapacitorIntegration } from './lib/integrations/capacitor';
-import type { CapacitorConfigFile } from './lib/integrations/capacitor/config';
+import type { CapacitorConfig } from './lib/integrations/capacitor/config';
 import type { Integration as CordovaIntegration } from './lib/integrations/cordova';
 import type { Integration as EnterpriseIntegration } from './lib/integrations/enterprise';
 
@@ -654,7 +654,7 @@ export interface VueBuildOptions extends BuildOptions<'vue'> {
   sourcemaps?: boolean;
 }
 
-export interface IonicCapacitorOptions extends CapacitorConfigFile {
+export interface IonicCapacitorOptions extends CapacitorConfig {
   '--': string[];
   verbose?: boolean;
 }

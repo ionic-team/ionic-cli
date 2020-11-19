@@ -4,13 +4,13 @@ import * as path from 'path';
 import * as semver from 'semver';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, IonicCapacitorOptions, ProjectIntegration } from '../../definitions';
-import { input, strong } from '../../lib/color';
+import { input } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '../../lib/integrations/capacitor'
 import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integrations/capacitor/android';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
+import { CAPACITOR_CONFIG_JSON_FILE, CapacitorJSONConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 
 export abstract class CapacitorCommand extends Command {
@@ -30,14 +30,14 @@ export abstract class CapacitorCommand extends Command {
     return this._integration;
   }
 
-  async getGeneratedConfig(platform: string): Promise<CapacitorConfig> {
+  async getGeneratedConfig(platform: string): Promise<CapacitorJSONConfig> {
     if (!this.project) {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
     const p = await this.getGeneratedConfigPath(platform);
 
-    return new CapacitorConfig(p);
+    return new CapacitorJSONConfig(p);
   }
 
   async getGeneratedConfigPath(platform: string): Promise<string> {
@@ -47,7 +47,7 @@ export abstract class CapacitorCommand extends Command {
 
     const p = await this.getGeneratedConfigDir(platform);
 
-    return path.resolve(this.integration.root, p, CAPACITOR_CONFIG_FILE);
+    return path.resolve(this.integration.root, p, CAPACITOR_CONFIG_JSON_FILE);
   }
 
   async getAndroidManifest(): Promise<CapacitorAndroidManifest> {
@@ -165,7 +165,7 @@ export abstract class CapacitorCommand extends Command {
       this.env.log.warn(
         `Capacitor server URL is in use.\n` +
         `This may result in unexpected behavior for this build, where an external server is used in the Web View instead of your app. This likely occurred because of ${input('--livereload')} usage in the past and the CLI improperly exiting without cleaning up.\n\n` +
-        `Delete the ${input('server')} key in the ${strong(CAPACITOR_CONFIG_FILE)} file if you did not intend to use an external server.`
+        `Delete the ${input('server')} key in the Capacitor config file if you did not intend to use an external server.`
       );
       this.env.log.nl();
     }

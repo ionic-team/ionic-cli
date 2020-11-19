@@ -1,26 +1,24 @@
 import { BaseConfig } from '@ionic/cli-framework';
 import * as lodash from 'lodash';
 
-export const CAPACITOR_CONFIG_FILE = 'capacitor.config.json';
+export const CAPACITOR_CONFIG_JSON_FILE = 'capacitor.config.json';
 
-export interface CapacitorConfigFile {
+export interface CapacitorConfig {
   appId?: string;
   appName?: string;
   webDir?: string;
   server?: {
-    cleartext?: boolean;
     url?: string;
-    originalCleartext?: boolean;
     originalUrl?: string;
   };
 }
 
-export class CapacitorConfig extends BaseConfig<CapacitorConfigFile> {
+export class CapacitorJSONConfig extends BaseConfig<CapacitorConfig> {
   constructor(p: string) {
     super(p, { spaces: '\t' });
   }
 
-  provideDefaults(config: CapacitorConfigFile): CapacitorConfigFile {
+  provideDefaults(config: CapacitorConfig): CapacitorConfig {
     return config;
   }
 
