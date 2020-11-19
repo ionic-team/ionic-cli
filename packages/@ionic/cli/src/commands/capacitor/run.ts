@@ -219,7 +219,13 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
           choices: targets.map(t => ({ name: `${t.name} (${t.id})`, value: t.id })),
         });
 
-        // TODO: check for target missing in non-interactive
+        if (!inputs[0]) {
+          throw new FatalException(`The ${input('platform')} argument is required.`);
+        }
+
+        if (!options['target']) {
+          throw new FatalException(`The ${input('--target')} option is required.`);
+        }
       }
     }
   }
