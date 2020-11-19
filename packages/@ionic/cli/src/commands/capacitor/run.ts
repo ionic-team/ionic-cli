@@ -1,17 +1,28 @@
 import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
+import { columnar } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
+import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as semver from 'semver';
 
+import { COLUMNAR_OPTIONS } from '../../constants';
 import { AnyBuildOptions, AnyServeOptions, CapacitorRunHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';
 import { ancillary, input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
 import { generateOptionsForCapacitorBuild, getNativeIDEForPlatform, getVirtualDeviceNameForPlatform } from '../../lib/integrations/capacitor/utils';
-import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
+import { COMMON_SERVE_COMMAND_OPTIONS } from '../../lib/serve';
 
 import { CapacitorCommand } from './base';
+
+const debug = Debug('ionic:commands:capacitor:run');
+
+interface NativeTarget {
+  id: string;
+  name: string;
+  api: string;
+}
 
 export class RunCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -162,13 +173,9 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     const [ platform ] = inputs;
 
-    if (options['list']) {
-      await this.runCapacitor(['run', platform, '--list']);
-      throw new FatalException('', 0);
-    }
-
     const version = await this.getCapacitorVersion();
     const isOldCapacitor = semver.lt(version, '3.0.0-alpha.7');
+    const doOpenFlow = isOldCapacitor || options['open'] === true;
 
     if (isOldCapacitor) {
       this.env.log.warn(
@@ -176,6 +183,15 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
         `Please update to the latest Capacitor. Visit the docs${ancillary('[1]')} for upgrade guides.\n\n` +
         `${ancillary('[1]')}: ${strong('https://capacitorjs.com/docs/')}\n`
       );
+    }
+
+    const targets = doOpenFlow ? [] : await this.getNativeTargets(platform);
+
+    if (options['list']) {
+      const rows = targets.map(t => [t.name, t.api, t.id]);
+      this.env.log.msg(columnar(rows, { ...COLUMNAR_OPTIONS, headers: ['Name', 'API', 'Target ID'] }));
+
+      throw new FatalException('', 0);
     }
 
     await this.runCapacitor(['sync', platform]);
@@ -194,7 +210,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       throw e;
     }
 
-    if (isOldCapacitor || options['open'] === true) {
+    if (doOpenFlow) {
       await this.runCapacitorOpenFlow(inputs, options);
     } else {
       await this.runCapacitorRunFlow(inputs, options);
@@ -286,6 +302,24 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     await this.runCapacitorRunHook('capacitor:run:before', inputs, options, { ...this.env, project: this.project });
     await this.runCapacitor(['run', platform, '--no-sync', ...(typeof options['target'] === 'string' ? ['--target', options['target']] : [])]);
+  }
+
+  protected async getNativeTargets(platform: string): Promise<NativeTarget[]> {
+    const args = ['run', platform, '--list', '--json'];
+
+    debug('Getting native targets for %O with Capacitor CLI: %O', platform, args);
+
+    const output = await this.env.shell.cmdinfo('capacitor', args, { cwd: this.integration.root });
+
+    if (!output) {
+      return [];
+    }
+
+    const targets = JSON.parse(output);
+
+    debug('%O native targets found', targets.length);
+
+    return targets;
   }
 
   protected async runCapacitorRunHook(name: CapacitorRunHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
