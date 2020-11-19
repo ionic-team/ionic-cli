@@ -225,12 +225,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     if (!serverUrl) {
       const details = await runner.run(runnerOpts);
-
-      if (details.externallyAccessible === false) {
-        const extra = LOCAL_ADDRESSES.includes(details.externalAddress) ? '\nEnsure you have proper port forwarding setup from your device to your computer.' : '';
-        this.env.log.warn(`Your device or emulator may not be able to access ${strong(details.externalAddress)}.${extra}\n\n`);
-      }
-
       serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
     }
 
