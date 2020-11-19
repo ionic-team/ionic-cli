@@ -160,6 +160,14 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
         `Please update to the latest Capacitor. Visit the docs${ancillary('[1]')} for upgrade guides.\n\n` +
         `${ancillary('[1]')}: ${strong('https://capacitorjs.com/docs/')}\n`
       );
+
+      if (options['list']) {
+        throw new FatalException(`The ${input('--list')} option is not supported with your Capacitor version.`);
+      }
+
+      if (options['target']) {
+        throw new FatalException(`The ${input('--target')} option is not supported with your Capacitor version.`);
+      }
     }
 
     if (!inputs[0]) {
