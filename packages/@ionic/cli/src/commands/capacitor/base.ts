@@ -9,6 +9,7 @@ import { Command } from '../../lib/command';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '../../lib/integrations/capacitor'
+import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integrations/capacitor/android';
 import { CAPACITOR_CONFIG_FILE, CapacitorConfig, CapacitorConfigFile } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 
@@ -47,6 +48,19 @@ export abstract class CapacitorCommand extends Command {
     const p = await this.getGeneratedConfigDir(platform);
 
     return path.resolve(this.project.directory, p, CAPACITOR_CONFIG_FILE);
+  }
+
+  async getAndroidManifest(): Promise<CapacitorAndroidManifest> {
+    const p = await this.getAndroidManifestPath();
+
+    return CapacitorAndroidManifest.load(p);
+  }
+
+  async getAndroidManifestPath(): Promise<string> {
+    const cli = await this.getCapacitorCLIConfig();
+    const srcDir = cli?.android.srcDirAbs ?? 'android/app/src/main';
+
+    return path.resolve(this.integration.root, srcDir, ANDROID_MANIFEST_FILE);
   }
 
   async getGeneratedConfigDir(platform: string): Promise<string> {

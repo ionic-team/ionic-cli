@@ -20,6 +20,7 @@ import { CAPACITOR_CONFIG_FILE, CapacitorConfig, CapacitorConfigFile } from './c
 export interface CapacitorCLIConfig {
   android: {
     platformDirAbs: string;
+    srcDirAbs: string;
     assetsDirAbs: string;
   };
   ios: {

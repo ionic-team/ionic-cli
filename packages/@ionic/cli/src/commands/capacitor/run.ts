@@ -241,6 +241,17 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     });
 
     conf.setServerUrl(serverUrl);
+
+    const manifest = await this.getAndroidManifest();
+
+    if (platform === 'android') {
+      onBeforeExit(async () => {
+        await manifest.reset();
+      });
+
+      manifest.enableCleartextTraffic();
+      await manifest.save();
+    }
   }
 
   protected async runCapacitorOpenFlow(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
