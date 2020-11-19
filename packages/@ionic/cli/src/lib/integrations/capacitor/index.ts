@@ -2,7 +2,11 @@ import { PackageJson, parseArgs } from '@ionic/cli-framework';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
+import * as Debug from 'debug';
+import * as lodash from 'lodash';
 import * as path from 'path';
+
+const debug = Debug('ionic:lib:integrations:capacitor');
 
 import { BaseIntegration, IntegrationConfig } from '../';
 import {
@@ -39,6 +43,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   get config(): IntegrationConfig {
     return new IntegrationConfig(this.e.project.filePath, { pathPrefix: [...this.e.project.pathPrefix, 'integrations', this.name] });
+  }
+
+  get root(): string {
+    return this.config.get('root', this.e.project.directory);
   }
 
   async add(details: IntegrationAddDetails): Promise<void> {
@@ -86,17 +94,17 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   protected getCapacitorConfigJsonPath(): string {
-    return path.resolve(this.config.get('root', this.e.project.directory), 'capacitor.config.json');
+    return path.resolve(this.root, 'capacitor.config.json');
   }
 
   async installCapacitorCore() {
     const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core' });
-    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async installCapacitorCLI() {
     const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli', saveDev: true });
-    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
@@ -148,32 +156,47 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     return info;
   }
 
-  async getCapacitorCLIVersion(): Promise<string | undefined> {
-    return this.e.shell.cmdinfo('capacitor', ['--version'], { cwd: this.e.project.directory });
-  }
+  getCapacitorCLIVersion = lodash.memoize(async (): Promise<string | undefined> => {
+    return this.e.shell.cmdinfo('capacitor', ['--version'], { cwd: this.root });
+  });
 
-  async getCapacitorCLIConfig(): Promise<CapacitorCLIConfig | undefined> {
-    const output = await this.e.shell.cmdinfo('capacitor', ['config', '--json'], { cwd: this.e.project.directory });
+  getCapacitorCLIConfig = lodash.memoize(async (): Promise<CapacitorCLIConfig | undefined> => {
+    const args = ['config', '--json'];
 
-    if (output) {
-      return JSON.parse(output);
+    debug('Getting config with Capacitor CLI: %O', args);
+
+    const output = await this.e.shell.cmdinfo('capacitor', args, { cwd: this.root });
+
+    if (!output) {
+      debug('Could not get config from Capacitor CLI (probably old version)');
+      return;
     }
-  }
 
-  async getCapacitorConfig(): Promise<CapacitorConfig | undefined> {
-    // try using `capacitor config --json`
+    return JSON.parse(output);
+  });
+
+  getCapacitorConfig = lodash.memoize(async (): Promise<CapacitorConfig | undefined> => {
     const cli = await this.getCapacitorCLIConfig();
 
     if (cli) {
+      debug('Loaded Capacitor config!');
       return cli.app.extConfig;
     }
 
+    // fallback to reading capacitor.config.json if it exists
     const confPath = this.getCapacitorConfigJsonPath();
 
-      // fallback to reading capacitor.config.json if it exists
-    if (await pathExists(confPath)) {
-      const conf = new CapacitorJSONConfig(confPath);
-      return conf.c;
+    if (!(await pathExists(confPath))) {
+      debug('Capacitor config file does not exist at %O', confPath);
+      debug('Failed to load Capacitor config');
+      return;
     }
-  }
+
+    const conf = new CapacitorJSONConfig(confPath);
+    const extConfig = conf.c;
+
+    debug('Loaded Capacitor config!');
+
+    return extConfig;
+  });
 }

@@ -16,7 +16,6 @@ import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacit
 export abstract class CapacitorCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
   private _integrationObject?: CapacitorIntegration;
-  private _cliconfig?: CapacitorCLIConfig;
 
   get integration(): Required<ProjectIntegration> {
     if (!this.project) {
@@ -77,12 +76,9 @@ export abstract class CapacitorCommand extends Command {
   }
 
   async getCapacitorCLIConfig(): Promise<CapacitorCLIConfig | undefined> {
-    if (!this._cliconfig) {
-      const capacitor = await this.getCapacitorIntegration();
-      this._cliconfig = await capacitor.getCapacitorCLIConfig();
-    }
+    const capacitor = await this.getCapacitorIntegration();
 
-    return this._cliconfig;
+    return capacitor.getCapacitorCLIConfig();
   }
 
   async getCapacitorIntegration() {
