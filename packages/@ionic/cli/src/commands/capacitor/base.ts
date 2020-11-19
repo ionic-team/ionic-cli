@@ -1,4 +1,5 @@
 import { pathExists } from '@ionic/utils-fs';
+import { onBeforeExit } from '@ionic/utils-process';
 import * as lodash from 'lodash';
 import * as path from 'path';
 import * as semver from 'semver';
@@ -88,7 +89,7 @@ export abstract class CapacitorCommand extends Command {
     return this.project.createIntegration('capacitor');
   });
 
-  async getCapacitorVersion(): Promise<semver.SemVer> {
+  getCapacitorVersion = lodash.memoize(async (): Promise<semver.SemVer> => {
     const capacitor = await this.getCapacitorIntegration();
     const version = semver.parse(await capacitor.getCapacitorCLIVersion());
 
@@ -97,7 +98,7 @@ export abstract class CapacitorCommand extends Command {
     }
 
     return version;
-  }
+  });
 
   async checkCapacitor(runinfo: CommandInstanceInfo) {
     if (!this.project) {
@@ -151,6 +152,51 @@ export abstract class CapacitorCommand extends Command {
 
         throw e;
       }
+    }
+  }
+
+  async runServe(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${input('ionic capacitor run')} outside a project directory.`);
+    }
+
+    const [ platform ] = inputs;
+
+    try {
+      const runner = await this.project.requireServeRunner();
+      const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
+
+      let serverUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
+
+      if (!serverUrl) {
+        const details = await runner.run(runnerOpts);
+        serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
+      }
+
+      const conf = await this.getGeneratedConfig(platform);
+
+      onBeforeExit(async () => {
+        conf.resetServerUrl();
+      });
+
+      conf.setServerUrl(serverUrl);
+
+      const manifest = await this.getAndroidManifest();
+
+      if (platform === 'android') {
+        onBeforeExit(async () => {
+          await manifest.reset();
+        });
+
+        manifest.enableCleartextTraffic();
+        await manifest.save();
+      }
+    } catch (e) {
+      if (e instanceof RunnerException) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
     }
   }
 
