@@ -440,7 +440,7 @@ export abstract class Project implements IProject {
     const resolvedPath = path.resolve(this.rootDirectory, root);
 
     if (!pathExistsSync(resolvedPath)) {
-      throw new DirectoryNotAccessibleException(`Path ${input(resolvedPath)} is not accessible.`);
+      throw new DirectoryNotAccessibleException(`Project root ${input(resolvedPath)} is not accessible.`);
     }
 
     return resolvedPath;
@@ -742,9 +742,17 @@ export abstract class Project implements IProject {
     const integration = this.config.get('integrations')[name];
 
     if (integration) {
+      let rootDirectory = this.directory;
+      
+      if (integration.root) {
+        rootDirectory = path.resolve(this.rootDirectory, integration.root);
+        if (!pathExistsSync(rootDirectory)) {
+          throw new DirectoryNotAccessibleException(`Integration root ${input(rootDirectory)} is not accessible.`);
+        }
+      }
       return {
         enabled: integration.enabled !== false,
-        root: integration.root === undefined ? this.directory : path.resolve(this.rootDirectory, integration.root),
+        root: rootDirectory,
       };
     }
   }
