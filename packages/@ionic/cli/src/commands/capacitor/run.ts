@@ -250,17 +250,19 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       if (doOpenFlow) {
         await this.runServe(inputs, options);
         await this.runCapacitorOpenFlow(inputs, options);
+
+        // output can get messy with the open flow, so print this type of
+        // message again
+        this.env.log.nl();
+        this.env.log.info(
+          'Development server will continue running until manually stopped.\n' +
+          chalk.yellow('Use Ctrl+C to quit this process')
+        );
       } else {
         await this.runCapacitor(['sync', platform]);
         await this.runServe(inputs, options);
         await this.runCapacitorRunFlow(inputs, options, { shouldSync: false });
       }
-
-      this.env.log.nl();
-      this.env.log.info(
-        'Development server will continue running until manually stopped.\n' +
-        chalk.yellow('Use Ctrl+C to quit this process')
-      );
 
       await sleepForever();
     } else {
