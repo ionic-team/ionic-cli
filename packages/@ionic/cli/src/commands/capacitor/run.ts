@@ -243,20 +243,19 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
     const [ platform ] = inputs;
 
-    if (options['livereload']) {
-      await this.runServe(inputs, options);
-    } else {
-      await this.runBuild(inputs, options);
-    }
+    const doLiveReload = !!options['livereload'];
+    const doOpenFlow = (await this.isOldCapacitor()) || options['open'] === true;
 
-    if ((await this.isOldCapacitor()) || options['open'] === true) {
-      await this.runCapacitor(['sync', platform]);
-      await this.runCapacitorOpenFlow(inputs, options);
-    } else {
-      await this.runCapacitorRunFlow(inputs, options);
-    }
+    if (doLiveReload) {
+      if (doOpenFlow) {
+        await this.runServe(inputs, options);
+        await this.runCapacitorOpenFlow(inputs, options);
+      } else {
+        await this.runCapacitor(['sync', platform]);
+        await this.runServe(inputs, options);
+        await this.runCapacitorRunFlow(inputs, options, { shouldSync: false });
+      }
 
-    if (options['livereload']) {
       this.env.log.nl();
       this.env.log.info(
         'Development server will continue running until manually stopped.\n' +
@@ -264,6 +263,15 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       );
 
       await sleepForever();
+    } else {
+      if (doOpenFlow) {
+        await this.runBuild(inputs, options);
+        await this.runCapacitor(['sync', platform]);
+        await this.runCapacitorOpenFlow(inputs, options);
+      } else {
+        await this.runBuild(inputs, options);
+        await this.runCapacitorRunFlow(inputs, options, { shouldSync: true });
+      }
     }
   }
 
@@ -314,7 +322,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     );
   }
 
-  protected async runCapacitorRunFlow(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  protected async runCapacitorRunFlow(inputs: CommandLineInputs, options: CommandLineOptions, { shouldSync = true }: { shouldSync?: boolean } = {}): Promise<void> {
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic capacitor run')} outside a project directory.`);
     }
@@ -322,7 +330,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     const [ platform ] = inputs;
 
     await this.runCapacitorRunHook('capacitor:run:before', inputs, options, { ...this.env, project: this.project });
-    await this.runCapacitor(['run', platform, '--target', String(options['target'])]);
+    await this.runCapacitor(['run', platform, ...(shouldSync ? [] : ['--no-sync']), '--target', String(options['target'])]);
   }
 
   protected async runCapacitorRunHook(name: CapacitorRunHookName, inputs: CommandLineInputs, options: CommandLineOptions, e: HookDeps): Promise<void> {
