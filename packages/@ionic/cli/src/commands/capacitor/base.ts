@@ -1,5 +1,6 @@
 import { pathExists } from '@ionic/utils-fs';
 import { onBeforeExit } from '@ionic/utils-process';
+import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
 import * as lodash from 'lodash';
 import * as path from 'path';
 import * as semver from 'semver';
@@ -91,14 +92,26 @@ export abstract class CapacitorCommand extends Command {
   });
 
   getCapacitorVersion = lodash.memoize(async (): Promise<semver.SemVer> => {
-    const capacitor = await this.getCapacitorIntegration();
-    const version = semver.parse(await capacitor.getCapacitorCLIVersion());
+    try {
+      const proc = await this.env.shell.createSubprocess('capacitor', ['--version'], { cwd: this.integration.root });
+      const version = semver.parse((await proc.output()).trim());
 
-    if (!version) {
-      throw new FatalException('Error while getting Capacitor CLI version. Is Capacitor installed?');
+      if (!version) {
+        throw new FatalException('Error while parsing Capacitor CLI version.');
+      }
+
+      return version;
+    } catch (e) {
+      if (e instanceof SubprocessError) {
+        if (e.code === ERROR_COMMAND_NOT_FOUND) {
+          throw new FatalException('Error while getting Capacitor CLI version. Is Capacitor installed?');
+        }
+
+        throw new FatalException('Error while getting Capacitor CLI version.\n' + (e.output ?? e.code));
+      }
+
+      throw e;
     }
-
-    return version;
   });
 
   async checkCapacitor(runinfo: CommandInstanceInfo) {

@@ -247,8 +247,10 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
     const doOpenFlow = (await this.isOldCapacitor()) || options['open'] === true;
 
     if (doLiveReload) {
+      await this.runCapacitor(['sync', platform]);
+      await this.runServe(inputs, options);
+
       if (doOpenFlow) {
-        await this.runServe(inputs, options);
         await this.runCapacitorOpenFlow(inputs, options);
 
         this.env.log.nl();
@@ -257,8 +259,6 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
           chalk.yellow('Use Ctrl+C to quit this process')
         );
       } else {
-        await this.runCapacitor(['sync', platform]);
-        await this.runServe(inputs, options);
         await this.runCapacitorRunFlow(inputs, options, { shouldSync: false });
 
         this.env.log.nl();
@@ -271,12 +271,12 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
 
       await sleepForever();
     } else {
+      await this.runBuild(inputs, options);
+
       if (doOpenFlow) {
-        await this.runBuild(inputs, options);
         await this.runCapacitor(['sync', platform]);
         await this.runCapacitorOpenFlow(inputs, options);
       } else {
-        await this.runBuild(inputs, options);
         await this.runCapacitorRunFlow(inputs, options, { shouldSync: true });
       }
     }

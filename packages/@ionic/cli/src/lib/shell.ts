@@ -33,8 +33,6 @@ export class Shell implements IShell {
   }
 
   async run(command: string, args: readonly string[], { stream, killOnExit = true, showCommand = true, showError = true, fatalOnNotFound = true, fatalOnError = true, truncateErrorOutput, ...crossSpawnOptions }: IShellRunOptions): Promise<void> {
-    this.prepareSpawnOptions(crossSpawnOptions);
-
     const proc = await this.createSubprocess(command, args, crossSpawnOptions);
 
     const fullCmd = proc.bashify();
@@ -186,8 +184,6 @@ export class Shell implements IShell {
   }
 
   async spawn(command: string, args: readonly string[], { showCommand = true, ...crossSpawnOptions }: IShellSpawnOptions): Promise<ChildProcess> {
-    this.prepareSpawnOptions(crossSpawnOptions);
-
     const proc = await this.createSubprocess(command, args, crossSpawnOptions);
     const p = proc.spawn();
 
@@ -200,7 +196,6 @@ export class Shell implements IShell {
 
   async cmdinfo(command: string, args: readonly string[] = []): Promise<string | undefined> {
     const opts: IShellSpawnOptions = {};
-    this.prepareSpawnOptions(opts);
 
     const proc = await this.createSubprocess(command, args, opts);
 
@@ -213,6 +208,7 @@ export class Shell implements IShell {
   }
 
   async createSubprocess(command: string, args: readonly string[] = [], options: SubprocessOptions = {}): Promise<Subprocess> {
+    this.prepareSpawnOptions(options);
     const cmdpath = await this.resolveCommandPath(command, options);
     const proc = new Subprocess(cmdpath, args, options);
 
