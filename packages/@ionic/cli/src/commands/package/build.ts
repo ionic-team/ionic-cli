@@ -387,7 +387,7 @@ This can be used only together with build type ${input('release')} for Android a
     if (!filename) {
       req.on('response', res => {
         const contentDisposition = res.header['content-disposition'];
-        filename = contentDisposition ? contentDisposition.split('=')[1] : 'output.bin';
+        filename = contentDisposition ? contentDisposition.split('=')[1].replace(/([/,?,<,>,*,|,\"])/g, '_') : 'output.bin';
       });
     }
 
