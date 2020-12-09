@@ -107,12 +107,31 @@ export abstract class CapacitorCommand extends Command {
           throw new FatalException('Error while getting Capacitor CLI version. Is Capacitor installed?');
         }
 
-        throw new FatalException('Error while getting Capacitor CLI version.\n' + (e.output ?? e.code));
+        throw new FatalException('Error while getting Capacitor CLI version.\n' + (e.output ? e.output : e.code));
       }
 
       throw e;
     }
   });
+
+  async getInstalledPlatforms(): Promise<string[]> {
+    const cli = await this.getCapacitorCLIConfig();
+    const platforms: string[] = [];
+
+    if (!cli) {
+      return [];
+    }
+
+    if (await pathExists(cli.android.platformDirAbs)) {
+      platforms.push('android');
+    }
+
+    if (await pathExists(cli.ios.platformDirAbs)) {
+      platforms.push('ios');
+    }
+
+    return platforms;
+  }
 
   async checkCapacitor(runinfo: CommandInstanceInfo) {
     if (!this.project) {

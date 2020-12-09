@@ -1,7 +1,10 @@
 import { validators } from '@ionic/cli-framework';
+import * as semver from 'semver';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input } from '../../lib/color';
+import { FatalException } from '../../lib/errors';
+import { pkgManagerArgs } from '../../lib/utils/npm';
 
 import { CapacitorCommand } from './base';
 
@@ -13,7 +16,8 @@ export class AddCommand extends CapacitorCommand implements CommandPreRun {
       summary: 'Add a native platform to your Ionic project',
       description: `
 ${input('ionic capacitor add')} will do the following:
-- Add a new platform specific folder to your project (ios, android, or electron)
+- Install the Capacitor platform package
+- Copy the native platform template into your project
       `,
       inputs: [
         {
@@ -42,12 +46,20 @@ ${input('ionic capacitor add')} will do the following:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
-    const args = ['add'];
+    const version = await this.getCapacitorVersion();
 
-    if (platform) {
-      args.push(platform);
+    const installedPlatforms = await this.getInstalledPlatforms();
+
+    if (installedPlatforms.includes(platform)) {
+      throw new FatalException(`The ${input(platform)} platform is already installed!`);
     }
 
+    if (semver.gte(version, '3.0.0-alpha.1')) {
+      const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: `@capacitor/${platform}`, saveDev: true });
+      await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
+    }
+
+    const args = ['add', platform];
     await this.runCapacitor(args);
   }
 }
