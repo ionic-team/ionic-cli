@@ -17,7 +17,7 @@ ${input('ionic capacitor update')} will do the following:
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to update (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
+          summary: `The platform to update (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
         },
       ],
     };

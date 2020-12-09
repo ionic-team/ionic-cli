@@ -39,7 +39,7 @@ ${input('ionic capacitor sync')} will do the following:
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to sync (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
+          summary: `The platform to sync (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
         },
       ],
       options,

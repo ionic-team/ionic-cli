@@ -15,6 +15,7 @@ import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integ
 import { CAPACITOR_CONFIG_JSON_FILE, CapacitorJSONConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 import { createPrefixedWriteStream } from '../../lib/utils/logger';
+import { pkgManagerArgs } from '../../lib/utils/npm';
 
 export abstract class CapacitorCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
@@ -235,6 +236,16 @@ export abstract class CapacitorCommand extends Command {
     }
   }
 
+  async isPlatformInstalled(platform: string): Promise<boolean> {
+    const cli = await this.getCapacitorCLIConfig();
+
+    if (!cli || (platform !== 'android' && platform !== 'ios')) {
+      return false;
+    }
+
+    return await pathExists(cli[platform].platformDirAbs);
+  }
+
   async checkForPlatformInstallation(platform: string) {
     if (!this.project) {
       throw new FatalException('Cannot use Capacitor outside a project directory.');
@@ -247,16 +258,26 @@ export abstract class CapacitorCommand extends Command {
         throw new FatalException('Cannot check platform installations--Capacitor not yet integrated.');
       }
 
-      const integrationRoot = capacitor.root;
-      const platformsToCheck = ['android', 'ios', 'electron'];
-      const platforms = (await Promise.all(platformsToCheck.map(async (p): Promise<[string, boolean]> => [p, await pathExists(path.resolve(integrationRoot, p))])))
-        .filter(([, e]) => e)
-        .map(([p]) => p);
-
-      if (!platforms.includes(platform)) {
-        await this.runCapacitor(['add', platform]);
+      if (!(await this.isPlatformInstalled(platform))) {
+        await this.installPlatform(platform);
       }
     }
+  }
+
+  async installPlatform(platform: string): Promise<void> {
+    const version = await this.getCapacitorVersion();
+    const installedPlatforms = await this.getInstalledPlatforms();
+
+    if (installedPlatforms.includes(platform)) {
+      throw new FatalException(`The ${input(platform)} platform is already installed!`);
+    }
+
+    if (semver.gte(version, '3.0.0-alpha.1')) {
+      const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: `@capacitor/${platform}`, saveDev: true });
+      await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
+    }
+
+    await this.runCapacitor(['add', platform]);
   }
 
   protected async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicCapacitorOptions> {
