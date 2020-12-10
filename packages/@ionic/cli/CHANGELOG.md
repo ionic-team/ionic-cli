@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.12.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.2...@ionic/cli@6.12.3) (2020-12-10)
+
+
+### Bug Fixes
+
+* **appflow:** allow download of packages built from branches with  in the name. CT-434 ([#4622](https://github.com/ionic-team/ionic-cli/issues/4622)) ([0054fd5](https://github.com/ionic-team/ionic-cli/commit/0054fd51706c071ffad98bf04ee053266bc780d1))
+
+
+
+
+
 ## [6.12.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.1...@ionic/cli@6.12.2) (2020-11-17)
 
 
