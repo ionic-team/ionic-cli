@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [5.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.0.6...@ionic/cli-framework@5.1.0) (2020-12-10)
+
+
+### Features
+
+* **config:** add spaces option when writing JSON config ([#4612](https://github.com/ionic-team/ionic-cli/issues/4612)) ([fdd9bb2](https://github.com/ionic-team/ionic-cli/commit/fdd9bb26098441238adc56ea7a67b385a3b9a964))
+
+
+
+
+
 ## [5.0.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.0.5...@ionic/cli-framework@5.0.6) (2020-09-29)
 
 **Note:** Version bump only for package @ionic/cli-framework
