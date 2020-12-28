@@ -82,14 +82,14 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
         group: 'utility',
         name: 'native-run',
         key: 'native_run_version',
-        value: nativeRun || 'not installed',
+        value: nativeRun || 'not installed globally',
         flair: nativeRunUpdate ? `update available: ${latestNativeRun ? success(latestNativeRun.version) : '???'}` : '',
       },
       {
         group: 'utility',
         name: 'cordova-res',
         key: 'cordova_res_version',
-        value: cordovaRes || 'not installed',
+        value: cordovaRes || 'not installed globally',
         flair: cordovaResUpdate ? `update available: ${latestCordovaRes ? success(latestCordovaRes.version) : '???'}` : '',
       },
     ];

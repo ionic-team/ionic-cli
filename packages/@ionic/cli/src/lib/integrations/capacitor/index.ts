@@ -1,4 +1,4 @@
-import { PackageJson, parseArgs } from '@ionic/cli-framework';
+import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
@@ -125,9 +125,13 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     const [
       [ capacitorCorePkg, capacitorCorePkgPath ],
       capacitorCLIVersion,
-    ] = await (Promise.all<[PackageJson | undefined, string | undefined], string | undefined>([
+      [ capacitorIOSPkg, capacitorIOSPkgPath ],
+      [ capacitorAndroidPkg, capacitorAndroidPkgPath ],
+    ] = await (Promise.all([
       this.e.project.getPackageJson('@capacitor/core'),
       this.getCapacitorCLIVersion(),
+      this.e.project.getPackageJson('@capacitor/ios'),
+      this.e.project.getPackageJson('@capacitor/android'),
     ]));
 
     const info: InfoItem[] = [
@@ -143,6 +147,20 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         key: 'capacitor_core_version',
         value: capacitorCorePkg ? capacitorCorePkg.version : 'not installed',
         path: capacitorCorePkgPath,
+      },
+      {
+        group: 'capacitor',
+        name: '@capacitor/ios',
+        key: 'capacitor_ios_version',
+        value: capacitorIOSPkg ? capacitorIOSPkg.version : 'not installed',
+        path: capacitorIOSPkgPath,
+      },
+      {
+        group: 'capacitor',
+        name: '@capacitor/android',
+        key: 'capacitor_android_version',
+        value: capacitorAndroidPkg ? capacitorAndroidPkg.version : 'not installed',
+        path: capacitorAndroidPkgPath,
       },
       {
         group: 'capacitor',
