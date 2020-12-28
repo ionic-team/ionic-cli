@@ -12,7 +12,7 @@ import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '../../lib/integrations/capacitor'
 import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integrations/capacitor/android';
-import { CAPACITOR_CONFIG_JSON_FILE, CapacitorJSONConfig } from '../../lib/integrations/capacitor/config';
+import { CAPACITOR_CONFIG_JSON_FILE, CapacitorJSONConfig, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 import { createPrefixedWriteStream } from '../../lib/utils/logger';
 import { pkgManagerArgs } from '../../lib/utils/npm';
@@ -82,6 +82,12 @@ export abstract class CapacitorCommand extends Command {
     const capacitor = await this.getCapacitorIntegration();
 
     return capacitor.getCapacitorCLIConfig();
+  }
+
+  async getCapacitorConfig(): Promise<CapacitorConfig | undefined> {
+    const capacitor = await this.getCapacitorIntegration();
+
+    return capacitor.getCapacitorConfig();
   }
 
   getCapacitorIntegration = lodash.memoize(async (): Promise<CapacitorIntegration> => {
@@ -169,9 +175,9 @@ export abstract class CapacitorCommand extends Command {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    const cli = await this.getCapacitorCLIConfig();
+    const conf = await this.getCapacitorConfig();
 
-    if (cli?.app.extConfig.server?.url) {
+    if (conf?.server?.url) {
       this.env.log.warn(
         `Capacitor server URL is in use.\n` +
         `This may result in unexpected behavior for this build, where an external server is used in the Web View instead of your app. This likely occurred because of ${input('--livereload')} usage in the past and the CLI improperly exiting without cleaning up.\n\n` +
@@ -277,8 +283,7 @@ export abstract class CapacitorCommand extends Command {
   protected async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicCapacitorOptions> {
     const separatedArgs = options['--'];
     const verbose = !!options['verbose'];
-    const capacitor = await this.getCapacitorIntegration();
-    const conf = await capacitor.getCapacitorConfig();
+    const conf = await this.getCapacitorConfig();
 
     return {
       '--': separatedArgs ? separatedArgs : [],

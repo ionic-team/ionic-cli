@@ -549,8 +549,8 @@ export abstract class Project implements IProject {
   async getDistDir(): Promise<string> {
     if (this.getIntegration('capacitor') !== undefined) {
       const capacitor = await this.createIntegration('capacitor');
-      const conf = await capacitor.getCapacitorCLIConfig();
-      const webDir = conf?.app.extConfig.webDir;
+      const conf = await capacitor.getCapacitorConfig();
+      const webDir = conf?.webDir;
 
       if (webDir) {
         return path.resolve(this.directory, webDir);
