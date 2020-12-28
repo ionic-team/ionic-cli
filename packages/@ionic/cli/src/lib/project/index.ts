@@ -553,7 +553,7 @@ export abstract class Project implements IProject {
       const webDir = conf?.webDir;
 
       if (webDir) {
-        return path.resolve(this.directory, webDir);
+        return path.resolve(capacitor.root, webDir);
       } else {
         throw new FatalException(
           `The ${input('webDir')} property must be set in the Capacitor configuration file. \n` +
