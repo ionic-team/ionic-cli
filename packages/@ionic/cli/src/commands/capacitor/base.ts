@@ -117,21 +117,25 @@ export abstract class CapacitorCommand extends Command {
 
   async getInstalledPlatforms(): Promise<string[]> {
     const cli = await this.getCapacitorCLIConfig();
+    const androidPlatformDirAbs = cli?.android.platformDirAbs ?? path.resolve(this.integration.root, 'android');
+    const iosPlatformDirAbs = cli?.ios.platformDirAbs ?? path.resolve(this.integration.root, 'ios');
     const platforms: string[] = [];
 
-    if (!cli) {
-      return [];
-    }
-
-    if (await pathExists(cli.android.platformDirAbs)) {
+    if (await pathExists(androidPlatformDirAbs)) {
       platforms.push('android');
     }
 
-    if (await pathExists(cli.ios.platformDirAbs)) {
+    if (await pathExists(iosPlatformDirAbs)) {
       platforms.push('ios');
     }
 
     return platforms;
+  }
+
+  async isPlatformInstalled(platform: string): Promise<boolean> {
+    const platforms = await this.getInstalledPlatforms();
+
+    return platforms.includes(platform);
   }
 
   async checkCapacitor(runinfo: CommandInstanceInfo) {
@@ -234,16 +238,6 @@ export abstract class CapacitorCommand extends Command {
 
       throw e;
     }
-  }
-
-  async isPlatformInstalled(platform: string): Promise<boolean> {
-    const cli = await this.getCapacitorCLIConfig();
-
-    if (!cli || (platform !== 'android' && platform !== 'ios')) {
-      return false;
-    }
-
-    return await pathExists(cli[platform].platformDirAbs);
   }
 
   async checkForPlatformInstallation(platform: string) {
