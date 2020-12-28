@@ -81,7 +81,6 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       }
 
       options.push('--web-dir', webDir);
-      options.push('--npm-client', this.e.config.get('npmClient'));
 
       await this.installCapacitorCore();
       await this.installCapacitorCLI();
@@ -98,12 +97,12 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async installCapacitorCore() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core@next' });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async installCapacitorCLI() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli', saveDev: true });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli@next', saveDev: true });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
