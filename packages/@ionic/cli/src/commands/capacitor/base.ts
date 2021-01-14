@@ -227,9 +227,9 @@ export abstract class CapacitorCommand extends Command {
 
       conf.setServerUrl(serverUrl);
 
-      const manifest = await this.getAndroidManifest();
-
       if (platform === 'android') {
+        const manifest = await this.getAndroidManifest();
+
         onBeforeExit(async () => {
           await manifest.reset();
         });
