@@ -2,6 +2,7 @@ import { CommandLineOptions, combine, contains, validators } from '@ionic/cli-fr
 import { pathExists, pathWritable, readFile, writeFile } from '@ionic/utils-fs';
 import * as et from 'elementtree';
 import * as path from 'path';
+import * as chalk from 'chalk';
 
 import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
@@ -36,7 +37,7 @@ export abstract class DeployCoreCommand extends Command {
 
 export abstract class DeployConfCommand extends DeployCoreCommand {
 
-  protected readonly optionsToPlistKeys = {
+  protected readonly optionsToPlistKeys: {[key: string]: string} = {
     'app-id': 'IonAppId',
     'channel-name': 'IonChannelName',
     'update-method': 'IonUpdateMethod',
@@ -52,6 +53,24 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     'min-background-duration': 'ionic_min_background_duration',
     'update-api': 'ionic_update_api',
   };
+
+  protected readonly requiredOptionsDefaults: {[key: string]: string} = {
+    'max-store': '2',
+    'min-background-duration': '30',
+    'update-api': 'https://api.ionicjs.com',
+  }
+
+  protected readonly requiredOptionsFromPlistVal: {[key: string]: string} = {
+    'IonMaxVersions': 'max-store',
+    'IonMinBackgroundDuration': 'min-background-duration',
+    'IonApi': 'update-api',
+  }
+
+  protected readonly requiredOptionsFromXmlVal = {
+    'ionic_max_versions': 'max-store',
+    'ionic_min_background_duration': 'min-background-duration',
+    'ionic_update_api': 'update-api',
+  }
 
   protected async getAppId(): Promise<string | undefined> {
     if (this.project) {
@@ -132,7 +151,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
       return false;
     }
     if (!plistPath) {
-      this.env.log.info(`No Capacitor iOS project found.`);
+      this.env.log.warn(`No ${chalk.bold('Capacitor iOS')} project found you will need to rerun ${chalk.yellow('ionic deploy configure')} if you add it later.`);
       return false;
     }
     // try to load the plist file first
@@ -169,6 +188,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     }
     // check which options are set (configure might not have all of them set)
     const setOptions: { [key: string]: string } = {};
+
     for (const [optionKey, plistKey] of Object.entries(this.optionsToPlistKeys)) {
       if (options[optionKey]) {
         setOptions[optionKey] = plistKey;
@@ -183,19 +203,39 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     const pdictChildren = pdict.getchildren();
     // there is no way to refer to a first right sibling in elementtree, so we use flags
     let removeNextStringTag = false;
+    let existingRequiredKeys = [];
     for (const element of pdictChildren) {
+
+      // find required options and keep track of what is already existing
+      if ((element.tag === 'key') && (element.text) && this.requiredOptionsFromPlistVal[element.text as string] != undefined) {
+        existingRequiredKeys.push(this.requiredOptionsFromPlistVal[element.text as string])
+      }
+
       // we remove all the existing element if there
       if ((element.tag === 'key') && (element.text) && Object.values(setOptions).includes(element.text as string)) {
         pdict.remove(element);
         removeNextStringTag = true;
         continue;
       }
+
       // and remove the first right sibling (this will happen at the next iteration of the loop
       if ((element.tag === 'string') && removeNextStringTag) {
         pdict.remove(element);
         removeNextStringTag = false;
       }
     }
+
+    // set any missing required keys to default
+    for (const key of Object.keys(this.requiredOptionsDefaults)) {
+      if (existingRequiredKeys.includes(key)) {
+        continue;
+      }
+      setOptions[key] = this.optionsToPlistKeys[key];
+      if (!options[key]) {
+        options[key] = this.requiredOptionsDefaults[key];
+      }
+    }
+
     // add again the new settings
     for (const [optionKey, plistKey] of Object.entries(setOptions)) {
       const plistValue = options[optionKey];
@@ -237,7 +277,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
       return false;
     }
     if (!stringXmlPath) {
-      this.env.log.info(`No Capacitor Android project found.`);
+      this.env.log.warn(`No ${chalk.bold('Capacitor Android')} project found you will need to rerun ${chalk.yellow('ionic deploy configure')} if you add it later.`);
       return false;
     }
     // try to load the plist file first
@@ -289,6 +329,23 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
         element.text = options[optionKey] as string;
       }
     }
+
+    // make sure required keys are set
+    // TODO
+    for (const [stringKey, optionKey] of Object.entries(this.requiredOptionsFromXmlVal)) {
+      let element = root.find(`./string[@name="${stringKey}"]`);
+      // if the tag already exists, just update the content
+      if (element) {
+        continue;
+      } else {
+        // otherwise create the tag and set to default
+        element = et.SubElement(root, 'string');
+        element.set('name', stringKey);
+        console.log(optionKey, 'opoitn key');
+        element.text = this.requiredOptionsDefaults[optionKey];
+      }
+    }
+
     // write back the modified plist
     const newXML = etree.write({
       encoding: 'utf-8',
