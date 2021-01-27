@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.12.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.3...@ionic/cli@6.12.4) (2021-01-27)
+
+
+### Bug Fixes
+
+* **Appflow:** Fix issue with deploy add and deploy configure commands where sometimes necessary variables weren't correctly set. ([#4634](https://github.com/ionic-team/ionic-cli/issues/4634)) ([be6cf2e](https://github.com/ionic-team/ionic-cli/commit/be6cf2e05957b38c35dd692a3917c22c262e5e71))
+
+
+
+
+
 ## [6.12.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.2...@ionic/cli@6.12.3) (2020-12-10)
 
 
