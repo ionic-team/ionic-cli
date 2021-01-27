@@ -126,7 +126,7 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
     // check if it is already installed
     const alreadyAdded = await this.checkDeployInstalled();
     if (!alreadyAdded) {
-      this.addPlugin(options, runinfo, integration);
+      await this.addPlugin(options, runinfo, integration);
     } else {
       this.env.log.warn("Live Updates plugin already added. Reconfiguring only.");
     }

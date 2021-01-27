@@ -2,7 +2,6 @@ import { CommandLineOptions, combine, contains, validators } from '@ionic/cli-fr
 import { pathExists, pathWritable, readFile, writeFile } from '@ionic/utils-fs';
 import * as et from 'elementtree';
 import * as path from 'path';
-import * as chalk from 'chalk';
 
 import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
@@ -151,7 +150,10 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
       return false;
     }
     if (!plistPath) {
-      this.env.log.warn(`No ${chalk.bold('Capacitor iOS')} project found you will need to rerun ${chalk.yellow('ionic deploy configure')} if you add it later.`);
+      this.env.log.warn(
+        `No ${strong('Capacitor iOS')} project found\n` +
+        `You will need to rerun ${input('ionic deploy configure')} if you add it later.\n`
+      );
       return false;
     }
     // try to load the plist file first
@@ -277,7 +279,9 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
       return false;
     }
     if (!stringXmlPath) {
-      this.env.log.warn(`No ${chalk.bold('Capacitor Android')} project found you will need to rerun ${chalk.yellow('ionic deploy configure')} if you add it later.`);
+      this.env.log.warn(
+        `No ${strong('Capacitor Android')} project found\n`+
+        `You will need to rerun ${input('ionic deploy configure')} if you add it later.\n`);
       return false;
     }
     // try to load the plist file first
