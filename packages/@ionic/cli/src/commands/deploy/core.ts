@@ -331,7 +331,6 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     }
 
     // make sure required keys are set
-    // TODO
     for (const [stringKey, optionKey] of Object.entries(this.requiredOptionsFromXmlVal)) {
       let element = root.find(`./string[@name="${stringKey}"]`);
       // if the tag already exists, just update the content
