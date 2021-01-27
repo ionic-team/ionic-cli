@@ -4,6 +4,7 @@ import { CommandInstanceInfo, CommandMetadata } from '../../definitions';
 import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
+
 import { DeployConfCommand } from './core';
 
 export class ConfigureCommand extends DeployConfCommand {
