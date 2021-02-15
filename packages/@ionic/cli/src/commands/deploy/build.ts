@@ -1,19 +1,23 @@
 import { CommandLineInputs, CommandLineOptions, MetadataGroup } from '@ionic/cli-framework';
 import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { sleep } from '@ionic/utils-process';
+import { tmpfilepath } from '@ionic/utils-fs';
 import { columnar } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
+import * as fs from 'fs';
 
 import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
 import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
+import { createRequest, download } from '../../lib/utils/http';
 
 const debug = Debug('ionic:commands:deploy:build');
 
 interface DeployBuild {
+  artifact_name: string;
   job_id: number;
   id: string;
   caller_id: number;
@@ -30,6 +34,10 @@ interface DeployBuild {
   pending_channels: string[];
 }
 
+interface DownloadUrl {
+  url: string | null;
+}
+
 export class BuildCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
     const dashUrl = this.env.config.getDashUrl();
@@ -40,7 +48,7 @@ export class BuildCommand extends Command {
       groups: [MetadataGroup.PAID],
       summary: 'Create a deploy build on Appflow',
       description: `
-This command creates a deploy build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal.
+This command creates a deploy build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created web build zip file in the current directory.
 
 Customizing the build:
 - The ${input('--environment')} and ${input('--channel')} options can be used to customize the groups of values exposed to the build.
@@ -117,6 +125,15 @@ Apart from ${input('--commit')}, every option can be specified using the full na
     if (build.state !== 'success') {
       throw new Error(`Build ${build.state}`);
     }
+
+    const url = await this.getDownloadUrl(appflowId, buildId, token);
+
+    if (!url.url) {
+      throw new Error('Missing URL in response');
+    }
+
+    const filename = await this.downloadBuild(url.url, build.artifact_name);
+    this.env.log.ok(`Artifact downloaded: ${filename}`);
 
   }
 
@@ -209,4 +226,36 @@ Apart from ${input('--commit')}, every option can be specified using the full na
       }
     }
   }
+
+  async getDownloadUrl(appflowId: string, buildId: number, token: string): Promise<DownloadUrl> {
+    const { req } = await this.env.client.make('GET', `/apps/${appflowId}/packages/${buildId}/download?artifact_type=WWW_ZIP`);
+    req.set('Authorization', `Bearer ${token}`).send();
+
+    try {
+      const res = await this.env.client.do(req);
+      return res.data as DownloadUrl;
+    } catch (e) {
+      if (isSuperAgentError(e)) {
+        if (e.response.status === 401) {
+          this.env.log.error('Try logging out and back in again.');
+        }
+        const apiErrorMessage = (e.response.body.error && e.response.body.error.message) ? e.response.body.error.message : 'Api Error';
+        throw new FatalException(`Unable to get download URL for build ${buildId}: ` + apiErrorMessage);
+      } else {
+        throw e;
+      }
+    }
+  }
+
+  async downloadBuild(url: string, filename: string): Promise<string> {
+    const { req } = await createRequest('GET', url, this.env.config.getHTTPConfig());
+
+    const tmpFile = tmpfilepath('ionic-package-build');
+    const ws = fs.createWriteStream(tmpFile);
+    await download(req, ws, {});
+    fs.copyFileSync(tmpFile, filename);
+    fs.unlinkSync(tmpFile);
+    return filename;
+  }
+
 }
