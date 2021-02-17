@@ -27,6 +27,12 @@ const IOS_ARTIFACT_TYPES = ['ipa', 'dsym'];
 const ARTIFACT_TYPES = ANDROID_ARTIFACT_TYPES.concat(IOS_ARTIFACT_TYPES);
 const TARGET_PLATFORM = ['Android', 'iOS - Xcode 11 (Preferred)', 'iOS - Xcode 10'];
 
+interface Artifact {
+  name: string;
+  url: string;
+  artifact_type: string;
+}
+
 export interface PackageBuild {
   job_id: number;
   id: string;
@@ -48,6 +54,7 @@ export interface PackageBuild {
   distribution_credential_name: string;
   job: any;
   distribution_trace: string;
+  artifacts: Artifact[];
 }
 
 interface DownloadUrl {
@@ -293,16 +300,6 @@ if you do not wish to download ${input('apk')}.
     const token = await this.env.session.getUserToken();
     const appflowId = await this.project.requireAppflowId();
     const [ platform, buildType ] = inputs;
-    let artifactTypes;
-
-    if (Array.isArray(options['artifact-type'])) {
-      artifactTypes = options['artifact-type'].map(val => val.toUpperCase());
-    } else if (typeof options['artifact-type'] == 'string' && ARTIFACT_TYPES.includes(options['artifact-type'])) {
-      artifactTypes = [options['artifact-type'].toUpperCase()]
-    } else {
-      const useOriginalDefault = !!(options['build-file-name']);
-      artifactTypes = await this.getDefaultArtifactType(platform, useOriginalDefault);
-    }
 
     if (!options.commit) {
       options.commit = (await this.env.shell.output('git', ['rev-parse', 'HEAD'], { cwd: this.project.directory })).trim();
@@ -318,7 +315,7 @@ if you do not wish to download ${input('apk')}.
       ['Commit', strong(`${build.commit.sha.substring(0, 6)} ${build.commit.note}`)],
       ['Target Platform', strong(build.stack.friendly_name)],
       ['Build Type', strong(build.build_type)],
-      ['Artifact Type(s)', strong(`${artifactTypes}`)],
+      ['Artifact Type(s)', options['artifact-type'] ? strong(`${options['artifact-type']}`.toUpperCase()) : weak('all available')],
       ['Security Profile', build.profile_tag ? strong(build.profile_tag) : weak('not set')],
       ['Environment', build.environment_name ? strong(build.environment_name) : weak('not set')],
       ['Native Config', build.native_config_name ? strong(build.native_config_name) : weak('not set')],
@@ -335,24 +332,28 @@ if you do not wish to download ${input('apk')}.
       throw new Error(`Build ${build.state}`);
     }
 
-    for (const artifactType of artifactTypes) {
-      const url = await this.getDownloadUrl(appflowId, buildId, artifactType, token);
+    const availableArtifactTypes = build.artifacts.map((artifact) => artifact.artifact_type);
 
-      if (!url.url) {
-        throw new Error('Missing URL in response');
+    if (Array.isArray(options['artifact-type'])) {
+      let errors = [];
+      for (const artifactType of new Set(options['artifact-type'])) {
+        try {
+          await this.downloadArtifact(appflowId, buildId, artifactType, token, options);
+        } catch (error) {
+          errors.push(error);
+        }
       }
 
-      let customBuildFileName = '';
-
-      if (options['build-file-name']) {
-        this.env.log.warn(`The ${input('--build-file-name')} option has been deprecated. Please use ${input('--ipa-name')}, ${input('--apk-name')} or ${input('--{ artifact }-name')}.`);
-        customBuildFileName = await this.sanitizeString(options['build-file-name']);
-      } else {
-        customBuildFileName = await this.sanitizeString(options[`${artifactType.toLowerCase()}-name`]);
+      if (errors.length) {
+        errors.forEach((error) => this.env.log.error(error.message));
       }
 
-      const filename = await this.downloadBuild(url.url, customBuildFileName);
-      this.env.log.ok(`Artifact downloaded: ${filename}`);
+    } else if (typeof options['artifact-type'] == 'string') {
+      await this.downloadArtifact(appflowId, buildId, options['artifact-type'], token, options);
+    } else {
+      for (const artifactType of availableArtifactTypes) {
+        await this.downloadArtifact(appflowId, buildId, artifactType.toUpperCase(), token, options);
+      }
     }
   }
 
@@ -367,17 +368,6 @@ if you do not wish to download ${input('apk')}.
     }
 
     return String(value);
-  }
-
-  async getDefaultArtifactType(platform: string, useOriginalDefault?: boolean): Promise<Array<string>> {
-    switch (platform) {
-      case 'ios':
-        return useOriginalDefault ? ['IPA'] : ['IPA', 'DSYM'];
-      case 'android':
-        return useOriginalDefault ? ['APK'] : ['APK', 'AAB'] ;
-      default:
-        throw new Error(`No default artifact type for platform '${platform}'`);
-    }
   }
 
   async createPackageBuild(appflowId: string, token: string, platform: string, buildType: string, options: CommandLineOptions): Promise<PackageBuild> {
@@ -501,5 +491,26 @@ if you do not wish to download ${input('apk')}.
     fs.copyFileSync(tmpFile, filename);
     fs.unlinkSync(tmpFile);
     return filename;
+  }
+
+  async downloadArtifact(appflowId: string, buildId: number, artifactType: string, token: string, options: CommandLineOptions) {
+
+    const url = await this.getDownloadUrl(appflowId, buildId, artifactType.toUpperCase(), token);
+
+    if (!url.url) {
+      throw new Error('Missing URL in response');
+    }
+
+    let customBuildFileName = '';
+
+    if (options['build-file-name']) {
+      this.env.log.warn(`The ${input('--build-file-name')} option has been deprecated. Please use ${input('--ipa-name')}, ${input('--apk-name')} or ${input('--{ artifact }-name')}.`);
+      customBuildFileName = await this.sanitizeString(options['build-file-name']);
+    } else {
+      customBuildFileName = await this.sanitizeString(options[`${artifactType.toLowerCase()}-name`]);
+    }
+
+    const filename = await this.downloadBuild(url.url, customBuildFileName);
+    this.env.log.ok(`Artifact downloaded: ${filename}`);
   }
 }
