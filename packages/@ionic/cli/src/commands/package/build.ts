@@ -345,7 +345,7 @@ if you do not wish to download ${input('apk')}.
       }
 
       if (errors.length) {
-        errors.forEach((error) => this.env.log.error(error.message));
+        throw new FatalException(`There were issues downloading artifacts: ${errors.join('\n')}`);
       }
 
     } else if (typeof options['artifact-type'] == 'string') {
@@ -498,7 +498,7 @@ if you do not wish to download ${input('apk')}.
     const url = await this.getDownloadUrl(appflowId, buildId, artifactType.toUpperCase(), token);
 
     if (!url.url) {
-      throw new Error('Missing URL in response');
+      throw new Error(`Artifact type '${artifactType}' not found`);
     }
 
     let customBuildFileName = '';
