@@ -2,7 +2,6 @@ import { MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input } from '../../lib/color';
-import { FatalException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
 
 import { DeployConfCommand } from './core';
@@ -95,20 +94,12 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    // check if it is already installed
-    const alreadyAdded = await this.checkDeployInstalled();
-    if (alreadyAdded) {
-      throw new FatalException(
-        `Appflow Deploy plugin is already installed.`
-      );
-    }
     // check if there are native integration installed
     await this.requireNativeIntegration();
     await this.preRunCheckInputs(options);
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
-    const integration = await this.getAppIntegration();
+  async addPlugin(options: CommandLineOptions, runinfo: CommandInstanceInfo, integration?: string) {
     if (integration === 'cordova') {
       let deployCommand = ['cordova', 'plugin', 'add', 'cordova-plugin-ionic'];
       const userOptions = this.buildCordovaDeployOptions(options);
@@ -125,6 +116,22 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
       );
       // install the plugin with npm
       await this.env.shell.run(installer, installerArgs, { stdio: 'inherit' });
+    }
+
+  }
+
+  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+    const integration = await this.getAppIntegration();
+
+    // check if it is already installed
+    const alreadyAdded = await this.checkDeployInstalled();
+    if (!alreadyAdded) {
+      await this.addPlugin(options, runinfo, integration);
+    } else {
+      this.env.log.warn("Live Updates plugin already added. Reconfiguring only.");
+    }
+
+    if (integration === 'capacitor') {
       // generate the manifest
       await runCommand(runinfo, ['deploy', 'manifest']);
       // run capacitor sync

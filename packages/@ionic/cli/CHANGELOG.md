@@ -3,6 +3,35 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.13.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.4...@ionic/cli@6.13.0) (2021-02-18)
+
+
+### Bug Fixes
+
+* **appflow:** Default should be all available not hard-coded by platform ([#4645](https://github.com/ionic-team/ionic-cli/issues/4645)) ([6e66109](https://github.com/ionic-team/ionic-cli/commit/6e66109d4993ddb24882bd5c5875a31b2fe65cff))
+
+
+### Features
+
+* **appflow:** support Capacitor only apps with `ionic deploy manifest` ([#4641](https://github.com/ionic-team/ionic-cli/issues/4641)) ([cee620b](https://github.com/ionic-team/ionic-cli/commit/cee620baff2515115393d882b88f6a99e3fefd9b))
+* **appflow:** Support downloading all artifact types from appflow builds ([cae11db](https://github.com/ionic-team/ionic-cli/commit/cae11dba3f1efbec753ae6e91c21ad79be169e38))
+* **appflow:** Support downloading WWW_ZIP after deploy build ([bce15d1](https://github.com/ionic-team/ionic-cli/commit/bce15d1b57a102938d4e6922773fe27af24dcca7))
+
+
+
+
+
+## [6.12.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.3...@ionic/cli@6.12.4) (2021-01-27)
+
+
+### Bug Fixes
+
+* **Appflow:** Fix issue with deploy add and deploy configure commands where sometimes necessary variables weren't correctly set. ([#4634](https://github.com/ionic-team/ionic-cli/issues/4634)) ([be6cf2e](https://github.com/ionic-team/ionic-cli/commit/be6cf2e05957b38c35dd692a3917c22c262e5e71))
+
+
+
+
+
 ## [6.12.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.2...@ionic/cli@6.12.3) (2020-12-10)
 
 
