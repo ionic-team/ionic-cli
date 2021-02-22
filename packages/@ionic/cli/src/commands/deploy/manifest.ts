@@ -124,7 +124,12 @@ export class DeployManifestCommand extends DeployCoreCommand {
       return;
     }
 
-    return JSON.parse(output);
+    try {
+      return JSON.parse(output);
+    } catch(e) {
+      debug('Could not get config from Capacitor CLI (probably old version)', e);
+      return;
+    }
   });
 
   private getCapacitorConfig = lodash.memoize(async (): Promise<CapacitorConfig | undefined> => {
