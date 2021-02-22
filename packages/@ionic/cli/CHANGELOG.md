@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.13.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.13.0...@ionic/cli@6.13.1) (2021-02-22)
+
+
+### Bug Fixes
+
+* **appflow:** fix deploy manifest for Capacitor 1.x apps ([#4648](https://github.com/ionic-team/ionic-cli/issues/4648)) ([77b02a3](https://github.com/ionic-team/ionic-cli/commit/77b02a39d08fb369c6b95b5f3b0c255370e9fc23))
+
+
+
+
+
 # [6.13.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.12.4...@ionic/cli@6.13.0) (2021-02-18)
 
 
