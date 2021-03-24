@@ -30,7 +30,7 @@ export class BuildCommand extends Command implements CommandPreRun {
     return {
       name: 'build',
       type: 'project',
-      summary: 'Build for Android, iOS, and other Platform Targets',
+      summary: 'Build for Android and iOS Platform Targets',
       description,
       footnotes,
       groups,
