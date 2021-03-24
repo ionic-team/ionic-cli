@@ -127,7 +127,7 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
     if (project.config.get('pro_id' as any) && argv._[1] !== 'unset') {
       log.warn(
         `The ${input('pro_id')} field in ${strong(prettyPath(project.filePath))} has been deprecated.\n` +
-        `Ionic Pro has been renamed to Ionic Appflow! We've copied the value in ${input('pro_id')} to ${input('id')}, but you may want to unset the deprecated property: ${input('ionic config unset pro_id')}\n`
+        `Ionic Pro has been renamed to Appflow! We've copied the value in ${input('pro_id')} to ${input('id')}, but you may want to unset the deprecated property: ${input('ionic config unset pro_id')}\n`
       );
     }
   }

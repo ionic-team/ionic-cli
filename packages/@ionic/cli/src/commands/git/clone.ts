@@ -14,7 +14,7 @@ export class GitCloneCommand extends Command {
       inputs: [
         {
           name: 'id',
-          summary: 'The ID of the Ionic Appflow app to clone',
+          summary: 'The ID of the Appflow app to clone',
           validators: [validators.required],
         },
         {

@@ -36,11 +36,11 @@ export class LinkCommand extends Command implements CommandPreRun {
       groups: [MetadataGroup.PAID],
       summary: 'Connect local apps to Ionic',
       description: `
-Link apps on Ionic Appflow to local Ionic projects with this command.
+Link apps on Appflow to local Ionic projects with this command.
 
-If the ${input('id')} argument is excluded, this command will prompt you to select an app from Ionic Appflow.
+If the ${input('id')} argument is excluded, this command will prompt you to select an app from Appflow.
 
-Ionic Appflow uses a git-based workflow to manage app updates. During the linking process, select ${strong('GitHub')} (recommended) or ${strong('Ionic Appflow')} as a git host. See our documentation[^appflow-git-basics] for more information.
+Appflow uses a git-based workflow to manage app updates. During the linking process, select ${strong('GitHub')} (recommended) or ${strong('Appflow')} as a git host. See our documentation[^appflow-git-basics] for more information.
 
 Ultimately, this command sets the ${strong('id')} property in ${strong(prettyPath(projectFile))}, which marks this app as linked.
 
@@ -61,7 +61,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       inputs: [
         {
           name: 'id',
-          summary: `The Ionic Appflow ID of the app to link (e.g. ${input('a1b2c3d4')})`,
+          summary: `The Appflow ID of the app to link (e.g. ${input('a1b2c3d4')})`,
         },
       ],
       options: [
@@ -72,13 +72,13 @@ If you are having issues linking, please get in touch with our Support[^support-
         },
         {
           name: 'create',
-          summary: 'Create a new app on Ionic Appflow and link it with this local Ionic project',
+          summary: 'Create a new app on Appflow and link it with this local Ionic project',
           type: Boolean,
           groups: [MetadataGroup.HIDDEN],
         },
         {
           name: 'pro-id',
-          summary: 'Specify an app ID from the Ionic Appflow to link',
+          summary: 'Specify an app ID from the Appflow to link',
           groups: [MetadataGroup.DEPRECATED, MetadataGroup.HIDDEN],
           spec: { value: 'id' },
         },
@@ -141,11 +141,11 @@ If you are having issues linking, please get in touch with our Support[^support-
     if (!id && !create) {
       const choices = [
         {
-          name: `Link ${idFromConfig ? 'a different' : 'an existing'} app on Ionic Appflow`,
+          name: `Link ${idFromConfig ? 'a different' : 'an existing'} app on Appflow`,
           value: CHOICE_LINK_EXISTING_APP,
         },
         {
-          name: 'Create a new app on Ionic Appflow',
+          name: 'Create a new app on Appflow',
           value: CHOICE_CREATE_NEW_APP,
         },
       ];
@@ -186,7 +186,7 @@ If you are having issues linking, please get in touch with our Support[^support-
           const confirm = await this.env.prompt({
             type: 'confirm',
             name: 'confirm',
-            message: `No apps found. Would you like to create a new app on Ionic Appflow?`,
+            message: `No apps found. Would you like to create a new app on Appflow?`,
           });
 
           if (!confirm) {
@@ -271,7 +271,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     this.env.log.nl();
 
     this.env.log.info(
-      `Ionic Appflow uses a git-based workflow to manage app updates.\n` +
+      `Appflow uses a git-based workflow to manage app updates.\n` +
       `You will be prompted to set up the git host and repository for this new app. See the docs${ancillary('[1]')} for more information.\n\n` +
       `${ancillary('[1]')}: ${strong('https://ion.link/appflow-git-basics')}`
     );
@@ -288,7 +288,7 @@ If you are having issues linking, please get in touch with our Support[^support-
           value: CHOICE_GITHUB,
         },
         {
-          name: 'Ionic Appflow',
+          name: 'Appflow',
           value: CHOICE_IONIC,
         },
         // TODO: option to skip git setup for now
@@ -323,7 +323,7 @@ If you are having issues linking, please get in touch with our Support[^support-
 
       if (githubUrl) {
         this.env.log.info(
-          `You can now push to one of your branches on GitHub to trigger a build in Ionic Appflow!\n` +
+          `You can now push to one of your branches on GitHub to trigger a build in Appflow!\n` +
           `If you haven't added GitHub as your origin you can do so by running:\n\n` +
           `${input('git remote add origin ' + githubUrl)}\n\n` +
           `You can find additional links above to help if you're having issues.`
@@ -382,7 +382,7 @@ If you are having issues linking, please get in touch with our Support[^support-
     this.env.log.nl();
     this.env.log.info(
       `GitHub OAuth setup required.\n` +
-      `To continue, we need you to authorize Ionic Appflow with your GitHub account. ` +
+      `To continue, we need you to authorize Appflow with your GitHub account. ` +
       `A browser will open and prompt you to complete the authorization request. ` +
       `When finished, please return to the CLI to continue linking your app.`
     );
@@ -542,7 +542,7 @@ If you are having issues linking, please get in touch with our Support[^support-
 
   async selectGithubBranches(repoId: number): Promise<string[]> {
     this.env.log.nl();
-    this.env.log.info(strong(`By default Ionic Appflow links only to the ${input('master')} branch.`));
+    this.env.log.info(strong(`By default Appflow links only to the ${input('master')} branch.`));
     this.env.log.info(
       `${strong('If you\'d like to link to another branch or multiple branches you\'ll need to select each branch to connect to.')}\n` +
       `If you're not familiar with on working with branches in GitHub you can read about them here:\n\n` +

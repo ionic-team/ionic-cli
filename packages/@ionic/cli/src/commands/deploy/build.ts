@@ -48,7 +48,7 @@ export class BuildCommand extends Command {
       groups: [MetadataGroup.PAID],
       summary: 'Create a deploy build on Appflow',
       description: `
-This command creates a deploy build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created web build zip file in the current directory.
+This command creates a deploy build on Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created web build zip file in the current directory.
 
 Customizing the build:
 - The ${input('--environment')} and ${input('--channel')} options can be used to customize the groups of values exposed to the build.

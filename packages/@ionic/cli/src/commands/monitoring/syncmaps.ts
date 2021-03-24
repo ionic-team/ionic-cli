@@ -18,7 +18,7 @@ export class MonitoringSyncSourcemapsCommand extends Command {
     return {
       name: 'syncmaps',
       type: 'project',
-      summary: 'Build & upload sourcemaps to Ionic Appflow Monitoring service',
+      summary: 'Build & upload sourcemaps to Appflow Monitoring service',
       description: `
 By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap files within ${strong(SOURCEMAP_DIRECTORY)}. To optionally perform a production build before uploading sourcemaps, specify the ${input('--build')} flag.
       `,
