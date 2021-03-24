@@ -9,7 +9,7 @@ export class PackageNamespace extends Namespace {
       name: 'package',
       summary: 'Appflow package functionality',
       description: `
-Interface to execute commands about package builds and deployments on Ionic Appflow.
+Interface to execute commands about package builds and deployments on Appflow.
 
 Appflow package documentation:
 - Overview: ${strong('https://ion.link/appflow-package-docs')}

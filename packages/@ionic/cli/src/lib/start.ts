@@ -125,7 +125,7 @@ function getAppflowAdvertisement(): string {
   return `
   ──────────────────────────────────────────────────────────────
 
-        ${title('Ionic Appflow')}, the mobile DevOps solution by Ionic
+        ${title('Appflow')}, the mobile DevOps solution by Ionic
 
            Continuously build, deploy, and ship apps ${emoji('🚀', '')}
         Focus on building apps while we automate the rest ${emoji('🎁', '')}

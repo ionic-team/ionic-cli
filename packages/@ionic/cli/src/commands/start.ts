@@ -767,7 +767,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     ];
 
     if (linkConfirmed) {
-      steps.push(`Push your code to Ionic Appflow to perform real-time updates, and more: ${input('git push ionic master')}`);
+      steps.push(`Push your code to Appflow to perform real-time updates, and more: ${input('git push ionic master')}`);
     }
 
     this.env.log.msg(`${strong('Your Ionic app is ready! Follow these next steps')}:\n${steps.map(s => ` - ${s}`).join('\n')}`);
