@@ -35,7 +35,7 @@ export class GenerateCommand extends Command implements CommandPreRun {
     return {
       name: 'generate',
       type: 'project',
-      summary: 'Create Pages, Components, & Framework Features',
+      summary: 'Create Pages, Components, & Angular Features',
       description,
       footnotes,
       inputs,
