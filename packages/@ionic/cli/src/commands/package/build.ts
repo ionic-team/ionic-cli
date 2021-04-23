@@ -1,11 +1,9 @@
 import { CommandLineInputs, CommandLineOptions, MetadataGroup, combine, contains, validators } from '@ionic/cli-framework';
 import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
-import { tmpfilepath } from '@ionic/utils-fs';
 import { columnar } from '@ionic/utils-terminal';
 import { sleep } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
-import * as fs from 'fs';
 
 import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';
@@ -13,7 +11,6 @@ import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { fileUtils } from '../../lib/utils/file';
-import { createRequest, download } from '../../lib/utils/http';
 
 const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
@@ -22,9 +19,6 @@ const ANDROID_BUILD_TYPES = ['debug', 'release'];
 const IOS_BUILD_TYPES = ['development', 'ad-hoc', 'app-store', 'enterprise'];
 const APP_STORE_COMPATIBLE_TYPES = ['release', 'app-store', 'enterprise'];
 const BUILD_TYPES = ANDROID_BUILD_TYPES.concat(IOS_BUILD_TYPES);
-const ANDROID_ARTIFACT_TYPES = ['aab', 'apk'];
-const IOS_ARTIFACT_TYPES = ['ipa', 'dsym'];
-const ARTIFACT_TYPES = ANDROID_ARTIFACT_TYPES.concat(IOS_ARTIFACT_TYPES);
 const TARGET_PLATFORM = ['Android', 'iOS - Xcode 11 (Preferred)', 'iOS - Xcode 10'];
 
 interface Artifact {
@@ -57,9 +51,6 @@ export interface PackageBuild {
   artifacts: Artifact[];
 }
 
-interface DownloadUrl {
-  url: string | null;
-}
 
 export class BuildCommand extends Command {
   async getMetadata(): Promise<CommandMetadata> {
@@ -71,7 +62,7 @@ export class BuildCommand extends Command {
       groups: [MetadataGroup.PAID],
       summary: 'Create a package build on Appflow',
       description: `
-This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory.
+This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal.
 
 Apart from ${input('--commit')}, every option can be specified using the full name setup within the Dashboard[^dashboard].
 
@@ -86,8 +77,7 @@ Deploying the build to an App Store:
 This can be used only together with build type ${input('release')} for Android and build types ${input('app-store')} or ${input('enterprise')} for iOS.
 
 Downloading build artifacts:
-- By default once the build is complete, all artifacts are downloaded for the selected platform. ${input('aab')} and ${input('apk')} for Android \
-${input('ipa')} and ${input('dsym')} for iOS.
+- By default once the build is complete...
 - The ${input('--artifact-type')} option can be used to limit artifact downloads to only of that type. For instance, with Android, you can specify ${input('aab')} \
 if you do not wish to download ${input('apk')}.
 `,
@@ -103,8 +93,6 @@ if you do not wish to download ${input('apk')}.
         'android debug --environment="My Custom Environment Name"',
         'android debug --native-config="My Custom Native Config Name"',
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
-        'android debug --artifact-type=aab',
-        'android debug --aab-name="my-app-prod.aab" --apk-name="my-app-prod.apk"',
         'ios development --signing-certificate="iOS Signing Certificate Name" --build-stack="iOS - Xcode 9"',
         'ios development --signing-certificate="iOS Signing Certificate Name" --ipa-name=my_custom_file_name.ipa',
         'ios app-store --signing-certificate="iOS Signing Certificate Name" --destination="Apple App Store Destination"',
@@ -158,47 +146,6 @@ if you do not wish to download ${input('apk')}.
           summary: `Target platform (${TARGET_PLATFORM.map(v => input(`"${v}"`)).join(', ')})`,
           type: String,
           groups: [MetadataGroup.ADVANCED],
-          spec: { value: 'name' },
-        },
-        {
-          name: 'build-file-name',
-          summary: 'The name for the downloaded build file',
-          type: String,
-          groups: [MetadataGroup.DEPRECATED],
-          spec: { value: 'name' },
-        },
-        {
-          name: 'ipa-name',
-          summary: 'The name for the downloaded ipa file',
-          type: String,
-          groups: [MetadataGroup.ADVANCED],
-          spec: { value: 'name' },
-        },
-        {
-          name: 'dsym-name',
-          summary: 'The name for the downloaded dsym file',
-          type: String,
-          groups: [MetadataGroup.ADVANCED],
-          spec: { value: 'name' },
-        },
-        {
-          name: 'apk-name',
-          summary: 'The name for the downloaded apk file',
-          type: String,
-          groups: [MetadataGroup.ADVANCED],
-          spec: { value: 'name' },
-        },
-        {
-          name: 'aab-name',
-          summary: 'The name for the downloaded aab file',
-          type: String,
-          groups: [MetadataGroup.ADVANCED],
-          spec: { value: 'name' },
-        },
-        {
-          name: 'artifact-type',
-          summary: `The artifact type (${ARTIFACT_TYPES.map(v => input(v)).join(', ')})`,
-          type: String,
           spec: { value: 'name' },
         },
       ],
@@ -270,26 +217,6 @@ if you do not wish to download ${input('apk')}.
     if (options['destination'] && !APP_STORE_COMPATIBLE_TYPES.includes(inputs[1])) {
       throw new FatalException(`Build with type ${strong(String(inputs[1]))} cannot be deployed to App Store`);
     }
-
-    if (options['artifact-type'] && (Array.isArray(options['artifact-type']) || typeof options['artifact-type'] === 'string')) {
-      const artifactTypes = Array.isArray(options['artifact-type']) ? options['artifact-type'] : [options['artifact-type']];
-      let unsupported: string[];
-
-      switch (inputs[0]) {
-        case 'android':
-          unsupported = artifactTypes.filter(type => !ANDROID_ARTIFACT_TYPES.includes(type));
-          break;
-        case 'ios':
-          unsupported = artifactTypes.filter(type => !IOS_ARTIFACT_TYPES.includes(type));
-          break;
-        default:
-          throw new FatalException(`Unsupported platform ${inputs[0]}`);
-      }
-
-      if (unsupported.length) {
-        throw new FatalException(`Unsupported artifact types for platform ${inputs[0]}: ${[...unsupported]}`);
-      }
-    }
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -331,30 +258,6 @@ if you do not wish to download ${input('apk')}.
     if (build.state !== 'success') {
       throw new Error(`Build ${build.state}`);
     }
-
-    const availableArtifactTypes = build.artifacts.map((artifact) => artifact.artifact_type);
-
-    if (Array.isArray(options['artifact-type'])) {
-      let errors = [];
-      for (const artifactType of new Set(options['artifact-type'])) {
-        try {
-          await this.downloadArtifact(appflowId, buildId, artifactType, token, options);
-        } catch (error) {
-          errors.push(error);
-        }
-      }
-
-      if (errors.length) {
-        throw new FatalException(`There were issues downloading artifacts: ${errors.join('\n')}`);
-      }
-
-    } else if (typeof options['artifact-type'] == 'string') {
-      await this.downloadArtifact(appflowId, buildId, options['artifact-type'], token, options);
-    } else {
-      for (const artifactType of availableArtifactTypes) {
-        await this.downloadArtifact(appflowId, buildId, artifactType.toUpperCase(), token, options);
-      }
-    }
   }
 
   async sanitizeString(value: string | string[] | boolean | null | undefined): Promise<string> {
@@ -391,6 +294,7 @@ if you do not wish to download ${input('apk')}.
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
         }
+        console.log(this.env.client.config.getAPIUrl())
         const apiErrorMessage = (e.response.body.error && e.response.body.error.message) ? e.response.body.error.message : 'Api Error';
         throw new FatalException(`Unable to create build: ` + apiErrorMessage);
       } else {
@@ -413,26 +317,6 @@ if you do not wish to download ${input('apk')}.
         }
         const apiErrorMessage = (e.response.body.error && e.response.body.error.message) ? e.response.body.error.message : 'Api Error';
         throw new FatalException(`Unable to get build ${buildId}: ` + apiErrorMessage);
-      } else {
-        throw e;
-      }
-    }
-  }
-
-  async getDownloadUrl(appflowId: string, buildId: number, artifactType: string, token: string): Promise<DownloadUrl> {
-    const { req } = await this.env.client.make('GET', `/apps/${appflowId}/packages/${buildId}/download?artifact_type=${artifactType}`);
-    req.set('Authorization', `Bearer ${token}`).send();
-
-    try {
-      const res = await this.env.client.do(req);
-      return res.data as DownloadUrl;
-    } catch (e) {
-      if (isSuperAgentError(e)) {
-        if (e.response.status === 401) {
-          this.env.log.error('Try logging out and back in again.');
-        }
-        const apiErrorMessage = (e.response.body.error && e.response.body.error.message) ? e.response.body.error.message : 'Api Error';
-        throw new FatalException(`Unable to get download URL for build ${buildId}: ` + apiErrorMessage);
       } else {
         throw e;
       }
@@ -473,44 +357,5 @@ if you do not wish to download ${input('apk')}.
     ws.end();
 
     return build;
-  }
-
-  async downloadBuild(url: string, filename: string): Promise<string> {
-    const { req } = await createRequest('GET', url, this.env.config.getHTTPConfig());
-
-    if (!filename) {
-      req.on('response', res => {
-        const contentDisposition = res.header['content-disposition'];
-        filename = contentDisposition ? contentDisposition.split('=')[1].replace(/([/?<>*|\"])/g, '_') : 'output.bin';
-      });
-    }
-
-    const tmpFile = tmpfilepath('ionic-package-build');
-    const ws = fs.createWriteStream(tmpFile);
-    await download(req, ws, {});
-    fs.copyFileSync(tmpFile, filename);
-    fs.unlinkSync(tmpFile);
-    return filename;
-  }
-
-  async downloadArtifact(appflowId: string, buildId: number, artifactType: string, token: string, options: CommandLineOptions) {
-
-    const url = await this.getDownloadUrl(appflowId, buildId, artifactType.toUpperCase(), token);
-
-    if (!url.url) {
-      throw new Error(`Artifact type '${artifactType}' not found`);
-    }
-
-    let customBuildFileName = '';
-
-    if (options['build-file-name']) {
-      this.env.log.warn(`The ${input('--build-file-name')} option has been deprecated. Please use ${input('--ipa-name')}, ${input('--apk-name')} or ${input('--{ artifact }-name')}.`);
-      customBuildFileName = await this.sanitizeString(options['build-file-name']);
-    } else {
-      customBuildFileName = await this.sanitizeString(options[`${artifactType.toLowerCase()}-name`]);
-    }
-
-    const filename = await this.downloadBuild(url.url, customBuildFileName);
-    this.env.log.ok(`Artifact downloaded: ${filename}`);
   }
 }
