@@ -71,7 +71,7 @@ export class BuildCommand extends Command {
       groups: [MetadataGroup.PAID],
       summary: 'Create a package build on Appflow',
       description: `
-This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory.
+This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory. Downloading build artifacts can be skipped by supplying the flag ${input('skip-download')}.
 
 Apart from ${input('--commit')}, every option can be specified using the full name setup within the Dashboard[^dashboard].
 
@@ -104,6 +104,7 @@ if you do not wish to download ${input('apk')}.
         'android debug --native-config="My Custom Native Config Name"',
         'android debug --commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
         'android debug --artifact-type=aab',
+        'android debug --skip-download',
         'android debug --aab-name="my-app-prod.aab" --apk-name="my-app-prod.apk"',
         'ios development --signing-certificate="iOS Signing Certificate Name" --build-stack="iOS - Xcode 9"',
         'ios development --signing-certificate="iOS Signing Certificate Name" --ipa-name=my_custom_file_name.ipa',
@@ -200,6 +201,13 @@ if you do not wish to download ${input('apk')}.
           summary: `The artifact type (${ARTIFACT_TYPES.map(v => input(v)).join(', ')})`,
           type: String,
           spec: { value: 'name' },
+        },
+        {
+          name: 'skip-download',
+          summary: `Skip downloading build artifacts after command succeeds.`,
+          type: Boolean,
+          spec: { value: 'name' },
+          default: false,
         },
       ],
     };
@@ -330,6 +338,10 @@ if you do not wish to download ${input('apk')}.
     build = await this.tailBuildLog(appflowId, buildId, token);
     if (build.state !== 'success') {
       throw new Error(`Build ${build.state}`);
+    }
+
+    if (options['skip-download']) {
+      return;
     }
 
     const availableArtifactTypes = build.artifacts.map((artifact) => artifact.artifact_type);
