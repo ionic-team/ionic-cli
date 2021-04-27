@@ -48,12 +48,12 @@ export class BuildCommand extends Command {
       groups: [MetadataGroup.PAID],
       summary: 'Create a deploy build on Appflow',
       description: `
-This command creates a deploy build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created web build zip file in the current directory.
+This command creates a deploy build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created web build zip file in the current directory. Downloading build artifacts can be skipped by supplying the flag ${input('skip-download')}.
+
+Apart from ${input('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
 
 Customizing the build:
 - The ${input('--environment')} and ${input('--channel')} options can be used to customize the groups of values exposed to the build.
-
-Apart from ${input('--commit')}, every option can be specified using the full name setup within the Appflow Dashboard[^dashboard].
 `,
       footnotes: [
         {
@@ -66,6 +66,7 @@ Apart from ${input('--commit')}, every option can be specified using the full na
         '--environment="My Custom Environment Name"',
         '--commit=2345cd3305a1cf94de34e93b73a932f25baac77c',
         '--channel="Master"',
+        '--channel="Master" --skip-download',
         '--channel="Master" --channel="My Custom Channel"',
       ],
       options: [
@@ -87,6 +88,13 @@ Apart from ${input('--commit')}, every option can be specified using the full na
           type: String,
           groups: [MetadataGroup.ADVANCED],
           spec: { value: 'sha1' },
+        },
+        {
+          name: 'skip-download',
+          summary: `Skip downloading build artifacts after command succeeds.`,
+          type: Boolean,
+          spec: { value: 'name' },
+          default: false,
         },
       ],
     };
@@ -124,6 +132,10 @@ Apart from ${input('--commit')}, every option can be specified using the full na
     build = await this.tailBuildLog(appflowId, buildId, token);
     if (build.state !== 'success') {
       throw new Error(`Build ${build.state}`);
+    }
+
+    if (options['skip-download']) {
+      return;
     }
 
     const url = await this.getDownloadUrl(appflowId, buildId, token);
