@@ -76,11 +76,12 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
 
   protected async validatePK(pk: string, appId?: string): Promise<EnterpriseProjectIntegration> {
     let key = await this.getPK(pk);
-    if (!key.org) {
-      throw new FatalException('No Organization attached to key. Please contact support@ionic.io');
-    }
 
     if (!key.app || appId) {
+      if (!key.org) {
+        // temporary error until we make possible to link the key to an app for personal accounts
+        throw new FatalException('No App attached to key. Please contact support@ionic.io');
+      }
       if (!appId) {
         appId = await this.chooseAppToLink(key.org);
       }
@@ -91,7 +92,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
       keyId: key.id,
       productKey: key.key,
       appId: key.app.id,
-      orgId: key.org.id,
+      orgId: key.org ? key.org.id : undefined,
       registries: key.registries,
     };
   }
