@@ -22,6 +22,7 @@ const CHOICE_LINK_EXISTING_APP = 'linkExistingApp';
 
 const CHOICE_IONIC = 'ionic';
 const CHOICE_GITHUB = 'github';
+const CHOICE_SKIP = 'skip'
 
 const CHOICE_MASTER_ONLY = 'master';
 const CHOICE_SPECIFIC_BRANCHES = 'specific';
@@ -291,7 +292,10 @@ If you are having issues linking, please get in touch with our Support[^support-
           name: 'Ionic Appflow',
           value: CHOICE_IONIC,
         },
-        // TODO: option to skip git setup for now
+        {
+          name: 'Don\'t use a git host',
+          value: CHOICE_SKIP,
+        },
       ],
     });
 
