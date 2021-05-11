@@ -3,6 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.14.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.14.0...@ionic/cli@6.14.1) (2021-04-30)
+
+
+### Bug Fixes
+
+* **appflow:** allow personal accounts to install enterprise packages ([#4681](https://github.com/ionic-team/ionic-cli/issues/4681)) ([97b0ee5](https://github.com/ionic-team/ionic-cli/commit/97b0ee5fa4432f965eabd38089681045dd3a4d5c))
+
+
+
+
+
+# [6.14.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.13.1...@ionic/cli@6.14.0) (2021-04-28)
+
+
+### Features
+
+* **appflow:** add flag for skipping artifact download after builds succeed ([#4678](https://github.com/ionic-team/ionic-cli/issues/4678)) ([d87c6f2](https://github.com/ionic-team/ionic-cli/commit/d87c6f28a34c668349868f8214346ff07398c820))
+
+
+
+
+
 ## [6.13.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.13.0...@ionic/cli@6.13.1) (2021-02-22)
 
 
