@@ -204,6 +204,16 @@ export interface GithubRepoAssociation extends RepoAssociationBase {
   id: number;
 }
 
+export interface GitlabRepoAssociation extends RepoAssociationBase {
+  type: 'gitlab';
+  id: number;
+}
+
+export interface GitlabEnterpriseRepoAssociation extends RepoAssociationBase {
+  type: 'gitlab_enterprise';
+  id: number;
+}
+
 export interface BitbucketCloudRepoAssociation extends RepoAssociationBase {
   type: 'bitbucket_cloud';
   id: string;
@@ -212,6 +222,11 @@ export interface BitbucketCloudRepoAssociation extends RepoAssociationBase {
 export interface BitbucketServerRepoAssociation extends RepoAssociationBase {
   type: 'bitbucket_server';
   id: number;
+}
+
+export interface AzureDevopsRepoAssociation extends RepoAssociationBase {
+  type: 'azure_devops';
+  id: string;
 }
 
 export type RepoAssociation = GithubRepoAssociation | BitbucketCloudRepoAssociation | BitbucketServerRepoAssociation;

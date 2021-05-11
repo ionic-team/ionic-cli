@@ -5,6 +5,7 @@ import {
   AndroidBuildOutput,
   App,
   AppAssociation,
+  AzureDevopsRepoAssociation,
   BitbucketCloudRepoAssociation,
   BitbucketServerRepoAssociation,
   CommandPreRun,
@@ -13,6 +14,8 @@ import {
   GithubBranch,
   GithubRepo,
   GithubRepoAssociation,
+  GitlabEnterpriseRepoAssociation,
+  GitlabRepoAssociation,
   ICommand,
   IMultiProjectConfig,
   IProjectConfig,
@@ -140,7 +143,10 @@ export function isAppAssociation(association: any): association is AppAssociatio
     (
       isGithubRepoAssociation(association.repository) ||
       isBitbucketCloudRepoAssociation(association.repository) ||
-      isBitbucketServerRepoAssociation(association.repository)
+      isBitbucketServerRepoAssociation(association.repository) ||
+      isGitlabRepoAssociation(association.repository) ||
+      isGitlabEnterpriseRepoAssociation(association.repository) ||
+      isAzureDevopsRepoAssociation(association.repository)
     )
   );
 }
@@ -157,6 +163,18 @@ export function isGithubRepoAssociation(association: any): association is Github
     && typeof association.id === 'number';
 }
 
+export function isGitlabRepoAssociation(association: any): association is GitlabRepoAssociation {
+  return association
+    && association.type === 'gitlab'
+    && typeof association.id === 'number';
+}
+
+export function isGitlabEnterpriseRepoAssociation(association: any): association is GitlabEnterpriseRepoAssociation {
+  return association
+    && association.type === 'gitlab_enterprise'
+    && typeof association.id === 'number';
+}
+
 export function isBitbucketCloudRepoAssociation(association: any): association is BitbucketCloudRepoAssociation {
   return association
     && association.type === 'bitbucket_cloud'
@@ -167,6 +185,12 @@ export function isBitbucketServerRepoAssociation(association: any): association 
   return association
     && association.type === 'bitbucket_server'
     && typeof association.id === 'number';
+}
+
+export function isAzureDevopsRepoAssociation(association: any): association is AzureDevopsRepoAssociation {
+  return association
+    && association.type === 'azure_devops'
+    && typeof association.id === 'string';
 }
 
 export function isApp(app: any): app is App {
