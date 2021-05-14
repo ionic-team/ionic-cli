@@ -108,12 +108,14 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
     const confPath = this.getCapacitorConfigJsonPath();
-    const conf = new CapacitorJSONConfig(confPath);
+    if (await pathExists(confPath)) {
+      const conf = new CapacitorJSONConfig(confPath);
 
-    conf.set('appName', name);
+      conf.set('appName', name);
 
-    if (packageId) {
-      conf.set('appId', packageId);
+      if (packageId) {
+        conf.set('appId', packageId);
+      }
     }
   }
 
