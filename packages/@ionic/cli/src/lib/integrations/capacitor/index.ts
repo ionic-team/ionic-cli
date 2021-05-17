@@ -84,6 +84,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
       await this.installCapacitorCore();
       await this.installCapacitorCLI();
+      await this.installCapacitorPlugins()
 
       await mkdirp(details.root);
       await this.e.shell.run('capacitor', ['init', name, packageId, ...options], { cwd: details.root });
@@ -103,6 +104,12 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   async installCapacitorCLI() {
     const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli@next', saveDev: true });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.root });
+  }
+
+  async installCapacitorPlugins() {
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: ['@capacitor/haptics', '@capacitor/app', '@capacitor/keyboard'] });
+    console.log(managerArgs)
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
