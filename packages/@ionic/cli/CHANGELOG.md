@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.15.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.14.1...@ionic/cli@6.15.0) (2021-05-11)
+
+
+### Features
+
+* **link:** Link bug fix and git selection changes ([#4689](https://github.com/ionic-team/ionic-cli/issues/4689)) ([942e965](https://github.com/ionic-team/ionic-cli/commit/942e96576f17b9958d4fe0be680235bc22ecbd32))
+
+
+
+
+
 ## [6.14.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.14.0...@ionic/cli@6.14.1) (2021-04-30)
 
 
