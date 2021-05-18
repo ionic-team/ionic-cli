@@ -539,7 +539,6 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     this.env.shell.alterPath = p => prependNodeModulesBinToPath(projectDir, p);
 
     if (!this.schema.cloned) {
-      // Default to capacitor always
       if (this.schema.type === 'react' || this.schema.type === 'vue') {
          options['capacitor'] = true;
        }

@@ -24,7 +24,7 @@ export type PkgManagerCommand = 'dedupe' | 'rebuild' | 'install' | 'uninstall' |
 
 export interface PkgManagerOptions {
   command: PkgManagerCommand;
-  pkg?: string;
+  pkg?: string | string[];
   script?: string;
   scriptArgs?: string[];
   global?: boolean;
@@ -134,7 +134,12 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
   }
 
   if (options.pkg) {
-    installerArgs.push(options.pkg);
+    if (typeof options.pkg === 'string'){
+      installerArgs.push(options.pkg);
+    }
+    if (Array.isArray(options.pkg)){
+      installerArgs.push(...options.pkg)
+    }
   }
 
   if (cmd === 'run' && options.script) {

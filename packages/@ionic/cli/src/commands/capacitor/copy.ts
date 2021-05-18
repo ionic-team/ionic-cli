@@ -35,7 +35,7 @@ ${input('ionic capacitor copy')} will do the following:
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to copy (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
+          summary: `The platform to copy (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
         },
       ],
       options,

@@ -1,14 +1,21 @@
 import { pathExists } from '@ionic/utils-fs';
-import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
+import { onBeforeExit } from '@ionic/utils-process';
+import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
+import * as lodash from 'lodash';
 import * as path from 'path';
+import * as semver from 'semver';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, IonicCapacitorOptions, ProjectIntegration } from '../../definitions';
-import { input, strong } from '../../lib/color';
+import { input, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException, RunnerException } from '../../lib/errors';
 import { runCommand } from '../../lib/executor';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../../lib/integrations/capacitor/config';
+import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '../../lib/integrations/capacitor'
+import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integrations/capacitor/android';
+import { CAPACITOR_CONFIG_JSON_FILE, CapacitorJSONConfig, CapacitorConfig } from '../../lib/integrations/capacitor/config';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
+import { createPrefixedWriteStream } from '../../lib/utils/logger';
+import { pkgManagerArgs } from '../../lib/utils/npm';
 
 export abstract class CapacitorCommand extends Command {
   private _integration?: Required<ProjectIntegration>;
@@ -25,12 +32,116 @@ export abstract class CapacitorCommand extends Command {
     return this._integration;
   }
 
-  getCapacitorConfig(): CapacitorConfig {
+  async getGeneratedConfig(platform: string): Promise<CapacitorJSONConfig> {
     if (!this.project) {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    return new CapacitorConfig(path.resolve(this.project.directory, CAPACITOR_CONFIG_FILE));
+    const p = await this.getGeneratedConfigPath(platform);
+
+    return new CapacitorJSONConfig(p);
+  }
+
+  async getGeneratedConfigPath(platform: string): Promise<string> {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    const p = await this.getGeneratedConfigDir(platform);
+
+    return path.resolve(this.integration.root, p, CAPACITOR_CONFIG_JSON_FILE);
+  }
+
+  async getAndroidManifest(): Promise<CapacitorAndroidManifest> {
+    const p = await this.getAndroidManifestPath();
+
+    return CapacitorAndroidManifest.load(p);
+  }
+
+  async getAndroidManifestPath(): Promise<string> {
+    const cli = await this.getCapacitorCLIConfig();
+    const srcDir = cli?.android.srcMainDirAbs ?? 'android/app/src/main';
+
+    return path.resolve(this.integration.root, srcDir, ANDROID_MANIFEST_FILE);
+  }
+
+  async getGeneratedConfigDir(platform: string): Promise<string> {
+    const cli = await this.getCapacitorCLIConfig();
+
+    switch (platform) {
+      case 'android':
+        return cli?.android.assetsDirAbs ?? 'android/app/src/main/assets';
+      case 'ios':
+        return cli?.ios.nativeTargetDirAbs ?? 'ios/App/App';
+    }
+
+    throw new FatalException(`Could not determine generated Capacitor config path for ${input(platform)} platform.`);
+  }
+
+  async getCapacitorCLIConfig(): Promise<CapacitorCLIConfig | undefined> {
+    const capacitor = await this.getCapacitorIntegration();
+
+    return capacitor.getCapacitorCLIConfig();
+  }
+
+  async getCapacitorConfig(): Promise<CapacitorConfig | undefined> {
+    const capacitor = await this.getCapacitorIntegration();
+
+    return capacitor.getCapacitorConfig();
+  }
+
+  getCapacitorIntegration = lodash.memoize(async (): Promise<CapacitorIntegration> => {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
+    }
+
+    return this.project.createIntegration('capacitor');
+  });
+
+  getCapacitorVersion = lodash.memoize(async (): Promise<semver.SemVer> => {
+    try {
+      const proc = await this.env.shell.createSubprocess('capacitor', ['--version'], { cwd: this.integration.root });
+      const version = semver.parse((await proc.output()).trim());
+
+      if (!version) {
+        throw new FatalException('Error while parsing Capacitor CLI version.');
+      }
+
+      return version;
+    } catch (e) {
+      if (e instanceof SubprocessError) {
+        if (e.code === ERROR_COMMAND_NOT_FOUND) {
+          throw new FatalException('Error while getting Capacitor CLI version. Is Capacitor installed?');
+        }
+
+        throw new FatalException('Error while getting Capacitor CLI version.\n' + (e.output ? e.output : e.code));
+      }
+
+      throw e;
+    }
+  });
+
+  async getInstalledPlatforms(): Promise<string[]> {
+    const cli = await this.getCapacitorCLIConfig();
+    const androidPlatformDirAbs = cli?.android.platformDirAbs ?? path.resolve(this.integration.root, 'android');
+    const iosPlatformDirAbs = cli?.ios.platformDirAbs ?? path.resolve(this.integration.root, 'ios');
+    const platforms: string[] = [];
+
+    if (await pathExists(androidPlatformDirAbs)) {
+      platforms.push('android');
+    }
+
+    if (await pathExists(iosPlatformDirAbs)) {
+      platforms.push('ios');
+    }
+
+    return platforms;
+  }
+
+  async isPlatformInstalled(platform: string): Promise<boolean> {
+    const platforms = await this.getInstalledPlatforms();
+
+    return platforms.includes(platform);
   }
 
   async checkCapacitor(runinfo: CommandInstanceInfo) {
@@ -49,34 +160,14 @@ export abstract class CapacitorCommand extends Command {
     await this.checkCapacitor(runinfo);
   }
 
-  async runCapacitor(argList: string[]): Promise<void> {
-    try {
-      return await this._runCapacitor(argList);
-    } catch (e) {
-      if (e instanceof SubprocessError) {
-        if (e.code === ERROR_COMMAND_NOT_FOUND) {
-          const pkg = '@capacitor/cli';
-          const requiredMsg = `The Capacitor CLI is required for Capacitor projects.`;
-          this.env.log.nl();
-          this.env.log.info(`Looks like ${input(pkg)} isn't installed in this project.\n` + requiredMsg);
-          this.env.log.nl();
-
-          const installed = await this.promptToInstallCapacitor();
-
-          if (!installed) {
-            throw new FatalException(`${input(pkg)} is required for Capacitor projects.`);
-          }
-
-          return this.runCapacitor(argList);
-        }
-
-        if (e.code === ERROR_SIGNAL_EXIT) {
-          return;
-        }
-      }
-
-      throw e;
+  async runCapacitor(argList: string[]) {
+    if (!this.project) {
+      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
+
+    const stream = createPrefixedWriteStream(this.env.log, weak(`[capacitor]`));
+
+    await this.env.shell.run('capacitor', argList, { stream, fatalOnNotFound: false, truncateErrorOutput: 5000, cwd: this.integration.root });
   }
 
   async runBuild(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
@@ -84,14 +175,13 @@ export abstract class CapacitorCommand extends Command {
       throw new FatalException(`Cannot use Capacitor outside a project directory.`);
     }
 
-    const conf = this.getCapacitorConfig();
-    const serverConfig = conf.get('server');
+    const conf = await this.getCapacitorConfig();
 
-    if (serverConfig && serverConfig.url) {
+    if (conf?.server?.url) {
       this.env.log.warn(
         `Capacitor server URL is in use.\n` +
         `This may result in unexpected behavior for this build, where an external server is used in the Web View instead of your app. This likely occurred because of ${input('--livereload')} usage in the past and the CLI improperly exiting without cleaning up.\n\n` +
-        `Delete the ${input('server')} key in the ${strong(CAPACITOR_CONFIG_FILE)} file if you did not intend to use an external server.`
+        `Delete the ${input('server')} key in the Capacitor config file if you did not intend to use an external server.`
       );
       this.env.log.nl();
     }
@@ -111,6 +201,51 @@ export abstract class CapacitorCommand extends Command {
     }
   }
 
+  async runServe(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    if (!this.project) {
+      throw new FatalException(`Cannot run ${input('ionic capacitor run')} outside a project directory.`);
+    }
+
+    const [ platform ] = inputs;
+
+    try {
+      const runner = await this.project.requireServeRunner();
+      const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
+
+      let serverUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
+
+      if (!serverUrl) {
+        const details = await runner.run(runnerOpts);
+        serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
+      }
+
+      const conf = await this.getGeneratedConfig(platform);
+
+      onBeforeExit(async () => {
+        conf.resetServerUrl();
+      });
+
+      conf.setServerUrl(serverUrl);
+
+      if (platform === 'android') {
+        const manifest = await this.getAndroidManifest();
+
+        onBeforeExit(async () => {
+          await manifest.reset();
+        });
+
+        manifest.enableCleartextTraffic();
+        await manifest.save();
+      }
+    } catch (e) {
+      if (e instanceof RunnerException) {
+        throw new FatalException(e.message);
+      }
+
+      throw e;
+    }
+  }
+
   async checkForPlatformInstallation(platform: string) {
     if (!this.project) {
       throw new FatalException('Cannot use Capacitor outside a project directory.');
@@ -123,66 +258,37 @@ export abstract class CapacitorCommand extends Command {
         throw new FatalException('Cannot check platform installations--Capacitor not yet integrated.');
       }
 
-      const integrationRoot = capacitor.root;
-      const platformsToCheck = ['android', 'ios', 'electron'];
-      const platforms = (await Promise.all(platformsToCheck.map(async (p): Promise<[string, boolean]> => [p, await pathExists(path.resolve(integrationRoot, p))])))
-        .filter(([, e]) => e)
-        .map(([p]) => p);
-
-      if (!platforms.includes(platform)) {
-        await this._runCapacitor(['add', platform]);
+      if (!(await this.isPlatformInstalled(platform))) {
+        await this.installPlatform(platform);
       }
     }
   }
 
-  protected createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): IonicCapacitorOptions {
+  async installPlatform(platform: string): Promise<void> {
+    const version = await this.getCapacitorVersion();
+    const installedPlatforms = await this.getInstalledPlatforms();
+
+    if (installedPlatforms.includes(platform)) {
+      throw new FatalException(`The ${input(platform)} platform is already installed!`);
+    }
+
+    if (semver.gte(version, '3.0.0-alpha.1')) {
+      const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: `@capacitor/${platform}@next`, saveDev: true });
+      await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
+    }
+
+    await this.runCapacitor(['add', platform]);
+  }
+
+  protected async createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<IonicCapacitorOptions> {
     const separatedArgs = options['--'];
     const verbose = !!options['verbose'];
-    const conf = this.getCapacitorConfig();
-    const server = conf.get('server');
+    const conf = await this.getCapacitorConfig();
 
     return {
       '--': separatedArgs ? separatedArgs : [],
-      appId: conf.get('appId'),
-      appName: conf.get('appName'),
-      server: {
-        url: server?.url,
-      },
       verbose,
+      ...conf,
     };
-  }
-
-  private async promptToInstallCapacitor(): Promise<boolean> {
-    if (!this.project) {
-      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
-    }
-
-    const { pkgManagerArgs } = await import('../../lib/utils/npm');
-
-    const pkg = '@capacitor/cli';
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { pkg, command: 'install', saveDev: true });
-
-    const confirm = await this.env.prompt({
-      name: 'confirm',
-      message: `Install ${input(pkg)}?`,
-      type: 'confirm',
-    });
-
-    if (!confirm) {
-      this.env.log.warn(`Not installing--here's how to install manually: ${input(`${manager} ${managerArgs.join(' ')}`)}`);
-      return false;
-    }
-
-    await this.env.shell.run(manager, managerArgs, { cwd: this.project.directory });
-
-    return true;
-  }
-
-  private async _runCapacitor(argList: string[]) {
-    if (!this.project) {
-      throw new FatalException(`Cannot use Capacitor outside a project directory.`);
-    }
-
-    await this.env.shell.run('capacitor', argList, { fatalOnNotFound: false, truncateErrorOutput: 5000, stdio: 'inherit', cwd: this.integration.root });
   }
 }

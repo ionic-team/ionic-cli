@@ -14,8 +14,10 @@ import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
 import { BaseIntegration } from '../integrations';
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from '../integrations/capacitor/config';
 import { Color } from '../utils/color';
+import type { Integration as CapacitorIntegration } from '../integrations/capacitor';
+import type { Integration as CordovaIntegration } from '../integrations/cordova';
+import type { Integration as EnterpriseIntegration } from '../integrations/enterprise';
 
 const debug = Debug('ionic:lib:project');
 
@@ -546,13 +548,15 @@ export abstract class Project implements IProject {
 
   async getDistDir(): Promise<string> {
     if (this.getIntegration('capacitor') !== undefined) {
-      const conf = new CapacitorConfig(path.resolve(this.directory, CAPACITOR_CONFIG_FILE));
-      const webDir = conf.get('webDir');
+      const capacitor = await this.createIntegration('capacitor');
+      const conf = await capacitor.getCapacitorConfig();
+      const webDir = conf?.webDir;
+
       if (webDir) {
-        return path.resolve(this.directory, webDir);
+        return path.resolve(capacitor.root, webDir);
       } else {
         throw new FatalException(
-          `The ${input('webDir')} property must be set in the Capacitor configuration file (${input(CAPACITOR_CONFIG_FILE)}). \n` +
+          `The ${input('webDir')} property must be set in the Capacitor configuration file. \n` +
           `See the Capacitor docs for more information: ${strong('https://capacitor.ionicframework.com/docs/basics/configuring-your-app')}`
         );
       }
@@ -717,7 +721,11 @@ export abstract class Project implements IProject {
     registry.register(new ailments.CordovaPlatformsCommitted(deps));
   }
 
-  async createIntegration(name: IntegrationName): Promise<IIntegration<ProjectIntegration>> {
+  async createIntegration(name: 'capacitor'): Promise<CapacitorIntegration>;
+  async createIntegration(name: 'cordova'): Promise<CordovaIntegration>;
+  async createIntegration(name: 'enterprise'): Promise<EnterpriseIntegration>;
+  async createIntegration(name: IntegrationName): Promise<CapacitorIntegration | CordovaIntegration | EnterpriseIntegration>;
+  async createIntegration(name: IntegrationName): Promise<CapacitorIntegration | CordovaIntegration | EnterpriseIntegration> {
     return BaseIntegration.createFromName({
       client: this.e.client,
       config: this.e.config,

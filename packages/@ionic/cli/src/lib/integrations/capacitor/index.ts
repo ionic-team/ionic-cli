@@ -1,8 +1,12 @@
-import { PackageJson, parseArgs } from '@ionic/cli-framework';
+import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
+import * as Debug from 'debug';
+import * as lodash from 'lodash';
 import * as path from 'path';
+
+const debug = Debug('ionic:lib:integrations:capacitor');
 
 import { BaseIntegration, IntegrationConfig } from '../';
 import {
@@ -15,7 +19,22 @@ import {
 import { input, strong } from '../../color';
 import { pkgManagerArgs } from '../../utils/npm';
 
-import { CAPACITOR_CONFIG_FILE, CapacitorConfig } from './config';
+import { CapacitorJSONConfig, CapacitorConfig } from './config';
+
+export interface CapacitorCLIConfig {
+  android: {
+    platformDirAbs: string;
+    srcMainDirAbs: string;
+    assetsDirAbs: string;
+  };
+  ios: {
+    platformDirAbs: string;
+    nativeTargetDirAbs: string;
+  };
+  app: {
+    extConfig: CapacitorConfig;
+  }
+}
 
 export class Integration extends BaseIntegration<ProjectIntegration> {
   readonly name: IntegrationName = 'capacitor';
@@ -26,8 +45,12 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     return new IntegrationConfig(this.e.project.filePath, { pathPrefix: [...this.e.project.pathPrefix, 'integrations', this.name] });
   }
 
+  get root(): string {
+    return this.config.get('root', this.e.project.directory);
+  }
+
   async add(details: IntegrationAddDetails): Promise<void> {
-    const confPath = this.getCapacitorConfigPath();
+    const confPath = this.getCapacitorConfigJsonPath();
 
     if (await pathExists(confPath)) {
       this.e.log.nl();
@@ -58,10 +81,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       }
 
       options.push('--web-dir', webDir);
-      options.push('--npm-client', this.e.config.get('npmClient'));
 
       await this.installCapacitorCore();
       await this.installCapacitorCLI();
+      await this.installCapacitorPlugins()
 
       await mkdirp(details.root);
       await this.e.shell.run('capacitor', ['init', name, packageId, ...options], { cwd: details.root });
@@ -70,47 +93,53 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     await super.add(details);
   }
 
-  async getCapacitorConfig(): Promise<CapacitorConfig> {
-    const confPath = this.getCapacitorConfigPath();
-    const conf = new CapacitorConfig(confPath);
-
-    return conf;
-  }
-
-  getCapacitorConfigPath(): string {
-    return path.resolve(this.e.project.directory, CAPACITOR_CONFIG_FILE);
+  protected getCapacitorConfigJsonPath(): string {
+    return path.resolve(this.root, 'capacitor.config.json');
   }
 
   async installCapacitorCore() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core' });
-    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core@latest' });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async installCapacitorCLI() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli', saveDev: true });
-    await this.e.shell.run(manager, managerArgs, { cwd: this.e.project.directory });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli@latest', saveDev: true });
+    await this.e.shell.run(manager, managerArgs, { cwd: this.root });
+  }
+
+  async installCapacitorPlugins() {
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: ['@capacitor/haptics', '@capacitor/app', '@capacitor/keyboard'] });
+    console.log(managerArgs)
+    await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async personalize({ name, packageId }: ProjectPersonalizationDetails) {
-    const conf = await this.getCapacitorConfig();
+    const confPath = this.getCapacitorConfigJsonPath();
+    if (await pathExists(confPath)) {
+      const conf = new CapacitorJSONConfig(confPath);
 
-    conf.set('appName', name);
+      conf.set('appName', name);
 
-    if (packageId) {
-      conf.set('appId', packageId);
+      if (packageId) {
+        conf.set('appId', packageId);
+      }
     }
   }
 
   async getInfo(): Promise<InfoItem[]> {
     const conf = await this.getCapacitorConfig();
-    const bundleId = conf.get('appId');
+    const bundleId = conf?.appId;
 
     const [
       [ capacitorCorePkg, capacitorCorePkgPath ],
       capacitorCLIVersion,
-    ] = await (Promise.all<[PackageJson | undefined, string | undefined], string | undefined>([
+      [ capacitorIOSPkg, capacitorIOSPkgPath ],
+      [ capacitorAndroidPkg, capacitorAndroidPkgPath ],
+    ] = await (Promise.all([
       this.e.project.getPackageJson('@capacitor/core'),
       this.getCapacitorCLIVersion(),
+      this.e.project.getPackageJson('@capacitor/ios'),
+      this.e.project.getPackageJson('@capacitor/android'),
     ]));
 
     const info: InfoItem[] = [
@@ -129,6 +158,20 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       },
       {
         group: 'capacitor',
+        name: '@capacitor/ios',
+        key: 'capacitor_ios_version',
+        value: capacitorIOSPkg ? capacitorIOSPkg.version : 'not installed',
+        path: capacitorIOSPkgPath,
+      },
+      {
+        group: 'capacitor',
+        name: '@capacitor/android',
+        key: 'capacitor_android_version',
+        value: capacitorAndroidPkg ? capacitorAndroidPkg.version : 'not installed',
+        path: capacitorAndroidPkgPath,
+      },
+      {
+        group: 'capacitor',
         name: 'Bundle ID',
         key: 'bundle_id',
         value: bundleId || 'unknown',
@@ -139,7 +182,47 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     return info;
   }
 
-  async getCapacitorCLIVersion(): Promise<string | undefined> {
-    return this.e.shell.cmdinfo('capacitor', ['--version'], { cwd: this.e.project.directory });
-  }
+  getCapacitorCLIVersion = lodash.memoize(async (): Promise<string | undefined> => {
+    return this.e.shell.cmdinfo('capacitor', ['--version'], { cwd: this.root });
+  });
+
+  getCapacitorCLIConfig = lodash.memoize(async (): Promise<CapacitorCLIConfig | undefined> => {
+    const args = ['config', '--json'];
+
+    debug('Getting config with Capacitor CLI: %O', args);
+
+    const output = await this.e.shell.cmdinfo('capacitor', args, { cwd: this.root });
+
+    if (!output) {
+      debug('Could not get config from Capacitor CLI (probably old version)');
+      return;
+    }
+
+    return JSON.parse(output);
+  });
+
+  getCapacitorConfig = lodash.memoize(async (): Promise<CapacitorConfig | undefined> => {
+    const cli = await this.getCapacitorCLIConfig();
+
+    if (cli) {
+      debug('Loaded Capacitor config!');
+      return cli.app.extConfig;
+    }
+
+    // fallback to reading capacitor.config.json if it exists
+    const confPath = this.getCapacitorConfigJsonPath();
+
+    if (!(await pathExists(confPath))) {
+      debug('Capacitor config file does not exist at %O', confPath);
+      debug('Failed to load Capacitor config');
+      return;
+    }
+
+    const conf = new CapacitorJSONConfig(confPath);
+    const extConfig = conf.c;
+
+    debug('Loaded Capacitor config!');
+
+    return extConfig;
+  });
 }

@@ -13,12 +13,13 @@ export class AddCommand extends CapacitorCommand implements CommandPreRun {
       summary: 'Add a native platform to your Ionic project',
       description: `
 ${input('ionic capacitor add')} will do the following:
-- Add a new platform specific folder to your project (ios, android, or electron)
+- Install the Capacitor platform package
+- Copy the native platform template into your project
       `,
       inputs: [
         {
           name: 'platform',
-          summary: `The platform to add (e.g. ${['android', 'ios', 'electron'].map(v => input(v)).join(', ')})`,
+          summary: `The platform to add (e.g. ${['android', 'ios'].map(v => input(v)).join(', ')})`,
           validators: [validators.required],
         },
       ],
@@ -33,7 +34,7 @@ ${input('ionic capacitor add')} will do the following:
         type: 'list',
         name: 'platform',
         message: 'What platform would you like to add?',
-        choices: ['android', 'ios', 'electron'],
+        choices: ['android', 'ios'],
       });
 
       inputs[0] = platform.trim();
@@ -42,12 +43,7 @@ ${input('ionic capacitor add')} will do the following:
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const [ platform ] = inputs;
-    const args = ['add'];
 
-    if (platform) {
-      args.push(platform);
-    }
-
-    await this.runCapacitor(args);
+    await this.installPlatform(platform);
   }
 }
