@@ -273,7 +273,7 @@ export abstract class CapacitorCommand extends Command {
     }
 
     if (semver.gte(version, '3.0.0-alpha.1')) {
-      const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: `@capacitor/${platform}@next`, saveDev: true });
+      const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: `@capacitor/${platform}@latest`, saveDev: false });
       await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
     }
 
