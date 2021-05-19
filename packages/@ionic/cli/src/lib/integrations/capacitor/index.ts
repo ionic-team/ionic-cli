@@ -109,7 +109,6 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
   async installCapacitorPlugins() {
     const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: ['@capacitor/haptics', '@capacitor/app', '@capacitor/keyboard'] });
-    console.log(managerArgs)
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
