@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.16.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.15.0...@ionic/cli@6.16.0) (2021-05-19)
+
+
+### Bug Fixes
+
+* **capacitor:** remove extra logging ([6cebf63](https://github.com/ionic-team/ionic-cli/commit/6cebf631dc3ab2b683da2a9a8fd24787504b88ae))
+
+
+### Features
+
+* **capacitor:** capacitor 3 support ([#4610](https://github.com/ionic-team/ionic-cli/issues/4610)) ([359cdec](https://github.com/ionic-team/ionic-cli/commit/359cdec031f3c3484093e9fee65e06ef866cfd8b)), closes [#4690](https://github.com/ionic-team/ionic-cli/issues/4690)
+
+
+
+
+
 # [6.15.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.14.1...@ionic/cli@6.15.0) (2021-05-11)
 
 
