@@ -18,6 +18,7 @@ interface PkgManagerVocabulary {
   saveDev: string;
   saveExact: string;
   nonInteractive: string;
+  lockFileOnly: string;
 }
 
 export type PkgManagerCommand = 'dedupe' | 'rebuild' | 'install' | 'uninstall' | 'run' | 'info';
@@ -32,6 +33,7 @@ export interface PkgManagerOptions {
   saveDev?: boolean;
   saveExact?: boolean;
   json?: boolean;
+  lockFileOnly?: boolean;
 }
 
 /**
@@ -78,16 +80,16 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
 
   switch (npmClient) {
     case 'npm':
-      vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '' };
+      vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '', lockFileOnly: '--package-lock-only' };
       break;
     case 'yarn':
-      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive' };
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive', lockFileOnly: '' };
       if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
         installerArgs.push('global');
       }
       break;
     case 'pnpm':
-      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '' };
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '', lockFileOnly: '--lockfile-only' };
       break;
     default:
       throw new Error(`unknown installer: ${npmClient}`);
@@ -98,6 +100,9 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
       installerArgs.push(vocab.install);
     } else {
       installerArgs.push(vocab.bareInstall);
+    }
+    if (options.lockFileOnly) {
+      installerArgs.push(vocab.lockFileOnly)
     }
   } else if (cmd === 'uninstall') {
     installerArgs.push(vocab.uninstall);
