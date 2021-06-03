@@ -77,6 +77,11 @@ describe('@ionic/cli', () => {
         expect(result).toEqual(['npm', 'info', '@ionic/cli', '--json']);
       });
 
+      it('should include lockFileOnly flag', async () => {
+        const result = await pkgManagerArgs('npm', { command: 'install', lockFileOnly: true });
+        expect(result).toEqual(['npm', 'i', '--package-lock-only']);
+      });
+
       describe('yarn', () => {
 
         jest.resetModules();
@@ -229,6 +234,10 @@ describe('@ionic/cli', () => {
           expect(result).toEqual(['pnpm', 'info',  '@ionic/cli', '--json']);
         });
 
+        it('should include lockFileOnly flag', async () => {
+          const result = await pkgManagerArgs('pnpm', { command: 'install', lockFileOnly: true });
+          expect(result).toEqual(['pnpm', 'install', '--lockfile-only']);
+        });
       });
 
     });
