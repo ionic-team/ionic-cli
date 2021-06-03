@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.16.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.16.1...@ionic/cli@6.16.2) (2021-06-03)
+
+
+### Bug Fixes
+
+* Add status-bar to plugins installed on capacitor integration ([#4701](https://github.com/ionic-team/ionic-cli/issues/4701)) ([7c49d5c](https://github.com/ionic-team/ionic-cli/commit/7c49d5cdd717a05eff2e2f2d1fc5f209fd450f43))
+* updated `ionic start` to update lock files when the --no-deps arg is passed ([#4706](https://github.com/ionic-team/ionic-cli/issues/4706)) ([868e61d](https://github.com/ionic-team/ionic-cli/commit/868e61d70c54023e39896b677ceac331b0606167))
+
+
+
+
+
 ## [6.16.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.16.0...@ionic/cli@6.16.1) (2021-05-19)
 
 
