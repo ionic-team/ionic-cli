@@ -72,7 +72,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       if (details.enableArgs && details.enableArgs.length > 0) {
         const parsedArgs = parseArgs(details.enableArgs);
 
-        name = parsedArgs._[0] || name;
+        name = String(parsedArgs._[0]) || name;
         packageId = parsedArgs._[1] || packageId;
 
         if (parsedArgs['web-dir']) {
