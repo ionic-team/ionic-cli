@@ -98,17 +98,17 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async installCapacitorCore() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core@latest' });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core@latest', noLockFile: true });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async installCapacitorCLI() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli@latest', saveDev: true });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli@latest', saveDev: true, noLockFile: true });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async installCapacitorPlugins() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: ['@capacitor/haptics', '@capacitor/app', '@capacitor/keyboard', '@capacitor/status-bar'] });
+    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: ['@capacitor/haptics', '@capacitor/app', '@capacitor/keyboard', '@capacitor/status-bar'], noLockFile: true });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 

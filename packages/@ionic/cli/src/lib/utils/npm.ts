@@ -19,6 +19,7 @@ interface PkgManagerVocabulary {
   saveExact: string;
   nonInteractive: string;
   lockFileOnly: string;
+  noLockFile: string;
 }
 
 export type PkgManagerCommand = 'dedupe' | 'rebuild' | 'install' | 'uninstall' | 'run' | 'info';
@@ -34,6 +35,7 @@ export interface PkgManagerOptions {
   saveExact?: boolean;
   json?: boolean;
   lockFileOnly?: boolean;
+  noLockFile?: boolean;
 }
 
 /**
@@ -80,16 +82,16 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
 
   switch (npmClient) {
     case 'npm':
-      vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '', lockFileOnly: '--package-lock-only' };
+      vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '', lockFileOnly: '--package-lock-only', noLockFile: '--no-package-lock' };
       break;
     case 'yarn':
-      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive', lockFileOnly: '' };
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive', lockFileOnly: '', noLockFile: '' };
       if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
         installerArgs.push('global');
       }
       break;
     case 'pnpm':
-      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '', lockFileOnly: '--lockfile-only' };
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '', lockFileOnly: '--lockfile-only', noLockFile: '' };
       break;
     default:
       throw new Error(`unknown installer: ${npmClient}`);
@@ -103,6 +105,9 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
     }
     if (options.lockFileOnly) {
       installerArgs.push(vocab.lockFileOnly)
+    }
+    if (options.noLockFile) {
+      installerArgs.push(vocab.noLockFile)
     }
   } else if (cmd === 'uninstall') {
     installerArgs.push(vocab.uninstall);
