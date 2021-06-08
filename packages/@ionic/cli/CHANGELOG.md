@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.16.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.16.2...@ionic/cli@6.16.3) (2021-06-08)
+
+
+### Bug Fixes
+
+* revert the change to update the lock file when the --no-deps flag is used and issue a warning instead ([#4713](https://github.com/ionic-team/ionic-cli/issues/4713)) ([96ba8b4](https://github.com/ionic-team/ionic-cli/commit/96ba8b40a24a8ba4e4bcfb84aa972e77220fb3d4))
+
+
+
+
+
 ## [6.16.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.16.1...@ionic/cli@6.16.2) (2021-06-03)
 
 
