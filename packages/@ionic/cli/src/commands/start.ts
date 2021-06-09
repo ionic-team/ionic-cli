@@ -593,16 +593,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       const [installer, ...installerArgs] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
     } else {
-      // --no-deps flag was used so skip installing dependencies, but update the lock file so that it's in sync with the package.json
-      this.env.log.msg('Updating lockfile.');
-      if (this.env.config.get('npmClient') === 'yarn') {
-        // Yarn doesn't have an out of the box way to update the lock file without performing an install so warn the user that the lockfile might be out of date
-        this.env.log.warn('Unable to update `yarn.lock` without installing dependencies. `yarn.lock` may be out of sync.');
-      } else {
-        // Perform an install that updates the lockfile without installing dependencies.
-        const [installer, ...installerArgs] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', lockFileOnly: true });
-        await this.env.shell.run(installer, installerArgs, shellOptions);
-      }
+      // --no-deps flag was used so skip installing dependencies, this also results in the package.json being out sync with the package.json so warn the user
+      this.env.log.warn('Using the --no-deps flag results in an out of date package lock file. The lock file can be updated by performing an `install` with your package manager.');
     }
 
     if (!this.schema.cloned) {
