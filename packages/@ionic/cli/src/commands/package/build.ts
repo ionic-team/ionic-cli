@@ -71,7 +71,7 @@ export class BuildCommand extends Command {
       groups: [MetadataGroup.PAID],
       summary: 'Create a package build on Appflow',
       description: `
-This command creates a package build on Ionic Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory. Downloading build artifacts can be skipped by supplying the flag ${input('skip-download')}.
+This command creates a package build on Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory. Downloading build artifacts can be skipped by supplying the flag ${input('skip-download')}.
 
 Apart from ${input('--commit')}, every option can be specified using the full name setup within the Dashboard[^dashboard].
 

@@ -37,11 +37,11 @@ export class LinkCommand extends Command implements CommandPreRun {
       groups: [MetadataGroup.PAID],
       summary: 'Connect local apps to Ionic',
       description: `
-Link apps on Ionic Appflow to local Ionic projects with this command.
+Link apps on Appflow to local Ionic projects with this command.
 
-If the ${input('id')} argument is excluded, this command will prompt you to select an app from Ionic Appflow.
+If the ${input('id')} argument is excluded, this command will prompt you to select an app from Appflow.
 
-Ionic Appflow uses a git-based workflow to manage app updates. During the linking process, select ${strong('GitHub')} (recommended) or ${strong('Ionic Appflow')} as a git host. See our documentation[^appflow-git-basics] for more information.
+Appflow uses a git-based workflow to manage app updates. During the linking process, select ${strong('GitHub')} (recommended) or ${strong('Appflow')} as a git host. See our documentation[^appflow-git-basics] for more information.
 
 Ultimately, this command sets the ${strong('id')} property in ${strong(prettyPath(projectFile))}, which marks this app as linked.
 
@@ -62,7 +62,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       inputs: [
         {
           name: 'id',
-          summary: `The Ionic Appflow ID of the app to link (e.g. ${input('a1b2c3d4')})`,
+          summary: `The Appflow ID of the app to link (e.g. ${input('a1b2c3d4')})`,
         },
       ],
       options: [
