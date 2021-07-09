@@ -39,7 +39,7 @@ export class AngularGenerateRunner extends GenerateRunner<AngularGenerateOptions
   async getCommandMetadata(): Promise<Partial<CommandMetadata>> {
     return {
       description: `
-      Automatically create framework features with Ionic Generate. This command uses the Angular CLI to generate features such as ${['pages', 'components', 'directives', 'services'].map(c => input(c)).join(', ')}, and more.
+Automatically create framework features with Ionic Generate. This command uses the Angular CLI to generate features such as ${['pages', 'components', 'directives', 'services'].map(c => input(c)).join(', ')}, and more.
 
  - For a full list of available types, use ${input('npx ng g --help')}
  - For a list of options for a types, use ${input('npx ng g <type> --help')}
