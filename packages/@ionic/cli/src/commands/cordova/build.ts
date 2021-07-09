@@ -45,7 +45,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
       type: 'project',
       summary: 'Use Cordova to build for Android and iOS platform targets',
       description: `
-Like running ${input('cordova build')} directly, ${input('ionic cordova build')} also builds web assets from ${input('ionic build')} and provides friendly checksfor Android and iOS platforms.
+Like running ${input('cordova build')} directly, ${input('ionic cordova build')} also builds web assets from ${input('ionic build')} and provides friendly checks for Android and iOS platforms.
 
 To pass additional options to the Cordova CLI, use the ${input('--')} separator after the Ionic CLI arguments.
 
