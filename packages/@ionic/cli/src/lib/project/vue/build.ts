@@ -41,9 +41,9 @@ export class VueBuildCLI extends BuildCLI<VueBuildOptions> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
     if (this.resolvedProgram === this.program) {
-      return ['build'];
+      return ['build', ...(options['--'] || [])];
     } else {
-      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
+      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: options['--'] });
       return pkgArgs;
     }
   }
