@@ -1,4 +1,4 @@
-import { BaseError, Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
+import { BaseError, Footnote, validators } from '@ionic/cli-framework';
 import { sleepForever } from '@ionic/utils-process';
 import { columnar } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
@@ -28,7 +28,7 @@ interface NativeTarget {
 
 export class RunCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
-    const groups: string[] = [MetadataGroup.BETA];
+    const groups: string[] = [];
     const exampleCommands = [
       '',
       'android',
@@ -92,24 +92,12 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       },
     ];
 
-    const serveRunner = this.project && await this.project.getServeRunner();
     const buildRunner = this.project && await this.project.getBuildRunner();
 
     if (buildRunner) {
       const libmetadata = await buildRunner.getCommandMetadata();
       groups.push(...libmetadata.groups || []);
       options.push(...libmetadata.options || []);
-      footnotes.push(...libmetadata.footnotes || []);
-    }
-
-    if (serveRunner) {
-      const libmetadata = await serveRunner.getCommandMetadata();
-      const existingOpts = options.map(o => o.name);
-      groups.push(...libmetadata.groups || []);
-      const runnerOpts = (libmetadata.options || [])
-        .filter(o => !existingOpts.includes(o.name))
-        .map(o => ({ ...o, hint: `${o.hint ? `${o.hint} ` : ''}${weak('(--livereload)')}` }));
-      options = lodash.uniqWith([...runnerOpts, ...options], (optionA, optionB) => optionA.name === optionB.name);
       footnotes.push(...libmetadata.footnotes || []);
     }
 
