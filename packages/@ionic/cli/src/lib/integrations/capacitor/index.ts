@@ -195,9 +195,16 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     if (!output) {
       debug('Could not get config from Capacitor CLI (probably old version)');
       return;
+    } else {
+      try {
+        // Capacitor 1 returns the `command not found` error in stdout instead of stderror like in Capacitor 2
+        // This ensures that the output from the command is valid JSON to account for this
+        return JSON.parse(output);
+      } catch(e) {
+        debug('Could not get config from Capacitor CLI (probably old version)', e);
+        return;
+      }
     }
-
-    return JSON.parse(output);
   });
 
   getCapacitorConfig = lodash.memoize(async (): Promise<CapacitorConfig | undefined> => {
