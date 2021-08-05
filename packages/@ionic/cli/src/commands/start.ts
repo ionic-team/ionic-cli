@@ -98,12 +98,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           name: 'cordova',
           summary: 'Include Cordova integration',
           type: Boolean,
+          groups: [MetadataGroup.DEPRECATED]
         },
         {
           name: 'capacitor',
           summary: 'Include Capacitor integration',
           type: Boolean,
-          groups: [MetadataGroup.EXPERIMENTAL],
         },
         {
           name: 'deps',
@@ -541,7 +541,11 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     if (!this.schema.cloned) {
       if (this.schema.type === 'react' || this.schema.type === 'vue') {
          options['capacitor'] = true;
-       }
+      }
+
+      if (this.schema.type === 'angular' && options['cordova'] === null) {
+        options['capacitor'] = true;
+      }
 
 
       if (options['cordova']) {
