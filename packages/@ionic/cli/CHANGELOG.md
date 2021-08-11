@@ -3,6 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.17.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.16.3...@ionic/cli@6.17.0) (2021-08-11)
+
+
+### Bug Fixes
+
+* numeric app names dont crash adding capacitor ([#4709](https://github.com/ionic-team/ionic-cli/issues/4709)) ([e13a4c5](https://github.com/ionic-team/ionic-cli/commit/e13a4c5ebccc79a85334968854688df9ada4b150))
+* Remove serve options from cap run command ([#4736](https://github.com/ionic-team/ionic-cli/issues/4736)) ([75e635b](https://github.com/ionic-team/ionic-cli/commit/75e635b6431d186a79ab5ad685ca10798120e38f))
+
+
+### Features
+
+* Add web based GUI start wizard to ionic start command ([#4746](https://github.com/ionic-team/ionic-cli/issues/4746)) ([c0669a9](https://github.com/ionic-team/ionic-cli/commit/c0669a9d48b3728c485aa19a2d55fedbe582d121))
+* Cap is no longer experimental and is default for Angular ([#4745](https://github.com/ionic-team/ionic-cli/issues/4745)) ([d81e08b](https://github.com/ionic-team/ionic-cli/commit/d81e08bee0e2495c97b984dcc69f95c00ade31ab))
+
+
+
+
+
 ## [6.16.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.16.2...@ionic/cli@6.16.3) (2021-06-08)
 
 
