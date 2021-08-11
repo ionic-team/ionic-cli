@@ -7,7 +7,7 @@ import * as qs from 'querystring';
 import { Response } from 'superagent';
 
 import { ASSETS_DIRECTORY } from '../../constants';
-import { ContentType, IClient, IConfig, OAuthServerConfig } from '../../definitions';
+import { ContentType, IClient, IConfig, OAuthServerConfig, OpenIdToken } from '../../definitions';
 import { FatalException } from '../errors';
 import { formatResponseError } from '../http';
 import { openUrl } from '../open';
@@ -34,7 +34,7 @@ export interface OAuth2FlowDeps {
   readonly config: IConfig;
 }
 
-export abstract class OAuth2Flow<T> {
+export abstract class OAuth2Flow<T extends OpenIdToken> {
   abstract readonly flowName: string;
   readonly oauthConfig: OAuthServerConfig;
   readonly redirectHost: string;
@@ -61,8 +61,9 @@ export abstract class OAuth2Flow<T> {
 
     await openUrl(authorizationUrl);
 
-    const authorizationCode = await this.getAuthorizationCode();
-    const token = await this.exchangeAuthForAccessToken(authorizationCode, verifier);
+    const { code, state } = await this.getAuthorizationCode();
+    const token = await this.exchangeAuthForAccessToken(code, verifier);
+    token.state = state;
 
     return token;
   }
@@ -104,14 +105,14 @@ export abstract class OAuth2Flow<T> {
     return contents;
   }
 
-  protected async getAuthorizationCode(): Promise<string> {
+  protected async getAuthorizationCode(): Promise<{code: string; state?: string}> {
     if (!(await isPortAvailable(this.redirectPort))) {
       throw new Error(`Cannot start local server. Port ${this.redirectPort} is in use.`);
     }
 
     const successHtml = await this.getSuccessHtml();
 
-    return new Promise<string>((resolve, reject) => {
+    return new Promise<{code: string; state?: string}>((resolve, reject) => {
       const server = http.createServer((req, res) => {
         if (req.url) {
           const params = qs.parse(req.url.substring(req.url.indexOf('?') + 1));
@@ -122,7 +123,12 @@ export abstract class OAuth2Flow<T> {
             req.socket.destroy();
             server.close();
 
-            resolve(Array.isArray(params.code) ? params.code[0] : params.code);
+            const authResult = {
+              code: Array.isArray(params.code) ? params.code[0] : params.code,
+              state: Array.isArray(params.state) ? decodeURI(params.state[0]) : decodeURI(params.state),
+            };
+
+            resolve(authResult);
           }
 
           // TODO, timeout, error handling

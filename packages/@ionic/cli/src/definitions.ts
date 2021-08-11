@@ -282,6 +282,7 @@ export interface OpenIdToken {
   refresh_token?: string;
   scope: 'openid profile email offline_access';
   token_type: 'Bearer';
+  state?: string;
 }
 
 export interface Snapshot {
@@ -443,6 +444,7 @@ export interface ISession {
   ssoLogin(email: string): Promise<void>;
   tokenLogin(token: string): Promise<void>;
   webLogin(): Promise<void>;
+  wizardLogin(): Promise<string|undefined>;
   logout(): Promise<void>;
 
   isLoggedIn(): boolean;
