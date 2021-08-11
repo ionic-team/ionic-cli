@@ -238,10 +238,60 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     }
   }
 
+  /**
+   * Check if we should use the wizard for the start command.
+   * We should use if they ran `ionic start` or `ionic start --capacitor`
+   * and they are in an interactive environment.
+   */
+  async shouldUseStartWizard(inputs: CommandLineInputs, options: CommandLineOptions) {
+    const flagsToTestFor = [
+      'list',
+      'l',
+      'cordova',
+      'link',
+      'help',
+      'h',
+      'type',
+      'id',
+      'project-id',
+      'package-id',
+      'start-id',
+    ];
+
+    let didUseFlags = false ;
+
+    for (const key of flagsToTestFor) {
+      if (options[key] !== null) {
+        didUseFlags = true;
+        break;
+      }
+    }
+
+    return inputs.length === 0 && options['interactive'] && options['deps'] && options['git'] && !didUseFlags;
+  }
+
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { promptToLogin } = await import('../lib/session');
 
     verifyOptions(options, this.env);
+
+    if (await this.shouldUseStartWizard(inputs, options)) {
+      const confirm = await this.env.prompt({
+        type: 'confirm',
+        name: 'confirm',
+        message: 'Use the app creation wizard?',
+        default: true,
+      });
+
+      if (confirm) {
+        const startId = await this.env.session.wizardLogin();
+        if (!startId) {
+          this.env.log.error('There was an issue using the web wizard. Falling back to CLI wizard.');
+        } else {
+          options['start-id'] = startId;
+        }
+      }
+    }
 
     const appflowId = options['id'] ? String(options['id']) : undefined;
 

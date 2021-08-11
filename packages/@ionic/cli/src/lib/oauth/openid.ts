@@ -18,8 +18,11 @@ export interface OpenIDFlowOptions extends Partial<OAuth2FlowOptions> {
 export class OpenIDFlow extends OAuth2Flow<OpenIdToken> {
   readonly flowName = 'open_id';
 
-  constructor({ accessTokenRequestContentType = ContentType.FORM_URLENCODED, ...options }: OpenIDFlowOptions, readonly e: OAuth2FlowDeps) {
+  constructor({ accessTokenRequestContentType = ContentType.FORM_URLENCODED, ...options }: OpenIDFlowOptions, readonly e: OAuth2FlowDeps, authorizationUrlOverride?: string) {
     super({ accessTokenRequestContentType, ...options }, e);
+    if (authorizationUrlOverride) {
+      this.oauthConfig.authorizationUrl = authorizationUrlOverride;
+    }
   }
 
   protected generateAuthorizationParameters(challenge: string): AuthorizationParameters {
