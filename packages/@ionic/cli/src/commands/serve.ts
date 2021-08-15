@@ -32,7 +32,7 @@ export class ServeCommand extends Command implements CommandPreRun {
         hint: weak('(--lab)'),
       },
       {
-        name: 'open',
+        name: 'no-open',
         summary: 'Do not open a browser window',
         type: Boolean,
         default: true,

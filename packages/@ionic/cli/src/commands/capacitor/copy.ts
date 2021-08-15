@@ -9,7 +9,7 @@ export class CopyCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [
       {
-        name: 'build',
+        name: 'no-build',
         summary: 'Do not invoke an Ionic build',
         type: Boolean,
         default: true,
@@ -51,7 +51,7 @@ ${input('ionic capacitor copy')} will do the following:
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     if (options.build) {
       await this.runBuild(inputs, options);

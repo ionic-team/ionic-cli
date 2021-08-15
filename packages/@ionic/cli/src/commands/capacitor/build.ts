@@ -20,13 +20,13 @@ export class BuildCommand extends CapacitorCommand implements CommandPreRun {
     const options: CommandMetadataOption[] = [
       // Build Options
       {
-        name: 'build',
+        name: 'no-build',
         summary: 'Do not invoke Ionic build',
         type: Boolean,
         default: true,
       },
       {
-        name: 'open',
+        name: 'no-open',
         summary: 'Do not invoke Capacitor open',
         type: Boolean,
         default: true,

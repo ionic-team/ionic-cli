@@ -106,14 +106,14 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           type: Boolean,
         },
         {
-          name: 'deps',
+          name: 'no-deps',
           summary: 'Do not install npm/yarn dependencies',
           type: Boolean,
           default: true,
           groups: [MetadataGroup.ADVANCED],
         },
         {
-          name: 'git',
+          name: 'no-git',
           summary: 'Do not initialize a git repo',
           type: Boolean,
           default: true,

@@ -11,7 +11,7 @@ export class PrepareCommand extends CordovaCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [
       {
-        name: 'build',
+        name: 'no-build',
         summary: 'Do not invoke an Ionic build',
         type: Boolean,
         default: true,
@@ -62,7 +62,7 @@ You may wish to use ${input('ionic cordova prepare')} if you run your project wi
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     const { loadCordovaConfig } = await import('../../lib/integrations/cordova/config');
     const { getPlatforms } = await import('../../lib/integrations/cordova/project');
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic cordova prepare')} outside a project directory.`);

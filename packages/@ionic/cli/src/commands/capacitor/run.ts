@@ -59,7 +59,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       },
       // Build Options
       {
-        name: 'build',
+        name: 'no-build',
         summary: 'Do not invoke Ionic build',
         type: Boolean,
         default: true,

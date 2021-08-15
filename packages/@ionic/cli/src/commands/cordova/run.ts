@@ -19,7 +19,7 @@ const debug = Debug('ionic:commands:run');
 
 const NATIVE_RUN_OPTIONS: readonly CommandMetadataOption[] = [
   {
-    name: 'native-run',
+    name: 'no-native-run',
     summary: `Do not use ${input('native-run')} to run the app; use Cordova instead`,
     type: Boolean,
     default: true,
@@ -61,7 +61,7 @@ export class RunCommand extends CordovaCommand implements CommandPreRun {
       },
       // Build Options
       {
-        name: 'build',
+        name: 'no-build',
         summary: 'Do not invoke Ionic build',
         type: Boolean,
         default: true,

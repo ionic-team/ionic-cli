@@ -13,7 +13,7 @@ export class BuildCommand extends CordovaCommand implements CommandPreRun {
     const options: CommandMetadataOption[] = [
       // Build Options
       {
-        name: 'build',
+        name: 'no-build',
         summary: 'Do not invoke an Ionic build',
         type: Boolean,
         default: true,

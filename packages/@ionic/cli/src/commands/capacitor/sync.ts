@@ -11,7 +11,7 @@ export class SyncCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
     const options: CommandMetadataOption[] = [
       {
-        name: 'build',
+        name: 'no-build',
         summary: 'Do not invoke an Ionic build',
         type: Boolean,
         default: true,

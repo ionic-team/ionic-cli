@@ -30,7 +30,7 @@ Like running ${input('cordova platform')} directly, but adds default Ionic icons
       ],
       options: [
         {
-          name: 'resources',
+          name: 'no-resources',
           summary: `Do not pregenerate icons and splash screen resources (corresponds to ${input('add')})`,
           type: Boolean,
           default: true,
@@ -79,7 +79,7 @@ Like running ${input('cordova platform')} directly, but adds default Ionic icons
       throw new FatalException(`Cannot run ${input('ionic cordova platform')} outside a project directory.`);
     }
 
-    const [ action, platformName ] = inputs;
+    const [action, platformName] = inputs;
 
     const platforms = await getPlatforms(this.integration.root);
 
