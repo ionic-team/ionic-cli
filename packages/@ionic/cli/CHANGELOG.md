@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.17.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.17.0...@ionic/cli@6.17.1) (2021-09-03)
+
+
+### Bug Fixes
+
+* support Capacitor 1 apps ([#4758](https://github.com/ionic-team/ionic-cli/issues/4758)) ([0ca282b](https://github.com/ionic-team/ionic-cli/commit/0ca282b615e52867b1cbf263d08472878083f34f))
+
+
+
+
+
 # [6.17.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.16.3...@ionic/cli@6.17.0) (2021-08-11)
 
 
