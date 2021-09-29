@@ -158,6 +158,22 @@ export class ProSession extends BaseSession implements ISession {
     }
   }
 
+  async wizardLogin(): Promise<string|undefined> {
+    const { OpenIDFlow } = await import('./oauth/openid');
+    const wizardUrl = new URL(this.e.config.getOpenIDOAuthConfig().authorizationUrl);
+    wizardUrl.pathname = 'start';
+    const flow = new OpenIDFlow({}, this.e, wizardUrl.href);
+    const token = await flow.run();
+
+    await this.tokenLogin(token.access_token);
+
+    this.e.config.set('tokens.refresh', token.refresh_token);
+    this.e.config.set('tokens.expiresInSeconds', token.expires_in);
+    this.e.config.set('tokens.issuedOn', (new Date()).toJSON());
+    this.e.config.set('tokens.flowName', flow.flowName);
+    return token.state;
+  }
+
   async webLogin(): Promise<void> {
     const { OpenIDFlow } = await import('./oauth/openid');
     const flow = new OpenIDFlow({}, this.e);

@@ -52,7 +52,7 @@ export class DeployCommand extends Command {
       groups: [MetadataGroup.PAID],
       summary: 'Deploys a binary to a destination, such as an app store using Appflow',
       description: `
-This command deploys a binary to a destination using Ionic Appflow. While running, the remote log is printed to the terminal.
+This command deploys a binary to a destination using Appflow. While running, the remote log is printed to the terminal.
 
 The command takes two parameters: the numeric ID of the package build that previously created the binary and the name of the destination where the binary is going to be deployed.
 Both can be retrieved from the Dashboard[^dashboard].

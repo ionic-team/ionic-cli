@@ -13,9 +13,9 @@ export class GitRemoteCommand extends Command {
       name: 'remote',
       type: 'project',
       groups: [MetadataGroup.PAID],
-      summary: 'Adds/updates the Ionic Appflow git remote to your local Ionic app',
+      summary: 'Adds/updates the Appflow git remote to your local Ionic app',
       description: `
-This command is used by ${input('ionic link')} when Ionic Appflow is used as the git host.
+This command is used by ${input('ionic link')} when Appflow is used as the git host.
 
 ${input('ionic git remote')} will check the local repository for whether or not the git remote is properly set up. This command operates on the ${strong('ionic')} remote. For advanced configuration, see ${strong('Settings')} => ${strong('Git')} in the app settings of the Dashboard[^dashboard].
       `,
