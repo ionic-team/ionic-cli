@@ -613,8 +613,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: 'Integrate your new app with Capacitor to target native iOS and Android?',
-          default: false,
+          message: 'Integrate your new app with Capacitor to target web, iOS, and Android?',
+          default: true,
         });
 
         if (confirm) {
