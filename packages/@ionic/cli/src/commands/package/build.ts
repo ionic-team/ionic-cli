@@ -14,6 +14,7 @@ import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { fileUtils } from '../../lib/utils/file';
 import { createRequest, download } from '../../lib/utils/http';
+import { IONIC_CLOUD_CLI_MIGRATION } from '../../lib/updates';
 
 const debug = Debug('ionic:commands:package:build');
 const PLATFORMS = ['android', 'ios'];
@@ -68,7 +69,7 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
-      groups: [MetadataGroup.PAID],
+      groups: [MetadataGroup.PAID, MetadataGroup.DEPRECATED],
       summary: 'Create a package build on Appflow',
       description: `
 This command creates a package build on Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created app package file in the current directory. Downloading build artifacts can be skipped by supplying the flag ${input('skip-download')}.
@@ -214,6 +215,8 @@ if you do not wish to download ${input('apk')}.
   }
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+    this.env.log.warn(IONIC_CLOUD_CLI_MIGRATION);
+
     if (!inputs[0]) {
       const platformInput = await this.env.prompt({
         type: 'list',
