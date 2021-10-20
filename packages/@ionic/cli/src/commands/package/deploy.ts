@@ -15,6 +15,7 @@ import { isSuperAgentError } from '../../guards';
 import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
+import { IONIC_CLOUD_CLI_MIGRATION } from '../../lib/updates';
 
 import { PackageBuild } from './build';
 
@@ -49,7 +50,7 @@ export class DeployCommand extends Command {
     return {
       name: 'deploy',
       type: 'project',
-      groups: [MetadataGroup.PAID],
+      groups: [MetadataGroup.PAID, MetadataGroup.DEPRECATED],
       summary: 'Deploys a binary to a destination, such as an app store using Appflow',
       description: `
 This command deploys a binary to a destination using Appflow. While running, the remote log is printed to the terminal.
@@ -84,6 +85,7 @@ Both can be retrieved from the Dashboard[^dashboard].
     inputs: CommandLineInputs,
     options: CommandLineOptions
   ): Promise<void> {
+    this.env.log.warn(IONIC_CLOUD_CLI_MIGRATION);
     if (!inputs[0]) {
       const buildIdInputInput = await this.env.prompt({
         type: 'input',
@@ -108,7 +110,7 @@ Both can be retrieved from the Dashboard[^dashboard].
   async run(
     inputs: CommandLineInputs,
     options: CommandLineOptions
-  ): Promise<void> {
+  ): Promise<void> {    
     if (!this.project) {
       throw new FatalException(
         `Cannot run ${input(

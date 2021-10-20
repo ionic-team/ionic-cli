@@ -1,20 +1,22 @@
-import { MetadataGroup } from '@ionic/cli-framework';
+import { MetadataGroup, NamespaceMetadata } from '@ionic/cli-framework';
 
 import { strong } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
+import { IONIC_CLOUD_CLI_MIGRATION } from '../../lib/updates';
 
 export class PackageNamespace extends Namespace {
-  async getMetadata() {
+  async getMetadata(): Promise<NamespaceMetadata> {
     return {
       name: 'package',
       summary: 'Appflow package functionality',
       description: `
+${IONIC_CLOUD_CLI_MIGRATION}
 Interface to execute commands about package builds and deployments on Ionic Appflow.
 
 Appflow package documentation:
 - Overview: ${strong('https://ion.link/appflow-package-docs')}
       `,
-      groups: [MetadataGroup.PAID],
+      groups: [MetadataGroup.PAID, MetadataGroup.DEPRECATED],
     };
   }
 

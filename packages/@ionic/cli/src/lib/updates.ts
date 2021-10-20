@@ -6,7 +6,7 @@ import * as semver from 'semver';
 
 import { IConfig, IonicEnvironment } from '../definitions';
 
-import { input, success, weak } from './color';
+import { input, strong, success, weak, WARN } from './color';
 import { sendMessage } from './helper';
 import { pkgFromRegistry, pkgManagerArgs } from './utils/npm';
 
@@ -76,6 +76,13 @@ export async function runUpdateCheck({ config }: PersistPackageVersionsDeps): Pr
 
   await writeUpdateConfig(dir, newUpdateConfig);
 }
+
+export const IONIC_CLOUD_CLI_MIGRATION = (() =>
+`${strong(WARN('Deprecated: Ionic Appflow functionality has moved to the new Ionic Cloud CLI'))}.\n`+
+`Existing functionality in the Ionic CLI is deprecated as of ${WARN('v6.18.0')}. `+
+`This functionality will be removed from the Ionic CLI in the next major version. `+
+`Please visit our simple guide to migrate to the Ionic Cloud CLI, available now.\n`+
+`${strong('https://ionic.io/docs/appflow/cli/migration/')}\n`)();
 
 export async function runNotify(env: IonicEnvironment, pkg: PersistedPackage, latestVersion: string): Promise<void> {
   const dir = path.dirname(env.config.p);

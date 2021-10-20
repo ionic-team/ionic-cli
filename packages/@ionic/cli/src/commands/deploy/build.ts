@@ -13,6 +13,7 @@ import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 import { createRequest, download } from '../../lib/utils/http';
+import { IONIC_CLOUD_CLI_MIGRATION } from '../../lib/updates';
 
 const debug = Debug('ionic:commands:deploy:build');
 
@@ -45,7 +46,7 @@ export class BuildCommand extends Command {
     return {
       name: 'build',
       type: 'project',
-      groups: [MetadataGroup.PAID],
+      groups: [MetadataGroup.PAID, MetadataGroup.DEPRECATED],
       summary: 'Create a deploy build on Appflow',
       description: `
 This command creates a deploy build on Appflow. While the build is running, it prints the remote build log to the terminal. If the build is successful, it downloads the created web build zip file in the current directory. Downloading build artifacts can be skipped by supplying the flag ${input('skip-download')}.
@@ -100,7 +101,11 @@ Customizing the build:
     };
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async preRun(inputs: CommandLineInputs, optinos: CommandLineOptions): Promise<void> {
+    this.env.log.warn(IONIC_CLOUD_CLI_MIGRATION);
+  }
+
+  async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {    
     if (!this.project) {
       throw new FatalException(`Cannot run ${input('ionic deploy build')} outside a project directory.`);
     }
