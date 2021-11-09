@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.18.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.17.1...@ionic/cli@6.18.0) (2021-10-25)
+
+
+### Bug Fixes
+
+* **vue:** pass extra args to vue-cli ([56dd8a7](https://github.com/ionic-team/ionic-cli/commit/56dd8a7fe94d764bac63a41d35e0b709a2dde893)), closes [#4669](https://github.com/ionic-team/ionic-cli/issues/4669) [#4642](https://github.com/ionic-team/ionic-cli/issues/4642) [#4642](https://github.com/ionic-team/ionic-cli/issues/4642)
+
+
+### Features
+
+* **appflow:** deprecate appflow functionality in @ionic/cli ([#4776](https://github.com/ionic-team/ionic-cli/issues/4776)) ([6a39641](https://github.com/ionic-team/ionic-cli/commit/6a39641555c9247cc53091db5afde73f9b1d3e34))
+
+
+
+
+
 ## [6.17.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.17.0...@ionic/cli@6.17.1) (2021-09-03)
 
 
