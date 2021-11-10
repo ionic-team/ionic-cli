@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.18.0...@ionic/cli@6.18.1) (2021-11-10)
+
+
+### Bug Fixes
+
+* Update superagent-proxy dependency to v3 ([#4779](https://github.com/ionic-team/ionic-cli/issues/4779)) ([f153355](https://github.com/ionic-team/ionic-cli/commit/f153355324a958389f8414d72caa41035ec8bd98))
+
+
+
+
+
 # [6.18.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.17.1...@ionic/cli@6.18.0) (2021-10-25)
 
 
