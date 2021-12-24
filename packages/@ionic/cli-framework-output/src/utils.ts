@@ -23,7 +23,7 @@ export function dropWhile<T>(array: readonly T[], predicate: (item: T) => boolea
   });
 }
 
-const TIME_UNITS = ['s', 'ms', 'μp'];
+const TIME_UNITS = ['s', 'ms', 'μs'];
 
 export function formatHrTime(hrtime: [number, number]): string {
   let time = hrtime[0] + hrtime[1] / 1e9;
