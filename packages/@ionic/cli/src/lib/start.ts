@@ -207,6 +207,7 @@ export const SUPPORTED_FRAMEWORKS: readonly SupportedFramework[] = [
 ];
 
 export const STARTER_TEMPLATES: StarterTemplate[] = [
+  // Vue
   {
     name: 'tabs',
     projectType: 'vue',
@@ -235,6 +236,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     description: 'A starting project with a list',
     id: 'vue-official-list',
   },
+  // Angular
   {
     name: 'tabs',
     projectType: 'angular',
@@ -267,16 +269,10 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     name: 'my-first-app',
     projectType: 'angular',
     type: 'repo',
-    description: 'An example application that builds a camera with gallery',
+    description: 'A template for the "Build Your First App" tutorial',
     repo: 'https://github.com/ionic-team/photo-gallery-capacitor-ng',
   },
-  {
-    name: 'conference',
-    projectType: 'angular',
-    type: 'repo',
-    description: 'A kitchen-sink application that shows off all Ionic has to offer',
-    repo: 'https://github.com/ionic-team/ionic-conference-app',
-  },
+  // React
   {
     name: 'blank',
     projectType: 'react',
@@ -295,7 +291,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     name: 'my-first-app',
     projectType: 'react',
     type: 'repo',
-    description: 'An example application that builds a camera with gallery',
+    description: 'A template for the "Build Your First App" tutorial',
     repo: 'https://github.com/ionic-team/photo-gallery-capacitor-react',
   },
   {
@@ -312,13 +308,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     description: 'A starting project with a simple tabbed interface',
     id: 'react-official-tabs',
   },
-  {
-    name: 'conference',
-    projectType: 'react',
-    type: 'repo',
-    description: 'A kitchen-sink application that shows off all Ionic has to offer',
-    repo: 'https://github.com/ionic-team/ionic-react-conference-app',
-  },
+  // Old Ionic V3
   {
     name: 'tabs',
     projectType: 'ionic-angular',
@@ -361,6 +351,7 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     description: 'AWS Mobile Hub Starter',
     id: 'ionic-angular-official-aws',
   },
+  // Older Ionic V1
   {
     name: 'tabs',
     projectType: 'ionic1',
