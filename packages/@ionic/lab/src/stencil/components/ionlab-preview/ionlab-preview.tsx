@@ -18,13 +18,13 @@ export class Preview {
 
     const qp = {};
 
-    if (this.projectType === 'angular') {
+    if (this.projectType === 'ionic-angular') {
+      qp['ionicplatform'] = platform;
+      qp['ionicstatusbarpadding'] = 'true';
+    } else {
       qp['ionic:mode'] = platformMode(platform);
       qp['ionic:persistConfig'] = 'true';
       qp['ionic:_forceStatusbarPadding'] = 'true';
-    } else if (this.projectType === 'ionic-angular') {
-      qp['ionicplatform'] = platform;
-      qp['ionicstatusbarpadding'] = 'true';
     }
 
     return `${this.url}?${Object.keys(qp).map(k => `${encodeURIComponent(k)}=${encodeURIComponent(qp[k])}`).join('&')}`;
