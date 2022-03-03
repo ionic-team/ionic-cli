@@ -170,15 +170,12 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       this.env.log.info(`During this process, a browser window will open to authenticate you. Please leave this process running until authentication is complete.`);
       this.env.log.nl();
 
-      let login = true;
-      if (!this.env.flags.confirm) {
-        login = await this.env.prompt({
-          type: 'confirm',
-          name: 'continue',
-          message: 'Open the browser to log in to your Ionic account?',
-          default: true,
-        });
-      }
+      const login = await this.env.prompt({
+        type: 'confirm',
+        name: 'continue',
+        message: 'Open the browser to log in to your Ionic account?',
+        default: true,
+      });
 
       if (login) {
         await this.logout();
