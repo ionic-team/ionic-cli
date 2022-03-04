@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.18.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.18.1...@ionic/cli@6.18.2) (2022-03-04)
+
+
+### Bug Fixes
+
+* Pin @types/superagent version to avoid build problems ([#4802](https://github.com/ionic-team/ionic-cli/issues/4802)) ([bdf5b05](https://github.com/ionic-team/ionic-cli/commit/bdf5b05833b92471f4ac5ba24437a8131adbf2e1))
+
+
+
+
+
 ## [6.18.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.18.0...@ionic/cli@6.18.1) (2021-11-10)
 
 

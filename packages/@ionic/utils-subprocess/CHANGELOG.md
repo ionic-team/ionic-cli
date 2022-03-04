@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.8...@ionic/utils-subprocess@2.1.9) (2022-03-04)
+
+
+### Bug Fixes
+
+* bump cross-spawn version to avoid windows problem ([#4784](https://github.com/ionic-team/ionic-cli/issues/4784)) ([2c88a71](https://github.com/ionic-team/ionic-cli/commit/2c88a7180e87497a27a97ca979c612d6663cbb2a))
+
+
+
+
+
 ## [2.1.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.7...@ionic/utils-subprocess@2.1.8) (2020-09-29)
 
 **Note:** Version bump only for package @ionic/utils-subprocess

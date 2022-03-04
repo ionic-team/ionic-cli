@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.2.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.2.2...@ionic/cli-framework-output@2.2.3) (2022-03-04)
+
+
+### Bug Fixes
+
+* correct time unit ([#4796](https://github.com/ionic-team/ionic-cli/issues/4796)) ([8f79cf2](https://github.com/ionic-team/ionic-cli/commit/8f79cf2069ff0b59a076ae9112fcef2dd84f8dc2))
+
+
+
+
+
 ## [2.2.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework-output@2.2.1...@ionic/cli-framework-output@2.2.2) (2020-09-29)
 
 
