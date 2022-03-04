@@ -160,7 +160,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       await this.logout();
       await this.env.session.login(email, password);
     } else {
-      if (!this.env.flags.interactive) {
+      if (!this.env.flags.interactive && !this.env.flags.confirm) {
         throw new FatalException(
           'Refusing to attempt browser login in non-interactive mode.\n' +
           `If you are attempting to log in, make sure you are using a modern, interactive terminal. Otherwise, you can log in using inline username and password with ${input('ionic login <email> <password>')}. See ${input('ionic login --help')} for more details.`
