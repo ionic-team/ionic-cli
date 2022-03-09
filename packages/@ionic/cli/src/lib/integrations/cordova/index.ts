@@ -122,8 +122,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     await super.add(details);
     if(this.e.project.type === 'angular'){
       try {
-      const integration = this.e.project.requireIntegration(this.name);
-      await this.e.shell.run('ng', ['add', '@ionic/cordova-builders', '--skip-confirmation'], {cwd: integration.root});
+        const integration = this.e.project.requireIntegration(this.name);
+        await this.e.shell.run('ng', ['add', '@ionic/cordova-builders', '--skip-confirmation'], { cwd: integration.root });
       } catch (e) {
         debug('Error while adding @ionic/cordova-builders.');
       }
