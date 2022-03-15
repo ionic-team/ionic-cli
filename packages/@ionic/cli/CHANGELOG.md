@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.19.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.18.2...@ionic/cli@6.19.0) (2022-03-15)
+
+
+### Features
+
+* **integrations:** add ng add cordova-builder ([#4823](https://github.com/ionic-team/ionic-cli/issues/4823)) ([de8d028](https://github.com/ionic-team/ionic-cli/commit/de8d028f54199ddd59aed6636378e4829875a0cd))
+
+
+
+
+
 ## [6.18.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.18.1...@ionic/cli@6.18.2) (2022-03-04)
 
 
