@@ -101,10 +101,12 @@ export class VueServeCLI extends ServeCLI<VueServeOptions> {
   protected async buildArgs(_options: VueServeOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('../../utils/npm');
 
+    const separatedArgs = _options['--']
+
     if (this.resolvedProgram === this.program) {
-      return ['serve'];
+      return ['serve', ...separatedArgs];
     } else {
-      const [, ...pkgArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
+      const [, ...pkgArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: separatedArgs });
       return pkgArgs;
     }
   }
