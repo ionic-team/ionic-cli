@@ -34,8 +34,6 @@
     "@types/inquirer": "0.0.43",
     "@types/jest": "^26.0.10",
     "@types/node": "~10.17.13",
-    "@types/slice-ansi": "^4.0.0",
-    "@types/wrap-ansi": "^3.0.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",
