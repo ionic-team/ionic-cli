@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.19.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.19.0...@ionic/cli@6.19.1) (2022-05-09)
+
+
+### Bug Fixes
+
+* **capacitor:** Match platform version with CLI version ([#4829](https://github.com/ionic-team/ionic-cli/issues/4829)) ([9846d46](https://github.com/ionic-team/ionic-cli/commit/9846d467e926e76232826175d3d0d50c00b1ef1f))
+* **vue:** pass extra args to vue-cli serve ([#4827](https://github.com/ionic-team/ionic-cli/issues/4827)) ([87a0dcd](https://github.com/ionic-team/ionic-cli/commit/87a0dcdfd9f75b91e83c0eb13761d6135b226212))
+
+
+
+
+
 # [6.19.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.18.2...@ionic/cli@6.19.0) (2022-03-15)
 
 
