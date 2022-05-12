@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-terminal",
-  "version": "2.3.1",
+  "version": "2.3.2",
   "description": "Terminal utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -45,6 +45,8 @@
     "@types/jest": "^26.0.10",
     "@types/node": "~10.17.13",
     "@types/signal-exit": "^3.0.0",
+    "@types/slice-ansi": "^4.0.0",
+    "@types/wrap-ansi": "^3.0.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",
