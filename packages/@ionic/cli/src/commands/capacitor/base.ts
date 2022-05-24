@@ -13,6 +13,7 @@ import { runCommand } from '../../lib/executor';
 import type { CapacitorCLIConfig, Integration as CapacitorIntegration } from '../../lib/integrations/capacitor'
 import { ANDROID_MANIFEST_FILE, CapacitorAndroidManifest } from '../../lib/integrations/capacitor/android';
 import { CAPACITOR_CONFIG_JSON_FILE, CapacitorJSONConfig, CapacitorConfig } from '../../lib/integrations/capacitor/config';
+import { CapacitorIosInfo, IOS_INFO_FILE } from '../../lib/integrations/capacitor/ios';
 import { generateOptionsForCapacitorBuild } from '../../lib/integrations/capacitor/utils';
 import { createPrefixedWriteStream } from '../../lib/utils/logger';
 import { pkgManagerArgs } from '../../lib/utils/npm';
@@ -63,6 +64,21 @@ export abstract class CapacitorCommand extends Command {
     const srcDir = cli?.android.srcMainDirAbs ?? 'android/app/src/main';
 
     return path.resolve(this.integration.root, srcDir, ANDROID_MANIFEST_FILE);
+  }
+
+  async getiOSAppInfo(): Promise<CapacitorIosInfo> {
+    const p = await this.getiOSAppInfoPath();
+
+    this.env.log.info(`iOS App Info.plist path ${p}`);
+
+    return CapacitorIosInfo.load(p);
+  }
+
+  async getiOSAppInfoPath(): Promise<string> {
+    const cli = await this.getCapacitorCLIConfig();
+    const srcDir = cli?.ios.nativeTargetDirAbs ?? 'ios/App/App';
+
+    return path.resolve(this.integration.root, srcDir, IOS_INFO_FILE);
   }
 
   async getGeneratedConfigDir(platform: string): Promise<string> {
@@ -236,6 +252,17 @@ export abstract class CapacitorCommand extends Command {
 
         manifest.enableCleartextTraffic();
         await manifest.save();
+      }      
+
+      if (platform === 'ios') {
+        const appInfo = await this.getiOSAppInfo();
+
+        onBeforeExit(async () => {
+          await appInfo.reset();
+        })
+
+        appInfo.disableAppTransportSecurity();
+        await appInfo.save();
       }
     } catch (e) {
       if (e instanceof RunnerException) {
