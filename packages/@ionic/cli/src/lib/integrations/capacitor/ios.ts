@@ -1,20 +1,20 @@
 import { readFile, writeFile, unlink } from "@ionic/utils-fs";
-import { parse, build } from "plist";
+import * as et from "elementtree";
 
 export const IOS_INFO_FILE = "Info.plist";
 
 export class CapacitorIosInfo {
-  protected _doc?: any;
+  protected _doc?: et.ElementTree;
   protected origInfoPlistContent?: string;
   protected saving = false;
 
   constructor(readonly plistPath: string) {}
 
   get origPlistPath(): string {
-      return `${this.plistPath}.orig`;
+    return `${this.plistPath}.orig`;
   }
 
-  get doc(): any {
+  get doc(): et.ElementTree {
     if (!this._doc) {
       throw new Error("No doc loaded.");
     }
@@ -34,21 +34,72 @@ export class CapacitorIosInfo {
   }
 
   disableAppTransportSecurity() {
-    if (this.doc["NSAppTransportSecurity"]) {
-      this.doc["NSAllowsArbitraryLoads"] = true
+    const rootDict = this.getDictRoot();
+
+    let valueDict = this.getValueForKey(rootDict,"NSAppTransportSecurity");
+    if (valueDict) {
+        const value = this.getValueForKey(valueDict, "NSAllowsArbitraryLoads")
+        if (value) {
+          value.tag = "true"
+        } else {
+          et.SubElement(valueDict, "true")
+        }
     } else {
-      this.doc["NSAppTransportSecurity"] = {
-        "NSAllowsArbitraryLoads": true
-      }
+      const newKey = et.SubElement(rootDict, "key");
+      newKey.text = "NSAppTransportSecurity";
+
+      const newDict = et.SubElement(rootDict, "dict");
+      const newDictKey = et.SubElement(newDict, "key")
+      newDictKey.text = "NSAllowsArbitraryLoads";
+      et.SubElement(newDict, "true")
     }
   }
 
+
+  private getValueForKey(root: et.Element, key: string): et.Element | null {
+    const children = root.getchildren();
+    let keyFound = false;
+
+    for (const element of children) {
+      if (keyFound) {
+        keyFound = false;
+      
+        return element;
+      }
+
+      if ((element.tag === 'key') && element.text === key) {
+        keyFound = true;
+      }
+    }
+
+    return null;
+  }
+
+  private getDictRoot(): et.Element {
+    const root = this.doc.getroot();
+
+    if (root.tag !== "plist") {
+      throw new Error(`Info.plist is not a valid plist file because the root is not a <plist> tag`);
+    }
+
+    const rootDict = root.find('./dict');
+    if (!rootDict) {
+      throw new Error(`Info.plist is not a valid plist file because the first child is not a <dict> tag`);
+    }
+
+    return rootDict;
+  }
+
   async reset(): Promise<void> {
-    const origInfoPlistContent = await readFile(this.origPlistPath, { encoding: 'utf8' });
+    const origInfoPlistContent = await readFile(this.origPlistPath, {
+      encoding: "utf8",
+    });
 
     if (!this.saving) {
       this.saving = true;
-      await writeFile(this.plistPath, origInfoPlistContent, { encoding: 'utf8' });
+      await writeFile(this.plistPath, origInfoPlistContent, {
+        encoding: "utf8",
+      });
       await unlink(this.origPlistPath);
       this.saving = false;
     }
@@ -77,16 +128,14 @@ export class CapacitorIosInfo {
     });
 
     try {
-      this._doc = parse(this.origInfoPlistContent!) as object;
+      this._doc = et.parse(this.origInfoPlistContent);
     } catch (e: any) {
       throw new Error(`Cannot parse ${IOS_INFO_FILE} file: ${e.stack ?? e}`);
     }
   }
 
   protected write(): string {
-    const contents = build(this.doc, {
-       pretty: true,
-    })
+    const contents = this.doc.write({ indent: 4 });
 
     return contents;
   }
