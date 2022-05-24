@@ -1,5 +1,5 @@
 import { readFile, writeFile, unlink } from "@ionic/utils-fs";
-import { parse, build, PlistObject } from "plist";
+import { parse, build } from "plist";
 
 export const IOS_INFO_FILE = "Info.plist";
 
@@ -41,10 +41,6 @@ export class CapacitorIosInfo {
         "NSAllowsArbitraryLoads": true
       }
     }
-  }
-
-  protected getPlistValueForKey(key: string): PlistObject {
-    return this.doc[key] as PlistObject;
   }
 
   async reset(): Promise<void> {
