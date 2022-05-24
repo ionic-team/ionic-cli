@@ -251,7 +251,7 @@ export abstract class CapacitorCommand extends Command {
         await manifest.save();
       }      
 
-      if (platform === 'ios') {
+      if (platform === 'ios' && !options['external']) {
         const appInfo = await this.getiOSAppInfo();
 
         onBeforeExit(async () => {
