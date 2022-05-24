@@ -68,9 +68,6 @@ export abstract class CapacitorCommand extends Command {
 
   async getiOSAppInfo(): Promise<CapacitorIosInfo> {
     const p = await this.getiOSAppInfoPath();
-
-    this.env.log.info(`iOS App Info.plist path ${p}`);
-
     return CapacitorIosInfo.load(p);
   }
 
