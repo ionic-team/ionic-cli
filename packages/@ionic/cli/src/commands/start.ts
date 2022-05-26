@@ -646,9 +646,20 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
       const [installer, ...installerArgs] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
       await this.env.shell.run(installer, installerArgs, shellOptions);
+
+      if (options['cordova']) {
+        try {
+          await this.env.shell.run('ng', ['add', '@ionic/cordova-builders', '--skip-confirmation'], { cwd: this.project.rootDirectory });
+        } catch (e) {
+          debug('Error while adding @ionic/cordova-builders: %O', e);
+        }
+      }
     } else {
       // --no-deps flag was used so skip installing dependencies, this also results in the package.json being out sync with the package.json so warn the user
       this.env.log.warn('Using the --no-deps flag results in an out of date package lock file. The lock file can be updated by performing an `install` with your package manager.');
+      if (options['cordova']) {
+        this.env.log.warn('@ionic/cordova-builders couldn\'t be added, make sure you run `ng add @ionic/cordova-builders` after performing an `install` with your package manager.');
+      }
     }
 
     if (!this.schema.cloned) {
