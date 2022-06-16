@@ -3,6 +3,23 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [6.20.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.19.1...@ionic/cli@6.20.0) (2022-06-16)
+
+
+### Bug Fixes
+
+* **integrations:** Move ng add @ionic/cordova-builders after package installs ([#4853](https://github.com/ionic-team/ionic-cli/issues/4853)) ([8a69ae0](https://github.com/ionic-team/ionic-cli/commit/8a69ae0fd7d7fc15a0d1d5107199299117d34af4))
+
+
+### Features
+
+* **capacitor:** enable NSAppTransportSecurity settings for live reload if needed ([#4851](https://github.com/ionic-team/ionic-cli/issues/4851)) ([24e22a6](https://github.com/ionic-team/ionic-cli/commit/24e22a60d17709ff78563a796db01e69b6d641cb))
+* **cli:** allow cap electron commands ([#4854](https://github.com/ionic-team/ionic-cli/issues/4854)) ([46da22f](https://github.com/ionic-team/ionic-cli/commit/46da22ff5b89c66155829a307acd765c5ff957d0))
+
+
+
+
+
 ## [6.19.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.19.0...@ionic/cli@6.19.1) (2022-05-09)
 
 
