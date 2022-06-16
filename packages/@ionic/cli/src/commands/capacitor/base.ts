@@ -134,6 +134,11 @@ export abstract class CapacitorCommand extends Command {
     }
   });
 
+  isCorePlatform(platform: string): boolean {
+    const platforms = ['android', 'ios'];
+    return platforms.includes(platform);
+  }
+
   async getInstalledPlatforms(): Promise<string[]> {
     const cli = await this.getCapacitorCLIConfig();
     const androidPlatformDirAbs = cli?.android.platformDirAbs ?? path.resolve(this.integration.root, 'android');
@@ -146,6 +151,10 @@ export abstract class CapacitorCommand extends Command {
 
     if (await pathExists(iosPlatformDirAbs)) {
       platforms.push('ios');
+    }
+
+    if (await pathExists(path.resolve(this.integration.root, 'electron'))) {
+      platforms.push('electron');
     }
 
     return platforms;
@@ -297,8 +306,10 @@ export abstract class CapacitorCommand extends Command {
     }
 
     if (semver.gte(version, '3.0.0-alpha.1')) {
-      const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: `@capacitor/${platform}@${version}`, saveDev: false });
-      await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
+      if (this.isCorePlatform(platform)) {
+        const [ manager, ...managerArgs ] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: `@capacitor/${platform}@${version}`, saveDev: false });
+        await this.env.shell.run(manager, managerArgs, { cwd: this.integration.root });
+      }
     }
 
     await this.runCapacitor(['add', platform]);
