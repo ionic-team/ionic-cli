@@ -15,15 +15,11 @@ export class LoginCommand extends Command implements CommandPreRun {
       type: 'global',
       summary: 'Log in to Ionic',
       description: `
-Authenticate with Ionic and retrieve a user token, which is stored in the CLI config. The most secure way to log in is running ${input('ionic login')} without arguments, which will open a browser where you can submit your credentials.
+Authenticate with Ionic and retrieve a user token, which is stored in the CLI config. Running ${input('ionic login')} will open a browser where you can submit your credentials.
 
-If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. To retrieve your user token, first use ${input('ionic login <email> <password>')} to log in, then use ${input('ionic config get -g tokens.user')} to print the token. (${strong('Note')}: Tokens retrieved from the browser login are short-lived and not recommended for use with ${input('IONIC_TOKEN')}.)
-
-${input('ionic login')} will also accept ${input('password')} through stdin, e.g.: ${input('echo "<password>" | ionic login <email>')}.
+If the ${input('IONIC_TOKEN')} environment variable is set, the CLI will automatically authenticate you. Use the Dashboard to generate a Personal Access Token.
 
 If you need to create an Ionic account, use ${input('ionic signup')} or the Ionic Website[^signup].
-
-You can reset your password in the Dashboard[^reset-password].
 
 If you are having issues logging in, please get in touch with our Support[^support-request].
       `,
@@ -33,25 +29,20 @@ If you are having issues logging in, please get in touch with our Support[^suppo
           url: 'https://ionicframework.com/signup',
         },
         {
-          id: 'reset-password',
-          url: 'https://dashboard.ionicframework.com/reset-password',
-          shortUrl: 'https://ion.link/reset-password',
-        },
-        {
           id: 'support-request',
           url: 'https://ion.link/support-request',
         },
       ],
-      exampleCommands: ['', 'john@example.com', 'hello@example.com secret'],
+      exampleCommands: [''],
       inputs: [
         {
           name: 'email',
-          summary: 'Your email address',
+          summary: 'Your email address (deprecated)',
           private: true,
         },
         {
           name: 'password',
-          summary: 'Your password',
+          summary: 'Your password (deprecated)',
           private: true,
         },
       ],
@@ -70,6 +61,16 @@ If you are having issues logging in, please get in touch with our Support[^suppo
       this.env.log.warn(
         `The ${strong('--sso')} flag is no longer necessary.\n` +
         `SSO login has been upgraded to OpenID login, which is now the new default authentication flow of ${input('ionic login')}. Refresh tokens are used to automatically re-authenticate sessions.`
+      );
+      this.env.log.nl();
+    }
+
+    if (!!inputs[0]) {
+      this.env.log.warn(
+        'Authenticating using email and password is deprecated. ' +
+        (this.env.flags.interactive
+          ? `Please run ${input('ionic login')} without arguments to log in.`
+          : `Please generate a Personal Access Token and set the ${input('IONIC_TOKEN')} environment variable.`)
       );
       this.env.log.nl();
     }
