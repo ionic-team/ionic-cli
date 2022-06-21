@@ -83,6 +83,13 @@ async function authenticateFromEnvironment(ienv: IonicEnvironment) {
     if (ienv.config.get('user.email') !== email) {
       debug(`${strong('IONIC_EMAIL')} mismatch with current session--attempting login`);
 
+      ienv.log.warn(
+        'Authenticating using email and password is deprecated. Please generate a Personal Access Token and set the ' +
+        strong('IONIC_TOKEN') +
+        ' environment variable.'
+      );
+      ienv.log.nl();
+
       try {
         await ienv.session.login(email, password);
       } catch (e) {
