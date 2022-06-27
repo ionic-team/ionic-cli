@@ -1,6 +1,5 @@
 import { readFile } from '@ionic/utils-fs';
 import * as chalk from 'chalk';
-import * as path from 'path';
 
 import { TreatableAilment } from '../../../definitions';
 import { AppClient } from '../../app';
@@ -274,7 +273,7 @@ export class ViewportFitNotSet extends Ailment {
   }
 
   async detected() {
-    const indexHtml = await readFile(path.resolve(await this.project.getSourceDir(), 'index.html'), { encoding: 'utf8' });
+    const indexHtml = await readFile(await this.project.getIndexHtmlPath(), { encoding: 'utf8' });
     const m = indexHtml.match(/\<meta([\s]*(name=['"]viewport['"]){1})[\w\d\s\.\-,=]*(content=['"]){1}[\w\d\s\.\-,=]*(viewport-fit=cover){1}[\w\d\s\.\-,='"]+\/?\>/);
     return !Boolean(m);
   }

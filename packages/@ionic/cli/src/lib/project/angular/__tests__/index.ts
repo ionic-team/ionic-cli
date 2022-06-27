@@ -27,6 +27,15 @@ describe('@ionic/cli', () => {
 
       });
 
+      describe('getIndexHtmlPath', () => {
+
+        it('should default to src', async () => {
+          const result = await p.getIndexHtmlPath();
+          expect(result).toEqual(path.resolve('/path/to/proj/src/index.html'));
+        });
+
+      });
+
     });
 
   });

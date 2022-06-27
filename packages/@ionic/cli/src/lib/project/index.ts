@@ -542,6 +542,10 @@ export abstract class Project implements IProject {
     return path.resolve(this.directory, 'src');
   }
 
+  async getIndexHtmlPath(): Promise<string> {
+     return path.resolve(await this.getSourceDir(), 'index.html');
+  }
+
   async getDefaultDistDir(): Promise<string> {
     return 'www';
   }

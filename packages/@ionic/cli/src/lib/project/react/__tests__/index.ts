@@ -1,16 +1,16 @@
 import * as path from 'path'
-import { IonicAngularProject } from '../';
+import { ReactProject } from '../';
 
 describe('@ionic/cli', () => {
 
   describe('lib/project/ionic-angular', () => {
 
-    describe('IonicAngularProject', () => {
+    describe('ReactProject', () => {
 
-      let p: IonicAngularProject;
+      let p: ReactProject;
 
       beforeEach(() => {
-        p = new IonicAngularProject({ context: 'app', configPath: '/path/to/proj/file' } as any, {} as any);
+        p = new ReactProject({ context: 'app', configPath: '/path/to/proj/file' } as any, {} as any);
         jest.spyOn(p, 'config', 'get').mockImplementation(() => ({ get: () => undefined } as any));
       });
 
@@ -29,9 +29,9 @@ describe('@ionic/cli', () => {
 
       describe('getIndexHtmlPath', () => {
 
-        it('should default to src', async () => {
+        it('should default to public', async () => {
           const result = await p.getIndexHtmlPath();
-          expect(result).toEqual(path.resolve('/path/to/proj/src/index.html'));
+          expect(result).toEqual(path.resolve('/path/to/proj/public/index.html'));
         });
 
       });
@@ -39,5 +39,4 @@ describe('@ionic/cli', () => {
     });
 
   });
-
 });

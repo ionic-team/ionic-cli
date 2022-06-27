@@ -54,6 +54,10 @@ export class VueProject extends Project {
     return 'dist';
   }
 
+  async getIndexHtmlPath(): Promise<string> {
+    return path.resolve(this.directory, 'public', 'index.html');
+  }
+
   async requireBuildRunner(): Promise<import('./build').VueBuildRunner> {
     const { VueBuildRunner } = await import('./build');
     const deps = { ...this.e, project: this };
