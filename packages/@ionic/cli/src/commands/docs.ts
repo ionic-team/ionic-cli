@@ -31,6 +31,8 @@ export class DocsCommand extends Command {
     const homepage = 'https://ion.link/docs';
     const url = this.project ? await this.project.getDocsUrl() : homepage;
 
+    this.env.log.warn(`The "ionic docs" command has been deprecated and will be removed in an upcoming major release of the Ionic CLI. Developers should bookmark ${url} in their browser for easy access.`);
+
     try {
       const { req } = await createRequest('HEAD', url, this.env.config.getHTTPConfig());
       await req;
