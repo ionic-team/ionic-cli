@@ -15,7 +15,7 @@ export abstract class DoctorCommand extends Command {
       throw new FatalException(`Cannot use ${input('ionic doctor')} outside a project directory.`);
     }
 
-    this.env.log.warn(`The "ionic doctor" command has been deprecated and will be removed in an upcoming major release of the Ionic CLI. Developers can safely remove any references to this command as many of the checks are no longer needed.`);
+    this.env.log.warn(`The ${input('ionic doctor')} command has been deprecated and will be removed in an upcoming major release of the Ionic CLI. Developers can safely remove any references to this command as many of the checks are no longer needed.`);
 
     const { AilmentRegistry } = await import('../../lib/doctor');
 
