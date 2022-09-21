@@ -191,8 +191,6 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
     debug('Getting config with Capacitor CLI: %O', args);
 
-    //const output = await this.e.shell.cmdinfo('capacitor', args, { cwd: this.root });
-
     const output = await ((cmd: string, opts: ExecOptions): Promise<string | undefined> => {
       return new Promise((resolve, reject) => {
         exec(cmd, opts, (error, stdout, stderr) => {
