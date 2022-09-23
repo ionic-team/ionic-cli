@@ -195,7 +195,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       return new Promise((resolve, reject) => {
         exec(cmd, opts, (error, stdout, stderr) => {
           if (error) {
-            resolve(undefined);
+            reject();
           }
           resolve(stdout);
         })
