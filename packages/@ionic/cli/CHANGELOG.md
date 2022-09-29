@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.1...@ionic/cli@6.20.2) (2022-09-29)
+
+
+### Bug Fixes
+
+* **cli:** capacitor config not being read from multi-project directories ([#4909](https://github.com/ionic-team/ionic-cli/issues/4909)) ([0ab4881](https://github.com/ionic-team/ionic-cli/commit/0ab4881736f0d3b967d12802cb9cd01ba24d2088))
+
+
+
+
+
 ## [6.20.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.0...@ionic/cli@6.20.1) (2022-06-21)
 
 **Note:** Version bump only for package @ionic/cli
