@@ -195,12 +195,12 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       return new Promise((resolve, reject) => {
         exec(cmd, opts, (error, stdout, stderr) => {
           if (error) {
-            reject();
+            reject(error);
           }
           resolve(stdout);
         })
       })
-    })(`capacitor ${args.join(' ')}`, { cwd: this.root });
+    })(`npx capacitor ${args.join(' ')}`, { cwd: this.root });
 
     if (!output) {
       debug('Could not get config from Capacitor CLI (probably old version)');
