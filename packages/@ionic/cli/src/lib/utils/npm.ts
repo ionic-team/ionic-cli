@@ -80,7 +80,7 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
 
   switch (npmClient) {
     case 'npm':
-      vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '', lockFileOnly: '--package-lock-only' };
+      vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '--location=global', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '', lockFileOnly: '--package-lock-only' };
       break;
     case 'yarn':
       vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive', lockFileOnly: '' };
