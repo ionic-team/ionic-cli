@@ -1,6 +1,6 @@
 import { exec, ExecOptions } from 'child_process';
 import { parseArgs } from '@ionic/cli-framework';
-import { mkdirp, pathExists } from '@ionic/utils-fs';
+import { existsSync, mkdirp, pathExists, readFileSync } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
@@ -187,7 +187,17 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   });
 
   getCapacitorCLIConfig = lodash.memoize(async (): Promise<CapacitorCLIConfig | undefined> => {
-    const args = ['config', '--json'];
+    const pJsonPath = path.join(this.root, 'package.json');
+    let capPinVersion = 'latest'
+    if (existsSync(pJsonPath)) {
+      const jsonData = JSON.parse(readFileSync(pJsonPath, {'encoding': 'utf-8'}));
+      const allDeps: {[key: string]: string} = {...jsonData.dependencies, ...jsonData.devDependencies};
+      if ('@capacitor/cli' in allDeps) {
+        capPinVersion = allDeps['@capacitor/cli']
+      }
+    }
+
+    const args = [`--package=@capacitor/cli@${capPinVersion}`, 'capacitor', 'config', '--json'];
 
     debug('Getting config with Capacitor CLI: %O', args);
 
@@ -200,7 +210,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
           resolve(stdout);
         })
       })
-    })(`npx capacitor ${args.join(' ')}`, { cwd: this.root });
+    })(`npx ${args.join(' ')}`, { cwd: this.root });
 
     if (!output) {
       debug('Could not get config from Capacitor CLI (probably old version)');
@@ -211,7 +221,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         // This ensures that the output from the command is valid JSON to account for this
         return JSON.parse(output);
       } catch(e) {
-        debug('Could not get config from Capacitor CLI (probably old version)', e);
+        debug('Could not get config from Capacitor CLI (probably old version) -- Error: %O', e);
         return;
       }
     }
