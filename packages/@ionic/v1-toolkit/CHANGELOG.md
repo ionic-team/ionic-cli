@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.2.20](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.19...@ionic/v1-toolkit@3.2.20) (2022-10-06)
+
+
+### Bug Fixes
+
+* **cli:** capacitor commands not working ([#4918](https://github.com/ionic-team/ionic-cli/issues/4918)) ([27b958b](https://github.com/ionic-team/ionic-cli/commit/27b958bdf22c37f962d705a1b8ba1fee78b59c42))
+
+
+
+
+
 ## [3.2.19](https://github.com/ionic-team/ionic-cli/compare/@ionic/v1-toolkit@3.2.18...@ionic/v1-toolkit@3.2.19) (2022-09-29)
 
 
