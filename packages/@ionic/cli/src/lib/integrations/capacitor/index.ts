@@ -1,4 +1,3 @@
-import { exec, ExecOptions } from 'child_process';
 import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
@@ -191,16 +190,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
     debug('Getting config with Capacitor CLI: %O', args);
 
-    const output = await ((cmd: string, opts: ExecOptions): Promise<string | undefined> => {
-      return new Promise((resolve, reject) => {
-        exec(cmd, opts, (error, stdout, stderr) => {
-          if (error) {
-            reject();
-          }
-          resolve(stdout);
-        })
-      })
-    })(`capacitor ${args.join(' ')}`, { cwd: this.root });
+    const output = await this.e.shell.cmdinfo('capacitor', args, { cwd: this.root });
 
     if (!output) {
       debug('Could not get config from Capacitor CLI (probably old version)');
