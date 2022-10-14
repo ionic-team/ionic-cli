@@ -30,6 +30,8 @@ export abstract class DoctorCommand extends Command {
     const tasks = this.createTaskChain();
     const isLoggedIn = this.env.session.isLoggedIn();
 
+    this.env.log.warn(`The ${input('ionic doctor')} command has been deprecated and will be removed in an upcoming major release of the Ionic CLI. Developers can safely remove any references to this command as many of the checks are no longer needed.`);
+
     if (!isLoggedIn) {
       this.env.log.warn(`For best results, please make sure you're logged in to Ionic.\nSome issues can't be detected without authentication. Run:\n\n    ${input('ionic login')}`);
     }
