@@ -4,6 +4,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { input } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
+import * as semver from "semver";
 
 export class CopyCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -14,6 +15,12 @@ export class CopyCommand extends CapacitorCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
+      {
+        name: 'inline',
+        summary: 'Use inline source maps (only available on capacitor 4.2.0)',
+        type: Boolean,
+        default: true
+      }
     ];
 
     const runner = this.project && await this.project.getBuildRunner();
@@ -58,6 +65,11 @@ ${input('ionic capacitor copy')} will do the following:
     }
 
     const args = ['copy'];
+
+    const capVersion = await this.getCapacitorVersion();
+    if(semver.gte(capVersion, "4.2.0") && options.inline) {
+      args.push("--inline")
+    }
 
     if (platform) {
       args.push(platform);
