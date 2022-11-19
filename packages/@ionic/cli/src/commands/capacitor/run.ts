@@ -205,12 +205,16 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
             );
           }
         } else {
-          options['target'] = await this.env.prompt({
-            type: 'list',
-            name: 'target',
-            message: 'Which device would you like to target?',
-            choices: targets.map(t => ({ name: `${t.name} (${t.id})`, value: t.id })),
-          });
+          if (targets.length > 0) {
+            options['target'] = await this.env.prompt({
+              type: 'list',
+              name: 'target',
+              message: 'Which device would you like to target?',
+              choices: targets.map(t => ({ name: `${t.name} (${t.id})`, value: t.id })),
+            });
+          } else {
+            throw new FatalException(`No devices or emulators found`);
+          }
 
           if (!inputs[0]) {
             throw new FatalException(`The ${input('platform')} argument is required.`);
