@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.3...@ionic/cli@6.20.4) (2022-11-15)
+
+
+### Bug Fixes
+
+* **capacitor:** Error if no emulators or devices are found on run ([#4931](https://github.com/ionic-team/ionic-cli/issues/4931)) ([7ec24c0](https://github.com/ionic-team/ionic-cli/commit/7ec24c04043b760ff9940d24c9ac281dce3aa21f))
+
+
+
+
+
 ## [6.20.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.2...@ionic/cli@6.20.3) (2022-10-06)
 
 
