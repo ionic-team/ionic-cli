@@ -307,12 +307,6 @@ export async function createProjectFromDetails(details: ProjectDetailsResult, de
     case 'vue':
       const { VueProject } = await import('./vue');
       return new VueProject(details, deps);
-    case 'ionic-angular':
-      const { IonicAngularProject } = await import('./ionic-angular');
-      return new IonicAngularProject(details, deps);
-    case 'ionic1':
-      const { Ionic1Project } = await import('./ionic1');
-      return new Ionic1Project(details, deps);
     case 'custom':
       const { CustomProject } = await import('./custom');
       return new CustomProject(details, deps);
