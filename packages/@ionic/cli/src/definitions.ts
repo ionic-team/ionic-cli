@@ -691,15 +691,16 @@ export interface Ionic1BuildOptions extends BuildOptions<'ionic1'> {}
 export interface CustomBuildOptions extends BuildOptions<'custom'> {}
 
 export interface GenerateOptions {
-  type: string;
   name: string;
 }
 
 export interface AngularGenerateOptions extends GenerateOptions {
   [key: string]: any; // TODO
+  schematic: string;
 }
 
 export interface IonicAngularGenerateOptions extends GenerateOptions {
+  type: string;
   module: boolean;
   constants: boolean;
 }
