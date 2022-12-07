@@ -58,7 +58,7 @@ To test a generator before file modifications are made, use the ${input('--dry-r
       ],
       inputs: [
         {
-          name: 'type',
+          name: 'schematic',
           summary: `The type of feature (e.g. ${['page', 'component', 'directive', 'service'].map(c => input(c)).join(', ')})`,
           validators: [validators.required],
         },
@@ -75,22 +75,22 @@ To test a generator before file modifications are made, use the ${input('--dry-r
     if (inputs[0]) {
       this.validateFeatureType(inputs[0]);
     } else {
-      const type = await this.e.prompt({
+      const schematic = await this.e.prompt({
         type: 'list',
-        name: 'type',
+        name: 'schematic',
         message: 'What would you like to generate?',
         choices: SCHEMATICS,
       });
 
-      inputs[0] = type;
+      inputs[0] = schematic;
     }
 
     if (!inputs[1]) {
-      const type = SCHEMATIC_ALIAS.get(inputs[0]) || inputs[0];
+      const schematic = SCHEMATIC_ALIAS.get(inputs[0]) || inputs[0];
       const name = await this.e.prompt({
         type: 'input',
         name: 'name',
-        message: `Name/path of ${input(type)}:`,
+        message: `Name/path of ${input(schematic)}:`,
         validate: v => validators.required(v),
       });
 
@@ -99,7 +99,8 @@ To test a generator before file modifications are made, use the ${input('--dry-r
   }
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularGenerateOptions {
-    const baseOptions = super.createOptionsFromCommandLine(inputs, options);
+    const [schematic, name] = inputs;
+    const baseOptions = {name, schematic}
     const project = options['project'] ? String(options['project']) : 'app';
 
     // TODO: this is a little gross, is there a better way to pass in all the
@@ -113,22 +114,22 @@ To test a generator before file modifications are made, use the ${input('--dry-r
 
   async run(options: AngularGenerateOptions) {
     const { name } = options;
-    const type = SCHEMATIC_ALIAS.get(options.type) || options.type;
+    const schematic = SCHEMATIC_ALIAS.get(options.schematic) || options.schematic;
 
     try {
-      await this.generateComponent(type, name, lodash.omit(options, 'type', 'name'));
+      await this.generateComponent(schematic, name, lodash.omit(options, 'schematic', 'name'));
     } catch (e) {
       debug(e);
-      throw new FatalException(`Could not generate ${input(type)}.`);
+      throw new FatalException(`Could not generate ${input(schematic)}.`);
     }
 
     if (!options['dry-run']) {
-      this.e.log.ok(`Generated ${input(type)}!`);
+      this.e.log.ok(`Generated ${input(schematic)}!`);
     }
   }
 
-  private validateFeatureType(type: string) {
-    if (type === 'provider') {
+  private validateFeatureType(schematic: string) {
+    if (schematic === 'provider') {
       throw new FatalException(
         `Please use ${input('ionic generate service')} for generating service providers.\n` +
         `For more information, please see the Angular documentation${ancillary('[1]')} on services.\n\n` +
@@ -136,17 +137,17 @@ To test a generator before file modifications are made, use the ${input('--dry-r
       );
     }
 
-    if (!SCHEMATICS.includes(type) && !SCHEMATIC_ALIAS.get(type)) {
+    if (!SCHEMATICS.includes(schematic) && !SCHEMATIC_ALIAS.get(schematic)) {
       throw new FatalException(
-        `${input(type)} is not a known feature.\n` +
+        `${input(schematic)} is not a known feature.\n` +
         `Use ${input('npx ng g --help')} to list available types of features.`
       );
     }
   }
 
-  private async generateComponent(type: string, name: string, options: { [key: string]: string | boolean; }) {
+  private async generateComponent(schematic: string, name: string, options: { [key: string]: string | boolean; }) {
     const args = {
-      _: ['generate', type, name],
+      _: ['generate', schematic, name],
       // convert `--no-<opt>` style options to `--<opt>=false`
       ...lodash.mapValues(options, v => v === false ? 'false' : v),
     };
