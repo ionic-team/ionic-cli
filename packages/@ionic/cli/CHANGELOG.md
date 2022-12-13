@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.4...@ionic/cli@6.20.5) (2022-12-13)
+
+**Note:** Version bump only for package @ionic/cli
+
+
+
+
+
 ## [6.20.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.3...@ionic/cli@6.20.4) (2022-11-15)
 
 
