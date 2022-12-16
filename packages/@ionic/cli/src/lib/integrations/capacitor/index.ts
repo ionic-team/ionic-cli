@@ -202,7 +202,6 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       }
     })('capacitor', args, { cwd: this.root })
 
-    // const output = await this.e.shell.cmdinfo('capacitor', args, { cwd: this.root });
 
     if (!output) {
       debug('Could not get config from Capacitor CLI (probably old version)');
