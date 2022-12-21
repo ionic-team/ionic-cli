@@ -3,6 +3,58 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.5...@ionic/cli@6.20.6) (2022-12-20)
+
+
+### Bug Fixes
+
+* **cli:** capacitor recognize multi-project ([#4937](https://github.com/ionic-team/ionic-cli/issues/4937)) ([553ea79](https://github.com/ionic-team/ionic-cli/commit/553ea794f916f17db131d359caba9b6c1b31b919))
+
+
+
+
+
+## [6.20.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.4...@ionic/cli@6.20.5) (2022-12-13)
+
+**Note:** Version bump only for package @ionic/cli
+
+
+
+
+
+## [6.20.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.3...@ionic/cli@6.20.4) (2022-11-15)
+
+
+### Bug Fixes
+
+* **capacitor:** Error if no emulators or devices are found on run ([#4931](https://github.com/ionic-team/ionic-cli/issues/4931)) ([7ec24c0](https://github.com/ionic-team/ionic-cli/commit/7ec24c04043b760ff9940d24c9ac281dce3aa21f))
+
+
+
+
+
+## [6.20.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.2...@ionic/cli@6.20.3) (2022-10-06)
+
+
+### Bug Fixes
+
+* **cli:** capacitor commands not working ([#4918](https://github.com/ionic-team/ionic-cli/issues/4918)) ([27b958b](https://github.com/ionic-team/ionic-cli/commit/27b958bdf22c37f962d705a1b8ba1fee78b59c42))
+
+
+
+
+
+## [6.20.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.1...@ionic/cli@6.20.2) (2022-09-29)
+
+
+### Bug Fixes
+
+* **cli:** capacitor config not being read from multi-project directories ([#4909](https://github.com/ionic-team/ionic-cli/issues/4909)) ([0ab4881](https://github.com/ionic-team/ionic-cli/commit/0ab4881736f0d3b967d12802cb9cd01ba24d2088))
+
+
+
+
+
 ## [6.20.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.0...@ionic/cli@6.20.1) (2022-06-21)
 
 **Note:** Version bump only for package @ionic/cli

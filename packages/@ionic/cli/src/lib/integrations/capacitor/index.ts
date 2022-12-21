@@ -13,6 +13,7 @@ import {
   InfoItem,
   IntegrationAddDetails,
   IntegrationName,
+  IShellSpawnOptions,
   ProjectIntegration,
   ProjectPersonalizationDetails
 } from '../../../definitions';
@@ -190,7 +191,25 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
 
     debug('Getting config with Capacitor CLI: %O', args);
 
-    const output = await this.e.shell.cmdinfo('capacitor', args, { cwd: this.root });
+    let output = undefined;
+    try {
+      output = await (async (_command: string, _args: readonly string[] = [], opts: IShellSpawnOptions = {}) => {
+        try {
+          const proc = await this.e.shell.createSubprocess(_command, _args, opts);
+          const out = await proc.output();
+          return out.split('\n').join(' ').trim();
+        } catch (err) {
+          throw err;
+        }
+      })('capacitor', args, { cwd: this.root })
+    } catch (error) {
+      if ((error as any).code === 'ERR_SUBPROCESS_COMMAND_NOT_FOUND') {
+        throw new Error(`Capacitor command not found. Is the Capacitor CLI installed? (npm i -D @capacitor/cli)`);
+      } else {
+        throw new Error((error as any).message);
+      }
+    }
+
 
     if (!output) {
       debug('Could not get config from Capacitor CLI (probably old version)');

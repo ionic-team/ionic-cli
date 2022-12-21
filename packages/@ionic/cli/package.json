@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli",
-  "version": "6.20.1",
+  "version": "6.20.6",
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "https://ionicframework.com",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
@@ -78,7 +78,7 @@
     "@types/split2": "^2.1.6",
     "@types/superagent": "4.1.3",
     "@types/superagent-proxy": "^3.0.0",
-    "@types/tar": "^4.0.0",
+    "@types/tar": "^6.1.2",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",
