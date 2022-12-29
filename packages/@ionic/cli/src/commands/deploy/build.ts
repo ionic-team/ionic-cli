@@ -12,6 +12,7 @@ import { isSuperAgentError } from '../../guards';
 import { input, strong, weak } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
+import { fileUtils } from '../../lib/utils/file';
 import { createRequest, download } from '../../lib/utils/http';
 import { IONIC_CLOUD_CLI_MIGRATION } from '../../lib/updates';
 
@@ -97,6 +98,12 @@ Customizing the build:
           spec: { value: 'name' },
           default: false,
         },
+        {
+          name: 'build-file-name',
+          summary: 'An optional name for the downloaded web artifacts.',
+          type: String,
+          spec: { value: 'name' },
+        },
       ],
     };
   }
@@ -149,7 +156,13 @@ Customizing the build:
       throw new Error('Missing URL in response');
     }
 
-    const filename = await this.downloadBuild(url.url, build.artifact_name);
+    let buildFilename = build.artifact_name;
+
+    if (options['build-file-name']) {
+      buildFilename = await this.sanitizeString(options['build-file-name']);
+    }
+
+    const filename = await this.downloadBuild(url.url, buildFilename);
     this.env.log.ok(`Artifact downloaded: ${filename}`);
 
   }
@@ -273,6 +286,19 @@ Customizing the build:
     fs.copyFileSync(tmpFile, filename);
     fs.unlinkSync(tmpFile);
     return filename;
+  }
+
+  async sanitizeString(value: string | string[] | boolean | null | undefined): Promise<string> {
+
+    if (!value || typeof (value) !== 'string') {
+      return '';
+    }
+
+    if (!fileUtils.isValidFileName(value)) {
+      throw new FatalException(`${strong(String(value))} is not a valid file name`);
+    }
+
+    return String(value);
   }
 
 }
