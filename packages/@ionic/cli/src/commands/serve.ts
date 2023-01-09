@@ -100,6 +100,10 @@ Try the ${input('--lab')} option to see multiple platforms at once.`;
       options['lab'] = true;
     }
 
+    if (options['lab']) {
+      this.env.log.warn(`The ${input('--lab')} option has been deprecated and will be removed in an upcoming major release of the Ionic CLI. Please visit ${strong('https://ionicframework.com/docs/developing/previewing')} for alternatives to Ionic Lab.`);
+    }
+
     if (options['nolivereload']) {
       this.env.log.warn(`The ${input('--nolivereload')} option has been deprecated. Please use ${input('--no-livereload')}.`);
       options['livereload'] = false;
