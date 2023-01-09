@@ -227,11 +227,14 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   });
 
   getCapacitorConfig = lodash.memoize(async (): Promise<CapacitorConfig | undefined> => {
-    const cli = await this.getCapacitorCLIConfig();
-
-    if (cli) {
-      debug('Loaded Capacitor config!');
-      return cli.app.extConfig;
+    try {
+      const cli = await this.getCapacitorCLIConfig();
+      if (cli) {
+        debug('Loaded Capacitor config!');
+        return cli.app.extConfig;
+      }
+    } catch (ex) {
+      // ignore
     }
 
     // fallback to reading capacitor.config.json if it exists
