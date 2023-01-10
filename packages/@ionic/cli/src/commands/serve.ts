@@ -19,7 +19,7 @@ export class ServeCommand extends Command implements CommandPreRun {
         name: 'lab-host',
         summary: 'Use specific host for Ionic Lab server',
         default: 'localhost',
-        groups: [MetadataGroup.ADVANCED],
+        groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
         spec: { value: 'host' },
         hint: weak('(--lab)'),
       },
@@ -27,7 +27,7 @@ export class ServeCommand extends Command implements CommandPreRun {
         name: 'lab-port',
         summary: 'Use specific port for Ionic Lab server',
         default: DEFAULT_LAB_PORT.toString(),
-        groups: [MetadataGroup.ADVANCED],
+        groups: [MetadataGroup.ADVANCED, MetadataGroup.HIDDEN],
         spec: { value: 'port' },
         hint: weak('(--lab)'),
       },
@@ -56,10 +56,11 @@ export class ServeCommand extends Command implements CommandPreRun {
         summary: 'Test your apps on multiple platform types in the browser',
         type: Boolean,
         aliases: ['l'],
+        groups: [MetadataGroup.HIDDEN],
       },
     ];
 
-    const exampleCommands = ['', '--external', '--lab'];
+    const exampleCommands = ['', '--external'];
     const footnotes: Footnote[] = [];
 
     let description = `

@@ -10,7 +10,7 @@ const NG_BUILD_OPTIONS = [
   {
     name: 'configuration',
     aliases: ['c'],
-    summary: 'Specify the configuration to use.',
+    summary: 'Specify the configuration to use',
     type: String,
     groups: [MetadataGroup.ADVANCED, 'cordova'],
     hint: weak('[ng]'),
