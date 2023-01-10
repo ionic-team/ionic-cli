@@ -557,7 +557,7 @@ export abstract class Project implements IProject {
       } else {
         throw new FatalException(
           `The ${input('webDir')} property must be set in the Capacitor configuration file. \n` +
-          `See the Capacitor docs for more information: ${strong('https://capacitor.ionicframework.com/docs/basics/configuring-your-app')}`
+          `See the Capacitor docs for more information: ${strong('https://capacitorjs.com/docs/basics/configuring-your-app')}`
         );
       }
     } else {
