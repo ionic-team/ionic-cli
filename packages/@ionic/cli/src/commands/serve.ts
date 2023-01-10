@@ -27,7 +27,7 @@ export class ServeCommand extends Command implements CommandPreRun {
         name: 'lab-port',
         summary: 'Use specific port for Ionic Lab server',
         default: DEFAULT_LAB_PORT.toString(),
-        groups: [MetadataGroup.ADVANCED, MetadataGroup.HIDDEN],
+        groups: [MetadataGroup.HIDDEN, MetadataGroup.ADVANCED],
         spec: { value: 'port' },
         hint: weak('(--lab)'),
       },
