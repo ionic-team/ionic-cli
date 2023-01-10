@@ -1,3 +1,4 @@
+import { MetadataGroup } from '@ionic/cli-framework';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { columnar } from '@ionic/utils-terminal';
 
@@ -14,6 +15,7 @@ export class DoctorListCommand extends DoctorCommand {
       name: 'list',
       type: 'project',
       summary: 'List all issues and their identifiers',
+      groups: [MetadataGroup.DEPRECATED],
       description: `
 Issues can have various tags:
 - ${strong('treatable')}: ${input('ionic doctor treat')} can attempt to fix the issue
