@@ -19,9 +19,9 @@ export class SyncCommand extends CapacitorCommand implements CommandPreRun {
       },
       {
         name: 'inline',
-        summary: 'Use inline source maps  (only available on capacitor 4.1.0)',
+        summary: 'Use inline source maps  (only available on capacitor 4.1.0+)',
         type: Boolean,
-        default: true
+        default: false
       }
     ];
 
