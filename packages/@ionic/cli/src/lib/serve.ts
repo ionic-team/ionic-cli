@@ -2,7 +2,7 @@ import { BaseError, MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-fr
 import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework-output';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
-import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
+import { NetworkInterface, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
