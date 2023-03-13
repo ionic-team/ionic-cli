@@ -1,4 +1,4 @@
-import { contains, validate } from '@ionic/cli-framework';
+import { contains, MetadataGroup, validate } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IAilment } from '../../definitions';
 import { isTreatableAilment } from '../../guards';
@@ -13,6 +13,7 @@ export class DoctorCheckCommand extends DoctorCommand {
       name: 'check',
       type: 'project',
       summary: 'Check the health of your Ionic project',
+      groups: [MetadataGroup.DEPRECATED],
       description: `
 This command detects and prints common issues and suggested steps to fix them.
 

@@ -3,6 +3,65 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.20.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.7...@ionic/cli@6.20.8) (2023-01-13)
+
+**Note:** Version bump only for package @ionic/cli
+
+
+
+
+
+## [6.20.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.7...@ionic/cli@6.20.7) (2023-01-13)
+
+**Note:** Version bump only for package @ionic/cli
+
+
+
+
+
+## [6.20.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.6...@ionic/cli@6.20.7) (2023-01-13)
+
+
+### Bug Fixes
+
+* **capacitor:** forward --inline to Capacitor CLI on copy and sync ([#4928](https://github.com/ionic-team/ionic-cli/issues/4928)) ([f5f75fa](https://github.com/ionic-team/ionic-cli/commit/f5f75fa27cffee37571813a2827cfc02baf0cb9a))
+* **cli:** Deprecate doctor and lab commands ([#4945](https://github.com/ionic-team/ionic-cli/issues/4945)) ([6fcf882](https://github.com/ionic-team/ionic-cli/commit/6fcf882b9ee9c31fcea38a6390b3c181c4df5ca6))
+* deploy manifest error if no capacitor CLI ([#4940](https://github.com/ionic-team/ionic-cli/issues/4940)) ([f586a18](https://github.com/ionic-team/ionic-cli/commit/f586a18805ead288850f18d8981db4f0ad8848ed))
+
+
+
+
+
+## [6.20.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.5...@ionic/cli@6.20.6) (2022-12-20)
+
+
+### Bug Fixes
+
+* **cli:** capacitor recognize multi-project ([#4937](https://github.com/ionic-team/ionic-cli/issues/4937)) ([553ea79](https://github.com/ionic-team/ionic-cli/commit/553ea794f916f17db131d359caba9b6c1b31b919))
+
+
+
+
+
+## [6.20.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.4...@ionic/cli@6.20.5) (2022-12-13)
+
+**Note:** Version bump only for package @ionic/cli
+
+
+
+
+
+## [6.20.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.3...@ionic/cli@6.20.4) (2022-11-15)
+
+
+### Bug Fixes
+
+* **capacitor:** Error if no emulators or devices are found on run ([#4931](https://github.com/ionic-team/ionic-cli/issues/4931)) ([7ec24c0](https://github.com/ionic-team/ionic-cli/commit/7ec24c04043b760ff9940d24c9ac281dce3aa21f))
+
+
+
+
+
 ## [6.20.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.2...@ionic/cli@6.20.3) (2022-10-06)
 
 
