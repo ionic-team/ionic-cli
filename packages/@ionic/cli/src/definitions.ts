@@ -782,35 +782,6 @@ export interface ServeDetails {
   externallyAccessible: boolean;
 }
 
-export interface IAilment {
-  readonly id: string;
-  implicit: boolean;
-  projects?: ProjectType[];
-  getMessage(): Promise<string>;
-  detected(): Promise<boolean>;
-  getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
-}
-
-export interface TreatableAilment extends IAilment {
-  readonly treatable: boolean;
-  getTreatmentSteps(): Promise<DoctorTreatmentStep[]>;
-}
-
-export interface PatientTreatmentStep {
-  message: string;
-}
-
-export interface DoctorTreatmentStep extends PatientTreatmentStep {
-  treat(): Promise<void>;
-}
-
-export interface IAilmentRegistry {
-  ailments: IAilment[];
-
-  register(ailment: IAilment): void;
-  get(id: string): IAilment | undefined;
-}
-
 export interface IonicContext {
   readonly binPath: string;
   readonly libPath: string;

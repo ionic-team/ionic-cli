@@ -3,7 +3,7 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { Project } from '../';
-import { IAilmentRegistry, InfoItem } from '../../../definitions';
+import { InfoItem } from '../../../definitions';
 import { strong } from '../../color';
 
 const debug = Debug('ionic:lib:project:angular');
