@@ -98,11 +98,6 @@ export class AngularProject extends Project {
     return new AngularGenerateRunner(deps);
   }
 
-  async registerAilments(registry: IAilmentRegistry): Promise<void> {
-    await super.registerAilments(registry);
-    // TODO: register angular project ailments
-  }
-
   setPrimaryTheme(themeColor: string): Promise<void> {
     const themePath = path.join(this.directory, 'src', 'theme', 'variables.scss');
     return this.writeThemeColor(themePath, themeColor);

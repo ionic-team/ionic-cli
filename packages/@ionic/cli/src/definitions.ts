@@ -379,7 +379,6 @@ export interface IProject {
   getPackageJson(pkgName?: string, options?: { logErrors?: boolean }): Promise<[PackageJson | undefined, string | undefined]>;
   requirePackageJson(pkgName?: string): Promise<PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
-  registerAilments(registry: IAilmentRegistry): Promise<void>;
   getBuildRunner(): Promise<import('./lib/build').BuildRunner<any> | undefined>;
   getServeRunner(): Promise<import('./lib/serve').ServeRunner<any> | undefined>;
   getGenerateRunner(): Promise<import('./lib/generate').GenerateRunner<any> | undefined>;

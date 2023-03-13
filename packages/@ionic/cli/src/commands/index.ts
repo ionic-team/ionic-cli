@@ -50,7 +50,6 @@ export class IonicNamespace extends Namespace {
       ['ssl', async () => { const { SSLNamespace } = await import('./ssl/index'); return new SSLNamespace(this); }],
       ['ssh', async () => { const { SSHNamespace } = await import('./ssh/index'); return new SSHNamespace(this); }],
       ['monitoring', async () => { const { MonitoringNamespace } = await import('./monitoring/index'); return new MonitoringNamespace(this); }],
-      ['doctor', async () => { const { DoctorNamespace } = await import('./doctor/index'); return new DoctorNamespace(this); }],
       ['integrations', async () => { const { IntegrationsNamespace } = await import('./integrations/index'); return new IntegrationsNamespace(this); }],
       ['enterprise', async () => { const { EnterpriseNamespace } = await import('./enterprise/index'); return new EnterpriseNamespace(this); }],
       ['cap', 'capacitor'],
