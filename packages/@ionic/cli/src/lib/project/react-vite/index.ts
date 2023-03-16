@@ -7,7 +7,7 @@ import { Project } from '../';
 import { InfoItem } from '../../../definitions';
 import { RunnerNotFoundException } from '../../errors';
 
-const debug = Debug('ionic:lib:project:vue');
+const debug = Debug('ionic:lib:project:react');
 
 export class ReactViteProject extends Project {
   readonly type: 'react' = 'react';
@@ -32,7 +32,7 @@ export class ReactViteProject extends Project {
   }
 
   /**
-   * We can't detect Vue project types. We don't know what they look like!
+   * We can't detect React project types. We don't know what they look like!
    */
   async detected() {
     try {

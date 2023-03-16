@@ -137,7 +137,7 @@ export class ReactViteServeCLI extends ServeCLI<ReactServeOptions> {
     options: ReactServeOptions
   ): Promise<NodeJS.ProcessEnv> {
     const env: NodeJS.ProcessEnv = {};
-    // // Vue CLI binds to `localhost` by default, but if specified it prints a
+    // // Vite binds to `localhost` by default, but if specified it prints a
     // // warning, so don't set `HOST` if the host is set to `localhost`.
     if (options.host !== DEFAULT_ADDRESS) {
       env.HOST = options.host;

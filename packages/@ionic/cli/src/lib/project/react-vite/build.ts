@@ -25,8 +25,8 @@ export class ReactViteBuildRunner extends BuildRunner<ReactBuildOptions> {
   }
 
   async buildProject(options: ReactBuildOptions): Promise<void> {
-    const vueScripts = new ReactViteBuildCLI(this.e);
-    await vueScripts.build(options);
+    const reactVite = new ReactViteBuildCLI(this.e);
+    await reactVite.build(options);
   }
 }
 
