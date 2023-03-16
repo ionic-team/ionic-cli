@@ -12,7 +12,7 @@ describe('@ionic/cli', () => {
         const defaults = {
           name: undefined,
           project: 'app',
-          type: undefined,
+          schematic: undefined,
         };
 
         it('should provide defaults with no inputs or options', () => {
@@ -24,7 +24,7 @@ describe('@ionic/cli', () => {
         it('should provide options from inputs', () => {
           const runner = new AngularGenerateRunner({} as any);
           const result = runner.createOptionsFromCommandLine(['service', 'FancyBar'], { _: [] });
-          expect(result).toEqual({ ...defaults, name: 'FancyBar', type: 'service' });
+          expect(result).toEqual({ ...defaults, name: 'FancyBar', schematic: 'service' });
         });
 
         it('should respect --project', () => {
