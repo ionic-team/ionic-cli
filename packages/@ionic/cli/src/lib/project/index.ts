@@ -307,6 +307,12 @@ export async function createProjectFromDetails(details: ProjectDetailsResult, de
     case 'vue':
       const { VueProject } = await import('./vue');
       return new VueProject(details, deps);
+    case 'vue-vite':
+      const { VueViteProject } = await import('./vue-vite');
+      return new VueViteProject(details, deps);
+    case 'react-vite':
+      const { ReactViteProject } = await import('./react-vite');
+      return new ReactViteProject(details, deps);
     case 'custom':
       const { CustomProject } = await import('./custom');
       return new CustomProject(details, deps);
