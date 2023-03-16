@@ -11,7 +11,7 @@
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
   "engines": {
-    "node": ">=10.3.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "assets/",
