@@ -14,6 +14,17 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 
 
+## [6.20.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.8...@ionic/cli@6.20.9) (2023-03-17)
+
+
+### Bug Fixes
+
+* **cli:** native solution preview should no longer be hidden ([#4962](https://github.com/ionic-team/ionic-cli/issues/4962)) ([a2eb4b2](https://github.com/ionic-team/ionic-cli/commit/a2eb4b2cf46e0f2004c1850acfdeada46fb211b5))
+
+
+
+
+
 ## [6.20.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.7...@ionic/cli@6.20.8) (2023-01-13)
 
 **Note:** Version bump only for package @ionic/cli
