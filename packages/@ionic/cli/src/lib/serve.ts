@@ -2,7 +2,7 @@ import { BaseError, MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-fr
 import { LOGGER_LEVELS, createPrefixedFormatter } from '@ionic/cli-framework-output';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
-import { NetworkInterface, findClosestOpenPort, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
+import { NetworkInterface, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
 import * as chalk from 'chalk';
 import * as Debug from 'debug';
@@ -11,7 +11,7 @@ import * as lodash from 'lodash';
 import * as split2 from 'split2';
 import * as stream from 'stream';
 
-import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, LabServeDetails, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
+import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 
 import { ancillary, input, strong, weak } from './color';
 import { FatalException, ServeCLIProgramNotFoundException } from './errors';
@@ -25,7 +25,6 @@ const debug = Debug('ionic:lib:serve');
 export const DEFAULT_DEV_LOGGER_PORT = 53703;
 export const DEFAULT_LIVERELOAD_PORT = 35729;
 export const DEFAULT_SERVER_PORT = 8100;
-export const DEFAULT_LAB_PORT = 8200;
 export const DEFAULT_DEVAPP_COMM_PORT = 53233;
 
 export const DEFAULT_ADDRESS = 'localhost';
@@ -138,7 +137,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
     const engine = this.determineEngineFromCommandLine(options);
     const host = options['host'] ? String(options['host']) : DEFAULT_ADDRESS;
-    const labPort = str2num(options['lab-port'], DEFAULT_LAB_PORT);
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
     const [ platform ] = options['platform'] ? [String(options['platform'])] : inputs;
 
@@ -149,9 +147,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       browserOption: options['browseroption'] ? String(options['browseroption']) : undefined,
       engine,
       externalAddressRequired: !!options['externalAddressRequired'],
-      lab: !!options['lab'],
-      labHost: options['lab-host'] ? String(options['lab-host']) : 'localhost',
-      labPort,
       livereload: typeof options['livereload'] === 'boolean' ? Boolean(options['livereload']) : true,
       open: !!options['open'],
       platform,
@@ -195,16 +190,13 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     await this.beforeServe(options);
 
     const details = await this.serveProject(options);
-    const labDetails = options.lab ? await this.runLab(options, details) : undefined;
 
     const localAddress = `${details.protocol}://${options.publicHost ? options.publicHost : 'localhost'}:${details.port}`;
     const fmtExternalAddress = (host: string) => `${details.protocol}://${host}:${details.port}`;
-    const labHost = labDetails ? `http://${labDetails.host}:${labDetails.port}` : undefined;
 
     this.e.log.nl();
     this.e.log.info(
       `Development server running!` +
-      (labHost ? `\nLab: ${strong(labHost)}` : '') +
       `\nLocal: ${strong(localAddress)}` +
       (details.externalNetworkInterfaces.length > 0 ? `\nExternal: ${details.externalNetworkInterfaces.map(v => strong(fmtExternalAddress(v.address))).join(', ')}` : '') +
       `\n\n${chalk.yellow('Use Ctrl+C to quit this process')}`
@@ -212,7 +204,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     this.e.log.nl();
 
     if (options.open) {
-      const openAddress = labHost ? labHost : localAddress;
+      const openAddress = localAddress;
       const url = this.modifyOpenUrl(openAddress, options);
 
       await openUrl(url, { app: options.browser });
@@ -249,19 +241,6 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
   getUsedPorts(options: T, details: ServeDetails): number[] {
     return [details.port];
-  }
-
-  async runLab(options: T, serveDetails: ServeDetails): Promise<LabServeDetails> {
-    const labDetails: LabServeDetails = {
-      projectType: this.e.project.type,
-      host: options.labHost,
-      port: await findClosestOpenPort(options.labPort),
-    };
-
-    const lab = new IonicLabServeCLI(this.e);
-    await lab.serve({ serveDetails, ...labDetails });
-
-    return labDetails;
   }
 
   async selectExternalIP(options: T): Promise<[string, NetworkInterface[]]> {
@@ -646,38 +625,4 @@ export class YarnServeCLI extends PkgManagerServeCLI {
   readonly pkg = 'yarn';
   readonly program = 'yarn';
   readonly prefix = 'yarn';
-}
-
-interface IonicLabServeCLIOptions extends Readonly<LabServeDetails> {
-  readonly serveDetails: Readonly<ServeDetails>;
-}
-
-class IonicLabServeCLI extends ServeCLI<IonicLabServeCLIOptions> {
-  readonly name = 'Ionic Lab';
-  readonly pkg = '@ionic/lab';
-  readonly program = 'ionic-lab';
-  readonly prefix = 'lab';
-  readonly script = undefined;
-
-  protected stdoutFilter(line: string): boolean {
-    if (line.includes('running')) {
-      this.emit('ready');
-    }
-
-    return false; // no stdout
-  }
-
-  protected async buildArgs(options: IonicLabServeCLIOptions): Promise<string[]> {
-    const { serveDetails, ...labDetails } = options;
-
-    const pkg = await this.e.project.requirePackageJson();
-
-    const url = `${serveDetails.protocol}://localhost:${serveDetails.port}`;
-    const appName = this.e.project.config.get('name');
-    const labArgs = [url, '--host', labDetails.host, '--port', String(labDetails.port), '--project-type', labDetails.projectType];
-    const nameArgs = appName ? ['--app-name', appName] : [];
-    const versionArgs = pkg.version ? ['--app-version', pkg.version] : [];
-
-    return [...labArgs, ...nameArgs, ...versionArgs];
-  }
 }
