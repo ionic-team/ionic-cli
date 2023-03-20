@@ -3,7 +3,7 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { Project } from '../';
-import { IAilmentRegistry, InfoItem } from '../../../definitions';
+import { InfoItem } from '../../../definitions';
 import { strong } from '../../color';
 
 const debug = Debug('ionic:lib:project:angular');
@@ -96,11 +96,6 @@ export class AngularProject extends Project {
     const { AngularGenerateRunner } = await import('./generate');
     const deps = { ...this.e, project: this };
     return new AngularGenerateRunner(deps);
-  }
-
-  async registerAilments(registry: IAilmentRegistry): Promise<void> {
-    await super.registerAilments(registry);
-    // TODO: register angular project ailments
   }
 
   setPrimaryTheme(themeColor: string): Promise<void> {
