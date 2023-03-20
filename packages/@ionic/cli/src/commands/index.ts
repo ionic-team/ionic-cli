@@ -81,7 +81,6 @@ export class IonicNamespace extends Namespace {
       ['state', async () => { const { StateCommand } = await import('./state'); return new StateCommand(this); }],
       ['telemetry', async () => { const { TelemetryCommand } = await import('./telemetry'); return new TelemetryCommand(this); }],
       ['version', async () => { const { VersionCommand } = await import('./version'); return new VersionCommand(this); }],
-      ['lab', async () => { const { LabCommand } = await import('./serve'); return new LabCommand(this); }],
       ['g', 'generate'],
       ['s', 'serve'],
     ]);

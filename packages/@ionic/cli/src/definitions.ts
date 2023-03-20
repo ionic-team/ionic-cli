@@ -712,9 +712,6 @@ export interface ServeOptions {
   publicHost?: string;
   livereload: boolean;
   proxy: boolean;
-  lab: boolean;
-  labHost: string;
-  labPort: number;
   open: boolean;
   browser?: string;
   browserOption?: string;
