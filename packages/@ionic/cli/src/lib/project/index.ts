@@ -9,7 +9,7 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
-import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import { IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
@@ -698,21 +698,6 @@ export abstract class Project implements IProject {
       const { log } = this.e;
       log.error(`Unable to find or create the resources directory. Skipping icon generation: ${e}`);
     }
-  }
-
-  async registerAilments(registry: IAilmentRegistry): Promise<void> {
-    const ailments = await import('../doctor/ailments');
-    const deps = { ...this.e, project: this };
-
-    registry.register(new ailments.NpmInstalledLocally(deps));
-    registry.register(new ailments.IonicCLIInstalledLocally(deps));
-    registry.register(new ailments.GitNotUsed(deps));
-    registry.register(new ailments.GitConfigInvalid(deps));
-    registry.register(new ailments.IonicNativeOldVersionInstalled(deps));
-    registry.register(new ailments.UnsavedCordovaPlatforms(deps));
-    registry.register(new ailments.DefaultCordovaBundleIdUsed(deps));
-    registry.register(new ailments.ViewportFitNotSet(deps));
-    registry.register(new ailments.CordovaPlatformsCommitted(deps));
   }
 
   async createIntegration(name: 'capacitor'): Promise<CapacitorIntegration>;
