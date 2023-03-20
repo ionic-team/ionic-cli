@@ -379,7 +379,6 @@ export interface IProject {
   getPackageJson(pkgName?: string, options?: { logErrors?: boolean }): Promise<[PackageJson | undefined, string | undefined]>;
   requirePackageJson(pkgName?: string): Promise<PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
-  registerAilments(registry: IAilmentRegistry): Promise<void>;
   getBuildRunner(): Promise<import('./lib/build').BuildRunner<any> | undefined>;
   getServeRunner(): Promise<import('./lib/serve').ServeRunner<any> | undefined>;
   getGenerateRunner(): Promise<import('./lib/generate').GenerateRunner<any> | undefined>;
@@ -778,35 +777,6 @@ export interface ServeDetails {
   port: number;
   externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
-}
-
-export interface IAilment {
-  readonly id: string;
-  implicit: boolean;
-  projects?: ProjectType[];
-  getMessage(): Promise<string>;
-  detected(): Promise<boolean>;
-  getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
-}
-
-export interface TreatableAilment extends IAilment {
-  readonly treatable: boolean;
-  getTreatmentSteps(): Promise<DoctorTreatmentStep[]>;
-}
-
-export interface PatientTreatmentStep {
-  message: string;
-}
-
-export interface DoctorTreatmentStep extends PatientTreatmentStep {
-  treat(): Promise<void>;
-}
-
-export interface IAilmentRegistry {
-  ailments: IAilment[];
-
-  register(ailment: IAilment): void;
-  get(id: string): IAilment | undefined;
 }
 
 export interface IonicContext {
