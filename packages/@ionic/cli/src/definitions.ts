@@ -363,7 +363,6 @@ export interface IProject {
   readonly config: BaseConfig<IProjectConfig>;
   readonly details: import('./lib/project').ProjectDetailsResult;
 
-  getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
   getDefaultDistDir(): Promise<string>;
   getDistDir(): Promise<string>;
