@@ -35,8 +35,8 @@ describe('@ionic/cli', () => {
 
         it('should provide options from negations of cli flag defaults', () => {
           const runner = new AngularServeRunner({} as any);
-          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
-          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
+          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, open: true, externalAddressRequired: true });
+          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, open: true, externalAddressRequired: true });
         });
 
         it('should allow overrides of default values', () => {
