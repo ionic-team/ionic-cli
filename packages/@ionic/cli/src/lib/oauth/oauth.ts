@@ -117,7 +117,7 @@ export abstract class OAuth2Flow<T extends OpenIdToken> {
         if (req.url) {
           const params = qs.parse(req.url.substring(req.url.indexOf('?') + 1));
 
-          if (params.code) {
+          if (params.code && params.state) {
             res.writeHead(200, { 'Content-Type': ContentType.HTML });
             res.end(successHtml);
             req.socket.destroy();

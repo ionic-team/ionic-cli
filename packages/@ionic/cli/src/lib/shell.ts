@@ -55,7 +55,7 @@ export class Shell implements IShell {
           debug('Error in subprocess stdout pipe: %o', err);
         });
 
-        promise.p.stdout.pipe(s);
+        promise.p.stdout?.pipe(s);
       }
 
       if (promise.p.stderr) {
@@ -66,7 +66,7 @@ export class Shell implements IShell {
           debug('Error in subprocess stderr pipe: %o', err);
         });
 
-        promise.p.stderr.pipe(s);
+        promise.p.stderr?.pipe(s);
       }
 
       if (killOnExit) {

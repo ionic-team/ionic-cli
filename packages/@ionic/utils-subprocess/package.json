@@ -8,7 +8,7 @@
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
   "engines": {
-    "node": ">=10.3.0"
+    "node": ">=16.0.0"
   },
   "files": [
     "dist/",
@@ -44,7 +44,7 @@
     "@types/cross-spawn": "^6.0.0",
     "@types/debug": "^4.1.1",
     "@types/jest": "^26.0.10",
-    "@types/node": "~10.17.13",
+    "@types/node": "~16.0.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",

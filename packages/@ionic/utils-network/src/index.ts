@@ -16,8 +16,9 @@ function getDefaultAddresses(): string[] {
 
     for (const device of Object.keys(networkInterfaces)) {
       const networkInterface = networkInterfaces[device];
-
-      addresses.push(...networkInterface.map(i => i.address));
+      if (networkInterface) {
+        addresses.push(...networkInterface.map(i => i.address));
+      }
     }
   } catch (e) {
     // swallow
@@ -32,10 +33,11 @@ export function getExternalIPv4Interfaces(): NetworkInterface[] {
 
   for (const device of Object.keys(networkInterfaces)) {
     const networkInterface = networkInterfaces[device];
-
-    for (const networkAddress of networkInterface) {
-      if (!networkAddress.internal && networkAddress.family === 'IPv4') {
-        devices.push({ device, ...networkAddress });
+    if (networkInterface) {
+      for (const networkAddress of networkInterface) {
+        if (!networkAddress.internal && networkAddress.family === 'IPv4') {
+          devices.push({ device, ...networkAddress });
+        }
       }
     }
   }
