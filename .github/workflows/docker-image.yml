@@ -14,10 +14,7 @@ jobs:
         with:
           fetch-depth: 0
       - name: GitHub Container Registry Login
-        run: echo ${GH_TOKEN} | docker login ghcr.io -u ionitron --password-stdin
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
+        run: echo ${{ github.token }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build Container
         run: |
             docker build \
