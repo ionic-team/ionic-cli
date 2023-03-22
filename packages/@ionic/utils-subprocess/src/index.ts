@@ -125,10 +125,10 @@ export class Subprocess {
     const stderrBuf = new WritableStreamBuffer();
     const combinedBuf = new WritableStreamBuffer();
 
-    promise.p.stdout.pipe(stdoutBuf);
-    promise.p.stdout.pipe(combinedBuf);
-    promise.p.stderr.pipe(stderrBuf);
-    promise.p.stderr.pipe(combinedBuf);
+    promise.p.stdout?.pipe(stdoutBuf);
+    promise.p.stdout?.pipe(combinedBuf);
+    promise.p.stderr?.pipe(stderrBuf);
+    promise.p.stderr?.pipe(combinedBuf);
 
     try {
       await promise;
@@ -151,8 +151,8 @@ export class Subprocess {
     const promise = this.run();
     const buf = new WritableStreamBuffer();
 
-    promise.p.stdout.pipe(buf);
-    promise.p.stderr.pipe(buf);
+    promise.p.stdout?.pipe(buf);
+    promise.p.stderr?.pipe(buf);
 
     try {
       await promise;
@@ -187,16 +187,16 @@ export class Subprocess {
 
         if (code === 0) {
           return resolve();
-        }
-
-        if (signal) {
+        } else if (signal) {
           err = new SubprocessError('Signal exit from subprocess.');
           err.code = ERROR_SIGNAL_EXIT;
           err.signal = signal;
-        } else {
+        } else if (code) {
           err = new SubprocessError('Non-zero exit from subprocess.');
           err.code = ERROR_NON_ZERO_EXIT;
           err.exitCode = code;
+        } else {
+          return resolve();
         }
 
         reject(err);

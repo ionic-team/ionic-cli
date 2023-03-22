@@ -513,8 +513,8 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
       const ws = this.createLoggerStream();
 
-      p.stdout.pipe(split2()).pipe(this.createStreamFilter(line => this.stdoutFilter(line))).pipe(ws);
-      p.stderr.pipe(split2()).pipe(this.createStreamFilter(line => this.stderrFilter(line))).pipe(ws);
+      p.stdout?.pipe(split2()).pipe(this.createStreamFilter(line => this.stdoutFilter(line))).pipe(ws);
+      p.stderr?.pipe(split2()).pipe(this.createStreamFilter(line => this.stderrFilter(line))).pipe(ws);
 
       this.once('ready', () => {
         resolve();

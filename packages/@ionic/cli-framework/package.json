@@ -7,7 +7,7 @@
   "main": "./index.js",
   "types": "./index.d.ts",
   "engines": {
-    "node": ">=10.3.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "clean": "rimraf index.* definitions.* errors.* guards.* lib utils",
@@ -40,7 +40,7 @@
     "@types/jest": "^26.0.10",
     "@types/lodash": "^4.14.104",
     "@types/minimist": "^1.2.0",
-    "@types/node": "~10.17.13",
+    "@types/node": "~16.0.0",
     "@types/write-file-atomic": "^3.0.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
