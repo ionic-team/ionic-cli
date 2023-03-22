@@ -174,7 +174,6 @@ export function prepareInterfaces(interfaces: NodeJS.Dict<os.NetworkInterfaceInf
       return false;
     });
   }
-  
 }
 
 export function newSilentPublisher(namespace: string, name: string, port: number): Publisher {
