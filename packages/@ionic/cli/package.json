@@ -62,7 +62,7 @@
     "split2": "^3.0.0",
     "ssh-config": "^1.1.1",
     "stream-combiner2": "^1.1.1",
-    "superagent": "^5.2.1",
+    "superagent": "^8.0.9",
     "superagent-proxy": "^3.0.0",
     "tar": "^6.0.1",
     "tslib": "^2.0.1"
