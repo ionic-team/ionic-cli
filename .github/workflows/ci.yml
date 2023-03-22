@@ -16,16 +16,15 @@ jobs:
     strategy:
       matrix:
         node:
-          - 14.x
-          - 12.x
-          - 10.x
+          - 18.x
+          - 16.x
     steps:
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
           node-version: ${{ matrix.node }}
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Restore Dependency Cache
-        uses: actions/cache@v1
+        uses: actions/cache@v3
         with:
           path: ~/.npm
           key: ${{ runner.OS }}-dependency-cache-${{ hashFiles('**/package.json') }}
