@@ -187,7 +187,7 @@ export class Subprocess {
 
         if (code === 0) {
           return resolve();
-        } else  if (signal) {
+        } else if (signal) {
           err = new SubprocessError('Signal exit from subprocess.');
           err.code = ERROR_SIGNAL_EXIT;
           err.signal = signal;
