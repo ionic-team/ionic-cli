@@ -7,10 +7,10 @@ jobs:
     name: Build and Deploy Docker Container with latest CLI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
-      - uses: actions/checkout@v2
+          node-version: 16.x
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: GitHub Container Registry Login

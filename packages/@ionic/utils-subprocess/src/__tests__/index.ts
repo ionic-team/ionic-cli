@@ -231,8 +231,8 @@ describe('@ionic/utils-subprocess', () => {
       const stdoutMock = new WritableStreamBuffer();
       const stderrMock = new WritableStreamBuffer();
       const promise = cmd.run();
-      promise.p.stdout.pipe(stdoutMock);
-      promise.p.stderr.pipe(stderrMock);
+      promise.p.stdout?.pipe(stdoutMock);
+      promise.p.stderr?.pipe(stderrMock);
       mockSpawnStdout.feed('hello world!');
       mockSpawnStdout.stop();
       mockSpawnStderr.feed('oh no!');
@@ -253,8 +253,8 @@ describe('@ionic/utils-subprocess', () => {
       mockCrossSpawn.mockImplementation(() => cp);
       const buf = new WritableStreamBuffer();
       const promise = cmd.run();
-      promise.p.stdout.pipe(buf);
-      promise.p.stderr.pipe(buf);
+      promise.p.stdout?.pipe(buf);
+      promise.p.stderr?.pipe(buf);
       mockSpawnStdout.stop();
       mockSpawnStderr.stop();
       await promisifyEvent(buf, 'finish');
@@ -270,8 +270,8 @@ describe('@ionic/utils-subprocess', () => {
       mockCrossSpawn.mockImplementation(() => cp);
       const buf = new WritableStreamBuffer();
       const promise = cmd.run();
-      promise.p.stdout.pipe(buf);
-      promise.p.stderr.pipe(buf);
+      promise.p.stdout?.pipe(buf);
+      promise.p.stderr?.pipe(buf);
       mockSpawnStdout.stop();
       mockSpawnStderr.stop();
       await promisifyEvent(buf, 'finish');

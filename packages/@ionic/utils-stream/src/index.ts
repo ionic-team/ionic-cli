@@ -42,7 +42,7 @@ export class ReadableStreamBuffer extends Readable {
     this._send();
   }
 
-  feed(data: Buffer | string, encoding = 'utf8'): void {
+  feed(data: Buffer | string, encoding: BufferEncoding = 'utf8'): void {
     if (this._stopped) {
       throw new Error('ReadableStreamBuffer is stopped. Can no longer feed.');
     }
