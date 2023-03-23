@@ -132,7 +132,7 @@ export class Subprocess {
 
     try {
       await promise;
-    } catch (e) {
+    } catch (e: any) {
       stdoutBuf.end();
       stderrBuf.end();
       e.output = combinedBuf.consume().toString();
@@ -156,7 +156,7 @@ export class Subprocess {
 
     try {
       await promise;
-    } catch (e) {
+    } catch (e: any) {
       e.output = buf.consume().toString();
       throw e;
     }

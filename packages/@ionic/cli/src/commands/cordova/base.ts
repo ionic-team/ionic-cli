@@ -160,7 +160,7 @@ export abstract class CordovaCommand extends Command {
 
     try {
       await this.env.shell.run('cordova', argList, { fatalOnNotFound, truncateErrorOutput, cwd: this.integration.root, ...options });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof SubprocessError) {
         if (e.code === ERROR_COMMAND_NOT_FOUND) {
           const installArgs = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install', pkg: 'cordova', global: true });

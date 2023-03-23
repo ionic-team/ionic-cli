@@ -140,7 +140,7 @@ export async function createDevLoggerServer(host: string, port: number): Promise
       try {
         data = data.toString();
         msg = JSON.parse(data);
-      } catch (e) {
+      } catch (e: any) {
         process.stderr.write(`Error parsing JSON message from dev server: "${data}" ${chalk.red(e.stack ? e.stack : e)}\n`);
         return;
       }

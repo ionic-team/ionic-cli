@@ -82,7 +82,7 @@ export abstract class Hook {
             ...ctxEnvironment,
           },
         }));
-      } catch (e) {
+      } catch (e: any) {
         throw new HookException(
           `An error occurred while running an Ionic CLI hook defined in ${strong(prettyPath(this.e.project.filePath))}.\n` +
           `Hook: ${strong(this.name)}\n` +

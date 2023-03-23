@@ -60,7 +60,7 @@ export class BuildCommand extends Command implements CommandPreRun {
       const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
 
       await runner.run(runnerOpts);
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof RunnerException) {
         throw new FatalException(e.message);
       }

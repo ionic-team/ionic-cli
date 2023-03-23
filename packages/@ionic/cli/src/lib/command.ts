@@ -53,7 +53,7 @@ export abstract class Command extends BaseCommand<ICommand, INamespace, CommandM
 
     try {
       await this.validate(inputs);
-    } catch (e) {
+    } catch (e: any) {
       if (!this.env.flags.interactive) {
         this.env.log.warn(`Command ran non-interactively due to ${input('--no-interactive')} flag, CI being detected, non-TTY, or a config setting.`);
       }

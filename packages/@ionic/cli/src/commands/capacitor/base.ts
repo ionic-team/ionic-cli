@@ -121,7 +121,7 @@ export abstract class CapacitorCommand extends Command {
       }
 
       return version;
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof SubprocessError) {
         if (e.code === ERROR_COMMAND_NOT_FOUND) {
           throw new FatalException('Error while getting Capacitor CLI version. Is Capacitor installed?');
@@ -213,7 +213,7 @@ export abstract class CapacitorCommand extends Command {
         const runner = await this.project.requireBuildRunner();
         const runnerOpts = runner.createOptionsFromCommandLine(inputs, generateOptionsForCapacitorBuild(inputs, options));
         await runner.run(runnerOpts);
-      } catch (e) {
+      } catch (e: any) {
         if (e instanceof RunnerException) {
           throw new FatalException(e.message);
         }
@@ -270,7 +270,7 @@ export abstract class CapacitorCommand extends Command {
         appInfo.disableAppTransportSecurity();
         await appInfo.save();
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof RunnerException) {
         throw new FatalException(e.message);
       }

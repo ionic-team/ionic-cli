@@ -23,7 +23,7 @@ export class BaseSession {
       .send({});
       try {
         await this.e.client.do(req);
-      } catch (e) {}
+      } catch (e: any) {}
     }
     this.e.config.unset('org.id');
     this.e.config.unset('user.id');
@@ -120,7 +120,7 @@ export class ProSession extends BaseSession implements ISession {
       this.e.config.set('user.id', user.id);
       this.e.config.set('user.email', email);
       this.e.config.set('tokens.user', token);
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
         throw new SessionException('Incorrect email or password.');
       }
@@ -149,7 +149,7 @@ export class ProSession extends BaseSession implements ISession {
       this.e.config.set('user.id', user_id);
       this.e.config.set('user.email', user.email);
       this.e.config.set('tokens.user', token);
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e) && (e.response.status === 401 || e.response.status === 403)) {
         throw new SessionException('Invalid auth token.');
       }

@@ -87,7 +87,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
 
     try {
       await hook.run({ name: hook.name, build: options });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
@@ -113,7 +113,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
 
     try {
       await hook.run({ name: hook.name, build: options });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
@@ -194,7 +194,7 @@ export abstract class BuildCLI<T extends object> {
   protected async runWrapper(options: T): Promise<void> {
     try {
       return await this.run(options);
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof BuildCLIProgramNotFoundException)) {
         throw e;
       }
@@ -227,7 +227,7 @@ export abstract class BuildCLI<T extends object> {
 
     try {
       await this.e.shell.run(this.resolvedProgram, args, { stdio: 'inherit', cwd: this.e.project.directory, fatalOnNotFound: false, env: createProcessEnv(env) });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         throw new BuildCLIProgramNotFoundException(`${strong(this.resolvedProgram)} command not found.`);
       }

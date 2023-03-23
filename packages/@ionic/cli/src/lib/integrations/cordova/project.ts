@@ -37,7 +37,7 @@ export async function getAndroidBuildOutputJson(paths: string[]): Promise<Legacy
       } else {
         debug('Output file does not match expected format: %O', json);
       }
-    } catch (e) {
+    } catch (e: any) {
       debug('Error parsing file %O: %O', p, e);
     }
   }

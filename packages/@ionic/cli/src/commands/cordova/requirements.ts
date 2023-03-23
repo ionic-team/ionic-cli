@@ -47,7 +47,7 @@ Like running ${input('cordova requirements')} directly, but provides friendly ch
 
     try {
       await this.runCordova(filterArgumentsForCordova(metadata, options), { showError: false, fatalOnError: false });
-    } catch (e) {
+    } catch (e: any) {
       if (e.fatal || !isExitCodeException(e)) {
         throw e;
       }

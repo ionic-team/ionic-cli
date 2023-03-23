@@ -44,7 +44,7 @@ export async function runCordovaRes({ config, log, shell }: RunCordovaResDeps, a
 
   try {
     await shell.run('cordova-res', args, { showCommand: true, fatalOnNotFound: false, stream, ...options });
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
       throw await createCordovaResNotFoundError(config.get('npmClient'));
     }
@@ -68,7 +68,7 @@ export async function checkCordovaRes({ config }: CheckCordovaResDeps): Promise<
 export async function findCordovaRes(): Promise<string | undefined> {
   try {
     return await which('cordova-res');
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ENOENT') {
       throw e;
     }

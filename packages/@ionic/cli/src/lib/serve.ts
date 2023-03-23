@@ -175,7 +175,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
     try {
       await hook.run({ name: hook.name, serve: options });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
@@ -226,7 +226,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
 
     try {
       await hook.run({ name: hook.name, serve: lodash.assign({}, options, details) });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }
@@ -442,7 +442,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
   protected async spawnWrapper(options: T): Promise<void> {
     try {
       return await this.spawn(options);
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof ServeCLIProgramNotFoundException)) {
         throw e;
       }

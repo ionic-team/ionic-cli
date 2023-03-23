@@ -62,7 +62,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
 
     try {
       [ pubkey ] = await parsePublicKeyFile(pubkeyPath);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code === 'ENOENT') {
         throw new FatalException(
           `${strong(prettyPath(pubkeyPath))} does not appear to exist. Please specify a valid SSH public key.\n` +
@@ -85,7 +85,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
     try {
       const key = await sshkeyClient.create({ pubkey });
       this.env.log.ok(`Your public key (${strong(key.fingerprint)}) has been added to Ionic!`);
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e) && e.response.status === 409) {
         this.env.log.msg('Pubkey already added to Ionic.');
       } else {
