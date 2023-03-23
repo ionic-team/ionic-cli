@@ -46,7 +46,7 @@ Integrations, such as Cordova, can be disabled with this command.
         await integration.disable();
         this.env.log.ok(`Integration ${input(name)} disabled!`);
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }

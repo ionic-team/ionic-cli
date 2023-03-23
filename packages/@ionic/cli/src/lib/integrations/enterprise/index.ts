@@ -124,7 +124,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     try {
       const res = await this.e.client.do(req);
       return res.data as ProductKey;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 401 || e.response.status === 403) {
           throw new FatalException('Authorization Failed. Make sure you\'re logged into the correct account with access to the key. Try logging out and back in again.');
@@ -192,7 +192,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     try {
       const res = await this.e.client.do(req);
       return res.data as ProductKey;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 401 || e.response.status === 403) {
           throw new FatalException('Authorization Failed. Make sure you\'re logged into the correct account with access to the key. Try logging out and back in again.');
@@ -217,7 +217,7 @@ export class Integration extends BaseIntegration<EnterpriseProjectIntegration> {
     let npmrc = '';
     try {
       npmrc = await readFile(path.join(this.e.project.directory , '.npmrc'), 'utf8');
-    } catch (e) {
+    } catch (e: any) {
       if (!e.message.includes('ENOENT')) {
         throw e;
       }

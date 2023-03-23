@@ -42,7 +42,7 @@ export async function findOpenIonicPorts(address: string, ports: Ports): Promise
     }
 
     return { port, livereloadPort, notificationPort };
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'EADDRNOTAVAIL') {
       throw e;
     }

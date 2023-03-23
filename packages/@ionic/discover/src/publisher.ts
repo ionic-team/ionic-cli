@@ -145,7 +145,7 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
           }
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       this.emit('error', e);
     }
   }

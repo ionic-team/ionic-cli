@@ -103,7 +103,7 @@ export async function readStarterManifest(p: string): Promise<StarterManifest> {
     }
 
     return manifest;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       throw new Error(`${p} not found`);
     } else if (e instanceof SyntaxError) {

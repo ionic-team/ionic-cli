@@ -64,7 +64,7 @@ export abstract class BaseConfigCommand extends Command {
       }
 
       return serialized;
-    } catch (e) {
+    } catch (e: any) {
       throw new FatalException(`Cannot serialize value: ${strong(v)}`);
     }
   }
@@ -80,7 +80,7 @@ export abstract class BaseConfigCommand extends Command {
       if (!v.match(/^\d+e\d+$/)) {
         v = JSON.parse(v);
       }
-    } catch (e) {
+    } catch (e: any) {
       if (e.name !== 'SyntaxError') {
         throw e;
       }

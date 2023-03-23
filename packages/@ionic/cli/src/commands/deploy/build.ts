@@ -175,7 +175,7 @@ Customizing the build:
     try {
       const res = await this.env.client.do(req);
       return res.data as DeployBuild;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
@@ -209,7 +209,7 @@ Customizing the build:
           start = trace.length;
         }
         errorsEncountered = 0;
-      } catch (e) {
+      } catch (e: any) {
         // Retry up to 3 times in the case of an error.
         errorsEncountered++;
         ws.write(chalk.yellow(`Encountered error: ${e} while fetching build data retrying.`));
@@ -231,7 +231,7 @@ Customizing the build:
     try {
       const res = await this.env.client.do(req);
       return res.data as DeployBuild;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
@@ -251,7 +251,7 @@ Customizing the build:
     try {
       const res = await this.env.client.do(req);
       return res.data as DownloadUrl;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');

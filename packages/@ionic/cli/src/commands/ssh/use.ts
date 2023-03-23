@@ -43,7 +43,7 @@ Before making changes, ${input('ionic ssh use')} will print a diff and ask for p
 
     try {
       await validatePrivateKey(keyPath);
-    } catch (e) {
+    } catch (e: any) {
       if (e === ERROR_SSH_MISSING_PRIVKEY) {
         throw new FatalException(
           `${strong(prettyPath(keyPath))} does not appear to exist. Please specify a valid SSH private key.\n` +

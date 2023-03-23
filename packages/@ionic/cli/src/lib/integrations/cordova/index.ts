@@ -84,7 +84,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         if (!overwrite) {
           blacklist.push(f);
         }
-      } catch (e) {
+      } catch (e: any) {
         if (e.code !== 'ENOENT') {
           throw e;
         }
@@ -125,7 +125,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   async getCordovaConfig(): Promise<configlib.CordovaConfig | undefined> {
     try {
       return await this.requireConfig();
-    } catch (e) {
+    } catch (e: any) {
       // ignore
     }
   }
@@ -149,7 +149,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       iosDeploy,
       iosSim,
       androidSdkToolsVersion,
-    ] = await (Promise.all<string | undefined, string, string, string | undefined, string | undefined, string | undefined, string | undefined>([
+    ] = await (Promise.all([
       this.getCordovaVersion(),
       this.getCordovaPlatformVersions(),
       this.getCordovaPluginVersions(),
@@ -207,7 +207,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     try {
       const integration = this.e.project.requireIntegration('cordova');
       return this.e.shell.cmdinfo('cordova', ['-v', '--no-telemetry', '--no-update-notifier'], { cwd: integration.root });
-    } catch (e) {
+    } catch (e: any) {
       debug('Error while getting Cordova version: %O', e);
     }
   }
@@ -228,7 +228,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       }
 
       return platforms.join(', ');
-    } catch (e) {
+    } catch (e: any) {
       debug('Error while getting Cordova platforms: %O', e);
       return 'not available';
     }
@@ -261,7 +261,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
       }
 
       return `${whitelistedPlugins.join(', ')}${count > 0 ? `, (and ${count} other plugins)` : ''}`;
-    } catch (e) {
+    } catch (e: any) {
       debug('Error while getting Cordova plugins: %O', e);
       return 'not available';
     }

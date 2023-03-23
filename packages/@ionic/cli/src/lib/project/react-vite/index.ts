@@ -43,7 +43,7 @@ export class ReactViteProject extends Project {
         debug(`${chalk.bold('@ionic/react')} detected in ${chalk.bold('package.json')}`);
         return true;
       }
-    } catch (e) {
+    } catch (e: any) {
       // ignore
     }
 

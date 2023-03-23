@@ -434,7 +434,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       try {
         // TODO: maybe we can use a PUT instead of DELETE now + POST later?
         await appClient.deleteAssociation(app.id);
-      } catch (e) {
+      } catch (e: any) {
         if (isSuperAgentError(e)) {
           if (e.response.status === 401) {
             await this.oAuthProcess(userId);
@@ -460,7 +460,7 @@ If you are having issues linking, please get in touch with our Support[^support-
       const association = await appClient.createAssociation(app.id, { repoId, type: 'github', branches });
       this.env.log.ok(`App ${input(app.id)} connected to ${strong(association.repository.html_url)}`);
       return association.repository.html_url;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e) && e.response.status === 403) {
         throw new FatalException(e.response.body.error.message);
       }
@@ -518,7 +518,7 @@ If you are having issues linking, please get in touch with our Support[^support-
 
         task.msg = `Looking up your GitHub repositories: ${strong(String(repos.length))} found`;
       }
-    } catch (e) {
+    } catch (e: any) {
       tasks.fail();
 
       if (isSuperAgentError(e) && e.response.status === 401) {
@@ -592,7 +592,7 @@ If you are having issues linking, please get in touch with our Support[^support-
 
         task.msg = `Looking up the available branches on your GitHub repository: ${strong(String(availableBranches.length))} found`;
       }
-    } catch (e) {
+    } catch (e: any) {
       tasks.fail();
       throw e;
     }

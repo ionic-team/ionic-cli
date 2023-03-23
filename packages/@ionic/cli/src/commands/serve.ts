@@ -102,7 +102,7 @@ By default, ${input('ionic serve')} boots up a development server on ${input('lo
       const runnerOpts = runner.createOptionsFromCommandLine(inputs, options);
 
       await runner.run(runnerOpts);
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof RunnerException) {
         throw new FatalException(e.message);
       }

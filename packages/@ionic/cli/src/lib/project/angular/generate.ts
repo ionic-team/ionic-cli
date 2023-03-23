@@ -118,7 +118,7 @@ To test a generator before file modifications are made, use the ${input('--dry-r
 
     try {
       await this.generateComponent(schematic, name, lodash.omit(options, 'schematic', 'name'));
-    } catch (e) {
+    } catch (e: any) {
       debug(e);
       throw new FatalException(`Could not generate ${input(schematic)}.`);
     }

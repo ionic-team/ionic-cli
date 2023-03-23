@@ -43,7 +43,7 @@ export async function getUpdateConfig({ config }: GetUpdateConfigDeps): Promise<
 
   try {
     return await readUpdateConfig(dir);
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ENOENT') {
       process.stderr.write(`${e.stack ? e.stack : e}\n`);
     }

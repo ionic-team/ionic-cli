@@ -81,7 +81,7 @@ export async function runNativeRun({ config, log, shell }: RunNativeRunDeps, arg
 
   try {
     await shell.run('native-run', args, { showCommand: !args.includes('--json'), fatalOnNotFound: false, stream, ...options });
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
       throw createNativeRunNotFoundError(config.get('npmClient'));
     }
@@ -112,7 +112,7 @@ export async function checkNativeRun({ config }: CheckNativeRunDeps): Promise<vo
 export async function findNativeRun(): Promise<string | undefined> {
   try {
     return await which('native-run');
-  } catch (e) {
+  } catch (e: any) {
     if (e.code !== 'ENOENT') {
       throw e;
     }
@@ -153,7 +153,7 @@ export async function getNativeTargets({ log, shell }: RunNativeRunDeps, platfor
     const output = await proc.output();
 
     return JSON.parse(output);
-  } catch (e) {
+  } catch (e: any) {
     if (e instanceof SubprocessError && e.code === ERROR_NON_ZERO_EXIT) {
       const output = e.output ? JSON.parse(e.output) : {};
 

@@ -144,7 +144,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     let plistPath;
     try {
       plistPath = await this.getIosCapPlist();
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.warn(e.message);
       this.printPlistInstructions(options);
       return false;
@@ -161,7 +161,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     try {
       const plistFile = await readFile(plistPath);
       plistData = plistFile.toString();
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.error(`The iOS Info.plist could not be read.`);
       this.printPlistInstructions(options);
       return false;
@@ -170,7 +170,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     let etree;
     try {
       etree = et.parse(plistData);
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.error(`Impossible to parse the XML in the Info.plist`);
       this.printPlistInstructions(options);
       return false;
@@ -261,7 +261,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
       newXML;
     try {
       await writeFile(plistPath, xmlToWrite, { encoding: 'utf-8' });
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.error(`Changes to Info.plist could not be written.`);
       this.printPlistInstructions(options);
     }
@@ -273,7 +273,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     let stringXmlPath;
     try {
       stringXmlPath = await this.getAndroidCapString();
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.warn(e.message);
       this.printPlistInstructions(options);
       return false;
@@ -289,7 +289,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     try {
       const stringFile = await readFile(stringXmlPath);
       stringData = stringFile.toString();
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.error(`The Android string.xml could not be read.`);
       this.printStringXmlInstructions(options);
       return false;
@@ -298,7 +298,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     let etree;
     try {
       etree = et.parse(stringData);
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.error(`Impossible to parse the XML in the string.xml`);
       this.printStringXmlInstructions(options);
       return false;
@@ -356,7 +356,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     });
     try {
       await writeFile(stringXmlPath, newXML, { encoding: 'utf-8' });
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.error(`Changes to string.xml could not be written.`);
       this.printStringXmlInstructions(options);
     }

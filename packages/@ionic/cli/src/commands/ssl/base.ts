@@ -8,7 +8,7 @@ export abstract class SSLBaseCommand extends Command {
   async checkForOpenSSL() {
     try {
       await this.env.shell.run('openssl', ['version'], { stdio: 'ignore', showCommand: false, fatalOnNotFound: false });
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND)) {
         throw e;
       }
