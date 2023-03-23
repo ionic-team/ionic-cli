@@ -96,7 +96,7 @@ export async function runServer(options: ServeOptions): Promise<ServeOptions> {
  * Create HTTP server
  */
 async function createHttpServer(options: ServeOptions): Promise<Application> {
-  const express = require('express');
+  const { default: express } = await import('express');
   const app = express();
 
   /**
@@ -175,7 +175,7 @@ async function createHttpServer(options: ServeOptions): Promise<Application> {
 }
 
 async function attachProxy(app: Application, config: ProxyConfig) {
-  const proxyMiddleware = require('http-proxy-middleware');
+  const { default: proxyMiddleware } = await import('http-proxy-middleware');
   app.use(config.mount, proxyMiddleware(config.mount, config));
 }
 

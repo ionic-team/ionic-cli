@@ -86,7 +86,7 @@ function getDevServerScript() {
 }
 
 export async function createLiveReloadServer({ host, port, wwwDir }: { host: string, port: number; wwwDir: string; }): Promise<LiveReloadFunction> {
-  const tinylr = require('tiny-lr');
+  const { default: tinylr } = await import('tiny-lr');
   const lrserver = tinylr();
   lrserver.listen(port, host);
 

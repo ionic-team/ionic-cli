@@ -49,8 +49,8 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string | undefined] => [e, process.env[e]]).filter(([, v]) => !!v);
 
   const getInfo = async () => {
-    const osName = require('os-name');
-    const semver = require('semver');
+    const { default: osName } = await import('os-name');
+    const semver = await import('semver');
     const { getUpdateConfig } = await import('./updates');
 
     const os = osName();

@@ -7,7 +7,7 @@ export interface OpenUrlOptions {
 }
 
 export async function openUrl(target: string, options: OpenUrlOptions = {}): Promise<void> {
-  const o = require('open');
+  const { default: o } = await import ('open');
   const p = await o(target, { ...options, wait: false, url: true });
   const e = (err: Error) => debug('Error during open: %O', err);
   const n = p.on.bind(p);
