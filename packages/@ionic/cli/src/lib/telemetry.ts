@@ -44,7 +44,7 @@ export class Telemetry implements ITelemetry {
 
 async function getLeek({ config, version }: { config: IConfig; version: string; }): Promise<import('leek')> {
   if (!_gaTracker) {
-    const Leek =  require('leek');
+    const { default: Leek } = await import('leek');
     let telemetryToken = config.get('tokens.telemetry');
 
     if (!telemetryToken) {
