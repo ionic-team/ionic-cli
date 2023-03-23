@@ -1,6 +1,6 @@
 import { combine, validators } from '@ionic/cli-framework';
-import * as chalk from 'chalk';
-import * as readline from 'readline';
+import chalk from 'chalk';
+import readline from 'readline';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
 import { input, strong, success } from '../lib/color';

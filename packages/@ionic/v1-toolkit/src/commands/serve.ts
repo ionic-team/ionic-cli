@@ -1,7 +1,7 @@
 import { Command, CommandLineInputs, CommandLineOptions } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
-import * as chalk from 'chalk';
-import * as path from 'path';
+import chalk from 'chalk';
+import path from 'path';
 
 import { Config } from '../lib/config';
 import { hasTask, runTask } from '../lib/gulp';

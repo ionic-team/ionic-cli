@@ -1,6 +1,6 @@
 import { unparseArgs, validators } from '@ionic/cli-framework';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
+import Debug from 'debug';
+import lodash from 'lodash';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
 import { ancillary, input, strong } from '../../color';

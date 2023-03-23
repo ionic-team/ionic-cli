@@ -1,5 +1,5 @@
-import * as lodash from 'lodash';
-import * as util from 'util';
+import lodash from 'lodash';
+import util from 'util';
 
 import { ValidationError } from './definitions';
 

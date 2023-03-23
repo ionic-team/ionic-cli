@@ -2,7 +2,7 @@ import { BaseError, MetadataGroup } from '@ionic/cli-framework';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { createProcessEnv } from '@ionic/utils-process';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
-import * as Debug from 'debug';
+import Debug from 'debug';
 
 import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, NpmClient, Runner } from '../definitions';
 

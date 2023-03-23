@@ -1,4 +1,4 @@
-import * as fs from 'fs-extra';
+import fs from 'fs-extra';
 
 export async function stat(p: string): Promise<fs.Stats | undefined> {
   try {

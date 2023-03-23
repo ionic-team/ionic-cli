@@ -1,7 +1,7 @@
 import { Colors } from '@ionic/cli-framework';
 import { COLORS } from '@ionic/cli/lib/color';
-import * as chalk from 'chalk';
-import * as escapeStringRegexp from 'escape-string-regexp';
+import chalk from 'chalk';
+import escapeStringRegexp from 'escape-string-regexp';
 
 interface CodePair {
   open: string;

@@ -1,9 +1,9 @@
 import { pathExists } from '@ionic/utils-fs';
 import { onBeforeExit } from '@ionic/utils-process';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
-import * as lodash from 'lodash';
-import * as path from 'path';
-import * as semver from 'semver';
+import lodash from 'lodash';
+import path from 'path';
+import semver from 'semver';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, IonicCapacitorOptions, ProjectIntegration } from '../../definitions';
 import { input, weak } from '../../lib/color';
