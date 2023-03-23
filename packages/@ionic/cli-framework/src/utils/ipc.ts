@@ -64,7 +64,7 @@ export class RPCProcess {
         if (fn) {
           try {
             data = await fn(msg.args);
-          } catch (e) {
+          } catch (e: any) {
             err = e;
           }
         } else {
@@ -162,7 +162,7 @@ export class RPCHost {
   start(): void {
     try {
       fs.accessSync(this.modulePath, fs.constants.R_OK);
-    } catch (e) {
+    } catch (e: any) {
       debug('Error during access check: %O', e);
       throw new IPCError(`Module not accessible: ${this.modulePath}`);
     }

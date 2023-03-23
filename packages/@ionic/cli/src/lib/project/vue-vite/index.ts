@@ -43,7 +43,7 @@ export class VueViteProject extends Project {
         debug(`${chalk.bold('@ionic/vue')} detected in ${chalk.bold('package.json')}`);
         return true;
       }
-    } catch (e) {
+    } catch (e: any) {
       // ignore
     }
 

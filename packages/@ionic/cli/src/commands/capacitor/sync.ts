@@ -104,7 +104,7 @@ ${input('ionic capacitor sync')} will do the following:
         build: buildRunner.createOptionsFromCommandLine(inputs, options),
         capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }

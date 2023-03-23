@@ -95,7 +95,7 @@ export class CommServer extends events.EventEmitter {
       }
 
       return payload;
-    } catch (e) {
+    } catch (e: any) {
       debug(e);
     }
   }

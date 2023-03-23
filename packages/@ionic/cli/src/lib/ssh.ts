@@ -43,7 +43,7 @@ export function parsePublicKey(pubkey: string): [string, string, string, string]
 export async function validatePrivateKey(keyPath: string): Promise<void> {
   try {
     await stat(keyPath);
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       throw ERROR_SSH_MISSING_PRIVKEY;
     }

@@ -50,7 +50,7 @@ export async function loadGulp(): Promise<GulpInst> {
       const gulpPath = require.resolve('gulp');
       debug(`Using gulp: ${gulpPath}`);
       _gulpInst = require(gulpPath);
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'MODULE_NOT_FOUND') {
         throw e;
       }
@@ -62,7 +62,7 @@ export async function loadGulp(): Promise<GulpInst> {
     try {
       gulpFile = require(gulpFilePath); // requiring the gulp file
 
-    } catch (e) {
+    } catch (e: any) {
       if (e.code !== 'MODULE_NOT_FOUND') {
         throw e;
       }
@@ -91,7 +91,7 @@ export async function loadGulp(): Promise<GulpInst> {
               _gulpInst.task(key, task);
             }
           });
-      } catch (e) {
+      } catch (e: any) {
         throw new Error(`Cannot declare gulp v4 task, using exports: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
           chalk.red(e.stack ? e.stack : e));
       }
@@ -102,7 +102,7 @@ export async function loadGulp(): Promise<GulpInst> {
       try {
         include(gulpFilePath);
 
-      } catch (e) {
+      } catch (e: any) {
         throw new Error(
           `Error in module: ${chalk.bold(prettyPath(gulpFilePath))}:\n` +
           chalk.red(e.stack ? e.stack : e)
@@ -127,7 +127,7 @@ export async function tasks(gulpInst?: GulpInst): Promise<string[]> {
     const registry = gulp.registry();
     return registry && Object.keys(registry.tasks()) || [];
 
-  } catch (e) {
+  } catch (e: any) {
     process.stderr.write(`${timestamp()} Cannot load gulp tasks: ${chalk.bold(String(e))}\n` +
       chalk.red(e.stack ? e.stack : e));
     return [];
@@ -137,7 +137,7 @@ export async function tasks(gulpInst?: GulpInst): Promise<string[]> {
 export async function hasTask(name: string): Promise<boolean> {
   try {
     return (await tasks()).includes(name);
-  } catch (e) {
+  } catch (e: any) {
     process.stderr.write(`${timestamp()} Cannot load gulp: ${chalk.bold(String(e))}\n` +
       chalk.red(e.stack ? e.stack : e));
   }
@@ -158,7 +158,7 @@ export async function runTask(name: string): Promise<void> {
     process.stdout.write(`${timestamp()} Invoking ${chalk.cyan(name)} gulp task.\n`);
     // Execute as promise
     await new Promise(done => taskWrapper(done));
-  } catch (e) {
+  } catch (e: any) {
     process.stderr.write(`${timestamp()} Cannot run ${chalk.cyan(name)} task: ${String(e)}\n` +
       chalk.red(e.stack ? e.stack : e));
   }

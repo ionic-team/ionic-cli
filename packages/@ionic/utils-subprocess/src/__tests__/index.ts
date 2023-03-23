@@ -331,7 +331,7 @@ describe('@ionic/utils-subprocess', () => {
       cp.emit('close', 1);
       try {
         await p;
-      } catch (e) {
+      } catch (e: any) {
         if (!(e instanceof SubprocessError)) {
           throw new Error('not SubprocessError');
         }
@@ -366,7 +366,7 @@ describe('@ionic/utils-subprocess', () => {
       cp.emit('close', 1);
       try {
         await p;
-      } catch (e) {
+      } catch (e: any) {
         if (!(e instanceof SubprocessError)) {
           throw new Error('not SubprocessError');
         }

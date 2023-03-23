@@ -101,7 +101,7 @@ You may wish to use ${input('ionic cordova prepare')} if you run your project wi
           const runner = await this.project.requireBuildRunner();
           const runnerOpts = runner.createOptionsFromCommandLine(inputs, buildOptions);
           await runner.run(runnerOpts);
-        } catch (e) {
+        } catch (e: any) {
           if (e instanceof RunnerException) {
             throw new FatalException(e.message);
           }

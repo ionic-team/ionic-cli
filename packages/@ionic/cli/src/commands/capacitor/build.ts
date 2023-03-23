@@ -114,7 +114,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
 
     try {
       await this.runBuild(inputs, options);
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof RunnerException) {
         throw new FatalException(e.message);
       }
@@ -162,7 +162,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
         build: buildRunner.createOptionsFromCommandLine(inputs, options),
         capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }

@@ -169,7 +169,7 @@ Both can be retrieved from the Dashboard[^dashboard].
     try {
       const res = await this.env.client.do(req);
       return res.data as DistributionBuild;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');
@@ -235,7 +235,7 @@ Both can be retrieved from the Dashboard[^dashboard].
     try {
       const res = await this.env.client.do(req);
       return res.data as PackageBuild;
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         if (e.response.status === 401) {
           this.env.log.error('Try logging out and back in again.');

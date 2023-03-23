@@ -20,7 +20,7 @@ function getDefaultAddresses(): string[] {
         addresses.push(...networkInterface.map(i => i.address));
       }
     }
-  } catch (e) {
+  } catch (e: any) {
     // swallow
   }
 
@@ -83,7 +83,7 @@ export async function isPortAvailable(port: number): Promise<boolean> {
       if (!available) {
         return false;
       }
-    } catch (e) {
+    } catch (e: any) {
       debug('error while checking %s:%d: %o', address, port, e);
     }
   }
@@ -169,7 +169,7 @@ export async function isHostConnectable(host: string, port: number, { timeout }:
 
         resolve(true);
         resolved = true;
-      } catch (e) {
+      } catch (e: any) {
         // try again
       }
     }
