@@ -135,7 +135,7 @@ const beforeExitHandlerWrapper = (signal: 'process.exit' | BeforeExitSignal) => 
   await Promise.all([...exitFns.values()].map(async fn => {
     try {
       await fn();
-    } catch (e) {
+    } catch (e: any) {
       debug('onBeforeExit handler: error from function: %O', e);
     }
   }));

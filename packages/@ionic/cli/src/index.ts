@@ -92,7 +92,7 @@ async function authenticateFromEnvironment(ienv: IonicEnvironment) {
 
       try {
         await ienv.session.login(email, password);
-      } catch (e) {
+      } catch (e: any) {
         ienv.log.error(`Error occurred during automatic login via ${strong('IONIC_EMAIL')} / ${strong('IONIC_PASSWORD')} environment variables.`);
         throw e;
       }
@@ -106,7 +106,7 @@ export async function run(pargv: string[]): Promise<void> {
 
   try {
     executor = await loadExecutor(await generateContext(), pargv);
-  } catch (e) {
+  } catch (e: any) {
     process.stderr.write(`${e.message ? e.message : (e.stack ? e.stack : e)}\n`);
     process.exitCode = 1;
     return;
@@ -132,7 +132,7 @@ export async function run(pargv: string[]): Promise<void> {
     }
 
     await executor.execute(location, process.env);
-  } catch (e) {
+  } catch (e: any) {
     err = e;
   } finally {
     if (ienv.flags.interactive) {

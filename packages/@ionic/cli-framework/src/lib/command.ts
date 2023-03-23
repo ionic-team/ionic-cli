@@ -29,7 +29,7 @@ export abstract class BaseCommand<C extends ICommand<C, N, M, I, O>, N extends I
       if (input.validators && input.validators.length > 0) {
         try {
           validate(argv[i], input.name, [...input.validators]);
-        } catch (e) {
+        } catch (e: any) {
           if (!(e instanceof InputValidationError)) {
             throw e;
           }

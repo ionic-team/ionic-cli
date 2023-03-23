@@ -76,7 +76,7 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
       const leek = await getLeek({ config, version: ctx.version });
       try {
         await leek.track({ name, message });
-      } catch (e) {
+      } catch (e: any) {
         debug(`leek track error: ${e.stack ? e.stack : e}`);
       }
     })(),
@@ -117,7 +117,7 @@ export async function sendCommand({ config, client, getInfo, ctx, session, proje
 
       try {
         await client.do(req);
-      } catch (e) {
+      } catch (e: any) {
         debug(`metric send error: ${e.stack ? e.stack : e}`);
       }
     })(),

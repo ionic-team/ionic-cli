@@ -73,7 +73,7 @@ export class AngularProject extends Project {
         debug(`${strong('@ionic/angular')} detected in ${strong('package.json')}`);
         return true;
       }
-    } catch (e) {
+    } catch (e: any) {
       // ignore
     }
 

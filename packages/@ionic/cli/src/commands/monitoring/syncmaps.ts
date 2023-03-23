@@ -125,7 +125,7 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
       const res = await this.env.client.do(req);
 
       return this.uploadSourcemap(res, file);
-    } catch (e) {
+    } catch (e: any) {
       if (isSuperAgentError(e)) {
         this.env.log.error(`Unable to sync map ${file}: ` + e.message);
         if (e.response.status === 401) {

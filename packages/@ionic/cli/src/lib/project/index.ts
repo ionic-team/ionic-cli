@@ -254,7 +254,7 @@ export class ProjectDetails {
       }
 
       return await JSON.parse(configContents);
-    } catch (e) {
+    } catch (e: any) {
       throw new ProjectDetailsError('Could not read project file', 'ERR_INVALID_PROJECT_FILE', e);
     }
   }
@@ -286,7 +286,7 @@ export class ProjectDetails {
       }
 
       throw new ProjectDetailsError('Unknown project file structure', 'ERR_INVALID_PROJECT_FILE');
-    } catch (e) {
+    } catch (e: any) {
       errors.push(e);
     }
 
@@ -459,7 +459,7 @@ export abstract class Project implements IProject {
   async getBuildRunner(): Promise<import('../build').BuildRunner<any> | undefined> {
     try {
       return await this.requireBuildRunner();
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
@@ -469,7 +469,7 @@ export abstract class Project implements IProject {
   async getServeRunner(): Promise<import('../serve').ServeRunner<any> | undefined> {
     try {
       return await this.requireServeRunner();
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
@@ -479,7 +479,7 @@ export abstract class Project implements IProject {
   async getGenerateRunner(): Promise<import('../generate').GenerateRunner<any> | undefined> {
     try {
       return await this.requireGenerateRunner();
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
@@ -510,7 +510,7 @@ export abstract class Project implements IProject {
     try {
       pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       pkg = await readPackageJsonFile(pkgPath);
-    } catch (e) {
+    } catch (e: any) {
       if (logErrors) {
         this.e.log.warn(`Error loading ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}: ${e}`);
       }
@@ -523,7 +523,7 @@ export abstract class Project implements IProject {
     try {
       const pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       return await readPackageJsonFile(pkgPath);
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof SyntaxError) {
         throw new FatalException(`Could not parse ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}. Is it a valid JSON file?`);
       } else if (e === ERROR_INVALID_PACKAGE_JSON) {
@@ -680,7 +680,7 @@ export abstract class Project implements IProject {
       }
 
       await writeFile(variablesPath, themeVarsContents);
-    } catch (e) {
+    } catch (e: any) {
       const { log } = this.e;
       log.error(`Unable to modify theme variables, theme will need to be set manually: ${e}`);
     }
@@ -696,7 +696,7 @@ export abstract class Project implements IProject {
 
       await writeFile(iconPath, appIcon);
       await writeFile(splashPath, splash);
-    } catch (e) {
+    } catch (e: any) {
       const { log } = this.e;
       log.error(`Unable to find or create the resources directory. Skipping icon generation: ${e}`);
     }
@@ -756,7 +756,7 @@ export abstract class Project implements IProject {
     const integrations: (IIntegration<ProjectIntegration> | undefined)[] = await Promise.all(integrationNames.map(async name => {
       try {
         return await this.createIntegration(name);
-      } catch (e) {
+      } catch (e: any) {
         if (!(e instanceof IntegrationNotFoundException)) {
           throw e;
         }
