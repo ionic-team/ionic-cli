@@ -1,7 +1,7 @@
 import { pathExists, readFile, readdirSafe } from '@ionic/utils-fs';
 import { columnar, prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
-import * as path from 'path';
+import Debug from 'debug';
+import path from 'path';
 
 import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';

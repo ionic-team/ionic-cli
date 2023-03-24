@@ -4,9 +4,9 @@ import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { ensureDir, findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
-import * as path from 'path';
+import Debug from 'debug';
+import lodash from 'lodash';
+import path from 'path';
 
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
 import { IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';

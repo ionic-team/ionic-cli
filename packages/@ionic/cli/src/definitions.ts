@@ -17,7 +17,7 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { NetworkInterface } from '@ionic/utils-network';
 import { Subprocess, SubprocessOptions, WhichOptions } from '@ionic/utils-subprocess';
 import { ChildProcess, SpawnOptions } from 'child_process';
-import * as fs from 'fs';
+import fs from 'fs';
 
 import type { Integration as CapacitorIntegration } from './lib/integrations/capacitor';
 import type { CapacitorConfig } from './lib/integrations/capacitor/config';

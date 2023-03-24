@@ -1,6 +1,6 @@
-import * as chalk from 'chalk';
-import * as lodash from 'lodash';
-import * as path from 'path';
+import chalk from 'chalk';
+import lodash from 'lodash';
+import path from 'path';
 
 import { ProjectType } from './definitions';
 

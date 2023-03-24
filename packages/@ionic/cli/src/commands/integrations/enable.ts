@@ -1,5 +1,5 @@
 import { BaseError, contains, validators } from '@ionic/cli-framework';
-import * as path from 'path';
+import path from 'path';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { isIntegrationName } from '../../guards';

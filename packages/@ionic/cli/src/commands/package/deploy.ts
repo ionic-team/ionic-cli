@@ -8,7 +8,7 @@ import {
 import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { sleep } from '@ionic/utils-process';
 import { columnar } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';

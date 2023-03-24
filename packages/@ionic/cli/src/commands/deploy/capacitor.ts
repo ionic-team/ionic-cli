@@ -1,5 +1,5 @@
 import { BaseConfig } from "@ionic/cli-framework";
-import lodash = require("lodash");
+import lodash  from 'lodash';
 
 export interface CapacitorConfig {
   appId?: string;

@@ -3,11 +3,11 @@ import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { map } from '@ionic/utils-array';
 import { pathExists, readdirp, stat, writeFile } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as crypto from 'crypto';
-import * as fs from 'fs';
-import lodash = require('lodash');
-import * as path from 'path';
-import * as Debug from 'debug';
+import crypto from 'crypto';
+import fs from 'fs';
+import lodash from 'lodash';
+import path from 'path';
+import Debug from 'debug';
 
 import { CommandMetadata } from '../../definitions';
 import { input } from '../../lib/color';

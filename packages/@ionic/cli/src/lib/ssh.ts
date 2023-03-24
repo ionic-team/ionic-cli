@@ -1,6 +1,6 @@
 import { readFile, stat } from '@ionic/utils-fs';
-import * as os from 'os';
-import * as path from 'path';
+import os from 'os';
+import path from 'path';
 
 import { IClient, IPaginator, PaginateArgs, PaginatorState, ResourceClientCreate, ResourceClientDelete, ResourceClientLoad, ResourceClientPaginate, Response, SSHKey } from '../definitions';
 import { isSSHKeyListResponse, isSSHKeyResponse } from '../guards';

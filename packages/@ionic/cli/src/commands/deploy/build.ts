@@ -3,9 +3,9 @@ import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { sleep } from '@ionic/utils-process';
 import { tmpfilepath } from '@ionic/utils-fs';
 import { columnar } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
-import * as fs from 'fs';
+import chalk from 'chalk';
+import Debug from 'debug';
+import fs from 'fs';
 
 import { CommandMetadata } from '../../definitions';
 import { isSuperAgentError } from '../../guards';

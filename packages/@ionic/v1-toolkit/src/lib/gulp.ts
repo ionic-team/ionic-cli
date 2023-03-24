@@ -1,11 +1,11 @@
 import { prettyPath } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
-import * as path from 'path';
-import * as fs from 'fs';
-import * as gulp from 'gulp';
-import * as undertaker from 'undertaker';
-import * as vm from "vm";
+import chalk from 'chalk';
+import Debug from 'debug';
+import path from 'path';
+import fs from 'fs';
+import gulp from 'gulp';
+import undertaker from 'undertaker';
+import vm from "vm";
 
 import { timestamp } from './log';
 import {Context} from "vm";

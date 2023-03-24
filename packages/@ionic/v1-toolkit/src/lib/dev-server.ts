@@ -1,7 +1,7 @@
 import { readFile } from '@ionic/utils-fs';
-import * as chalk from 'chalk';
-import * as path from 'path';
-import * as util from 'util';
+import chalk from 'chalk';
+import path from 'path';
+import util from 'util';
 
 export type Application = import('express').Application;
 export type RequestHandler = import('express').RequestHandler;
@@ -86,7 +86,7 @@ function getDevServerScript() {
 }
 
 export async function createLiveReloadServer({ host, port, wwwDir }: { host: string, port: number; wwwDir: string; }): Promise<LiveReloadFunction> {
-  const tinylr = await import('tiny-lr');
+  const { default: tinylr } = await import('tiny-lr');
   const lrserver = tinylr();
   lrserver.listen(port, host);
 

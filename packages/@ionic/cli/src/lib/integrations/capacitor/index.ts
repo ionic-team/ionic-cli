@@ -1,10 +1,10 @@
 import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
-import * as path from 'path';
+import chalk from 'chalk';
+import Debug from 'debug';
+import lodash from 'lodash';
+import path from 'path';
 
 const debug = Debug('ionic:lib:integrations:capacitor');
 
