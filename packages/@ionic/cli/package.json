@@ -59,7 +59,7 @@
     "open": "^7.0.4",
     "os-name": "^5.1.0",
     "semver": "^7.3.8",
-    "split2": "^3.0.0",
+    "split2": "^4.1.0",
     "ssh-config": "^1.1.1",
     "stream-combiner2": "^1.1.1",
     "superagent": "^8.0.9",
