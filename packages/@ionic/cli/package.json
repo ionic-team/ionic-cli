@@ -60,7 +60,7 @@
     "os-name": "^5.1.0",
     "semver": "^7.3.8",
     "split2": "^4.1.0",
-    "ssh-config": "^1.1.1",
+    "ssh-config": "^4.2.1",
     "stream-combiner2": "^1.1.1",
     "superagent": "^8.0.9",
     "superagent-proxy": "^3.0.0",
