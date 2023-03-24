@@ -206,8 +206,11 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     if (options.open) {
       const openAddress = localAddress;
       const url = this.modifyOpenUrl(openAddress, options);
-
-      await openUrl(url, { app: options.browser });
+      if (options.browser) {
+        await openUrl(url, { app: { name: options.browser } });
+      } else {
+        await openUrl(url);
+      }
 
       this.e.log.info(`Browser window opened to ${strong(url)}!`);
       this.e.log.nl();
