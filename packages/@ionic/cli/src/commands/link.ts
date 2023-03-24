@@ -1,7 +1,7 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { createPromptChoiceSeparator } from '@ionic/cli-framework-prompts';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import Debug from 'debug';
 
 import { PROJECT_FILE } from '../constants';
 import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo } from '../definitions';

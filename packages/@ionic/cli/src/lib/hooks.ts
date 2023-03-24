@@ -1,8 +1,8 @@
 import { conform } from '@ionic/utils-array';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
-import * as path from 'path';
+import Debug from 'debug';
+import lodash from 'lodash';
+import path from 'path';
 
 import { HookFn, HookInput, HookName, IConfig, IProject, IShell } from '../definitions';
 

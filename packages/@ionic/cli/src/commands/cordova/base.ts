@@ -2,8 +2,8 @@ import { MetadataGroup } from '@ionic/cli-framework';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { ERROR_COMMAND_NOT_FOUND, ERROR_SIGNAL_EXIT, SubprocessError } from '@ionic/utils-subprocess';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as lodash from 'lodash';
-import * as path from 'path';
+import lodash from 'lodash';
+import path from 'path';
 
 import { CommandInstanceInfo, CommandMetadataOption, IShellRunOptions, ProjectIntegration } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';

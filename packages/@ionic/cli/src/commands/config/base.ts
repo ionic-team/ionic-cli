@@ -1,6 +1,6 @@
 import { BaseConfig } from '@ionic/cli-framework';
-import * as lodash from 'lodash';
-import * as util from 'util';
+import lodash from 'lodash';
+import util from 'util';
 
 import { CommandLineInputs, CommandLineOptions, IConfig, IProject } from '../../definitions';
 import { failure, input, strong } from '../../lib/color';

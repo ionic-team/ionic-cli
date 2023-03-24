@@ -6,7 +6,7 @@ import { FatalException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
 
 import { CapacitorCommand } from './base';
-import * as semver from 'semver';
+import semver from 'semver';
 
 export class SyncCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

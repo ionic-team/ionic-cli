@@ -1,4 +1,4 @@
-import * as path from 'path';
+import path from 'path';
 
 import { injectScript } from '../dev-server';
 import { readFile } from '@ionic/utils-fs';

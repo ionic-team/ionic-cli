@@ -1,5 +1,5 @@
 import { readFile, writeFile, unlink } from '@ionic/utils-fs';
-import * as et from 'elementtree';
+import et from 'elementtree';
 
 export const ANDROID_MANIFEST_FILE = 'AndroidManifest.xml';
 
