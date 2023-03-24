@@ -1,5 +1,5 @@
 import { pathExists } from '@ionic/utils-fs';
-import * as path from 'path';
+import path from 'path';
 
 import { IShell } from '../definitions';
 

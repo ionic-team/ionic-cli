@@ -1,4 +1,4 @@
-import * as fsExtraSpy from 'fs-extra';
+import fsExtraSpy from 'fs-extra';
 import * as fsSafeSpy from '@ionic/utils-fs/dist/safe';
 import * as project from '../project';
 
@@ -11,7 +11,7 @@ describe('@ionic/cli', () => {
       it('should filter out files and hidden files/folders', async () => {
         const files: [string, boolean][] = [['.DS_Store', false], ['.dir', true], ['android', true], ['ios', true], ['platforms.json', false]];
         jest.spyOn(fsSafeSpy, 'readdir').mockImplementation(async () => files.map(([f]) => f));
-        jest.spyOn(fsSafeSpy, 'stat').mockImplementation(async (p) => ({
+        jest.spyOn(fsSafeSpy, 'stat').mockImplementation(async (p: any) => ({
           isDirectory: () => {
             const file = files.find(([f]) => p.endsWith(f));
             return typeof file !== 'undefined' && file[1];

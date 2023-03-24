@@ -1,8 +1,8 @@
-import * as Debug from 'debug';
-import * as dgram from 'dgram';
-import * as events from 'events';
+import Debug from 'debug';
+import dgram from 'dgram';
+import events from 'events';
 import { Netmask } from 'netmask';
-import * as os from 'os';
+import os from 'os';
 
 const debug = Debug('ionic:discover:publisher');
 

@@ -1,6 +1,6 @@
 import { MetadataGroup, ZshCompletionFormatter, getCompletionWords } from '@ionic/cli-framework';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
-import * as path from 'path';
+import path from 'path';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../definitions';
 import { strong } from '../lib/color';

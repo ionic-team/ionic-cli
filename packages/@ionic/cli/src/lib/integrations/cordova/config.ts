@@ -1,9 +1,9 @@
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { readFile, writeFile } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
-import * as et from 'elementtree';
-import * as path from 'path';
+import Debug from 'debug';
+import et from 'elementtree';
+import path from 'path';
 
 import { CordovaPackageJson, ProjectIntegration } from '../../../definitions';
 import { isCordovaPackageJson } from '../../../guards';

@@ -1,8 +1,8 @@
 import { mkdirpSync } from '@ionic/utils-fs';
-import * as fs from 'fs';
-import * as lodash from 'lodash';
-import * as path from 'path';
-import * as writeFileAtomic from 'write-file-atomic';
+import fs from 'fs';
+import lodash from 'lodash';
+import path from 'path';
+import writeFileAtomic from 'write-file-atomic';
 
 export interface BaseConfigOptions {
   /**

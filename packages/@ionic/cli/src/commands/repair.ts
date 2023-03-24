@@ -1,6 +1,6 @@
 import { pathExists, remove, unlink } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as path from 'path';
+import path from 'path';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, IProject, ProjectIntegration } from '../definitions';
 import { input, strong } from '../lib/color';

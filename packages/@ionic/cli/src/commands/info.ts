@@ -1,6 +1,6 @@
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { columnar } from '@ionic/utils-terminal';
-import * as lodash from 'lodash';
+import lodash from 'lodash';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, InfoItem, InfoItemGroup } from '../definitions';
 import { input, strong, weak } from '../lib/color';

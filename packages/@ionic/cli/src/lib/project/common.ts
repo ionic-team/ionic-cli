@@ -1,5 +1,5 @@
 import { findClosestOpenPort } from '@ionic/utils-network';
-import * as Debug from 'debug';
+import Debug from 'debug';
 
 import { input, strong } from '../color';
 import { FatalException } from '../errors';

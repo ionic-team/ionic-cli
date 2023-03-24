@@ -1,7 +1,7 @@
 import { filter, map } from '@ionic/utils-array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
+import Debug from 'debug';
+import lodash from 'lodash';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, Footnote, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, LinkFootnote, MetadataGroup, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
 import { isHydratedCommandMetadata, isLinkFootnote } from '../guards';

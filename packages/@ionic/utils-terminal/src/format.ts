@@ -1,11 +1,11 @@
-import * as os from 'os';
-import * as path from 'path';
+import os from 'os';
+import path from 'path';
 
-import sliceAnsi = require('slice-ansi');
-import stringWidth = require('string-width');
-import stripAnsi = require('strip-ansi');
-import wrapAnsi = require('wrap-ansi');
-import untildify = require('untildify');
+import sliceAnsi from 'slice-ansi';
+import stringWidth from 'string-width';
+import stripAnsi from 'strip-ansi';
+import wrapAnsi from 'wrap-ansi';
+import untildify from 'untildify';
 
 export { sliceAnsi, stringWidth, stripAnsi };
 

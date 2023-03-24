@@ -1,5 +1,5 @@
-import * as os from 'os';
-import * as path from 'path';
+import os from 'os';
+import path from 'path';
 
 describe('@ionic/utils-terminal', () => {
 

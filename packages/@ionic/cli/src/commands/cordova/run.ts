@@ -1,7 +1,7 @@
 import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
-import * as Debug from 'debug';
-import * as lodash from 'lodash';
+import Debug from 'debug';
+import lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions, ServeDetails } from '../../definitions';
 import { COMMON_BUILD_COMMAND_OPTIONS } from '../../lib/build';

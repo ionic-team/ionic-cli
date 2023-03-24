@@ -1,8 +1,8 @@
 import { BaseError, InputValidationError, PackageJson } from '@ionic/cli-framework';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { processExit } from '@ionic/utils-process';
-import * as Debug from 'debug';
-import * as path from 'path';
+import Debug from 'debug';
+import path from 'path';
 
 import { IonicNamespace } from './commands';
 import { IPCMessage, IonicContext, IonicEnvironment } from './definitions';

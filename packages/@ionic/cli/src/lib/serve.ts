@@ -4,12 +4,12 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { NetworkInterface, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
+import chalk from 'chalk';
+import Debug from 'debug';
 import { EventEmitter } from 'events';
-import * as lodash from 'lodash';
-import * as split2 from 'split2';
-import * as stream from 'stream';
+import lodash from 'lodash';
+import split2 from 'split2';
+import stream from 'stream';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 

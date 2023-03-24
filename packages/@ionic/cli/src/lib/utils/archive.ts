@@ -1,3 +1,3 @@
-import * as tar from 'tar';
+import tar from 'tar';
 
 export { tar };

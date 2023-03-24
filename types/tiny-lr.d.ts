@@ -1,5 +1,5 @@
 declare module "tiny-lr" {
-  import * as http from 'http';
+  import http from 'http';
 
   namespace TinyLR {}
 

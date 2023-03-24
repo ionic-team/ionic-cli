@@ -1,7 +1,7 @@
-import * as Debug from 'debug';
-import * as events from 'events';
-import * as util from 'util';
-import * as WebSocket from 'ws';
+import Debug from 'debug';
+import events from 'events';
+import util from 'util';
+import WebSocket from 'ws';
 
 const debug = Debug('ionic:discover:comm');
 
@@ -95,7 +95,7 @@ export class CommServer extends events.EventEmitter {
       }
 
       return payload;
-    } catch (e: any) {
+    } catch (e) {
       debug(e);
     }
   }
