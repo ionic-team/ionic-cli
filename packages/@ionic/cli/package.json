@@ -52,7 +52,7 @@
     "@ionic/utils-terminal": "2.3.3",
     "chalk": "^4.0.0",
     "debug": "^4.3.4",
-    "diff": "^4.0.1",
+    "diff": "^5.1.0",
     "elementtree": "^0.1.7",
     "leek": "0.0.24",
     "lodash": "^4.17.21",
