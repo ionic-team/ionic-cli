@@ -46,7 +46,7 @@
     "gulp": "^4.0.2",
     "http-proxy-middleware": "^0.20.0",
     "tiny-lr": "^1.1.0",
-    "tslib": "^2.0.1",
+    "tslib": "^2.5.0",
     "ws": "^7.0.0"
   },
   "devDependencies": {

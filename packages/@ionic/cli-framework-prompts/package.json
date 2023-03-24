@@ -27,7 +27,7 @@
     "@ionic/utils-terminal": "2.3.3",
     "debug": "^4.0.0",
     "inquirer": "^7.0.0",
-    "tslib": "^2.0.1"
+    "tslib": "^2.5.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",
