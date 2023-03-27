@@ -4,18 +4,18 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { input } from '../../lib/color';
 import { runCommand } from '../../lib/executor';
 
-import { DeployConfCommand } from './core';
+import { LiveUpdatesConfCommand } from './core';
 
-export class AddCommand extends DeployConfCommand {
+export class AddCommand extends LiveUpdatesConfCommand {
   async getMetadata(): Promise<CommandMetadata> {
 
     return {
       name: 'add',
       type: 'project',
       groups: [MetadataGroup.PAID],
-      summary: 'Adds Appflow Deploy to the project',
+      summary: 'Adds Ionic Live Updates plugin to the project',
       description: `
-This command adds the Appflow Deploy plugin (${input('cordova-plugin-ionic')}) for both Capacitor and Cordova projects.
+This command adds the Ionic Live Updates plugin (${input('cordova-plugin-ionic')}) for both Capacitor and Cordova projects.
 
 For Capacitor projects it runs all the steps necessary to install the plugin, sync with the native projects and add the configuration to the proper iOS and Android configuration files.
 
@@ -74,7 +74,7 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
     };
   }
 
-  protected buildCordovaDeployOptions(options: CommandLineOptions): string[] {
+  protected buildCordovaLiveUpdateOptions(options: CommandLineOptions): string[] {
     const optionsToCordova = {
       'app-id': 'APP_ID',
       'channel-name': 'CHANNEL_NAME',
@@ -101,12 +101,12 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
 
   async addPlugin(options: CommandLineOptions, runinfo: CommandInstanceInfo, integration?: string) {
     if (integration === 'cordova') {
-      let deployCommand = ['cordova', 'plugin', 'add', 'cordova-plugin-ionic'];
-      const userOptions = this.buildCordovaDeployOptions(options);
+      let addPluginCommand = ['cordova', 'plugin', 'add', 'cordova-plugin-ionic'];
+      const userOptions = this.buildCordovaLiveUpdateOptions(options);
       if (userOptions) {
-        deployCommand = deployCommand.concat(userOptions);
+        addPluginCommand = addPluginCommand.concat(userOptions);
       }
-      await runCommand(runinfo, deployCommand);
+      await runCommand(runinfo, addPluginCommand);
     }
     if (integration === 'capacitor') {
       const { pkgManagerArgs } = await import('../../lib/utils/npm');
@@ -124,7 +124,7 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
     const integration = await this.getAppIntegration();
 
     // check if it is already installed
-    const alreadyAdded = await this.checkDeployInstalled();
+    const alreadyAdded = await this.checkLiveUpdatesInstalled();
     if (!alreadyAdded) {
       await this.addPlugin(options, runinfo, integration);
     } else {
@@ -133,7 +133,7 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
 
     if (integration === 'capacitor') {
       // generate the manifest
-      await runCommand(runinfo, ['deploy', 'manifest']);
+      await runCommand(runinfo, ['live-update', 'manifest']);
       // run capacitor sync
       await runCommand(runinfo, ['capacitor', 'sync']);
       // update the ios project if present
@@ -142,7 +142,7 @@ For Cordova projects it just takes care of running the proper Cordova CLI comman
       await this.addConfToAndroidString(options);
     }
 
-    this.env.log.ok(`Appflow Deploy plugin added to the project!\n`);
+    this.env.log.ok(`Ionic Live Updates plugin added to the project!\n`);
   }
 
 }

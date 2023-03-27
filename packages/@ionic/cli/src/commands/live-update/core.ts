@@ -7,7 +7,7 @@ import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';
 import { FatalException } from '../../lib/errors';
 
-export abstract class DeployCoreCommand extends Command {
+export abstract class LiveUpdatesCoreCommand extends Command {
   protected async getAppIntegration(): Promise<string | undefined> {
     if (this.project) {
       if (this.project.getIntegration('capacitor') !== undefined) {
@@ -26,7 +26,7 @@ export abstract class DeployCoreCommand extends Command {
     if (!integration) {
       throw new FatalException(
         `It looks like your app isn't integrated with Capacitor or Cordova.\n` +
-        `In order to use the Appflow Deploy plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
+        `In order to use the Ionic Live Updates plugin, you will need to integrate your app with Capacitor or Cordova. See the docs for setting up native projects:\n\n` +
         `iOS: ${strong('https://ionicframework.com/docs/building/ios')}\n` +
         `Android: ${strong('https://ionicframework.com/docs/building/android')}\n`
       );
@@ -34,7 +34,7 @@ export abstract class DeployCoreCommand extends Command {
   }
 }
 
-export abstract class DeployConfCommand extends DeployCoreCommand {
+export abstract class LiveUpdatesConfCommand extends LiveUpdatesCoreCommand {
 
   protected readonly optionsToPlistKeys: {[key: string]: string} = {
     'app-id': 'IonAppId',
@@ -78,7 +78,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     return undefined;
   }
 
-  protected async checkDeployInstalled(): Promise<boolean> {
+  protected async checkLiveUpdatesInstalled(): Promise<boolean> {
     if (!this.project) {
       return false;
     }
@@ -152,7 +152,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     if (!plistPath) {
       this.env.log.warn(
         `No ${strong('Capacitor iOS')} project found\n` +
-        `You will need to rerun ${input('ionic deploy configure')} if you add it later.\n`
+        `You will need to rerun ${input('ionic live-update configure')} if you add it later.\n`
       );
       return false;
     }
@@ -281,7 +281,7 @@ export abstract class DeployConfCommand extends DeployCoreCommand {
     if (!stringXmlPath) {
       this.env.log.warn(
         `No ${strong('Capacitor Android')} project found\n`+
-        `You will need to rerun ${input('ionic deploy configure')} if you add it later.\n`);
+        `You will need to rerun ${input('ionic live-update configure')} if you add it later.\n`);
       return false;
     }
     // try to load the plist file first
