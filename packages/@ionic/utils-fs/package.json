@@ -32,9 +32,9 @@
   },
   "dependencies": {
     "@types/fs-extra": "^8.0.0",
-    "debug": "^4.0.0",
+    "debug": "^4.3.4",
     "fs-extra": "^9.0.0",
-    "tslib": "^2.0.1"
+    "tslib": "^2.5.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",
