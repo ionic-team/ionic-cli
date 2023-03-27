@@ -5,17 +5,17 @@ import { input } from '../../lib/color';
 import { FatalException } from '../../lib/errors';
 
 
-import { DeployConfCommand } from './core';
+import { LiveUpdatesConfCommand } from './core';
 
-export class ConfigureCommand extends DeployConfCommand {
+export class ConfigureCommand extends LiveUpdatesConfCommand {
   async getMetadata(): Promise<CommandMetadata> {
     return {
       name: 'configure',
       type: 'project',
       groups: [MetadataGroup.PAID],
-      summary: 'Overrides Appflow Deploy configuration',
+      summary: 'Overrides Ionic Live Updates plugin configuration',
       description: `
-This command overrides configuration for the Appflow Deploy plugin (${input('cordova-plugin-ionic')}) in Capacitor projects.
+This command overrides configuration for the Ionic Live Updates plugin (${input('cordova-plugin-ionic')}) in Capacitor projects.
 
 For Capacitor projects, if the plugin is already installed, it overrides the configuration variables in the native projects.
 
@@ -81,11 +81,11 @@ For Cordova projects this is not implemented because it is better to reinstall t
 
   async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
     // check if it is already installed
-    const alreadyAdded = await this.checkDeployInstalled();
+    const alreadyAdded = await this.checkLiveUpdatesInstalled();
     if (!alreadyAdded) {
       throw new FatalException(
-        `Deploy (cordova-plugin-ionic) not yet installed.\n` +
-        `Please run ${input('ionic deploy add')}`
+        `Live Updates (cordova-plugin-ionic) not yet installed.\n` +
+        `Please run ${input('ionic live-update add')}`
       );
     }
     // check if there are native integration installed
@@ -101,8 +101,8 @@ For Cordova projects this is not implemented because it is better to reinstall t
     const integration = await this.getAppIntegration();
     if (integration === 'cordova') {
       throw new FatalException(
-        `Deploy (cordova-plugin-ionic) configuration cannot be overridden for a Cordova project.\n` +
-        `Please uninstall the plugin and run ${input('ionic deploy add')} again.`
+        `Live Updates (cordova-plugin-ionic) configuration cannot be overridden for a Cordova project.\n` +
+        `Please uninstall the plugin and run ${input('ionic live-update add')} again.`
       );
     }
     if (integration === 'capacitor') {
@@ -120,7 +120,7 @@ For Cordova projects this is not implemented because it is better to reinstall t
         printOkMessage = await this.addConfToAndroidString(options);
       }
       if (printOkMessage) {
-        this.env.log.ok(`Deploy (cordova-plugin-ionic) configs successfully overridden for the project\n`);
+        this.env.log.ok(`Live Updates (cordova-plugin-ionic) configs successfully overridden for the project\n`);
       }
     }
   }
