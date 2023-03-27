@@ -33,10 +33,10 @@
   "dependencies": {
     "@ionic/utils-object": "2.1.5",
     "@ionic/utils-terminal": "2.3.3",
-    "debug": "^4.0.0",
+    "debug": "^4.3.4",
     "signal-exit": "^3.0.3",
     "tree-kill": "^1.2.2",
-    "tslib": "^2.0.1"
+    "tslib": "^2.5.0"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",

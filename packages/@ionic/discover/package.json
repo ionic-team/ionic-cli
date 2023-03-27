@@ -28,9 +28,9 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "debug": "^4.0.0",
+    "debug": "^4.3.4",
     "netmask": "^1.0.6",
-    "tslib": "^2.0.1",
+    "tslib": "^2.5.0",
     "ws": "^7.0.0"
   },
   "devDependencies": {
