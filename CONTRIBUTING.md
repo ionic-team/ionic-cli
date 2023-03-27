@@ -54,8 +54,6 @@ The Ionic CLI is organized into a monorepo. Here are the packages:
 ##### CLIs
 
 * [`packages/@ionic/cli`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/cli): Ionic CLI executable and library.
-* [`packages/@ionic/lab`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/lab): Utility CLI for Ionic Lab, used by `ionic serve`.
-* [`packages/@ionic/v1-toolkit`](https://github.com/ionic-team/ionic-cli/tree/develop/packages/%40ionic/v1-toolkit): Utility CLI for Ionic v1 Apps, used by `ionic serve`.
 
 ##### Libraries
 
@@ -73,8 +71,8 @@ The Ionic CLI is organized into a monorepo. Here are the packages:
 
 #### Toolset
 
-* npm 6+ is required.
-* Node 12+ is required.
+* npm 8+ is required.
+* Node 16+ is required.
 * The codebase is written in [TypeScript](https://www.typescriptlang.org/). If
   you're unfamiliar with TypeScript, we recommend using [VS
   Code](https://code.visualstudio.com/) and finding a tutorial to familiarize
@@ -101,8 +99,8 @@ such as [nvm](https://github.com/creationix/nvm) and switch between
 environments, e.g.
 
 ```bash
-nvm install v12
-nvm alias cli-local v12
+nvm install v16
+nvm alias cli-local v16
 ```
 
 You can even set up an alias in your terminal that sets `IONIC_CONFIG_DIRECTORY`
