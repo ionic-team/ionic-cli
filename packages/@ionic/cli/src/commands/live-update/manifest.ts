@@ -16,24 +16,24 @@ import { prependNodeModulesBinToPath, Shell } from '../../lib/shell';
 import { createDefaultLoggerHandlers, Logger } from '../../lib/utils/logger';
 
 import { CapacitorCLIConfig, CapacitorConfig, CapacitorJSONConfig } from './capacitor';
-import { DeployCoreCommand } from './core';
+import { LiveUpdatesCoreCommand } from './core';
 
-const debug = Debug('ionic:commands:deploy:manifest');
+const debug = Debug('ionic:commands:live-update:manifest');
 const CAPACITOR_CONFIG_JSON_FILE = 'capacitor.config.json';
 
-interface DeployManifestItem {
+interface LiveUpdatesManifestItem {
   href: string;
   size: number;
   integrity: string;
 }
 
-export class DeployManifestCommand extends DeployCoreCommand {
+export class LiveUpdatesManifestCommand extends LiveUpdatesCoreCommand {
   async getMetadata(): Promise<CommandMetadata> {
     // This command is set as type 'global' in order to support Capacitor apps without an ionic.config.json
     return {
       name: 'manifest',
       type: 'global',
-      summary: 'Generates a manifest file for the deploy service from a built app directory',
+      summary: 'Generates a manifest file for the Ionic Live Updates service from a built app directory',
       groups: [MetadataGroup.PAID],
     };
   }
@@ -41,7 +41,7 @@ export class DeployManifestCommand extends DeployCoreCommand {
   async run(): Promise<void> {
     const capacitorConfig = await this.getCapacitorConfig();
     if (!this.project && !capacitorConfig) {
-      throw new FatalException(`Cannot run ${input('ionic deploy manifest')} outside a project directory.`);
+      throw new FatalException(`Cannot run ${input('ionic live-update manifest')} outside a project directory.`);
     }
 
     let buildDir: string;
@@ -56,10 +56,10 @@ export class DeployManifestCommand extends DeployCoreCommand {
 
     const manifestPath = path.resolve(buildDir, 'pro-manifest.json');
     await writeFile(manifestPath, JSON.stringify(manifest, undefined, 2), { encoding: 'utf8' });
-    this.env.log.ok(`Appflow Deploy manifest written to ${input(prettyPath(manifestPath))}!`);
+    this.env.log.ok(`Ionic Live Updates manifest written to ${input(prettyPath(manifestPath))}!`);
   }
 
-  private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<DeployManifestItem[]> {
+  private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<LiveUpdatesManifestItem[]> {
     const contents = await readdirp(buildDir, { filter: item => !/(css|js)\.map$/.test(item.path) });
     const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await stat(f)]);
     const files = stats.filter(([ , s ]) => !s.isDirectory());
@@ -69,7 +69,7 @@ export class DeployManifestCommand extends DeployCoreCommand {
     return items.filter(item => item.href !== 'pro-manifest.json');
   }
 
-  private async getFileAndSizeAndHashForFile(buildDir: string, file: string, s: fs.Stats): Promise<DeployManifestItem> {
+  private async getFileAndSizeAndHashForFile(buildDir: string, file: string, s: fs.Stats): Promise<LiveUpdatesManifestItem> {
     const buffer = await this.readFile(file);
 
     return {
