@@ -1,6 +1,6 @@
-import path from 'path';
+import * as path from 'path';
 
-import SSHConfig from 'ssh-config';
+import * as SSHConfig from 'ssh-config';
 import { readFile } from '@ionic/utils-fs';
 
 import { ensureHostAndKeyPath } from '../ssh-config';

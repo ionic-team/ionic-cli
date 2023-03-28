@@ -1,4 +1,4 @@
-import osSpy from 'os';
+import * as osSpy from 'os';
 import { getExternalIPv4Interfaces } from '../';
 
 describe('@ionic/utils-network', () => {

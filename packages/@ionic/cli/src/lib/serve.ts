@@ -4,12 +4,12 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { NetworkInterface, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
-import chalk from 'chalk';
-import Debug from 'debug';
+import * as chalk from 'chalk';
+import * as Debug from 'debug';
 import { EventEmitter } from 'events';
-import lodash from 'lodash';
-import split2 from 'split2';
-import stream from 'stream';
+import * as lodash from 'lodash';
+import * as split2 from 'split2';
+import * as stream from 'stream';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
 
@@ -206,11 +206,8 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     if (options.open) {
       const openAddress = localAddress;
       const url = this.modifyOpenUrl(openAddress, options);
-      if (options.browser) {
-        await openUrl(url, { app: { name: options.browser } });
-      } else {
-        await openUrl(url);
-      }
+
+      await openUrl(url, { app: options.browser });
 
       this.e.log.info(`Browser window opened to ${strong(url)}!`);
       this.e.log.nl();

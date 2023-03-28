@@ -28,11 +28,11 @@
     "@ionic/utils-subprocess": "2.1.11",
     "@ionic/utils-terminal": "2.3.3",
     "chalk": "^4.0.0",
-    "debug": "^4.3.4",
-    "lodash": "^4.17.21",
+    "debug": "^4.0.0",
+    "lodash": "^4.17.5",
     "minimist": "^1.2.0",
     "rimraf": "^3.0.0",
-    "tslib": "^2.5.0",
+    "tslib": "^2.0.1",
     "write-file-atomic": "^3.0.0"
   },
   "devDependencies": {

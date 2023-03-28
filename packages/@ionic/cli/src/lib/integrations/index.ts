@@ -1,6 +1,6 @@
 import { BaseConfig } from '@ionic/cli-framework';
 import { PromptModule } from '@ionic/cli-framework-prompts';
-import path from 'path';
+import * as path from 'path';
 
 import {
   IClient,

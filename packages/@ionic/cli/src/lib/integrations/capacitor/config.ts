@@ -1,5 +1,5 @@
 import { BaseConfig } from '@ionic/cli-framework';
-import lodash from 'lodash';
+import * as lodash from 'lodash';
 
 export const CAPACITOR_CONFIG_JSON_FILE = 'capacitor.config.json';
 

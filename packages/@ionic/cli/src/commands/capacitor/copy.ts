@@ -4,7 +4,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { input } from '../../lib/color';
 
 import { CapacitorCommand } from './base';
-import semver from "semver";
+import * as semver from "semver";
 
 export class CopyCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {

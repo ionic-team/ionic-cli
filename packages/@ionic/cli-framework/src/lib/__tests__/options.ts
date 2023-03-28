@@ -1,4 +1,4 @@
-import minimist from 'minimist';
+import * as minimist from 'minimist';
 
 import { CommandMetadata } from '../../definitions';
 import { OptionFilters, filterCommandLineOptions, filterCommandLineOptionsByGroup, metadataOptionsToParseArgsOptions, separateArgv, stripOptions, unparseArgs } from '../options';

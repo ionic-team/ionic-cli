@@ -1,8 +1,8 @@
 import { createProcessEnv } from '@ionic/utils-process';
 import { ReadableStreamBuffer, WritableStreamBuffer } from '@ionic/utils-stream';
 import { EventEmitter } from 'events';
-import os from 'os';
-import path from 'path';
+import * as os from 'os';
+import * as path from 'path';
 
 const promisifyEvent = (emitter: EventEmitter, event: string | symbol): Promise<any> => {
   return new Promise<any>((resolve, reject) => {

@@ -1,8 +1,8 @@
 import { PackageJson } from '@ionic/cli-framework';
 import { readJson, writeJson } from '@ionic/utils-fs';
 import { stringWidth } from '@ionic/utils-terminal';
-import path from 'path';
-import semver from 'semver';
+import * as path from 'path';
+import * as semver from 'semver';
 
 import { IConfig, IonicEnvironment } from '../definitions';
 
