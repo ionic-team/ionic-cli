@@ -9,5 +9,5 @@ export async function openUrl(target: string, options?: Options): Promise<void> 
   const e = (err: Error) => debug('Error during open: %O', err);
   const n = p.on.bind(p);
 
-  n('error', err => e(err));
+  n('error', (err: any) => e(err));
 }
