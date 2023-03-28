@@ -3,7 +3,7 @@
     "allowUnreachableCode": false,
     "declaration": true,
     "importHelpers": true,
-    "module": "node16",
+    "module": "CommonJS",
     "moduleResolution": "node",
     "esModuleInterop": true,
     "noFallthroughCasesInSwitch": true,
