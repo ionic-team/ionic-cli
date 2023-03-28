@@ -1,6 +1,6 @@
-import chalk from 'chalk';
-import lodash from 'lodash';
-import util from 'util';
+import * as chalk from 'chalk';
+import * as lodash from 'lodash';
+import * as util from 'util';
 
 import {
   APIResponse,

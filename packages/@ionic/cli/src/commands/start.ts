@@ -2,9 +2,9 @@ import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
 import { columnar, prettyPath } from '@ionic/utils-terminal';
-import chalk from 'chalk';
-import Debug from 'debug';
-import path from 'path';
+import * as chalk from 'chalk';
+import * as Debug from 'debug';
+import * as path from 'path';
 
 import { COLUMNAR_OPTIONS, PROJECT_FILE } from '../constants';
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, IShellRunOptions, ProjectType, ResolvedStarterTemplate, StarterManifest } from '../definitions';

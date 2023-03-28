@@ -1,9 +1,9 @@
 import { MetadataGroup } from '@ionic/cli-framework';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { columnar, prettyPath } from '@ionic/utils-terminal';
-import chalk from 'chalk';
-import lodash from 'lodash';
-import util from 'util';
+import * as chalk from 'chalk';
+import * as lodash from 'lodash';
+import * as util from 'util';
 
 import { COLUMNAR_OPTIONS, PROJECT_FILE } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';

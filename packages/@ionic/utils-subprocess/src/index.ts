@@ -4,9 +4,9 @@ import { createProcessEnv, getPathParts } from '@ionic/utils-process';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
-import crossSpawn from 'cross-spawn';
-import os from 'os';
-import pathlib from 'path';
+import * as crossSpawn from 'cross-spawn';
+import * as os from 'os';
+import * as pathlib from 'path';
 
 export const ERROR_COMMAND_NOT_FOUND = 'ERR_SUBPROCESS_COMMAND_NOT_FOUND';
 export const ERROR_NON_ZERO_EXIT = 'ERR_SUBPROCESS_NON_ZERO_EXIT';

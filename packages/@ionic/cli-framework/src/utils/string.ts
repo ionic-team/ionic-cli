@@ -1,4 +1,4 @@
-import lodash from 'lodash';
+import * as lodash from 'lodash';
 
 export const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const URL_REGEX = /^[\S]+:[\S]+$/;
