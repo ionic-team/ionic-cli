@@ -31,8 +31,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "debug": "^4.3.4",
-    "tslib": "^2.5.0"
+    "debug": "^4.0.0",
+    "tslib": "^2.0.1"
   },
   "devDependencies": {
     "@types/debug": "^4.1.1",

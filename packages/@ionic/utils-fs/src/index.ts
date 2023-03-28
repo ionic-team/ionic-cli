@@ -1,7 +1,7 @@
-import fs from 'fs-extra';
-import os from 'os';
-import path from 'path';
-import stream from 'stream';
+import * as fs from 'fs-extra';
+import * as os from 'os';
+import * as path from 'path';
+import * as stream from 'stream';
 
 import * as safe from './safe';
 
@@ -334,7 +334,7 @@ export interface WalkerOptions {
   /**
    * Filter out file paths during walk.
    *
-   the file tree is walked, this function can be used to exclude files and
+   * As the file tree is walked, this function can be used to exclude files and
    * directories from the final result.
    *
    * It can also be used to tune performance. If a subdirectory is excluded, it

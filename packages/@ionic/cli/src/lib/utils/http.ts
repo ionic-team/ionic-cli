@@ -1,6 +1,6 @@
 import { conform } from '@ionic/utils-array';
 import { readFile } from '@ionic/utils-fs';
-import Debug from 'debug';
+import * as Debug from 'debug';
 
 import { CreateRequestOptions, HttpMethod } from '../../definitions';
 
@@ -21,7 +21,7 @@ function getGlobalProxy(): { envvar: string; envval: string; } | undefined {
 }
 
 export async function createRequest(method: HttpMethod, url: string, { userAgent, proxy, ssl }: CreateRequestOptions): Promise<{ req: SuperAgentRequest; }> {
-  const { default: superagent } = await import('superagent');
+  const superagent = await import('superagent');
 
   if (!proxy) {
     const gproxy = getGlobalProxy();
@@ -38,7 +38,7 @@ export async function createRequest(method: HttpMethod, url: string, { userAgent
     .redirects(25);
 
   if (proxy) {
-    const { default: superagentProxy } = await import('superagent-proxy');
+    const superagentProxy = await import('superagent-proxy');
     superagentProxy(superagent);
 
     if (req.proxy) {

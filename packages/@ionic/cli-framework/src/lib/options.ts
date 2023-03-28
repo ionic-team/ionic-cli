@@ -1,5 +1,5 @@
-import lodash from 'lodash';
-import minimist from 'minimist';
+import * as lodash from 'lodash';
+import * as minimist from 'minimist';
 
 import { CommandLineOptions, CommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
 

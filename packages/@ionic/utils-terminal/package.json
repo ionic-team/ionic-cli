@@ -32,12 +32,12 @@
   },
   "dependencies": {
     "@types/slice-ansi": "^4.0.0",
-    "debug": "^4.3.4",
+    "debug": "^4.0.0",
     "signal-exit": "^3.0.3",
     "slice-ansi": "^4.0.0",
     "string-width": "^4.1.0",
     "strip-ansi": "^6.0.0",
-    "tslib": "^2.5.0",
+    "tslib": "^2.0.1",
     "untildify": "^4.0.0",
     "wrap-ansi": "^7.0.0"
   },

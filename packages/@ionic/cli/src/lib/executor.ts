@@ -1,5 +1,5 @@
 import { BaseExecutor, metadataOptionsToParseArgsOptions, parseArgs, stripOptions } from '@ionic/cli-framework';
-import lodash from 'lodash';
+import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, INamespace, NamespaceLocateResult } from '../definitions';
 import { isCommand } from '../guards';

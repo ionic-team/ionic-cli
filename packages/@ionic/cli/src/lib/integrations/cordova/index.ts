@@ -1,9 +1,9 @@
 import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
-import chalk from 'chalk';
-import Debug from 'debug';
-import lodash from 'lodash';
-import os from 'os';
-import path from 'path';
+import * as chalk from 'chalk';
+import * as Debug from 'debug';
+import * as lodash from 'lodash';
+import * as os from 'os';
+import * as path from 'path';
 
 import { BaseIntegration, IntegrationConfig } from '../';
 import { InfoItem, IntegrationAddDetails, IntegrationAddHandlers, IntegrationName, ProjectIntegration, ProjectPersonalizationDetails } from '../../../definitions';

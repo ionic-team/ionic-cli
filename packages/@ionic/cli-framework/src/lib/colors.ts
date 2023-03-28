@@ -1,6 +1,6 @@
 import { ColorFunction, Colors as BaseColors } from '@ionic/cli-framework-output';
-import chalk from 'chalk';
-import lodash from 'lodash';
+import * as chalk from 'chalk';
+import * as lodash from 'lodash';
 
 import { MetadataGroup } from '../definitions';
 

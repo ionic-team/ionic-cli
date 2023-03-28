@@ -1,10 +1,10 @@
 import { BaseError, Footnote, validators } from '@ionic/cli-framework';
 import { sleepForever } from '@ionic/utils-process';
 import { columnar } from '@ionic/utils-terminal';
-import chalk from 'chalk';
-import Debug from 'debug';
-import lodash from 'lodash';
-import semver from 'semver';
+import * as chalk from 'chalk';
+import * as Debug from 'debug';
+import * as lodash from 'lodash';
+import * as semver from 'semver';
 
 import { COLUMNAR_OPTIONS } from '../../constants';
 import { AnyBuildOptions, AnyServeOptions, CapacitorRunHookName, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../../definitions';

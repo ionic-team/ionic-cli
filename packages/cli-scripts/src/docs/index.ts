@@ -3,10 +3,10 @@ import { Command, CommandHelpSchemaFootnote, CommandHelpSchemaInput, CommandHelp
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { CommandHelpSchema, NamespaceSchemaHelpFormatter } from '@ionic/cli/lib/help';
 import { mkdirp, remove, writeFile } from '@ionic/utils-fs';
-import chalk from 'chalk';
-import lodash from 'lodash';
-import path from 'path';
-import stripAnsi from 'strip-ansi';
+import * as chalk from 'chalk';
+import * as lodash from 'lodash';
+import * as path from 'path';
+import stripAnsi = require('strip-ansi');
 
 import { ansi2md, convertHTMLEntities, links2md } from './utils';
 
