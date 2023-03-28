@@ -1,6 +1,6 @@
 import { Footnote, MetadataGroup } from '@ionic/cli-framework';
 import { sleepForever } from '@ionic/utils-process';
-import lodash from 'lodash';
+import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun } from '../definitions';
 import { input } from '../lib/color';

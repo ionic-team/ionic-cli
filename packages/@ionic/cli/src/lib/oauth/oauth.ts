@@ -1,9 +1,9 @@
 import { readFile } from '@ionic/utils-fs';
 import { isPortAvailable } from '@ionic/utils-network';
-import crypto from 'crypto';
-import http from 'http';
-import path from 'path';
-import qs from 'querystring';
+import * as crypto from 'crypto';
+import * as http from 'http';
+import * as path from 'path';
+import * as qs from 'querystring';
 import { Response } from 'superagent';
 
 import { ASSETS_DIRECTORY } from '../../constants';

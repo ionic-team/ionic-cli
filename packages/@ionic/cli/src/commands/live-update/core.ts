@@ -1,7 +1,7 @@
 import { CommandLineOptions, combine, contains, validators } from '@ionic/cli-framework';
 import { pathExists, pathWritable, readFile, writeFile } from '@ionic/utils-fs';
-import et from 'elementtree';
-import path from 'path';
+import * as et from 'elementtree';
+import * as path from 'path';
 
 import { input, strong } from '../../lib/color';
 import { Command } from '../../lib/command';

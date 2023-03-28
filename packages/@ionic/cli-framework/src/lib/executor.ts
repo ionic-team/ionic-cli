@@ -1,5 +1,5 @@
 import { EventEmitter } from 'events';
-import lodash from 'lodash';
+import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandMetadata, CommandMetadataInput, CommandMetadataOption, ICommand, IExecutor, INamespace, NamespaceLocateResult } from '../definitions';
 import { BaseError, InputValidationError } from '../errors';

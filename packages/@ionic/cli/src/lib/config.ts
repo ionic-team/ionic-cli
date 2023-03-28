@@ -1,6 +1,6 @@
 import { BaseConfig, BaseConfigOptions, MetadataGroup, ParsedArgs, metadataOptionsToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
-import os from 'os';
-import path from 'path';
+import * as os from 'os';
+import * as path from 'path';
 
 import { CommandMetadataOption, ConfigFile, CreateRequestOptions, IConfig, OAuthServerConfig } from '../definitions';
 

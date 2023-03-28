@@ -1,5 +1,5 @@
 import { readFile, writeFile, unlink } from "@ionic/utils-fs";
-import et from "elementtree";
+import * as et from "elementtree";
 
 export const IOS_INFO_FILE = "Info.plist";
 

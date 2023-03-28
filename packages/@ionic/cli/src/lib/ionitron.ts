@@ -1,4 +1,4 @@
-import chalk from 'chalk';
+import * as chalk from 'chalk';
 
 export function getIonitronString(quote: string) {
   const quoteFormatted = quote

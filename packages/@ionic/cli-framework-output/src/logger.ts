@@ -1,6 +1,6 @@
 import { WordWrapOptions, stringWidth, wordWrap } from '@ionic/utils-terminal';
 import { Writable } from 'stream';
-import util from 'util';
+import * as util from 'util';
 
 import { ColorFunction, Colors, NO_COLORS } from './colors';
 import { dropWhile, enforceLF } from './utils';

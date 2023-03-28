@@ -1,6 +1,6 @@
-import Debug from 'debug';
-import lodash from 'lodash';
-import path from 'path';
+import * as Debug from 'debug';
+import * as lodash from 'lodash';
+import * as path from 'path';
 
 import { Project } from '../';
 import { InfoItem } from '../../../definitions';
