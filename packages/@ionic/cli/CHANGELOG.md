@@ -38,6 +38,14 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 - Using `deploy build`? Migrate to ionic-cloud build web and if you used the -channel option, also use ionic-cloud deploy web.
 - Using `package` commands? Migrate to ionic-cloud build and ionic-cloud deploy.
 
+The remaining `deploy` commands have been renamed to `live-update`.
+
+| deploy command | live-update command |
+| - | - |
+| `ionic deploy add` | `ionic live-update add` |
+| `ionic deploy configure` | `ionic live-update configure` |
+| `ionic deploy manifest` | `ionic live-update manifest` |
+
 See https://ionic.io/docs/appflow/cli/overview for more information on the Ionic Cloud CLI.
 * **docs:** The `ionic docs` command has been removed. See https://github.com/ionic-team/ionic-cli/pull/4905 for an alternative.
 * **doctor:** The `ionic doctor` command has been removed. See https://github.com/ionic-team/ionic-cli/pull/4907 for alternatives.
