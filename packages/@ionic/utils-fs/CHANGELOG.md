@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@3.1.6...@ionic/utils-fs@3.1.7) (2023-03-29)
+
+**Note:** Version bump only for package @ionic/utils-fs
+
+
+
+
+
 ## [3.1.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-fs@3.1.5...@ionic/utils-fs@3.1.6) (2022-06-16)
 
 **Note:** Version bump only for package @ionic/utils-fs

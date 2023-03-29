@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.12](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.11...@ionic/utils-subprocess@2.1.12) (2023-03-29)
+
+**Note:** Version bump only for package @ionic/utils-subprocess
+
+
+
+
+
 ## [2.1.11](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.10...@ionic/utils-subprocess@2.1.11) (2022-06-16)
 
 **Note:** Version bump only for package @ionic/utils-subprocess

@@ -1,6 +1,6 @@
 {
   "name": "@ionic/utils-process",
-  "version": "2.1.10",
+  "version": "2.1.11",
   "description": "Process utils for NodeJS",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
@@ -31,8 +31,8 @@
     "prepublishOnly": "npm run build"
   },
   "dependencies": {
-    "@ionic/utils-object": "2.1.5",
-    "@ionic/utils-terminal": "2.3.3",
+    "@ionic/utils-object": "2.1.6",
+    "@ionic/utils-terminal": "2.3.4",
     "debug": "^4.0.0",
     "signal-exit": "^3.0.3",
     "tree-kill": "^1.2.2",

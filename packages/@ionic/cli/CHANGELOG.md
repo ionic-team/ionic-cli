@@ -3,6 +3,57 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.9...@ionic/cli@7.0.0) (2023-03-29)
+
+
+### Bug Fixes
+
+* update test to reflect new output ([#4967](https://github.com/ionic-team/ionic-cli/issues/4967)) ([5c23518](https://github.com/ionic-team/ionic-cli/commit/5c23518b1a7bda4f020a82ced5557e157ccdbbc7))
+
+
+### chore
+
+* **appflow:** remove appflow from @ionic/cli ([#4777](https://github.com/ionic-team/ionic-cli/issues/4777)) ([34b07ad](https://github.com/ionic-team/ionic-cli/commit/34b07ad4b53130057ecc5a736036a87d582744c2))
+
+
+### Code Refactoring
+
+* **docs:** remove ionic docs command ([#4969](https://github.com/ionic-team/ionic-cli/issues/4969)) ([e624258](https://github.com/ionic-team/ionic-cli/commit/e62425889d07b496c0e578b61413ab00a8dae8d3))
+* **doctor:** remove ionic doctor command ([#4959](https://github.com/ionic-team/ionic-cli/issues/4959)) ([13568b1](https://github.com/ionic-team/ionic-cli/commit/13568b138bb8007e91901820656e97ac121a4913))
+* **lab:** remove ionic serve --lab option ([#4960](https://github.com/ionic-team/ionic-cli/issues/4960)) ([d6512a5](https://github.com/ionic-team/ionic-cli/commit/d6512a5139943dbe2084f99e63075db6e6b15b4d))
+
+
+### Features
+
+* add vite support for react and vue ([#4966](https://github.com/ionic-team/ionic-cli/issues/4966)) ([94e9fa2](https://github.com/ionic-team/ionic-cli/commit/94e9fa2a2146883ad857d2acad71b7605e3687d0))
+* remove ionic-angular project type ([ff1c936](https://github.com/ionic-team/ionic-cli/commit/ff1c93635a74fc26e57319123118eaf3ce6d9958))
+* remove ionicv1 project type ([6ea2d48](https://github.com/ionic-team/ionic-cli/commit/6ea2d48da10d2b964ab95961cc9600874279c59d))
+* remove v3 and v1 integrations ([d40da3d](https://github.com/ionic-team/ionic-cli/commit/d40da3d07da909f82807fe7182c035c69d20a65c))
+* use vite specific projects for starters ([#4970](https://github.com/ionic-team/ionic-cli/issues/4970)) ([f35ea72](https://github.com/ionic-team/ionic-cli/commit/f35ea7239d5b23f819084691480f1c791377d55f))
+
+
+### BREAKING CHANGES
+
+* **appflow:** The `package` commands and the `deploy build` command have been removed. Developers should migrate to the Ionic Cloud CLI instead. 
+- Using `deploy build`? Migrate to ionic-cloud build web and if you used the -channel option, also use ionic-cloud deploy web.
+- Using `package` commands? Migrate to ionic-cloud build and ionic-cloud deploy.
+
+See https://ionic.io/docs/appflow/cli/overview for more information on the Ionic Cloud CLI.
+* **docs:** The `ionic docs` command has been removed. See https://github.com/ionic-team/ionic-cli/pull/4905 for an alternative.
+* **doctor:** The `ionic doctor` command has been removed. See https://github.com/ionic-team/ionic-cli/pull/4907 for alternatives.
+* **lab:** The `--lab` option has been removed from `ionic serve`. See https://ionicframework.com/docs/developing/previewing for alternatives.
+* This commit removes integrations with V1 and V3 Ionic
+project types
+* This commit removes the Ionic V1 project type from the
+available project integrations. Please migrate to a modern Ionic
+project.
+* Integration with V3 (aka ionic-angular) project has
+been removed. Please update to modern Ionic projects.
+
+
+
+
+
 ## [6.20.9](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.8...@ionic/cli@6.20.9) (2023-03-17)
 
 
