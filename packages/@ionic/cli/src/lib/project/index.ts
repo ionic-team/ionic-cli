@@ -508,7 +508,7 @@ export abstract class Project implements IProject {
     let pkgPath: string | undefined;
 
     try {
-      pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      pkgPath = pkgName ? require.resolve(`${pkgName}/package.json`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       pkg = await readPackageJsonFile(pkgPath);
     } catch (e: any) {
       if (logErrors) {
