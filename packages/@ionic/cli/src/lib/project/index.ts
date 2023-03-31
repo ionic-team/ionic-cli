@@ -508,7 +508,7 @@ export abstract class Project implements IProject {
     let pkgPath: string | undefined;
 
     try {
-      pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      pkgPath = pkgName ? require.resolve(`${pkgName}/package.json`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       pkg = await readPackageJsonFile(pkgPath);
     } catch (e: any) {
       if (logErrors) {
@@ -521,7 +521,7 @@ export abstract class Project implements IProject {
 
   async requirePackageJson(pkgName?: string): Promise<PackageJson> {
     try {
-      const pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      const pkgPath = pkgName ? require.resolve(`${pkgName}/package.json`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       return await readPackageJsonFile(pkgPath);
     } catch (e: any) {
       if (e instanceof SyntaxError) {
