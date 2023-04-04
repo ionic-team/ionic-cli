@@ -76,7 +76,7 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
     }
   }
 
-  const installerExec: string = '';
+  let installerExec: string = '';
   const installerArgs: string[] = [];
 
   switch (npmClient) {
