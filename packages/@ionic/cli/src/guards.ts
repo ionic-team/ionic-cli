@@ -30,7 +30,6 @@ import {
   Snapshot,
   StarterManifest,
   SuperAgentError,
-  TreatableAilment,
   User
 } from './definitions';
 import { AuthConnection } from './lib/oauth/auth';
@@ -340,10 +339,6 @@ export function isSecurityProfile(obj: any): obj is SecurityProfile {
 export function isSecurityProfileResponse(r: APIResponse): r is Response<SecurityProfile> {
   const res = r as Response<SecurityProfile>;
   return isAPIResponseSuccess(res) && isSecurityProfile(res.data);
-}
-
-export function isTreatableAilment(ailment: any): ailment is TreatableAilment {
-  return ailment && ailment.treatable && typeof ailment.getTreatmentSteps === 'function';
 }
 
 export function isIntegrationName(name: any): name is IntegrationName {

@@ -26,9 +26,6 @@ describe('@ionic/cli', () => {
           browserOption: undefined,
           engine: 'browser',
           externalAddressRequired: false,
-          lab: false,
-          labHost: 'localhost',
-          labPort: 8200,
           livereload: true,
           open: false,
           port: 8100,
@@ -45,8 +42,8 @@ describe('@ionic/cli', () => {
 
         it('should provide options from negations of cli flag defaults', () => {
           const runner = new MyServeRunner({});
-          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
-          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, lab: true, open: true, externalAddressRequired: true });
+          const result = runner.createOptionsFromCommandLine([], { _: [], livereload: false, proxy: false, open: true, externalAddressRequired: true });
+          expect(result).toEqual({ ...defaults, livereload: false, proxy: false, open: true, externalAddressRequired: true });
         });
 
         it('should allow overrides of default values', () => {

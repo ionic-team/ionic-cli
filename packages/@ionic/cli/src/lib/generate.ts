@@ -15,8 +15,8 @@ export abstract class GenerateRunner<T extends GenerateOptions> implements Runne
   protected abstract readonly e: GenerateRunnerDeps;
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): GenerateOptions {
-    const [ type, name ] = inputs;
-    return { type, name };
+    const [ name ] = inputs;
+    return { name };
   }
 
   async ensureCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> { /* overwritten in subclasses */ }

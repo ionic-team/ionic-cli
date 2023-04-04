@@ -183,7 +183,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (!data) {
         return error();
       }
-    } catch (e) {
+    } catch (e: any) {
       return error(e);
     }
 
@@ -233,7 +233,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     try {
       await req;
-    } catch (e) {
+    } catch (e: any) {
       this.env.log.warn(`Unable to set app flag on server: ${e.message}`);
     }
   }
@@ -314,7 +314,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
       try {
         await checkForUnsupportedProject(projectType as ProjectType);
-      } catch (e) {
+      } catch (e: any) {
         this.env.log.error(e.message);
         options['cordova'] = false;
       }
@@ -650,7 +650,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (options['cordova']) {
         try {
           await this.env.shell.run('ng', ['add', '@ionic/cordova-builders', '--skip-confirmation'], { cwd: this.project.rootDirectory });
-        } catch (e) {
+        } catch (e: any) {
           debug('Error while adding @ionic/cordova-builders: %O', e);
         }
       }
@@ -666,7 +666,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (gitIntegration) {
         try {
           await this.env.shell.run('git', ['init'], shellOptions); // TODO: use initializeRepo()?
-        } catch (e) {
+        } catch (e: any) {
           this.env.log.warn('Error encountered during repo initialization. Disabling further git operations.');
           gitIntegration = false;
         }
@@ -701,7 +701,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         try {
           await this.env.shell.run('git', ['add', '-A'], shellOptions);
           await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
-        } catch (e) {
+        } catch (e: any) {
           this.env.log.warn('Error encountered during commit. Disabling further git operations.');
           gitIntegration = false;
         }
@@ -792,7 +792,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {
     try {
       return await readStarterManifest(manifestPath);
-    } catch (e) {
+    } catch (e: any) {
       debug(`Error with manifest file ${strong(prettyPath(manifestPath))}: ${e}`);
     }
   }

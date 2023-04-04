@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.3.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.3.3...@ionic/utils-terminal@2.3.4) (2023-03-29)
+
+**Note:** Version bump only for package @ionic/utils-terminal
+
+
+
+
+
 ## [2.3.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-terminal@2.3.2...@ionic/utils-terminal@2.3.3) (2022-06-16)
 
 **Note:** Version bump only for package @ionic/utils-terminal

@@ -16,7 +16,7 @@ export async function detectLocalCLI(): Promise<string> {
 
   try {
     pkgPath = require.resolve('ionic/package', { paths: compileNodeModulesPaths(process.cwd()) });
-  } catch (e) {
+  } catch (e: any) {
     // ignore
   }
 

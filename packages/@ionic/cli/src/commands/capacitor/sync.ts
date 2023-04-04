@@ -6,6 +6,7 @@ import { FatalException } from '../../lib/errors';
 import { Hook, HookDeps } from '../../lib/hooks';
 
 import { CapacitorCommand } from './base';
+import * as semver from 'semver';
 
 export class SyncCommand extends CapacitorCommand implements CommandPreRun {
   async getMetadata(): Promise<CommandMetadata> {
@@ -16,6 +17,12 @@ export class SyncCommand extends CapacitorCommand implements CommandPreRun {
         type: Boolean,
         default: true,
       },
+      {
+        name: 'inline',
+        summary: 'Use inline source maps  (only available on capacitor 4.1.0+)',
+        type: Boolean,
+        default: false
+      }
     ];
 
     const runner = this.project && await this.project.getBuildRunner();
@@ -67,6 +74,11 @@ ${input('ionic capacitor sync')} will do the following:
 
     const args = ['sync'];
 
+    const capVersion = await this.getCapacitorVersion();
+    if(semver.gte(capVersion, "4.1.0") && options.inline) {
+      args.push("--inline")
+    }
+
     if (platform) {
       args.push(platform);
     }
@@ -92,7 +104,7 @@ ${input('ionic capacitor sync')} will do the following:
         build: buildRunner.createOptionsFromCommandLine(inputs, options),
         capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }

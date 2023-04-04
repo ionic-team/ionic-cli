@@ -9,7 +9,7 @@ import * as lodash from 'lodash';
 import * as path from 'path';
 
 import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
-import { IAilmentRegistry, IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
+import { IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import { ancillary, failure, input, strong } from '../color';
 import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
@@ -254,7 +254,7 @@ export class ProjectDetails {
       }
 
       return await JSON.parse(configContents);
-    } catch (e) {
+    } catch (e: any) {
       throw new ProjectDetailsError('Could not read project file', 'ERR_INVALID_PROJECT_FILE', e);
     }
   }
@@ -286,7 +286,7 @@ export class ProjectDetails {
       }
 
       throw new ProjectDetailsError('Unknown project file structure', 'ERR_INVALID_PROJECT_FILE');
-    } catch (e) {
+    } catch (e: any) {
       errors.push(e);
     }
 
@@ -307,12 +307,12 @@ export async function createProjectFromDetails(details: ProjectDetailsResult, de
     case 'vue':
       const { VueProject } = await import('./vue');
       return new VueProject(details, deps);
-    case 'ionic-angular':
-      const { IonicAngularProject } = await import('./ionic-angular');
-      return new IonicAngularProject(details, deps);
-    case 'ionic1':
-      const { Ionic1Project } = await import('./ionic1');
-      return new Ionic1Project(details, deps);
+    case 'vue-vite':
+      const { VueViteProject } = await import('./vue-vite');
+      return new VueViteProject(details, deps);
+    case 'react-vite':
+      const { ReactViteProject } = await import('./react-vite');
+      return new ReactViteProject(details, deps);
     case 'custom':
       const { CustomProject } = await import('./custom');
       return new CustomProject(details, deps);
@@ -459,7 +459,7 @@ export abstract class Project implements IProject {
   async getBuildRunner(): Promise<import('../build').BuildRunner<any> | undefined> {
     try {
       return await this.requireBuildRunner();
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
@@ -469,7 +469,7 @@ export abstract class Project implements IProject {
   async getServeRunner(): Promise<import('../serve').ServeRunner<any> | undefined> {
     try {
       return await this.requireServeRunner();
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
@@ -479,7 +479,7 @@ export abstract class Project implements IProject {
   async getGenerateRunner(): Promise<import('../generate').GenerateRunner<any> | undefined> {
     try {
       return await this.requireGenerateRunner();
-    } catch (e) {
+    } catch (e: any) {
       if (!(e instanceof RunnerNotFoundException)) {
         throw e;
       }
@@ -508,9 +508,9 @@ export abstract class Project implements IProject {
     let pkgPath: string | undefined;
 
     try {
-      pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      pkgPath = pkgName ? require.resolve(`${pkgName}/package.json`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       pkg = await readPackageJsonFile(pkgPath);
-    } catch (e) {
+    } catch (e: any) {
       if (logErrors) {
         this.e.log.warn(`Error loading ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}: ${e}`);
       }
@@ -521,9 +521,9 @@ export abstract class Project implements IProject {
 
   async requirePackageJson(pkgName?: string): Promise<PackageJson> {
     try {
-      const pkgPath = pkgName ? require.resolve(`${pkgName}/package`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
+      const pkgPath = pkgName ? require.resolve(`${pkgName}/package.json`, { paths: compileNodeModulesPaths(this.directory) }) : this.packageJsonPath;
       return await readPackageJsonFile(pkgPath);
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof SyntaxError) {
         throw new FatalException(`Could not parse ${strong(pkgName ? pkgName : `project's`)} ${strong('package.json')}. Is it a valid JSON file?`);
       } else if (e === ERROR_INVALID_PACKAGE_JSON) {
@@ -532,10 +532,6 @@ export abstract class Project implements IProject {
 
       throw e; // Probably file not found
     }
-  }
-
-  async getDocsUrl(): Promise<string> {
-    return 'https://ion.link/docs';
   }
 
   async getSourceDir(): Promise<string> {
@@ -684,7 +680,7 @@ export abstract class Project implements IProject {
       }
 
       await writeFile(variablesPath, themeVarsContents);
-    } catch (e) {
+    } catch (e: any) {
       const { log } = this.e;
       log.error(`Unable to modify theme variables, theme will need to be set manually: ${e}`);
     }
@@ -700,25 +696,10 @@ export abstract class Project implements IProject {
 
       await writeFile(iconPath, appIcon);
       await writeFile(splashPath, splash);
-    } catch (e) {
+    } catch (e: any) {
       const { log } = this.e;
       log.error(`Unable to find or create the resources directory. Skipping icon generation: ${e}`);
     }
-  }
-
-  async registerAilments(registry: IAilmentRegistry): Promise<void> {
-    const ailments = await import('../doctor/ailments');
-    const deps = { ...this.e, project: this };
-
-    registry.register(new ailments.NpmInstalledLocally(deps));
-    registry.register(new ailments.IonicCLIInstalledLocally(deps));
-    registry.register(new ailments.GitNotUsed(deps));
-    registry.register(new ailments.GitConfigInvalid(deps));
-    registry.register(new ailments.IonicNativeOldVersionInstalled(deps));
-    registry.register(new ailments.UnsavedCordovaPlatforms(deps));
-    registry.register(new ailments.DefaultCordovaBundleIdUsed(deps));
-    registry.register(new ailments.ViewportFitNotSet(deps));
-    registry.register(new ailments.CordovaPlatformsCommitted(deps));
   }
 
   async createIntegration(name: 'capacitor'): Promise<CapacitorIntegration>;
@@ -775,7 +756,7 @@ export abstract class Project implements IProject {
     const integrations: (IIntegration<ProjectIntegration> | undefined)[] = await Promise.all(integrationNames.map(async name => {
       try {
         return await this.createIntegration(name);
-      } catch (e) {
+      } catch (e: any) {
         if (!(e instanceof IntegrationNotFoundException)) {
           throw e;
         }

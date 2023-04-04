@@ -36,17 +36,17 @@ export class BuildCommand extends CapacitorCommand implements CommandPreRun {
     const footnotes: Footnote[] = [
       {
         id: 'capacitor-native-config-docs',
-        url: 'https://capacitor.ionicframework.com/docs/basics/configuring-your-app',
+        url: 'https://capacitorjs.com/docs/basics/configuring-your-app',
         shortUrl: 'https://ion.link/capacitor-native-config-docs',
       },
       {
         id: 'capacitor-ios-config-docs',
-        url: 'https://capacitor.ionicframework.com/docs/ios/configuration',
+        url: 'https://capacitorjs.com/docs/ios/configuration',
         shortUrl: 'https://ion.link/capacitor-ios-config-docs',
       },
       {
         id: 'capacitor-android-config-docs',
-        url: 'https://capacitor.ionicframework.com/docs/android/configuration',
+        url: 'https://capacitorjs.com/docs/android/configuration',
         shortUrl: 'https://ion.link/capacitor-android-config-docs',
       },
     ];
@@ -114,7 +114,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
 
     try {
       await this.runBuild(inputs, options);
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof RunnerException) {
         throw new FatalException(e.message);
       }
@@ -162,7 +162,7 @@ To configure your native project, see the common configuration docs[^capacitor-n
         build: buildRunner.createOptionsFromCommandLine(inputs, options),
         capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }

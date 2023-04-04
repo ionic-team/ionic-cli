@@ -354,7 +354,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
         build: buildOptions,
         capacitor: await this.createOptionsFromCommandLine(inputs, options),
       });
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof BaseError) {
         throw new FatalException(e.message);
       }

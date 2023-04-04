@@ -38,7 +38,6 @@ const OBJECT_GUARDS: Guard[] = [
   guards.isSSHKeyResponse,
   guards.isSecurityProfile,
   guards.isSecurityProfileResponse,
-  guards.isTreatableAilment,
   guards.isIntegrationName,
   guards.isProjectConfig,
   guards.isMultiProjectConfig,

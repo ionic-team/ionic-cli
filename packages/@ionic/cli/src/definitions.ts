@@ -78,7 +78,7 @@ export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }
 
-export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue';
+export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue' | 'react-vite' | 'vue-vite';
 export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before' | 'capacitor:sync:after';
 
 export type CapacitorRunHookName = 'capacitor:run:before';
@@ -363,7 +363,6 @@ export interface IProject {
   readonly config: BaseConfig<IProjectConfig>;
   readonly details: import('./lib/project').ProjectDetailsResult;
 
-  getDocsUrl(): Promise<string>;
   getSourceDir(sourceRoot?: string): Promise<string>;
   getDefaultDistDir(): Promise<string>;
   getDistDir(): Promise<string>;
@@ -379,7 +378,6 @@ export interface IProject {
   getPackageJson(pkgName?: string, options?: { logErrors?: boolean }): Promise<[PackageJson | undefined, string | undefined]>;
   requirePackageJson(pkgName?: string): Promise<PackageJson>;
   personalize(details: ProjectPersonalizationDetails): Promise<void>;
-  registerAilments(registry: IAilmentRegistry): Promise<void>;
   getBuildRunner(): Promise<import('./lib/build').BuildRunner<any> | undefined>;
   getServeRunner(): Promise<import('./lib/serve').ServeRunner<any> | undefined>;
   getGenerateRunner(): Promise<import('./lib/generate').GenerateRunner<any> | undefined>;
@@ -691,15 +689,16 @@ export interface Ionic1BuildOptions extends BuildOptions<'ionic1'> {}
 export interface CustomBuildOptions extends BuildOptions<'custom'> {}
 
 export interface GenerateOptions {
-  type: string;
   name: string;
 }
 
 export interface AngularGenerateOptions extends GenerateOptions {
   [key: string]: any; // TODO
+  schematic: string;
 }
 
 export interface IonicAngularGenerateOptions extends GenerateOptions {
+  type: string;
   module: boolean;
   constants: boolean;
 }
@@ -711,9 +710,6 @@ export interface ServeOptions {
   publicHost?: string;
   livereload: boolean;
   proxy: boolean;
-  lab: boolean;
-  labHost: string;
-  labPort: number;
   open: boolean;
   browser?: string;
   browserOption?: string;
@@ -780,35 +776,6 @@ export interface ServeDetails {
   port: number;
   externalNetworkInterfaces: NetworkInterface[];
   externallyAccessible: boolean;
-}
-
-export interface IAilment {
-  readonly id: string;
-  implicit: boolean;
-  projects?: ProjectType[];
-  getMessage(): Promise<string>;
-  detected(): Promise<boolean>;
-  getTreatmentSteps(): Promise<PatientTreatmentStep[]>;
-}
-
-export interface TreatableAilment extends IAilment {
-  readonly treatable: boolean;
-  getTreatmentSteps(): Promise<DoctorTreatmentStep[]>;
-}
-
-export interface PatientTreatmentStep {
-  message: string;
-}
-
-export interface DoctorTreatmentStep extends PatientTreatmentStep {
-  treat(): Promise<void>;
-}
-
-export interface IAilmentRegistry {
-  ailments: IAilment[];
-
-  register(ailment: IAilment): void;
-  get(id: string): IAilment | undefined;
 }
 
 export interface IonicContext {

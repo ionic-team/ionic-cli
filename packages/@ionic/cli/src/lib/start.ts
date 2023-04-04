@@ -103,7 +103,7 @@ export async function readStarterManifest(p: string): Promise<StarterManifest> {
     }
 
     return manifest;
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT') {
       throw new Error(`${p} not found`);
     } else if (e instanceof SyntaxError) {
@@ -213,28 +213,28 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     projectType: 'vue',
     type: 'managed',
     description: 'A starting project with a simple tabbed interface',
-    id: 'vue-official-tabs',
+    id: 'vue-vite-official-tabs',
   },
   {
     name: 'sidemenu',
     projectType: 'vue',
     type: 'managed',
     description: 'A starting project with a side menu with navigation in the content area',
-    id: 'vue-official-sidemenu',
+    id: 'vue-vite-official-sidemenu',
   },
   {
     name: 'blank',
     projectType: 'vue',
     type: 'managed',
     description: 'A blank starter project',
-    id: 'vue-official-blank',
+    id: 'vue-vite-official-blank',
   },
   {
     name: 'list',
     projectType: 'vue',
     type: 'managed',
     description: 'A starting project with a list',
-    id: 'vue-official-list',
+    id: 'vue-vite-official-list',
   },
   // Angular
   {
@@ -278,14 +278,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     projectType: 'react',
     type: 'managed',
     description: 'A blank starter project',
-    id: 'react-official-blank',
+    id: 'react-vite-official-blank',
   },
   {
     name: 'list',
     projectType: 'react',
     type: 'managed',
     description: 'A starting project with a list',
-    id: 'react-official-list',
+    id: 'react-vite-official-list',
   },
   {
     name: 'my-first-app',
@@ -299,14 +299,14 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     projectType: 'react',
     type: 'managed',
     description: 'A starting project with a side menu with navigation in the content area',
-    id: 'react-official-sidemenu',
+    id: 'react-vite-official-sidemenu',
   },
   {
     name: 'tabs',
     projectType: 'react',
     type: 'managed',
     description: 'A starting project with a simple tabbed interface',
-    id: 'react-official-tabs',
+    id: 'react-vite-official-tabs',
   },
   // Old Ionic V3
   {

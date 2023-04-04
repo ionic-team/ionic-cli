@@ -7,17 +7,14 @@ jobs:
     name: Build and Deploy Docker Container with latest CLI
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v3
         with:
-          node-version: 14.x
-      - uses: actions/checkout@v2
+          node-version: 16.x
+      - uses: actions/checkout@v3
         with:
           fetch-depth: 0
       - name: GitHub Container Registry Login
-        run: echo ${GH_TOKEN} | docker login ghcr.io -u ionitron --password-stdin
-        env:
-          GH_TOKEN: ${{ secrets.GH_TOKEN }}
-
+        run: echo ${{ github.token }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build Container
         run: |
             docker build \

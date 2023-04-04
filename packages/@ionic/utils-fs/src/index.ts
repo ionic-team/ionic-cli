@@ -159,7 +159,7 @@ export async function getFileTree<RE = {}, DE = {}>(dir: string, { onError, onFi
 export async function fileToString(filePath: string): Promise<string> {
   try {
     return await fs.readFile(filePath, { encoding: 'utf8' });
-  } catch (e) {
+  } catch (e: any) {
     if (e.code === 'ENOENT' || e.code === 'ENOTDIR') {
       return '';
     }
@@ -198,13 +198,13 @@ export async function getFileChecksum(filePath: string): Promise<string> {
  * @return Promise<[true checksum, cached checksum or undefined if cache file missing]>
  */
 export async function getFileChecksums(p: string): Promise<[string, string | undefined]> {
-  return Promise.all<string, string | undefined>([
+  return Promise.all([
     getFileChecksum(p),
     (async () => {
       try {
         const md5 = await fs.readFile(`${p}.md5`, { encoding: 'utf8' });
         return md5.trim();
-      } catch (e) {
+      } catch (e: any) {
         if (e.code !== 'ENOENT') {
           throw e;
         }
@@ -236,7 +236,7 @@ export function writeStreamToFile(stream: NodeJS.ReadableStream, destination: st
 export async function pathAccessible(filePath: string, mode: number): Promise<boolean> {
   try {
     await fs.access(filePath, mode);
-  } catch (e) {
+  } catch (e: any) {
     return false;
   }
 
@@ -260,7 +260,7 @@ export async function pathExecutable(filePath: string): Promise<boolean> {
 }
 
 export async function isExecutableFile(filePath: string): Promise<boolean> {
-  const [ stats, executable ] = await (Promise.all<fs.Stats | undefined, boolean>([
+  const [ stats, executable ] = await (Promise.all([
     safe.stat(filePath),
     pathExecutable(filePath),
   ]));

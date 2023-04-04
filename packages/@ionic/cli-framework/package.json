@@ -1,13 +1,13 @@
 {
   "name": "@ionic/cli-framework",
-  "version": "5.1.3",
+  "version": "5.1.4",
   "description": "The foundation framework of the Ionic CLI",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
   "main": "./index.js",
   "types": "./index.d.ts",
   "engines": {
-    "node": ">=10.3.0"
+    "node": ">=16.0.0"
   },
   "scripts": {
     "clean": "rimraf index.* definitions.* errors.* guards.* lib utils",
@@ -19,14 +19,14 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework-output": "2.2.5",
-    "@ionic/utils-array": "2.1.5",
-    "@ionic/utils-fs": "3.1.6",
-    "@ionic/utils-object": "2.1.5",
-    "@ionic/utils-process": "2.1.10",
-    "@ionic/utils-stream": "3.1.5",
-    "@ionic/utils-subprocess": "2.1.11",
-    "@ionic/utils-terminal": "2.3.3",
+    "@ionic/cli-framework-output": "2.2.6",
+    "@ionic/utils-array": "2.1.6",
+    "@ionic/utils-fs": "3.1.7",
+    "@ionic/utils-object": "2.1.6",
+    "@ionic/utils-process": "2.1.11",
+    "@ionic/utils-stream": "3.1.6",
+    "@ionic/utils-subprocess": "2.1.12",
+    "@ionic/utils-terminal": "2.3.4",
     "chalk": "^4.0.0",
     "debug": "^4.0.0",
     "lodash": "^4.17.5",
@@ -40,12 +40,12 @@
     "@types/jest": "^26.0.10",
     "@types/lodash": "^4.14.104",
     "@types/minimist": "^1.2.0",
-    "@types/node": "~10.17.13",
+    "@types/node": "~16.0.0",
     "@types/write-file-atomic": "^3.0.0",
     "jest": "^26.4.2",
     "jest-cli": "^26.0.1",
     "lint-staged": "^10.0.2",
     "ts-jest": "~26.3.0",
-    "typescript": "~4.0.2"
+    "typescript": "~4.8.0"
   }
 }

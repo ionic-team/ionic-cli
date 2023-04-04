@@ -43,7 +43,7 @@ export class ReactProject extends Project {
         debug(`${chalk.bold('@ionic/React')} detected in ${chalk.bold('package.json')}`);
         return true;
       }
-    } catch (e) {
+    } catch (e: any) {
       // ignore
     }
 

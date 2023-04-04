@@ -118,7 +118,7 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
     };
   }
 
-  protected getInterfaces(): Interface[] {
+  protected getInterfaces(): Interface[] | undefined {
     return prepareInterfaces(os.networkInterfaces());
   }
 
@@ -145,26 +145,26 @@ export class Publisher extends events.EventEmitter implements IPublisherEventEmi
           }
         });
       }
-    } catch (e) {
+    } catch (e: any) {
       this.emit('error', e);
     }
   }
 }
 
-export function prepareInterfaces(interfaces: { [index: string]: os.NetworkInterfaceInfo[] }): Interface[] {
+export function prepareInterfaces(interfaces: NodeJS.Dict<os.NetworkInterfaceInfo[]>): Interface[] | undefined {
   const set = new Set<string>();
-
-  return Object.keys(interfaces)
-    .map(key => interfaces[key])
-    .reduce((prev, current) => prev.concat(current))
-    .filter(iface => iface.family === 'IPv4')
-    .map(iface => {
+  const values = Object.values(interfaces);
+  const flatValues = values.reduce((prev, current) => prev?.concat(current ? current : []));
+  if (flatValues) {
+   return flatValues
+    .filter((iface: os.NetworkInterfaceInfo) => iface.family === 'IPv4')
+    .map((iface: os.NetworkInterfaceInfo) => {
       return {
         address: iface.address,
         broadcast: computeBroadcastAddress(iface.address, iface.netmask),
       };
     })
-    .filter(iface => {
+    .filter((iface: any) => {
       if (!set.has(iface.broadcast)) {
         set.add(iface.broadcast);
 
@@ -173,6 +173,7 @@ export function prepareInterfaces(interfaces: { [index: string]: os.NetworkInter
 
       return false;
     });
+  }
 }
 
 export function newSilentPublisher(namespace: string, name: string, port: number): Publisher {

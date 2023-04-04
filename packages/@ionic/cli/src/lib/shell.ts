@@ -55,7 +55,7 @@ export class Shell implements IShell {
           debug('Error in subprocess stdout pipe: %o', err);
         });
 
-        promise.p.stdout.pipe(s);
+        promise.p.stdout?.pipe(s);
       }
 
       if (promise.p.stderr) {
@@ -66,7 +66,7 @@ export class Shell implements IShell {
           debug('Error in subprocess stderr pipe: %o', err);
         });
 
-        promise.p.stderr.pipe(s);
+        promise.p.stderr?.pipe(s);
       }
 
       if (killOnExit) {
@@ -78,7 +78,7 @@ export class Shell implements IShell {
       }
 
       await promise;
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
           throw new FatalException(`Command not found: ${input(command)}`, 127);
@@ -132,7 +132,7 @@ export class Shell implements IShell {
 
     try {
       return await proc.output();
-    } catch (e) {
+    } catch (e: any) {
       if (e instanceof SubprocessError && e.code === ERROR_COMMAND_NOT_FOUND) {
         if (fatalOnNotFound) {
           throw new FatalException(`Command not found: ${input(command)}`, 127);
@@ -171,7 +171,7 @@ export class Shell implements IShell {
     if (TERMINAL_INFO.windows) {
       try {
         return await this.which(command, { PATH: options.env && options.env.PATH ? options.env.PATH : process.env.PATH });
-      } catch (e) {
+      } catch (e: any) {
         // ignore
       }
     }
@@ -202,7 +202,7 @@ export class Shell implements IShell {
     try {
       const out = await proc.output();
       return out.split('\n').join(' ').trim();
-    } catch (e) {
+    } catch (e: any) {
       // no command info at this point
     }
   }
