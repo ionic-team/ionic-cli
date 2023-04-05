@@ -3,6 +3,18 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.0.0...@ionic/cli@7.0.1) (2023-04-05)
+
+
+### Bug Fixes
+
+* state should not be required on OAuth Response ([#4995](https://github.com/ionic-team/ionic-cli/issues/4995)) ([c053cb3](https://github.com/ionic-team/ionic-cli/commit/c053cb3394acec5402d2ea436796775d67c98d39))
+* **cli:** ionic info returns package information ([#4991](https://github.com/ionic-team/ionic-cli/issues/4991)) ([2dd9136](https://github.com/ionic-team/ionic-cli/commit/2dd9136bb85375b03883105d04d1c1bb090d884d)), closes [#4992](https://github.com/ionic-team/ionic-cli/issues/4992)
+
+
+
+
+
 # [7.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@6.20.9...@ionic/cli@7.0.0) (2023-03-29)
 
 
