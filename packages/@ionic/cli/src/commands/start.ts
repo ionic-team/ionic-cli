@@ -7,15 +7,40 @@ import * as Debug from 'debug';
 import * as path from 'path';
 
 import { COLUMNAR_OPTIONS, PROJECT_FILE } from '../constants';
-import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, IProject, IShellRunOptions, ProjectType, ResolvedStarterTemplate, StarterManifest } from '../definitions';
+import {
+  CommandInstanceInfo,
+  CommandLineInputs,
+  CommandLineOptions,
+  CommandMetadata,
+  CommandPreRun,
+  IProject,
+  IShellRunOptions,
+  ProjectType,
+  ResolvedStarterTemplate,
+  StarterManifest,
+} from '../definitions';
 import { failure, input, strong } from '../lib/color';
 import { Command } from '../lib/command';
 import { FatalException } from '../lib/errors';
 import { runCommand } from '../lib/executor';
-import { createProjectFromDetails, createProjectFromDirectory, isValidProjectId } from '../lib/project';
+import {
+  createProjectFromDetails,
+  createProjectFromDirectory,
+  isValidProjectId,
+} from '../lib/project';
 import { promptToSignup } from '../lib/session';
 import { prependNodeModulesBinToPath } from '../lib/shell';
-import { AppSchema, STARTER_BASE_URL, STARTER_TEMPLATES, SUPPORTED_FRAMEWORKS, getAdvertisement, getStarterList, getStarterProjectTypes, readStarterManifest, verifyOptions } from '../lib/start';
+import {
+  AppSchema,
+  STARTER_BASE_URL,
+  STARTER_TEMPLATES,
+  SUPPORTED_FRAMEWORKS,
+  getAdvertisement,
+  getStarterList,
+  getStarterProjectTypes,
+  readStarterManifest,
+  verifyOptions,
+} from '../lib/start';
 import { emoji } from '../lib/utils/emoji';
 import { createRequest } from '../lib/utils/http';
 
@@ -49,36 +74,52 @@ export class StartCommand extends Command implements CommandPreRun {
       description: `
 This command creates a working Ionic app. It installs dependencies for you and sets up your project.
 
-Running ${input('ionic start')} without any arguments will prompt you for information about your new project.
+Running ${input(
+        'ionic start'
+      )} without any arguments will prompt you for information about your new project.
 
-The first argument is your app's ${input('name')}. Don't worry--you can always change this later. The ${input('--project-id')} is generated from ${input('name')} unless explicitly specified.
+The first argument is your app's ${input(
+        'name'
+      )}. Don't worry--you can always change this later. The ${input(
+        '--project-id'
+      )} is generated from ${input('name')} unless explicitly specified.
 
-The second argument is the ${input('template')} from which to generate your app. You can list all templates with the ${input('--list')} option. You can also specify a git repository URL for ${input('template')}, in which case the existing project will be cloned.
+The second argument is the ${input(
+        'template'
+      )} from which to generate your app. You can list all templates with the ${input(
+        '--list'
+      )} option. You can also specify a git repository URL for ${input(
+        'template'
+      )}, in which case the existing project will be cloned.
 
-Use the ${input('--type')} option to start projects using older versions of Ionic. For example, you can start an Ionic 3 project with ${input('--type=ionic-angular')}. Use ${input('--list')} to see all project types and templates.
+Use the ${input(
+        '--type'
+      )} option to start projects using older versions of Ionic. For example, you can start an Ionic 3 project with ${input(
+        '--type=ionic-angular'
+      )}. Use ${input('--list')} to see all project types and templates.
       `,
       exampleCommands: [
         '',
         '--list',
         'myApp',
         'myApp blank',
-        'myApp tabs --cordova',
         'myApp tabs --capacitor',
-        'myApp super --type=ionic-angular',
-        'myApp blank --type=ionic1',
-        'cordovaApp tabs --cordova',
         '"My App" blank',
         '"Conference App" https://github.com/ionic-team/ionic-conference-app',
       ],
       inputs: [
         {
           name: 'name',
-          summary: `The name of your new project (e.g. ${input('myApp')}, ${input('"My App"')})`,
+          summary: `The name of your new project (e.g. ${input(
+            'myApp'
+          )}, ${input('"My App"')})`,
           validators: [validators.required],
         },
         {
           name: 'template',
-          summary: `The starter template to use (e.g. ${['blank', 'tabs'].map(t => input(t)).join(', ')}; use ${input('--list')} to see all)`,
+          summary: `The starter template to use (e.g. ${['blank', 'tabs']
+            .map((t) => input(t))
+            .join(', ')}; use ${input('--list')} to see all)`,
           validators: [validators.required],
         },
       ],
@@ -91,14 +132,16 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         },
         {
           name: 'type',
-          summary: `Type of project to start (e.g. ${getStarterProjectTypes().map(type => input(type)).join(', ')})`,
+          summary: `Type of project to start (e.g. ${getStarterProjectTypes()
+            .map((type) => input(type))
+            .join(', ')})`,
           type: String,
         },
         {
           name: 'cordova',
           summary: 'Include Cordova integration',
           type: Boolean,
-          groups: [MetadataGroup.DEPRECATED]
+          groups: [MetadataGroup.DEPRECATED],
         },
         {
           name: 'capacitor',
@@ -131,25 +174,34 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         },
         {
           name: 'project-id',
-          summary: 'Specify a slug for your app (used for the directory name and package name)',
+          summary:
+            'Specify a slug for your app (used for the directory name and package name)',
           groups: [MetadataGroup.ADVANCED],
           spec: { value: 'slug' },
         },
         {
           name: 'package-id',
-          summary: 'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
+          summary:
+            'Specify the bundle ID/application ID for your app (reverse-DNS notation)',
           groups: [MetadataGroup.ADVANCED],
           spec: { value: 'id' },
         },
         {
           name: 'start-id',
-          summary: 'Used by the Ionic app start experience to generate an associated app locally',
+          summary:
+            'Used by the Ionic app start experience to generate an associated app locally',
           groups: [MetadataGroup.HIDDEN],
           spec: { value: 'id' },
         },
         {
           name: 'tag',
-          summary: `Specify a tag to use for the starters (e.g. ${['latest', 'testing', 'next'].map(t => input(t)).join(', ')})`,
+          summary: `Specify a tag to use for the starters (e.g. ${[
+            'latest',
+            'testing',
+            'next',
+          ]
+            .map((t) => input(t))
+            .join(', ')})`,
           default: 'latest',
           groups: [MetadataGroup.HIDDEN],
         },
@@ -160,12 +212,21 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   async startIdStart(inputs: CommandLineInputs, options: CommandLineOptions) {
     const startId = options['start-id'];
 
-    const wizardApiUrl = process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
+    const wizardApiUrl =
+      process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
 
-    const { req } = await createRequest('GET', `${wizardApiUrl}/api/v1/wizard/app/${startId}`, this.env.config.getHTTPConfig());
+    const { req } = await createRequest(
+      'GET',
+      `${wizardApiUrl}/api/v1/wizard/app/${startId}`,
+      this.env.config.getHTTPConfig()
+    );
 
     const error = (e?: Error) => {
-      this.env.log.error(`No such app ${chalk.bold(startId)}. This app configuration may have expired. Please retry at https://ionicframework.com/start`);
+      this.env.log.error(
+        `No such app ${chalk.bold(
+          startId
+        )}. This app configuration may have expired. Please retry at https://ionicframework.com/start`
+      );
       if (e) {
         throw e;
       }
@@ -199,13 +260,19 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     await this.startIdConvert(startId as string);
 
-    const appIconBuffer = data.appIcon ?
-      Buffer.from(data.appIcon.replace(/^data:image\/\w+;base64,/, ''), 'base64') :
-      undefined;
+    const appIconBuffer = data.appIcon
+      ? Buffer.from(
+          data.appIcon.replace(/^data:image\/\w+;base64,/, ''),
+          'base64'
+        )
+      : undefined;
 
-    const splashBuffer = data.appSplash ?
-      Buffer.from(data.appSplash.replace(/^data:image\/\w+;base64,/, ''), 'base64') :
-      undefined;
+    const splashBuffer = data.appSplash
+      ? Buffer.from(
+          data.appSplash.replace(/^data:image\/\w+;base64,/, ''),
+          'base64'
+        )
+      : undefined;
 
     this.schema = {
       cloned: false,
@@ -223,13 +290,18 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
   }
 
   async startIdConvert(id: string) {
-    const wizardApiUrl = process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
+    const wizardApiUrl =
+      process.env.START_WIZARD_URL_BASE || `https://ionicframework.com`;
 
     if (!wizardApiUrl) {
       return;
     }
 
-    const { req } = await createRequest('POST', `${wizardApiUrl}/api/v1/wizard/app/${id}/start`, this.env.config.getHTTPConfig());
+    const { req } = await createRequest(
+      'POST',
+      `${wizardApiUrl}/api/v1/wizard/app/${id}/start`,
+      this.env.config.getHTTPConfig()
+    );
 
     try {
       await req;
@@ -243,7 +315,10 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
    * We should use if they ran `ionic start` or `ionic start --capacitor`
    * and they are in an interactive environment.
    */
-  async shouldUseStartWizard(inputs: CommandLineInputs, options: CommandLineOptions) {
+  async shouldUseStartWizard(
+    inputs: CommandLineInputs,
+    options: CommandLineOptions
+  ) {
     const flagsToTestFor = [
       'list',
       'l',
@@ -258,7 +333,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       'start-id',
     ];
 
-    let didUseFlags = false ;
+    let didUseFlags = false;
 
     for (const key of flagsToTestFor) {
       if (options[key] !== null) {
@@ -267,10 +342,19 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       }
     }
 
-    return inputs.length === 0 && options['interactive'] && options['deps'] && options['git'] && !didUseFlags;
+    return (
+      inputs.length === 0 &&
+      options['interactive'] &&
+      options['deps'] &&
+      options['git'] &&
+      !didUseFlags
+    );
   }
 
-  async preRun(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
+  async preRun(
+    inputs: CommandLineInputs,
+    options: CommandLineOptions
+  ): Promise<void> {
     const { promptToLogin } = await import('../lib/session');
 
     verifyOptions(options, this.env);
@@ -286,7 +370,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (confirm) {
         const startId = await this.env.session.wizardLogin();
         if (!startId) {
-          this.env.log.error('There was an issue using the web wizard. Falling back to CLI wizard.');
+          this.env.log.error(
+            'There was an issue using the web wizard. Falling back to CLI wizard.'
+          );
         } else {
           options['start-id'] = startId;
         }
@@ -307,10 +393,16 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       return;
     }
 
-    const projectType = isValidURL(inputs[1]) ? 'custom' : options['type'] ? String(options['type']) : await this.getProjectType();
+    const projectType = isValidURL(inputs[1])
+      ? 'custom'
+      : options['type']
+      ? String(options['type'])
+      : await this.getProjectType();
 
     if (options['cordova']) {
-      const { checkForUnsupportedProject } = await import('../lib/integrations/cordova/utils');
+      const { checkForUnsupportedProject } = await import(
+        '../lib/integrations/cordova/utils'
+      );
 
       try {
         await checkForUnsupportedProject(projectType as ProjectType);
@@ -330,7 +422,11 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         const app = await appClient.load(appflowId);
         // TODO: can ask to clone via repo_url
         tasks.end();
-        this.env.log.info(`Using ${strong(app.name)} for ${input('name')} and ${strong(app.slug)} for ${input('--project-id')}.`);
+        this.env.log.info(
+          `Using ${strong(app.name)} for ${input('name')} and ${strong(
+            app.slug
+          )} for ${input('--project-id')}.`
+        );
         inputs[0] = app.name;
         options['project-id'] = app.slug;
       } else {
@@ -338,7 +434,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           this.env.log.nl();
           this.env.log.msg(
             `${strong(`Every great app needs a name! ${emoji('😍', '')}`)}\n` +
-            `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${input('name')}, the first argument to ${input('ionic start')}.\n\n`
+              `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${input(
+                'name'
+              )}, the first argument to ${input('ionic start')}.\n\n`
           );
         }
 
@@ -346,7 +444,7 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
           type: 'input',
           name: 'name',
           message: 'Project name:',
-          validate: v => validators.required(v),
+          validate: (v) => validators.required(v),
         });
 
         inputs[0] = name;
@@ -357,8 +455,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (this.env.flags.interactive) {
         this.env.log.nl();
         this.env.log.msg(
-          `${strong(`Let's pick the perfect starter template! ${emoji('💪', '')}`)}\n` +
-          `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${input('template')}, the second argument to ${input('ionic start')}.\n\n`
+          `${strong(
+            `Let's pick the perfect starter template! ${emoji('💪', '')}`
+          )}\n` +
+            `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${input(
+              'template'
+            )}, the second argument to ${input('ionic start')}.\n\n`
         );
       }
 
@@ -367,11 +469,23 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         name: 'template',
         message: 'Starter template:',
         choices: () => {
-          const starterTemplateList = STARTER_TEMPLATES.filter(st => st.projectType === projectType);
-          const cols = columnar(starterTemplateList.map(({ name, description }) => [input(name), description || '']), COLUMNAR_OPTIONS).split('\n');
+          const starterTemplateList = STARTER_TEMPLATES.filter(
+            (st) => st.projectType === projectType
+          );
+          const cols = columnar(
+            starterTemplateList.map(({ name, description }) => [
+              input(name),
+              description || '',
+            ]),
+            COLUMNAR_OPTIONS
+          ).split('\n');
 
           if (starterTemplateList.length === 0) {
-            throw new FatalException(`No starter templates found for project type: ${input(projectType)}.`);
+            throw new FatalException(
+              `No starter templates found for project type: ${input(
+                projectType
+              )}.`
+            );
           }
 
           return starterTemplateList.map((starter, i) => {
@@ -387,7 +501,36 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       inputs[1] = template;
     }
 
-    const starterTemplate = STARTER_TEMPLATES.find(t => t.name === inputs[1] && t.projectType === projectType);
+
+    const starterTemplate = STARTER_TEMPLATES.find(
+      (t) => t.name === inputs[1] && t.projectType === projectType
+    );
+
+
+    if (projectType === 'angular') {
+      const angularMode = await this.env.prompt({
+        type: 'list',
+        name: 'standalone',
+        message: 'Would you like to build your app with NgModules or Standalone Components? \n Standalone components are new way to build with Angular that simplifies the how you build your app. \n To learn more, visit the Angular docs\n https://angular.io/guide/standalone-components\n\n',
+        choices: () => [
+          {
+            name: 'Standalone',
+            short: 'Standalone',
+            value: 'standalone',
+          },
+          {
+            name: 'NgModules',
+            short: 'NgModules',
+            value: 'ngModules',
+          },
+        ],
+      });
+      if(angularMode === 'ngModules'){
+        starterTemplate!.id = `${starterTemplate!.id}-ngmodules`
+      }
+      console.log(angularMode);
+      console.log(starterTemplate)
+    }
 
     if (starterTemplate && starterTemplate.type === 'repo') {
       inputs[1] = starterTemplate.repo;
@@ -399,7 +542,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: 'You are already in an Ionic project directory. Do you really want to start another project here?',
+        message:
+          'You are already in an Ionic project directory. Do you really want to start another project here?',
         default: false,
       });
 
@@ -413,7 +557,11 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     if (cloned) {
       if (!options['git']) {
-        this.env.log.warn(`The ${input('--no-git')} option has no effect when cloning apps. Git must be used.`);
+        this.env.log.warn(
+          `The ${input(
+            '--no-git'
+          )} option has no effect when cloning apps. Git must be used.`
+        );
       }
 
       options['git'] = true;
@@ -422,33 +570,55 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     if (options['v1'] || options['v2']) {
       throw new FatalException(
         `The ${input('--v1')} and ${input('--v2')} flags have been removed.\n` +
-        `Use the ${input('--type')} option. (see ${input('ionic start --help')})`
+          `Use the ${input('--type')} option. (see ${input(
+            'ionic start --help'
+          )})`
       );
     }
 
     if (options['app-name']) {
-      this.env.log.warn(`The ${input('--app-name')} option has been removed. Use the ${input('name')} argument with double quotes: e.g. ${input('ionic start "My App"')}`);
+      this.env.log.warn(
+        `The ${input('--app-name')} option has been removed. Use the ${input(
+          'name'
+        )} argument with double quotes: e.g. ${input('ionic start "My App"')}`
+      );
     }
 
     if (options['display-name']) {
-      this.env.log.warn(`The ${input('--display-name')} option has been removed. Use the ${input('name')} argument with double quotes: e.g. ${input('ionic start "My App"')}`);
+      this.env.log.warn(
+        `The ${input(
+          '--display-name'
+        )} option has been removed. Use the ${input(
+          'name'
+        )} argument with double quotes: e.g. ${input('ionic start "My App"')}`
+      );
     }
 
     if (options['bundle-id']) {
-      this.env.log.warn(`The ${input('--bundle-id')} option has been deprecated. Please use ${input('--package-id')}.`);
+      this.env.log.warn(
+        `The ${input(
+          '--bundle-id'
+        )} option has been deprecated. Please use ${input('--package-id')}.`
+      );
       options['package-id'] = options['bundle-id'];
     }
 
-    let projectId = options['project-id'] ? String(options['project-id']) : undefined;
+    let projectId = options['project-id']
+      ? String(options['project-id'])
+      : undefined;
 
     if (projectId) {
       await this.validateProjectId(projectId);
     } else {
-      projectId = options['project-id'] = isValidProjectId(inputs[0]) ? inputs[0] : slugify(inputs[0]);
+      projectId = options['project-id'] = isValidProjectId(inputs[0])
+        ? inputs[0]
+        : slugify(inputs[0]);
     }
 
     const projectDir = path.resolve(projectId);
-    const packageId = options['package-id'] ? String(options['package-id']) : undefined;
+    const packageId = options['package-id']
+      ? String(options['package-id'])
+      : undefined;
 
     if (projectId) {
       await this.checkForExisting(projectDir);
@@ -481,7 +651,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       this.env.log.nl();
       this.env.log.msg(
         `${strong(`Pick a framework! ${emoji('😁', '')}`)}\n\n` +
-        `Please select the JavaScript framework to use for your new app. To bypass this prompt next time, supply a value for the ${input('--type')} option.\n\n`
+          `Please select the JavaScript framework to use for your new app. To bypass this prompt next time, supply a value for the ${input(
+            '--type'
+          )} option.\n\n`
       );
     }
 
@@ -491,7 +663,13 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       message: 'Framework:',
       default: 'angular',
       choices: () => {
-        const cols = columnar(SUPPORTED_FRAMEWORKS.map(({ name, description }) => [input(name), description]), COLUMNAR_OPTIONS).split('\n');
+        const cols = columnar(
+          SUPPORTED_FRAMEWORKS.map(({ name, description }) => [
+            input(name),
+            description,
+          ]),
+          COLUMNAR_OPTIONS
+        ).split('\n');
         return SUPPORTED_FRAMEWORKS.map((starterTemplate, i) => {
           return {
             name: cols[i],
@@ -505,7 +683,11 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     return frameworkChoice;
   }
 
-  async run(inputs: CommandLineInputs, options: CommandLineOptions, runinfo: CommandInstanceInfo): Promise<void> {
+  async run(
+    inputs: CommandLineInputs,
+    options: CommandLineOptions,
+    runinfo: CommandInstanceInfo
+  ): Promise<void> {
     const { pkgManagerArgs } = await import('../lib/utils/npm');
     const { getTopLevel, isGitInstalled } = await import('../lib/git');
 
@@ -522,28 +704,37 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     const gitInstalled = await isGitInstalled(this.env);
     const gitTopLevel = await getTopLevel(this.env);
 
-    let gitIntegration = gitDesired && gitInstalled && !gitTopLevel ? true : false;
+    let gitIntegration =
+      gitDesired && gitInstalled && !gitTopLevel ? true : false;
 
     if (!gitInstalled) {
-      const installationDocs = `See installation docs for git: ${strong('https://git-scm.com/book/en/v2/Getting-Started-Installing-Git')}`;
+      const installationDocs = `See installation docs for git: ${strong(
+        'https://git-scm.com/book/en/v2/Getting-Started-Installing-Git'
+      )}`;
 
       if (appflowId) {
         throw new FatalException(
           `Git CLI not found on your PATH.\n` +
-          `Git must be installed to connect this app to Ionic. ${installationDocs}`
+            `Git must be installed to connect this app to Ionic. ${installationDocs}`
         );
       }
 
       if (this.schema.cloned) {
         throw new FatalException(
           `Git CLI not found on your PATH.\n` +
-          `Git must be installed to clone apps with ${input('ionic start')}. ${installationDocs}`
+            `Git must be installed to clone apps with ${input(
+              'ionic start'
+            )}. ${installationDocs}`
         );
       }
     }
 
     if (gitTopLevel && !this.schema.cloned) {
-      this.env.log.info(`Existing git project found (${strong(gitTopLevel)}). Git operations are disabled.`);
+      this.env.log.info(
+        `Existing git project found (${strong(
+          gitTopLevel
+        )}). Git operations are disabled.`
+      );
     }
 
     const tasks = this.createTaskChain();
@@ -558,23 +749,52 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     tasks.end();
 
     if (this.schema.cloned) {
-      await this.env.shell.run('git', ['clone', this.schema.url, projectDir, '--progress'], { stdio: 'inherit' });
+      await this.env.shell.run(
+        'git',
+        ['clone', this.schema.url, projectDir, '--progress'],
+        { stdio: 'inherit' }
+      );
     } else {
-      const starterTemplate = await this.findStarterTemplate(this.schema.template, this.schema.type, tag);
+      const starterTemplate = await this.findStarterTemplate(
+        this.schema.template,
+        this.schema.type,
+        tag
+      );
       await this.downloadStarterTemplate(projectDir, starterTemplate);
     }
 
     let project: IProject | undefined;
 
-    if (this.project && this.project.details.context === 'multiapp' && !this.schema.cloned) {
+    if (
+      this.project &&
+      this.project.details.context === 'multiapp' &&
+      !this.schema.cloned
+    ) {
       // We're in a multi-app setup, so the new config file isn't wanted.
       await unlink(path.resolve(projectDir, PROJECT_FILE));
 
-      project = await createProjectFromDetails({ context: 'multiapp', configPath: path.resolve(this.project.rootDirectory, PROJECT_FILE), id: projectId, type: this.schema.type, errors: [] }, this.env);
+      project = await createProjectFromDetails(
+        {
+          context: 'multiapp',
+          configPath: path.resolve(this.project.rootDirectory, PROJECT_FILE),
+          id: projectId,
+          type: this.schema.type,
+          errors: [],
+        },
+        this.env
+      );
       project.config.set('type', this.schema.type);
-      project.config.set('root', path.relative(this.project.rootDirectory, projectDir));
+      project.config.set(
+        'root',
+        path.relative(this.project.rootDirectory, projectDir)
+      );
     } else {
-      project = await createProjectFromDirectory(projectDir, { _: [] }, this.env, { logErrors: false });
+      project = await createProjectFromDirectory(
+        projectDir,
+        { _: [] },
+        this.env,
+        { logErrors: false }
+      );
     }
 
     // start is weird, once the project directory is created, it becomes a
@@ -586,24 +806,31 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       throw new FatalException('Error while loading project.');
     }
 
-    this.env.shell.alterPath = p => prependNodeModulesBinToPath(projectDir, p);
+    this.env.shell.alterPath = (p) =>
+      prependNodeModulesBinToPath(projectDir, p);
 
     if (!this.schema.cloned) {
       if (this.schema.type === 'react' || this.schema.type === 'vue') {
-         options['capacitor'] = true;
+        options['capacitor'] = true;
       }
 
       if (this.schema.type === 'angular' && options['cordova'] === null) {
         options['capacitor'] = true;
       }
 
-
       if (options['cordova']) {
-        const { confirmCordovaUsage } = await import('../lib/integrations/cordova/utils');
+        const { confirmCordovaUsage } = await import(
+          '../lib/integrations/cordova/utils'
+        );
         const confirm = await confirmCordovaUsage(this.env);
 
         if (confirm) {
-          await runCommand(runinfo, ['integrations', 'enable', 'cordova', '--quiet']);
+          await runCommand(runinfo, [
+            'integrations',
+            'enable',
+            'cordova',
+            '--quiet',
+          ]);
         } else {
           options['cordova'] = false;
         }
@@ -613,7 +840,8 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         const confirm = await this.env.prompt({
           type: 'confirm',
           name: 'confirm',
-          message: 'Integrate your new app with Capacitor to target native iOS and Android?',
+          message:
+            'Integrate your new app with Capacitor to target native iOS and Android?',
           default: false,
         });
 
@@ -623,7 +851,15 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       }
 
       if (options['capacitor']) {
-        await runCommand(runinfo, ['integrations', 'enable', 'capacitor', '--quiet', '--', this.schema.name, packageId ? packageId : 'io.ionic.starter']);
+        await runCommand(runinfo, [
+          'integrations',
+          'enable',
+          'capacitor',
+          '--quiet',
+          '--',
+          this.schema.name,
+          packageId ? packageId : 'io.ionic.starter',
+        ]);
       }
 
       await this.project.personalize({
@@ -638,27 +874,41 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       this.env.log.nl();
     }
 
-    const shellOptions: IShellRunOptions = { cwd: projectDir, stdio: 'inherit' };
+    const shellOptions: IShellRunOptions = {
+      cwd: projectDir,
+      stdio: 'inherit',
+    };
 
     if (options['deps']) {
       this.env.log.msg('Installing dependencies may take several minutes.');
       this.env.log.rawmsg(getAdvertisement());
 
-      const [installer, ...installerArgs] = await pkgManagerArgs(this.env.config.get('npmClient'), { command: 'install' });
+      const [installer, ...installerArgs] = await pkgManagerArgs(
+        this.env.config.get('npmClient'),
+        { command: 'install' }
+      );
       await this.env.shell.run(installer, installerArgs, shellOptions);
 
       if (options['cordova']) {
         try {
-          await this.env.shell.run('ng', ['add', '@ionic/cordova-builders', '--skip-confirmation'], { cwd: this.project.rootDirectory });
+          await this.env.shell.run(
+            'ng',
+            ['add', '@ionic/cordova-builders', '--skip-confirmation'],
+            { cwd: this.project.rootDirectory }
+          );
         } catch (e: any) {
           debug('Error while adding @ionic/cordova-builders: %O', e);
         }
       }
     } else {
       // --no-deps flag was used so skip installing dependencies, this also results in the package.json being out sync with the package.json so warn the user
-      this.env.log.warn('Using the --no-deps flag results in an out of date package lock file. The lock file can be updated by performing an `install` with your package manager.');
+      this.env.log.warn(
+        'Using the --no-deps flag results in an out of date package lock file. The lock file can be updated by performing an `install` with your package manager.'
+      );
       if (options['cordova']) {
-        this.env.log.warn('@ionic/cordova-builders couldn\'t be added, make sure you run `ng add @ionic/cordova-builders` after performing an `install` with your package manager.');
+        this.env.log.warn(
+          "@ionic/cordova-builders couldn't be added, make sure you run `ng add @ionic/cordova-builders` after performing an `install` with your package manager."
+        );
       }
     }
 
@@ -667,7 +917,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
         try {
           await this.env.shell.run('git', ['init'], shellOptions); // TODO: use initializeRepo()?
         } catch (e: any) {
-          this.env.log.warn('Error encountered during repo initialization. Disabling further git operations.');
+          this.env.log.warn(
+            'Error encountered during repo initialization. Disabling further git operations.'
+          );
           gitIntegration = false;
         }
       }
@@ -700,9 +952,15 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       if (gitIntegration) {
         try {
           await this.env.shell.run('git', ['add', '-A'], shellOptions);
-          await this.env.shell.run('git', ['commit', '-m', 'Initial commit', '--no-gpg-sign'], shellOptions);
+          await this.env.shell.run(
+            'git',
+            ['commit', '-m', 'Initial commit', '--no-gpg-sign'],
+            shellOptions
+          );
         } catch (e: any) {
-          this.env.log.warn('Error encountered during commit. Disabling further git operations.');
+          this.env.log.warn(
+            'Error encountered during commit. Disabling further git operations.'
+          );
           gitIntegration = false;
         }
       }
@@ -714,7 +972,12 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
 
     this.env.log.nl();
 
-    await this.showNextSteps(projectDir, this.schema.cloned, linkConfirmed, !options['cordova']);
+    await this.showNextSteps(
+      projectDir,
+      this.schema.cloned,
+      linkConfirmed,
+      !options['cordova']
+    );
   }
 
   async checkForExisting(projectDir: string) {
@@ -724,12 +987,16 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       const confirm = await this.env.prompt({
         type: 'confirm',
         name: 'confirm',
-        message: `${input(prettyPath(projectDir))} exists. ${failure('Overwrite?')}`,
+        message: `${input(prettyPath(projectDir))} exists. ${failure(
+          'Overwrite?'
+        )}`,
         default: false,
       });
 
       if (!confirm) {
-        this.env.log.msg(`Not erasing existing project in ${input(prettyPath(projectDir))}.`);
+        this.env.log.msg(
+          `Not erasing existing project in ${input(prettyPath(projectDir))}.`
+        );
         throw new FatalException();
       }
 
@@ -737,13 +1004,21 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     }
   }
 
-  async findStarterTemplate(template: string, type: string, tag: string): Promise<ResolvedStarterTemplate> {
-    const starterTemplate = STARTER_TEMPLATES.find(t => t.projectType === type && t.name === template);
+  async findStarterTemplate(
+    template: string,
+    type: string,
+    tag: string
+  ): Promise<ResolvedStarterTemplate> {
+    const starterTemplate = STARTER_TEMPLATES.find(
+      (t) => t.projectType === type && t.name === template
+    );
 
     if (starterTemplate && starterTemplate.type === 'managed') {
       return {
         ...starterTemplate,
-        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starterTemplate.id}.tar.gz`,
+        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${
+          starterTemplate.id
+        }.tar.gz`,
       };
     }
 
@@ -751,7 +1026,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     tasks.next('Looking up starter');
     const starterList = await getStarterList(this.env.config, tag);
 
-    const starter = starterList.starters.find(t => t.type === type && t.name === template);
+    const starter = starterList.starters.find(
+      (t) => t.type === type && t.name === template
+    );
 
     if (starter) {
       tasks.end();
@@ -759,12 +1036,16 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
       return {
         name: starter.name,
         projectType: starter.type,
-        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starter.id}.tar.gz`,
+        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${
+          starter.id
+        }.tar.gz`,
       };
     } else {
       throw new FatalException(
         `Unable to find starter template for ${input(template)}\n` +
-        `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${strong('https://github.com/ionic-team/starters')}`
+          `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${strong(
+            'https://github.com/ionic-team/starters'
+          )}`
       );
     }
   }
@@ -775,7 +1056,9 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     if (!['custom', ...projectTypes].includes(type)) {
       throw new FatalException(
         `${input(type)} is not a valid project type.\n` +
-        `Please choose a different ${input('--type')}. Use ${input('ionic start --list')} to list all available starter templates.`
+          `Please choose a different ${input('--type')}. Use ${input(
+            'ionic start --list'
+          )} to list all available starter templates.`
       );
     }
   }
@@ -784,16 +1067,22 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     if (!isValidProjectId(projectId)) {
       throw new FatalException(
         `${input(projectId)} is not a valid package or directory name.\n` +
-        `Please choose a different ${input('--project-id')}. Alphanumeric characters are always safe.`
+          `Please choose a different ${input(
+            '--project-id'
+          )}. Alphanumeric characters are always safe.`
       );
     }
   }
 
-  async loadManifest(manifestPath: string): Promise<StarterManifest | undefined> {
+  async loadManifest(
+    manifestPath: string
+  ): Promise<StarterManifest | undefined> {
     try {
       return await readStarterManifest(manifestPath);
     } catch (e: any) {
-      debug(`Error with manifest file ${strong(prettyPath(manifestPath))}: ${e}`);
+      debug(
+        `Error with manifest file ${strong(prettyPath(manifestPath))}: ${e}`
+      );
     }
   }
 
@@ -805,38 +1094,80 @@ Use the ${input('--type')} option to start projects using older versions of Ioni
     }
   }
 
-  async downloadStarterTemplate(projectDir: string, starterTemplate: ResolvedStarterTemplate) {
+  async downloadStarterTemplate(
+    projectDir: string,
+    starterTemplate: ResolvedStarterTemplate
+  ) {
     const { createRequest, download } = await import('../lib/utils/http');
     const { tar } = await import('../lib/utils/archive');
 
     const tasks = this.createTaskChain();
-    const task = tasks.next(`Downloading and extracting ${input(starterTemplate.name.toString())} starter`);
+    const task = tasks.next(
+      `Downloading and extracting ${input(
+        starterTemplate.name.toString()
+      )} starter`
+    );
     debug('Tar extraction created for %s', projectDir);
     const ws = tar.extract({ cwd: projectDir });
 
-    const { req } = await createRequest('GET', starterTemplate.archive, this.env.config.getHTTPConfig());
-    await download(req, ws, { progress: (loaded, total) => task.progress(loaded, total) });
+    const { req } = await createRequest(
+      'GET',
+      starterTemplate.archive,
+      this.env.config.getHTTPConfig()
+    );
+    await download(req, ws, {
+      progress: (loaded, total) => task.progress(loaded, total),
+    });
 
     tasks.end();
   }
 
-  async showNextSteps(projectDir: string, cloned: boolean, linkConfirmed: boolean, isCapacitor: boolean) {
-    const cordovaResCommand = isCapacitor ? 'cordova-res --skip-config --copy' : 'cordova-res';
+  async showNextSteps(
+    projectDir: string,
+    cloned: boolean,
+    linkConfirmed: boolean,
+    isCapacitor: boolean
+  ) {
+    const cordovaResCommand = isCapacitor
+      ? 'cordova-res --skip-config --copy'
+      : 'cordova-res';
     const steps = [
-      `Go to your ${cloned ? 'cloned' : 'new'} project: ${input(`cd ${prettyPath(projectDir)}`)}`,
-      `Run ${input('ionic serve')} within the app directory to see your app in the browser`,
-      isCapacitor ?
-        `Run ${input('ionic capacitor add')} to add a native iOS or Android project using Capacitor` :
-        `Run ${input('ionic cordova platform add')} to add a native iOS or Android project using Cordova`,
-      `Generate your app icon and splash screens using ${input(cordovaResCommand)}`,
-      `Explore the Ionic docs for components, tutorials, and more: ${strong('https://ion.link/docs')}`,
-      `Building an enterprise app? Ionic has Enterprise Support and Features: ${strong('https://ion.link/enterprise-edition')}`,
+      `Go to your ${cloned ? 'cloned' : 'new'} project: ${input(
+        `cd ${prettyPath(projectDir)}`
+      )}`,
+      `Run ${input(
+        'ionic serve'
+      )} within the app directory to see your app in the browser`,
+      isCapacitor
+        ? `Run ${input(
+            'ionic capacitor add'
+          )} to add a native iOS or Android project using Capacitor`
+        : `Run ${input(
+            'ionic cordova platform add'
+          )} to add a native iOS or Android project using Cordova`,
+      `Generate your app icon and splash screens using ${input(
+        cordovaResCommand
+      )}`,
+      `Explore the Ionic docs for components, tutorials, and more: ${strong(
+        'https://ion.link/docs'
+      )}`,
+      `Building an enterprise app? Ionic has Enterprise Support and Features: ${strong(
+        'https://ion.link/enterprise-edition'
+      )}`,
     ];
 
     if (linkConfirmed) {
-      steps.push(`Push your code to Ionic Appflow to perform real-time updates, and more: ${input('git push ionic master')}`);
+      steps.push(
+        `Push your code to Ionic Appflow to perform real-time updates, and more: ${input(
+          'git push ionic master'
+        )}`
+      );
     }
 
-    this.env.log.msg(`${strong('Your Ionic app is ready! Follow these next steps')}:\n${steps.map(s => ` - ${s}`).join('\n')}`);
+    this.env.log.msg(
+      `${strong('Your Ionic app is ready! Follow these next steps')}:\n${steps
+        .map((s) => ` - ${s}`)
+        .join('\n')}`
+    );
   }
 }

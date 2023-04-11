@@ -837,6 +837,7 @@ export interface BaseStarterTemplate {
   name: string;
   projectType: ProjectType;
   description?: string;
+  id?: string
 }
 
 export interface RepoStarterTemplate extends BaseStarterTemplate {
