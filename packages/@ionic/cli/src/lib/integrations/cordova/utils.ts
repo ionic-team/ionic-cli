@@ -7,7 +7,7 @@ import { FatalException } from '../../errors';
 import { prettyProjectName } from '../../project';
 import { emoji } from '../../utils/emoji';
 
-export const SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'ionic-angular', 'angular'];
+export const SUPPORTED_PROJECT_TYPES: readonly ProjectType[] = ['custom', 'angular'];
 
 /**
  * Filter and gather arguments from command line to be passed to Cordova

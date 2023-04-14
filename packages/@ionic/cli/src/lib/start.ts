@@ -343,47 +343,4 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     description: 'A starting project with a simple tabbed interface',
     id: 'react-vite-official-tabs',
   },
-  // Old Ionic V3
-  {
-    name: 'tabs',
-    projectType: 'ionic-angular',
-    type: 'managed',
-    description: 'A starting project with a simple tabbed interface',
-    id: 'ionic-angular-official-tabs',
-  },
-  {
-    name: 'sidemenu',
-    projectType: 'ionic-angular',
-    type: 'managed',
-    description: 'A starting project with a side menu with navigation in the content area',
-    id: 'ionic-angular-official-sidemenu',
-  },
-  {
-    name: 'blank',
-    projectType: 'ionic-angular',
-    type: 'managed',
-    description: 'A blank starter project',
-    id: 'ionic-angular-official-blank',
-  },
-  {
-    name: 'super',
-    projectType: 'ionic-angular',
-    type: 'managed',
-    description: 'A starting project complete with pre-built pages, providers and best practices for Ionic development.',
-    id: 'ionic-angular-official-super',
-  },
-  {
-    name: 'tutorial',
-    projectType: 'ionic-angular',
-    type: 'managed',
-    description: 'A tutorial based project that goes along with the Ionic documentation',
-    id: 'ionic-angular-official-tutorial',
-  },
-  {
-    name: 'aws',
-    projectType: 'ionic-angular',
-    type: 'managed',
-    description: 'AWS Mobile Hub Starter',
-    id: 'ionic-angular-official-aws',
-  },
 ];

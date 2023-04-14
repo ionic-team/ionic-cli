@@ -6,9 +6,7 @@ export class MonitoringNamespace extends Namespace {
   async getMetadata() {
     const groups: MetadataGroup[] = [];
 
-    if (!this.project || this.project.type !== 'ionic-angular') {
-      groups.push(MetadataGroup.HIDDEN);
-    }
+    groups.push(MetadataGroup.HIDDEN);
 
     return {
       name: 'monitoring',

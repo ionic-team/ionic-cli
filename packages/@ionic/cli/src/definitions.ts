@@ -78,7 +78,7 @@ export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }
 
-export type ProjectType = 'angular' | 'angular-standalone' | 'ionic-angular' | 'custom' | 'bare' | 'react' | 'vue' | 'react-vite' | 'vue-vite';
+export type ProjectType = 'angular' | 'angular-standalone' | 'custom' | 'bare' | 'react' | 'vue' | 'react-vite' | 'vue-vite';
 export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before' | 'capacitor:sync:after';
 
 export type CapacitorRunHookName = 'capacitor:run:before';
@@ -95,8 +95,8 @@ export interface BaseHookContext {
   env: NodeJS.ProcessEnv;
 }
 
-export type AnyServeOptions = ReactServeOptions | AngularServeOptions | IonicAngularServeOptions;
-export type AnyBuildOptions = ReactBuildOptions | AngularBuildOptions | IonicAngularBuildOptions;
+export type AnyServeOptions = ReactServeOptions | AngularServeOptions;
+export type AnyBuildOptions = ReactBuildOptions | AngularBuildOptions;
 
 export interface CapacitorSyncHookInput {
   readonly name: CapacitorSyncHookName;
@@ -118,17 +118,17 @@ export interface CapacitorBuildHookInput {
 
 export interface BuildHookInput {
   readonly name: 'build:before' | 'build:after';
-  readonly build: AngularBuildOptions | IonicAngularBuildOptions;
+  readonly build: AngularBuildOptions;
 }
 
 export interface ServeBeforeHookInput {
   readonly name: 'serve:before';
-  readonly serve: AngularServeOptions | IonicAngularServeOptions;
+  readonly serve: AngularServeOptions;
 }
 
 export interface ServeAfterHookInput {
   readonly name: 'serve:after';
-  readonly serve: (AngularServeOptions | IonicAngularServeOptions) & ServeDetails;
+  readonly serve: (AngularServeOptions) & ServeDetails;
 }
 
 export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput | CapacitorRunHookInput | CapacitorBuildHookInput | CapacitorSyncHookInput;
@@ -674,16 +674,6 @@ export interface IonicCapacitorOptions extends CapacitorConfig {
   verbose?: boolean;
 }
 
-export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> {
-  prod: boolean;
-  sourcemaps?: boolean;
-  aot: boolean;
-  minifyjs: boolean;
-  minifycss: boolean;
-  optimizejs: boolean;
-  env?: string;
-}
-
 export interface CustomBuildOptions extends BuildOptions<'custom'> {}
 
 export interface GenerateOptions {
@@ -740,15 +730,6 @@ export interface VueServeOptions extends ServeOptions {
   mode: string;
   configuration?: string;
   sourcemaps?: boolean;
-}
-
-export interface IonicAngularServeOptions extends ServeOptions {
-  sourcemaps?: boolean;
-  consolelogs: boolean;
-  serverlogs: boolean;
-  env?: string;
-  livereloadPort: number;
-  notificationPort: number;
 }
 
 export interface CustomServeOptions extends ServeOptions {}
