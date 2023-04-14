@@ -386,33 +386,4 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
     description: 'AWS Mobile Hub Starter',
     id: 'ionic-angular-official-aws',
   },
-  // Older Ionic V1
-  {
-    name: 'tabs',
-    projectType: 'ionic1',
-    type: 'managed',
-    description: 'A starting project for Ionic using a simple tabbed interface',
-    id: 'ionic1-official-tabs',
-  },
-  {
-    name: 'sidemenu',
-    projectType: 'ionic1',
-    type: 'managed',
-    description: 'A starting project for Ionic using a side menu with navigation in the content area',
-    id: 'ionic1-official-sidemenu',
-  },
-  {
-    name: 'blank',
-    projectType: 'ionic1',
-    type: 'managed',
-    description: 'A blank starter project for Ionic',
-    id: 'ionic1-official-blank',
-  },
-  {
-    name: 'maps',
-    projectType: 'ionic1',
-    type: 'managed',
-    description: 'An Ionic starter project using Google Maps and a side menu',
-    id: 'ionic1-official-maps',
-  },
 ];

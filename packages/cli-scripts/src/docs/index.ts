@@ -25,7 +25,7 @@ export class DocsCommand extends Command {
     await remove(STAGING_DIRECTORY);
     await mkdirp(STAGING_DIRECTORY);
 
-    const projectTypes: ProjectType[] = ['angular', 'ionic-angular', 'ionic1'];
+    const projectTypes: ProjectType[] = ['angular', 'ionic-angular'];
     const baseCtx = await generateContext();
 
     for (const projectType of projectTypes) {

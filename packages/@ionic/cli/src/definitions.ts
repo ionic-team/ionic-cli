@@ -78,7 +78,7 @@ export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }
 
-export type ProjectType = 'angular' | 'angular-standalone' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue' | 'react-vite' | 'vue-vite';
+export type ProjectType = 'angular' | 'angular-standalone' | 'ionic-angular' | 'custom' | 'bare' | 'react' | 'vue' | 'react-vite' | 'vue-vite';
 export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before' | 'capacitor:sync:after';
 
 export type CapacitorRunHookName = 'capacitor:run:before';
@@ -95,8 +95,8 @@ export interface BaseHookContext {
   env: NodeJS.ProcessEnv;
 }
 
-export type AnyServeOptions = ReactServeOptions | AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
-export type AnyBuildOptions = ReactBuildOptions | AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
+export type AnyServeOptions = ReactServeOptions | AngularServeOptions | IonicAngularServeOptions;
+export type AnyBuildOptions = ReactBuildOptions | AngularBuildOptions | IonicAngularBuildOptions;
 
 export interface CapacitorSyncHookInput {
   readonly name: CapacitorSyncHookName;
@@ -118,17 +118,17 @@ export interface CapacitorBuildHookInput {
 
 export interface BuildHookInput {
   readonly name: 'build:before' | 'build:after';
-  readonly build: AngularBuildOptions | IonicAngularBuildOptions | Ionic1BuildOptions;
+  readonly build: AngularBuildOptions | IonicAngularBuildOptions;
 }
 
 export interface ServeBeforeHookInput {
   readonly name: 'serve:before';
-  readonly serve: AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions;
+  readonly serve: AngularServeOptions | IonicAngularServeOptions;
 }
 
 export interface ServeAfterHookInput {
   readonly name: 'serve:after';
-  readonly serve: (AngularServeOptions | IonicAngularServeOptions | Ionic1ServeOptions) & ServeDetails;
+  readonly serve: (AngularServeOptions | IonicAngularServeOptions) & ServeDetails;
 }
 
 export type HookInput = BuildHookInput | ServeBeforeHookInput | ServeAfterHookInput | CapacitorRunHookInput | CapacitorBuildHookInput | CapacitorSyncHookInput;
@@ -684,8 +684,6 @@ export interface IonicAngularBuildOptions extends BuildOptions<'ionic-angular'> 
   env?: string;
 }
 
-export interface Ionic1BuildOptions extends BuildOptions<'ionic1'> {}
-
 export interface CustomBuildOptions extends BuildOptions<'custom'> {}
 
 export interface GenerateOptions {
@@ -749,13 +747,6 @@ export interface IonicAngularServeOptions extends ServeOptions {
   consolelogs: boolean;
   serverlogs: boolean;
   env?: string;
-  livereloadPort: number;
-  notificationPort: number;
-}
-
-export interface Ionic1ServeOptions extends ServeOptions {
-  consolelogs: boolean;
-  serverlogs: boolean;
   livereloadPort: number;
   notificationPort: number;
 }

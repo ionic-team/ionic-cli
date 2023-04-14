@@ -226,7 +226,6 @@ export class ProjectDetails {
         `Could not determine project type (project config: ${strong(prettyPath(result.configPath))}).\n` +
         `- ${wordWrap(`For ${strong(prettyProjectName('angular'))} projects, make sure ${input('@ionic/angular')} is listed as a dependency in ${strong('package.json')}.`, listWrapOptions)}\n` +
         `- ${wordWrap(`For ${strong(prettyProjectName('ionic-angular'))} projects, make sure ${input('ionic-angular')} is listed as a dependency in ${strong('package.json')}.`, listWrapOptions)}\n` +
-        `- ${wordWrap(`For ${strong(prettyProjectName('ionic1'))} projects, make sure ${input('ionic')} is listed as a dependency in ${strong('bower.json')}.`, listWrapOptions)}\n\n` +
         `Alternatively, set ${strong('type')} attribute in ${strong(prettyPath(result.configPath))} to one of: ${PROJECT_TYPES.map(v => input(v)).join(', ')}.\n\n` +
         `If the Ionic CLI does not know what type of project this is, ${input('ionic build')}, ${input('ionic serve')}, and other commands may not work. You can use the ${input('custom')} project type if that's okay.`
       );
@@ -783,8 +782,6 @@ export function prettyProjectName(type?: string): string {
     return '@ionic/vue';
   } else if (type === 'ionic-angular') {
     return 'Ionic 2/3';
-  } else if (type === 'ionic1') {
-    return 'Ionic 1';
   } else if (type === 'custom') {
     return 'Custom';
   }
