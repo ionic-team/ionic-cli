@@ -14,7 +14,7 @@
     "docs": "node packages/cli-scripts/bin/ionic-cli-scripts docs",
     "docs:watch": "chokidar 'packages/cli-scripts/dist/docs/**/*.js' -c 'npm run docs'",
     "publish:testing": "lerna publish prerelease --preid=testing --exact --no-git-tag-version --no-push --dist-tag=testing",
-    "publish:ci": "lerna publish -m 'chore(release): publish [skip ci]' --exact --conventional-commits --no-verify-access"
+    "publish:ci": "lerna version -m 'chore(release): publish [skip ci]' --exact --conventional-commits --yes && lerna exec --since HEAD~ -- npm publish --provenance"
   },
   "devDependencies": {
     "chokidar-cli": "^2.0.0",
