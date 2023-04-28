@@ -117,7 +117,7 @@ export abstract class OAuth2Flow<T extends OpenIdToken> {
         if (req.url) {
           const params = qs.parse(req.url.substring(req.url.indexOf('?') + 1));
 
-          if (params.code && params.state) {
+          if (params.code) {
             res.writeHead(200, { 'Content-Type': ContentType.HTML });
             res.end(successHtml);
             req.socket.destroy();
@@ -125,7 +125,7 @@ export abstract class OAuth2Flow<T extends OpenIdToken> {
 
             const authResult = {
               code: Array.isArray(params.code) ? params.code[0] : params.code,
-              state: Array.isArray(params.state) ? decodeURI(params.state[0]) : decodeURI(params.state),
+              state: params.state ? (Array.isArray(params.state) ? decodeURI(params.state[0]) : decodeURI(params.state)) : '',
             };
 
             resolve(authResult);
