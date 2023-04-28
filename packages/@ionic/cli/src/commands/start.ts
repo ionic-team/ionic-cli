@@ -511,7 +511,7 @@ Use the ${input(
       const angularMode = await this.env.prompt({
         type: 'list',
         name: 'standalone',
-        message: 'Would you like to build your app with NgModules or Standalone Components? \n Standalone components are a new way to build with Angular that simplifies the you build your app. \n To learn more, visit the Angular docs:\n https://angular.io/guide/standalone-components\n\n',
+        message: 'Would you like to build your app with NgModules or Standalone Components? \n Standalone components are a new way to build with Angular that simplifies the way you build your app. \n To learn more, visit the Angular docs:\n https://angular.io/guide/standalone-components\n\n',
         choices: () => [
           {
             name: 'NgModules',
