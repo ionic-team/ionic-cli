@@ -525,11 +525,9 @@ Use the ${input(
           }
         ],
       });
-      if(angularMode === 'ngModules'){
-        starterTemplate!.id = `${starterTemplate!.id}-ngmodules`
+      if (angularMode === 'standalone'){
+        starterTemplate!.id = `${starterTemplate!.id}-standalone`
       }
-      console.log(angularMode);
-      console.log(starterTemplate)
     }
 
     if (starterTemplate && starterTemplate.type === 'repo') {
