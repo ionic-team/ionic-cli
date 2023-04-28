@@ -531,7 +531,18 @@ Use the ${input(
        * components then we need to get the correct starter.
        */
       if (angularMode === 'standalone') {
+        /**
+         * Attempt to find the same type of starter
+         * but with standalone components.
+         */
         const standaloneStarter = STARTER_TEMPLATES.find((t) => t.name === inputs[1] && t.projectType === ANGULAR_STANDALONE);
+
+        /**
+         * If found, update the projectType and
+         * starterTemplate vars to use the new project.
+         * If no project is found it will continue
+         * to use the NgModule version.
+         */
         if (standaloneStarter !== undefined) {
           projectType = ANGULAR_STANDALONE;
           starterTemplate = standaloneStarter;
