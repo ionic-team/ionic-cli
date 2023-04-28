@@ -821,7 +821,10 @@ Use the ${input(
         options['capacitor'] = true;
       }
 
-      if (this.schema.type === 'angular' && options['cordova'] === null) {
+      if (
+        (this.schema.type === 'angular' || this.schema.type === 'angular-standalone')
+        && options['cordova'] === null
+      ) {
         options['capacitor'] = true;
       }
 
