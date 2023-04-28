@@ -8,7 +8,7 @@ import * as Debug from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
-import { PROJECT_FILE, PROJECT_TYPES } from '../../constants';
+import { PROJECT_FILE, PROJECT_TYPES, ANGULAR_STANDALONE } from '../../constants';
 import { IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import { ancillary, failure, input, strong } from '../color';
@@ -299,6 +299,7 @@ export async function createProjectFromDetails(details: ProjectDetailsResult, de
 
   switch (type) {
     case 'angular':
+    case ANGULAR_STANDALONE:
       const { AngularProject } = await import('./angular');
       return new AngularProject(details, deps);
     case 'react':

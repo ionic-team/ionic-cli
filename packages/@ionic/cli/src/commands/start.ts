@@ -6,7 +6,7 @@ import * as chalk from 'chalk';
 import * as Debug from 'debug';
 import * as path from 'path';
 
-import { COLUMNAR_OPTIONS, PROJECT_FILE } from '../constants';
+import { COLUMNAR_OPTIONS, PROJECT_FILE, ANGULAR_STANDALONE } from '../constants';
 import {
   CommandInstanceInfo,
   CommandLineInputs,
@@ -393,7 +393,7 @@ Use the ${input(
       return;
     }
 
-    const projectType = isValidURL(inputs[1])
+    let projectType = isValidURL(inputs[1])
       ? 'custom'
       : options['type']
       ? String(options['type'])
@@ -502,7 +502,7 @@ Use the ${input(
     }
 
 
-    const starterTemplate = STARTER_TEMPLATES.find(
+    let starterTemplate = STARTER_TEMPLATES.find(
       (t) => t.name === inputs[1] && t.projectType === projectType
     );
 
@@ -525,8 +525,17 @@ Use the ${input(
           }
         ],
       });
-      if (angularMode === 'standalone'){
-        starterTemplate!.id = `${starterTemplate!.id}-standalone`
+
+      /**
+       * If the developer wants to use standalone
+       * components then we need to get the correct starter.
+       */
+      if (angularMode === 'standalone') {
+        const standaloneStarter = STARTER_TEMPLATES.find((t) => t.name === inputs[1] && t.projectType === ANGULAR_STANDALONE);
+        if (standaloneStarter !== undefined) {
+          projectType = ANGULAR_STANDALONE;
+          starterTemplate = standaloneStarter;
+        }
       }
     }
 
