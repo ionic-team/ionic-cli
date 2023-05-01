@@ -94,9 +94,9 @@ The second argument is the ${input(
 
 Use the ${input(
         '--type'
-      )} option to start projects using older versions of Ionic. For example, you can start an Ionic 3 project with ${input(
-        '--type=ionic-angular'
-      )}. Use ${input('--list')} to see all project types and templates.
+      )} option to start projects using a different JavaScript Framework. Use ${input(
+        '--list'
+      )} to see all project types and templates.
       `,
       exampleCommands: [
         '',
@@ -104,6 +104,7 @@ Use the ${input(
         'myApp',
         'myApp blank',
         'myApp tabs --capacitor',
+        'myApp list --type=vue',
         '"My App" blank',
         '"Conference App" https://github.com/ionic-team/ionic-conference-app',
       ],
