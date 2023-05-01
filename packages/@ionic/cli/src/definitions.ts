@@ -78,7 +78,7 @@ export interface Runner<T extends object, U> {
   run(options: T): Promise<U>;
 }
 
-export type ProjectType = 'angular' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue' | 'react-vite' | 'vue-vite';
+export type ProjectType = 'angular' | 'angular-standalone' | 'ionic-angular' | 'ionic1' | 'custom' | 'bare' | 'react' | 'vue' | 'react-vite' | 'vue-vite';
 export type HookName = 'build:before' | 'build:after' | 'serve:before' | 'serve:after' | 'capacitor:run:before' | 'capacitor:build:before' | 'capacitor:sync:after';
 
 export type CapacitorRunHookName = 'capacitor:run:before';

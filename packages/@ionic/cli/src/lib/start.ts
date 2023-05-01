@@ -2,7 +2,7 @@ import { readJson } from '@ionic/utils-fs';
 import { columnar } from '@ionic/utils-terminal';
 import * as lodash from 'lodash';
 
-import { COLUMNAR_OPTIONS, PROJECT_TYPES } from '../constants';
+import { COLUMNAR_OPTIONS, PROJECT_TYPES, ANGULAR_STANDALONE } from '../constants';
 import { CommandLineOptions, IConfig, ILogger, ProjectType, StarterList, StarterManifest, StarterTemplate } from '../definitions';
 import { isStarterManifest } from '../guards';
 
@@ -268,6 +268,41 @@ export const STARTER_TEMPLATES: StarterTemplate[] = [
   {
     name: 'my-first-app',
     projectType: 'angular',
+    type: 'repo',
+    description: 'A template for the "Build Your First App" tutorial',
+    repo: 'https://github.com/ionic-team/photo-gallery-capacitor-ng',
+  },
+  {
+    name: 'tabs',
+    projectType: ANGULAR_STANDALONE,
+    type: 'managed',
+    description: 'A starting project with a simple tabbed interface',
+    id: 'angular-standalone-official-tabs',
+  },
+  {
+    name: 'sidemenu',
+    projectType: ANGULAR_STANDALONE,
+    type: 'managed',
+    description: 'A starting project with a side menu with navigation in the content area',
+    id: 'angular-standalone-official-sidemenu',
+  },
+  {
+    name: 'blank',
+    projectType: ANGULAR_STANDALONE,
+    type: 'managed',
+    description: 'A blank starter project',
+    id: 'angular-standalone-official-blank',
+  },
+  {
+    name: 'list',
+    projectType: ANGULAR_STANDALONE,
+    type: 'managed',
+    description: 'A starting project with a list',
+    id: 'angular-standalone-official-list',
+  },
+  {
+    name: 'my-first-app',
+    projectType: ANGULAR_STANDALONE,
     type: 'repo',
     description: 'A template for the "Build Your First App" tutorial',
     repo: 'https://github.com/ionic-team/photo-gallery-capacitor-ng',
