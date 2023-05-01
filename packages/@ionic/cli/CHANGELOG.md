@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.1.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.0.1...@ionic/cli@7.1.0) (2023-05-01)
+
+
+### Features
+
+* add standalone as an option ([#5005](https://github.com/ionic-team/ionic-cli/issues/5005)) ([707a42d](https://github.com/ionic-team/ionic-cli/commit/707a42d29579a355d9a57b65c07ec6a0b681028e))
+
+
+
+
+
 ## [7.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.0.0...@ionic/cli@7.0.1) (2023-04-05)
 
 
