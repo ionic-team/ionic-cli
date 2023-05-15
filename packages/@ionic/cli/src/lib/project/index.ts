@@ -55,9 +55,9 @@ export class ProjectDetailsError extends BaseException {
     /**
      * The underlying error that caused this error.
      */
-    readonly error?: Error
+    cause?: Error
   ) {
-    super(msg);
+    super(msg, { cause });
   }
 }
 
@@ -193,7 +193,7 @@ export class ProjectDetails {
     if (e1) {
       log.error(
         `Error while loading config (project config: ${strong(prettyPath(result.configPath))})\n` +
-        `${e1.error ? `${e1.message}: ${failure(e1.error.toString())}` : failure(e1.message)}. ` +
+        `${e1.cause ? `${e1.message}: ${failure(e1.cause.toString())}` : failure(e1.message)}. ` +
         `Run ${input('ionic init')} to re-initialize your Ionic project. Without a valid project config, the CLI will not have project context.`
       );
 
