@@ -205,7 +205,9 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
             );
           }
         } else {
-          if (targets.length > 0) {
+          if (targets.length === 1) {
+            options['target'] = targets[0].id;
+          } else if (targets.length > 1) {
             options['target'] = await this.env.prompt({
               type: 'list',
               name: 'target',
