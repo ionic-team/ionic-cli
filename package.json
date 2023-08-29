@@ -19,7 +19,7 @@
   "devDependencies": {
     "chokidar-cli": "^2.0.0",
     "husky": "^4.2.0",
-    "lerna": "^3.13.3",
+    "lerna": "^7.2.0",
     "typescript": "~4.8.0"
   },
   "husky": {
