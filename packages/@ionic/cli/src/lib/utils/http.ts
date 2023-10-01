@@ -1,12 +1,10 @@
 import { conform } from '@ionic/utils-array';
 import { readFile } from '@ionic/utils-fs';
-import * as Debug from 'debug';
+import { ProxyAgent } from 'proxy-agent';
 
 import { CreateRequestOptions, HttpMethod } from '../../definitions';
 
 export type SuperAgentRequest = import('superagent').SuperAgentRequest;
-
-const debug = Debug('ionic:lib:utils:http');
 
 export const PROXY_ENVIRONMENT_VARIABLES: readonly string[] = ['IONIC_HTTP_PROXY', 'HTTPS_PROXY', 'HTTP_PROXY', 'PROXY', 'https_proxy', 'http_proxy', 'proxy'];
 
@@ -38,14 +36,7 @@ export async function createRequest(method: HttpMethod, url: string, { userAgent
     .redirects(25);
 
   if (proxy) {
-    const superagentProxy = await import('superagent-proxy');
-    superagentProxy(superagent);
-
-    if (req.proxy) {
-      req.proxy(proxy);
-    } else {
-      debug(`Cannot install proxy--req.proxy not defined`);
-    }
+    req.agent(new ProxyAgent({ getProxyForUrl: () => proxy as string }))
   }
 
   if (ssl) {
