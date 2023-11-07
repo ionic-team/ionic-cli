@@ -9,6 +9,13 @@
   "engines": {
     "node": ">=16.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ionic-team/ionic-cli/issues"
+  },
   "scripts": {
     "clean": "rimraf index.* definitions.* errors.* guards.* lib utils",
     "lint": "true",
