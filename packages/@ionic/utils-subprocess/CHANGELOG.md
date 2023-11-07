@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.13](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.12...@ionic/utils-subprocess@2.1.13) (2023-11-07)
+
+
+### Bug Fixes
+
+* use native ES2022 error cause ([#5010](https://github.com/ionic-team/ionic-cli/issues/5010)) ([0c4cd0f](https://github.com/ionic-team/ionic-cli/commit/0c4cd0f47e00b43e8c0ce4eef072351a846b566c))
+
+
+
+
+
 ## [2.1.12](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.11...@ionic/utils-subprocess@2.1.12) (2023-03-29)
 
 **Note:** Version bump only for package @ionic/utils-subprocess

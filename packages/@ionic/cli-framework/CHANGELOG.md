@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [5.1.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.1.4...@ionic/cli-framework@5.1.5) (2023-11-07)
+
+
+### Bug Fixes
+
+* use native ES2022 error cause ([#5010](https://github.com/ionic-team/ionic-cli/issues/5010)) ([0c4cd0f](https://github.com/ionic-team/ionic-cli/commit/0c4cd0f47e00b43e8c0ce4eef072351a846b566c))
+
+
+
+
+
 ## [5.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.1.3...@ionic/cli-framework@5.1.4) (2023-03-29)
 
 **Note:** Version bump only for package @ionic/cli-framework
