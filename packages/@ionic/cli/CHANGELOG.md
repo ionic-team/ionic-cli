@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.2...@ionic/cli@7.1.3) (2023-11-07)
+
+**Note:** Version bump only for package @ionic/cli
+
+
+
+
+
 ## [7.1.2](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.1...@ionic/cli@7.1.2) (2023-11-07)
 
 
