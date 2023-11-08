@@ -12,8 +12,7 @@
     "target": "ES2021",
     "types": [],
     "lib": [
-      "ES2021",
-      "ES2022.Error"
+      "ES2021"
     ]
   }
 }
