@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.3...@ionic/cli@7.1.4) (2023-11-08)
+
+
+### Reverts
+
+* use native ES2022 error cause ([#5060](https://github.com/ionic-team/ionic-cli/issues/5060)) ([1e64a1a](https://github.com/ionic-team/ionic-cli/commit/1e64a1ada60545adf8e7c99fbd1f8766cf2416f9))
+
+
+
+
+
 ## [7.1.3](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.2...@ionic/cli@7.1.3) (2023-11-07)
 
 **Note:** Version bump only for package @ionic/cli

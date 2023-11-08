@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli",
-  "version": "7.1.3",
+  "version": "7.1.4",
   "description": "A tool for creating and developing Ionic Framework mobile apps.",
   "homepage": "https://ionicframework.com",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
@@ -40,7 +40,7 @@
   },
   "license": "MIT",
   "dependencies": {
-    "@ionic/cli-framework": "5.1.6",
+    "@ionic/cli-framework": "5.1.7",
     "@ionic/cli-framework-output": "2.2.7",
     "@ionic/cli-framework-prompts": "2.1.12",
     "@ionic/utils-array": "2.1.6",
@@ -48,7 +48,7 @@
     "@ionic/utils-network": "2.1.6",
     "@ionic/utils-process": "2.1.11",
     "@ionic/utils-stream": "3.1.6",
-    "@ionic/utils-subprocess": "2.1.13",
+    "@ionic/utils-subprocess": "2.1.14",
     "@ionic/utils-terminal": "2.3.4",
     "chalk": "^4.0.0",
     "debug": "^4.0.0",

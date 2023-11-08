@@ -1,6 +1,6 @@
 {
   "name": "@ionic/cli-framework",
-  "version": "5.1.6",
+  "version": "5.1.7",
   "description": "The foundation framework of the Ionic CLI",
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionicframework.com) ",
@@ -32,7 +32,7 @@
     "@ionic/utils-object": "2.1.6",
     "@ionic/utils-process": "2.1.11",
     "@ionic/utils-stream": "3.1.6",
-    "@ionic/utils-subprocess": "2.1.13",
+    "@ionic/utils-subprocess": "2.1.14",
     "@ionic/utils-terminal": "2.3.4",
     "chalk": "^4.0.0",
     "debug": "^4.0.0",
