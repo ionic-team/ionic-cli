@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [3.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.14...@ionic/utils-subprocess@3.0.0) (2023-11-08)
+
+
+### Bug Fixes
+
+* use native ES2022 error cause ([#5010](https://github.com/ionic-team/ionic-cli/issues/5010)) ([a97ba2b](https://github.com/ionic-team/ionic-cli/commit/a97ba2bcac4556017ba010692f71fed2bef3f77b))
+
+
+### BREAKING CHANGES
+
+* `message`, `stack`, and `error` properties removed from `BaseError` and `SubprocessError`
+
+
+
+
+
 ## [2.1.14](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.13...@ionic/utils-subprocess@2.1.14) (2023-11-08)
 
 
