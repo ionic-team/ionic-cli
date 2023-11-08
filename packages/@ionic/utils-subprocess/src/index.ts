@@ -35,11 +35,20 @@ export function convertPATH(path = process.env.PATH || ''): string {
 
 export class SubprocessError extends Error {
   readonly name = 'SubprocessError';
+  message: string;
+  stack: string;
 
   code?: typeof ERROR_COMMAND_NOT_FOUND | typeof ERROR_NON_ZERO_EXIT | typeof ERROR_SIGNAL_EXIT;
+  error?: Error;
   output?: string;
   signal?: string;
   exitCode?: number;
+
+  constructor(message: string) {
+    super(message);
+    this.message = message;
+    this.stack = (new Error()).stack || '';
+  }
 }
 
 export interface SubprocessOptions extends SpawnOptions {}
@@ -163,12 +172,13 @@ export class Subprocess {
         let err: SubprocessError;
 
         if (error.code === 'ENOENT') {
-          err = new SubprocessError('Command not found.', { cause: error });
+          err = new SubprocessError('Command not found.');
           err.code = ERROR_COMMAND_NOT_FOUND;
         } else {
-          err = new SubprocessError('Command error.', { cause: error });
+          err = new SubprocessError('Command error.');
         }
 
+        err.error = error;
         reject(err);
       });
 
