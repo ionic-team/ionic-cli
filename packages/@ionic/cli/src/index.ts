@@ -3,6 +3,7 @@ import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { processExit } from '@ionic/utils-process';
 import * as Debug from 'debug';
 import * as path from 'path';
+import * as util from 'util';
 
 import { IonicNamespace } from './commands';
 import { IPCMessage, IonicContext, IonicEnvironment } from './definitions';
@@ -171,11 +172,7 @@ export async function run(pargv: string[]): Promise<void> {
     } else if (err instanceof BaseError) {
       ienv.log.error(err.message);
     } else {
-      ienv.log.msg(failure(String(err.stack ? err.stack : err)));
-
-      if (err.stack) {
-        debug(failure(String(err.stack)));
-      }
+      ienv.log.rawmsg(failure(util.inspect(err)));
     }
   }
 }
