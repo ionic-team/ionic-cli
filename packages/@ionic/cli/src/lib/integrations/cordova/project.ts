@@ -2,6 +2,7 @@ import { filter } from '@ionic/utils-array';
 import { readJson, readdirSafe, statSafe } from '@ionic/utils-fs';
 import * as Debug from 'debug';
 import * as path from 'path';
+import * as semver from 'semver';
 
 import { AndroidBuildOutput, LegacyAndroidBuildOutputEntry } from '../../../definitions';
 import { isAndroidBuildOutputFile, isLegacyAndroidBuildOutputFile } from '../../../guards';
@@ -13,6 +14,7 @@ const debug = Debug('ionic:lib:cordova:project');
 const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
 const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
 const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
+const CORDOVA_IOS_PACKAGE_PATH = 'platforms/ios/build';
 
 export async function getPlatforms(projectDir: string): Promise<string[]> {
   const platformsDir = path.resolve(projectDir, 'platforms');
@@ -82,4 +84,44 @@ export async function getPackagePath(root: string, appName: string, platform: st
   }
 
   throw new FatalException(`Unknown package path for ${input(appName)} on ${input(platform)}.`);
+}
+
+
+/**
+ * Get the relative path to most recently built APK or IPA file
+ */
+export async function getPackagePathCordova(root: string, appName: string, platform: string, platformVersion: any, { emulator = false, release = false }: GetPackagePathOptions = {}): Promise<string> {
+  if (platform === 'android') {
+    return getAndroidPackageFilePath(root, { emulator, release });
+  } else if (platform === 'ios') {
+    return getiOSPackageFilePath(root, { emulator, release, appName, platformVersion });
+  }
+
+  throw new FatalException(`Unknown package path for ${input(appName)} on ${input(platform)}.`);
+}
+
+interface iOSGetPackagePathOptions {
+  emulator?: boolean;
+  release?: boolean;
+  appName: string;
+  platformVersion: any;
+}
+
+async function getiOSPackageFilePath(root: string, { emulator = false, release = false, appName, platformVersion }: iOSGetPackagePathOptions): Promise<string> {
+  let defaultPath = "device";
+  let deviceType = "iphoneos";
+  let extension = "ipa";
+  if (emulator) {
+    defaultPath = "emulator";
+    deviceType = "iphonesimulator";
+    extension = "app";
+  }
+  if (semver.gte(platformVersion, '7.0.0')) {
+    let releaseType = "Debug";
+    if (release) {
+      releaseType = "Release";
+    }
+    defaultPath = `${releaseType}-${deviceType}`;
+  }
+  return path.join(CORDOVA_IOS_PACKAGE_PATH, defaultPath, `${appName}.${extension}`);
 }
