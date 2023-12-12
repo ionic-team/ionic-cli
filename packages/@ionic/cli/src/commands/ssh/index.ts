@@ -1,3 +1,4 @@
+import { MetadataGroup } from '@ionic/cli-framework';
 import { input } from '../../lib/color';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
@@ -12,6 +13,8 @@ export class SSHNamespace extends Namespace {
 These commands help automate your SSH configuration for Ionic. As an alternative, SSH configuration can be done entirely manually by visiting your Personal Settings[^dashboard-settings-ssh-keys].
 
 To begin, run ${input('ionic ssh setup')}, which lets you use existing keys or generate new ones just for Ionic.
+
+Deprecated. Developers should configure SSH by visiting their Personal Settings at https://dashboard.ionicframework.com/settings/ssh-keys.
       `,
       footnotes: [
         {
@@ -19,6 +22,7 @@ To begin, run ${input('ionic ssh setup')}, which lets you use existing keys or g
           url: `${dashUrl}/settings/ssh-keys`,
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 
