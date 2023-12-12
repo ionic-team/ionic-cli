@@ -45,7 +45,7 @@ export class SSLGenerateCommand extends SSLBaseCommand implements CommandPreRun 
     return {
       name: 'generate',
       type: 'project',
-      summary: 'Generates an SSL key & certificate (Deprecated)',
+      summary: 'Generates an SSL key & certificate',
       // TODO: document how to add trusted certs
       description: `
 Uses OpenSSL to create a self-signed certificate for ${strong('localhost')} (by default).
@@ -112,7 +112,7 @@ Deprecated. Developers should generate an SSL certificate locally and then confi
           groups: [MetadataGroup.ADVANCED],
         },
       ],
-      groups: [MetadataGroup.EXPERIMENTAL],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 
