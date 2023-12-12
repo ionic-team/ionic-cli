@@ -56,7 +56,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
           name: 'ssl',
           summary: 'Use HTTPS for the dev server',
           type: Boolean,
-          groups: [MetadataGroup.DEPRECATED, 'cordova'],
+          groups: [MetadataGroup.EXPERIMENTAL, 'cordova'],
           hint: weak('[ng]'),
         },
         {
