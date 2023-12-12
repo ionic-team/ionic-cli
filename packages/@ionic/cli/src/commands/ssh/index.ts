@@ -14,7 +14,7 @@ These commands help automate your SSH configuration for Ionic. As an alternative
 
 To begin, run ${input('ionic ssh setup')}, which lets you use existing keys or generate new ones just for Ionic.
 
-Deprecated. Developers should configure SSH by visting their Personal Settings at https://dashboard.ionicframework.com/settings/ssh-keys.
+Deprecated. Developers should configure SSH by visiting their Personal Settings at https://dashboard.ionicframework.com/settings/ssh-keys.
       `,
       footnotes: [
         {
