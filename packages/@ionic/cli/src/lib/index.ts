@@ -49,7 +49,10 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string | undefined] => [e, process.env[e]]).filter(([, v]) => !!v);
 
   const getInfo = async () => {
-    const osName = await import('os-name');
+    // use `eval()` to avoid `tsc` convert `import()` to `require()`
+    // because `os-name` package only support ESM since v5 release
+    // TODO: remove `eval()` once we upgrade to typescript 4.7+ and set `module: "node16"` in `tsconfig.base.json`
+    const { default: osName } = await eval("import('os-name')");
     const semver = await import('semver');
     const { getUpdateConfig } = await import('./updates');
 
