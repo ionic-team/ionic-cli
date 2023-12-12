@@ -1,4 +1,4 @@
-import { validators } from '@ionic/cli-framework';
+import { validators, MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input, strong } from '../../lib/color';
@@ -10,7 +10,7 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'delete',
       type: 'global',
-      summary: 'Delete an SSH public key from Ionic (Deprecated)',
+      summary: 'Delete an SSH public key from Ionic',
       inputs: [
         {
           name: 'key-id',
@@ -18,6 +18,7 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
           validators: [validators.required],
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 

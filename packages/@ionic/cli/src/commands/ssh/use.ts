@@ -1,4 +1,4 @@
-import { validators } from '@ionic/cli-framework';
+import { validators, MetadataGroup } from '@ionic/cli-framework';
 import { fileToString, writeFile } from '@ionic/utils-fs';
 import { expandPath, prettyPath } from '@ionic/utils-terminal';
 
@@ -13,7 +13,7 @@ export class SSHUseCommand extends SSHBaseCommand {
     return {
       name: 'use',
       type: 'global',
-      summary: 'Set your active Ionic SSH key (Deprecated)',
+      summary: 'Set your active Ionic SSH key',
       description: `
 This command modifies the SSH configuration file (${strong('~/.ssh/config')}) to set an active private key for the ${strong('git.ionicjs.com')} host. Read more about SSH configuration by running the ${input('man ssh_config')} command or by visiting online man pages[^ssh-config-docs].
 
@@ -32,6 +32,7 @@ Before making changes, ${input('ionic ssh use')} will print a diff and ask for p
           validators: [validators.required],
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 

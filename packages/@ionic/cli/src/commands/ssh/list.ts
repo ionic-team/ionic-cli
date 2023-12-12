@@ -1,3 +1,4 @@
+import { MetadataGroup } from '@ionic/cli-framework';
 import { columnar } from '@ionic/utils-terminal';
 
 import { COLUMNAR_OPTIONS } from '../../constants';
@@ -11,7 +12,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'list',
       type: 'global',
-      summary: 'List your SSH public keys on Ionic (Deprecated)',
+      summary: 'List your SSH public keys on Ionic',
       options: [
         {
           name: 'json',
@@ -19,6 +20,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
           type: Boolean,
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 

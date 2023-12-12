@@ -1,3 +1,4 @@
+import { MetadataGroup } from '@ionic/cli-framework';
 import { pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
 
@@ -15,7 +16,7 @@ export class SSHSetupCommand extends SSHBaseCommand {
     return {
       name: 'setup',
       type: 'global',
-      summary: 'Setup your Ionic SSH keys automatically (Deprecated)',
+      summary: 'Setup your Ionic SSH keys automatically',
       description: `
 This command offers a setup wizard for Ionic SSH keys using a series of prompts. For more control, see the commands available for managing SSH keys with the ${input('ionic ssh --help')} command. For an entirely manual approach, see ${strong('Personal Settings')} => ${strong('SSH Keys')} in the Dashboard[^dashboard-settings-ssh-keys].
 
@@ -31,6 +32,7 @@ If you are having issues setting up SSH keys, please get in touch with our Suppo
           url: 'https://ion.link/support-request',
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 
