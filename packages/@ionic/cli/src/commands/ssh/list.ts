@@ -11,7 +11,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
     return {
       name: 'list',
       type: 'global',
-      summary: 'List your SSH public keys on Ionic',
+      summary: 'List your SSH public keys on Ionic (Deprecated)',
       options: [
         {
           name: 'json',

@@ -15,7 +15,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
     return {
       name: 'generate',
       type: 'global',
-      summary: 'Generates a private and public SSH key pair',
+      summary: 'Generates a private and public SSH key pair (Deprecated)',
       inputs: [
         {
           name: 'key-path',
