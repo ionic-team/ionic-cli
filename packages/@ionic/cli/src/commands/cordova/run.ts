@@ -7,7 +7,7 @@ import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMeta
 import { COMMON_BUILD_COMMAND_OPTIONS } from '../../lib/build';
 import { input, strong, weak } from '../../lib/color';
 import { FatalException, RunnerException } from '../../lib/errors';
-import { getPackagePath } from '../../lib/integrations/cordova/project';
+import { getPackagePath, getPackagePathCordova } from '../../lib/integrations/cordova/project';
 import { filterArgumentsForCordova, generateOptionsForCordovaBuild } from '../../lib/integrations/cordova/utils';
 import { SUPPORTED_PLATFORMS, checkNativeRun, createNativeRunArgs, createNativeRunListArgs, getNativeTargets, runNativeRun } from '../../lib/native-run';
 import { COMMON_SERVE_COMMAND_OPTIONS, LOCAL_ADDRESSES } from '../../lib/serve';
@@ -302,7 +302,14 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), buildOpts);
 
-      const packagePath = await getPackagePath(this.integration.root, conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
+      const [ pkg ] = await this.project.getPackageJson(`cordova-${platform}`);
+      let packagePath = await getPackagePath(this.integration.root, conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
+
+      if (pkg) {
+        const platformVersion = pkg.version;
+        packagePath = await getPackagePathCordova(this.integration.root, conf.getProjectInfo().name, platform, platformVersion, { emulator: !options['device'], release: !!options['release'] });
+      }
+
       const forwardedPorts = details ? runner.getUsedPorts(runnerOpts, details) : [];
 
       await this.runNativeRun(createNativeRunArgs({ packagePath, platform, forwardedPorts }, options));
@@ -337,10 +344,15 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     if (options['native-run']) {
       const conf = await loadCordovaConfig(this.integration);
       const [ platform ] = inputs;
-
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), { stdio: 'inherit' });
 
-      const packagePath = await getPackagePath(this.integration.root, conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
+      const [ pkg ] = await this.project.getPackageJson(`cordova-${platform}`);
+      let packagePath = await getPackagePath(this.integration.root, conf.getProjectInfo().name, platform, { emulator: !options['device'], release: !!options['release'] });
+
+      if (pkg) {
+        const platformVersion = pkg.version;
+        packagePath = await getPackagePathCordova(this.integration.root, conf.getProjectInfo().name, platform, platformVersion, { emulator: !options['device'], release: !!options['release'] });
+      }
 
       await this.runNativeRun(createNativeRunArgs({ packagePath, platform }, { ...options, connect: false }));
     } else {
