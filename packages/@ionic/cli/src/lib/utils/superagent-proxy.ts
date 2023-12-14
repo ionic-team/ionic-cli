@@ -51,7 +51,7 @@ export default function setup(superagent: any, uri?: string): SuperAgent<SuperAg
  */
 
 function proxy(this: any, uri?: string) {
-  debug('Request#proxy(%0)', uri);
+  debug('Request#proxy(%o)', uri);
   // we need to observe the `url` field from now on... Superagent sometimes
   // re-uses the `req` instance but changes its `url` field (i.e. in the case of
   // a redirect), so when that happens we need to potentially re-set the proxy
