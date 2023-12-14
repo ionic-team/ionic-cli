@@ -1,4 +1,4 @@
-import * as fsExtraSpy from 'fs-extra';
+import fsExtraSpy from 'fs-extra';
 import * as fsSafeSpy from '@ionic/utils-fs/dist/safe';
 import * as project from '../project';
 
