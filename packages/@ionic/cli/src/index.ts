@@ -1,7 +1,7 @@
 import { BaseError, InputValidationError, PackageJson } from '@ionic/cli-framework';
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { processExit } from '@ionic/utils-process';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as path from 'path';
 import * as util from 'util';
 
@@ -126,7 +126,7 @@ export async function run(pargv: string[]): Promise<void> {
 
     const location = await executor.locate(pargv);
 
-    const [ , [ cmd = '' ] = [] ] = location.path;
+    const [, [cmd = ''] = []] = location.path;
 
     if (!['config', 'completion', 'help', 'login', 'logout', 'version'].includes(cmd)) {
       await authenticateFromEnvironment(ienv);

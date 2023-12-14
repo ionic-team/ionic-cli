@@ -10,7 +10,6 @@
     "../../../types/leek.d.ts",
     "../../../types/ssh-config.d.ts",
     "../../../types/stream-combiner2.d.ts",
-    "../../../types/superagent-proxy.d.ts",
     "src/**/*.ts"
   ],
   "exclude": [

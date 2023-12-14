@@ -1,4 +1,4 @@
-import * as onExit from 'signal-exit';
+import onExit from 'signal-exit';
 
 import { EscapeCode } from './ansi';
 

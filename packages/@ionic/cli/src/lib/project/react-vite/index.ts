@@ -1,5 +1,5 @@
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
+import chalk from 'chalk';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 

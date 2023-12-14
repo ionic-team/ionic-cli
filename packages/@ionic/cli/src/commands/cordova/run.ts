@@ -1,6 +1,6 @@
 import { Footnote, MetadataGroup, validators } from '@ionic/cli-framework';
 import { onBeforeExit, sleepForever } from '@ionic/utils-process';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 
 import { CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, CommandPreRun, IShellRunOptions, ServeDetails } from '../../definitions';
@@ -212,7 +212,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
       inputs[0] = p.trim();
     }
 
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     if (platform && options['native-run'] && !SUPPORTED_PLATFORMS.includes(platform)) {
       this.env.log.warn(`${input(platform)} is not supported by ${input('native-run')}. Using Cordova to run the app.`);
@@ -298,7 +298,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
     buildOpts.stdio = options['verbose'] ? 'inherit' : ['pipe', 'ignore', 'pipe'];
 
     if (options['native-run']) {
-      const [ platform ] = inputs;
+      const [platform] = inputs;
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), buildOpts);
 
@@ -336,7 +336,7 @@ Just like with ${input('ionic cordova build')}, you can pass additional options 
 
     if (options['native-run']) {
       const conf = await loadCordovaConfig(this.integration);
-      const [ platform ] = inputs;
+      const [platform] = inputs;
 
       await this.runCordova(filterArgumentsForCordova({ ...metadata, name: 'build' }, options), { stdio: 'inherit' });
 

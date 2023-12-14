@@ -1,7 +1,7 @@
 import { MetadataGroup } from '@ionic/cli-framework';
 import { strcmp } from '@ionic/cli-framework/utils/string';
 import { columnar, prettyPath } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 

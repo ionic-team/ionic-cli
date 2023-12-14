@@ -1,6 +1,6 @@
 import { filter } from '@ionic/utils-array';
 import { readJson, readdirSafe, statSafe } from '@ionic/utils-fs';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as path from 'path';
 
 import { AndroidBuildOutput, LegacyAndroidBuildOutputEntry } from '../../../definitions';

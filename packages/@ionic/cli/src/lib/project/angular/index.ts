@@ -1,4 +1,4 @@
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
@@ -13,11 +13,11 @@ export class AngularProject extends Project {
 
   async getInfo(): Promise<InfoItem[]> {
     const [
-      [ ionicAngularPkg, ionicAngularPkgPath ],
-      [ ionicAngularToolkitPkg, ionicAngularToolkitPkgPath ],
-      [ angularCLIPkg, angularCLIPkgPath ],
-      [ angularDevKitBuildAngularPkg, angularDevKitBuildAngularPkgPath ],
-      [ angularDevKitSchematicsPkg, angularDevKitSchematicsPkgPath ],
+      [ionicAngularPkg, ionicAngularPkgPath],
+      [ionicAngularToolkitPkg, ionicAngularToolkitPkgPath],
+      [angularCLIPkg, angularCLIPkgPath],
+      [angularDevKitBuildAngularPkg, angularDevKitBuildAngularPkgPath],
+      [angularDevKitSchematicsPkg, angularDevKitSchematicsPkgPath],
     ] = await Promise.all([
       this.getPackageJson('@ionic/angular'),
       this.getPackageJson('@ionic/angular-toolkit'),

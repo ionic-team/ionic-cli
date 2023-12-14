@@ -7,7 +7,7 @@ import * as crypto from 'crypto';
 import * as fs from 'fs';
 import lodash = require('lodash');
 import * as path from 'path';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 
 import { CommandMetadata } from '../../definitions';
 import { input } from '../../lib/color';
@@ -62,7 +62,7 @@ export class LiveUpdatesManifestCommand extends LiveUpdatesCoreCommand {
   private async getFilesAndSizesAndHashesForGlobPattern(buildDir: string): Promise<LiveUpdatesManifestItem[]> {
     const contents = await readdirp(buildDir, { filter: item => !/(css|js)\.map$/.test(item.path) });
     const stats = await map(contents, async (f): Promise<[string, fs.Stats]> => [f, await stat(f)]);
-    const files = stats.filter(([ , s ]) => !s.isDirectory());
+    const files = stats.filter(([, s]) => !s.isDirectory());
 
     const items = await Promise.all(files.map(([f, s]) => this.getFileAndSizeAndHashForFile(buildDir, f, s)));
 
@@ -113,7 +113,7 @@ export class LiveUpdatesManifestCommand extends LiveUpdatesCoreCommand {
       level: LOGGER_LEVELS.INFO,
       handlers: createDefaultLoggerHandlers(),
     });
-    const shell = new Shell({ log }, { alterPath: p => { return prependNodeModulesBinToPath(this.env.ctx.execPath, p)} });
+    const shell = new Shell({ log }, { alterPath: p => { return prependNodeModulesBinToPath(this.env.ctx.execPath, p) } });
 
     debug('Getting config with Capacitor CLI: %O', args);
 
@@ -126,7 +126,7 @@ export class LiveUpdatesManifestCommand extends LiveUpdatesCoreCommand {
 
     try {
       return JSON.parse(output);
-    } catch(e) {
+    } catch (e) {
       debug('Could not get config from Capacitor CLI (probably old version)', e);
       return;
     }
