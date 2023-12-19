@@ -3,6 +3,17 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [7.1.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.5...@ionic/cli@7.1.6) (2023-12-19)
+
+
+### Bug Fixes
+
+* **cli:** resolve vm2 security vulnerability ([#5070](https://github.com/ionic-team/ionic-cli/issues/5070)) ([4050419](https://github.com/ionic-team/ionic-cli/commit/4050419bef70fb92e58b0a83cd4b68b48090e596))
+
+
+
+
+
 ## [7.1.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.4...@ionic/cli@7.1.5) (2023-11-08)
 
 
