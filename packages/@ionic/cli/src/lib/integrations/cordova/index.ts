@@ -1,6 +1,6 @@
 import { copy, mkdirp, pathExists, readdirSafe, remove, stat } from '@ionic/utils-fs';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
+import chalk from 'chalk';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 import * as os from 'os';
 import * as path from 'path';
@@ -251,8 +251,8 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         .map(m => [m[1], m[2]]);
 
       const whitelistedPlugins = plugins
-        .filter(([ plugin, version ]) => whitelist.some(re => re.test(plugin)))
-        .map(([ plugin, version ]) => `${plugin} ${version}`);
+        .filter(([plugin, version]) => whitelist.some(re => re.test(plugin)))
+        .map(([plugin, version]) => `${plugin} ${version}`);
 
       const count = plugins.length - whitelistedPlugins.length;
 

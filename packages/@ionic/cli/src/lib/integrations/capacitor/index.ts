@@ -1,8 +1,8 @@
 import { parseArgs } from '@ionic/cli-framework';
 import { mkdirp, pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
+import chalk from 'chalk';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
@@ -99,17 +99,17 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
   }
 
   async installCapacitorCore() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core@latest' });
+    const [manager, ...managerArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/core@latest' });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async installCapacitorCLI() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli@latest', saveDev: true });
+    const [manager, ...managerArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: '@capacitor/cli@latest', saveDev: true });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
   async installCapacitorPlugins() {
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: ['@capacitor/haptics', '@capacitor/app', '@capacitor/keyboard', '@capacitor/status-bar'] });
+    const [manager, ...managerArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: ['@capacitor/haptics', '@capacitor/app', '@capacitor/keyboard', '@capacitor/status-bar'] });
     await this.e.shell.run(manager, managerArgs, { cwd: this.root });
   }
 
@@ -131,10 +131,10 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
     const bundleId = conf?.appId;
 
     const [
-      [ capacitorCorePkg, capacitorCorePkgPath ],
+      [capacitorCorePkg, capacitorCorePkgPath],
       capacitorCLIVersion,
-      [ capacitorIOSPkg, capacitorIOSPkgPath ],
-      [ capacitorAndroidPkg, capacitorAndroidPkgPath ],
+      [capacitorIOSPkg, capacitorIOSPkgPath],
+      [capacitorAndroidPkg, capacitorAndroidPkgPath],
     ] = await (Promise.all([
       this.e.project.getPackageJson('@capacitor/core'),
       this.getCapacitorCLIVersion(),
@@ -219,7 +219,7 @@ export class Integration extends BaseIntegration<ProjectIntegration> {
         // Capacitor 1 returns the `command not found` error in stdout instead of stderror like in Capacitor 2
         // This ensures that the output from the command is valid JSON to account for this
         return JSON.parse(output);
-      } catch(e) {
+      } catch (e) {
         debug('Could not get config from Capacitor CLI (probably old version)', e);
         return;
       }

@@ -1,7 +1,8 @@
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as events from 'events';
 import * as util from 'util';
-import * as WebSocket from 'ws';
+import WebSocket from 'ws';
+
 
 const debug = Debug('ionic:discover:comm');
 

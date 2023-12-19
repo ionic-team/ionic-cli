@@ -1,5 +1,5 @@
 import { compileNodeModulesPaths, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as path from 'path';
 import * as semver from 'semver';
 

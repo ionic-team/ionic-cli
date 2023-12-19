@@ -1,5 +1,5 @@
 import { PassThrough, Writable } from 'stream';
-import * as combineStreams from 'stream-combiner2';
+import combineStreams from 'stream-combiner2';
 import { NullStream, ReadableStreamBuffer, WritableStreamBuffer, growBufferForAppendedData } from '../';
 
 describe('@ionic/utils-stream', () => {

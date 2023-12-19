@@ -1,7 +1,7 @@
 import { readPackageJsonFile } from '@ionic/cli-framework/utils/node';
 import { readFile, writeFile } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as et from 'elementtree';
 import * as path from 'path';
 
@@ -24,7 +24,7 @@ export class CordovaConfig {
   protected _sessionid?: string;
   protected saving = false;
 
-  constructor(readonly configXmlPath: string, readonly packageJsonPath: string) {}
+  constructor(readonly configXmlPath: string, readonly packageJsonPath: string) { }
 
   get doc(): et.ElementTree {
     if (!this._doc) {
@@ -237,11 +237,11 @@ export async function loadCordovaConfig(integration: Required<ProjectIntegration
   } catch (e: any) {
     const msg = e.code === 'ENOENT'
       ? (
-          `Could not find necessary file(s): ${strong('config.xml')}, ${strong('package.json')}.\n\n` +
-          ` - ${strong(prettyPath(configXmlPath))}\n` +
-          ` - ${strong(prettyPath(packageJsonPath))}\n\n` +
-          `You can re-add the Cordova integration with the following command: ${input('ionic integrations enable cordova --add')}`
-        )
+        `Could not find necessary file(s): ${strong('config.xml')}, ${strong('package.json')}.\n\n` +
+        ` - ${strong(prettyPath(configXmlPath))}\n` +
+        ` - ${strong(prettyPath(packageJsonPath))}\n\n` +
+        `You can re-add the Cordova integration with the following command: ${input('ionic integrations enable cordova --add')}`
+      )
       : failure(e.stack ? e.stack : e);
 
     throw new FatalException(

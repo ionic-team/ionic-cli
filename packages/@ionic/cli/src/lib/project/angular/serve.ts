@@ -2,7 +2,7 @@ import { MetadataGroup, ParsedArgs, unparseArgs } from '@ionic/cli-framework';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { findClosestOpenPort } from '@ionic/utils-network';
 import { stripAnsi } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { AngularServeOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, ServeDetails } from '../../../definitions';
 import { input, strong, weak } from '../../color';
@@ -123,7 +123,7 @@ The dev server can use HTTPS via the ${input('--ssl')} option ${chalk.bold.red('
   }
 
   async serveProject(options: AngularServeOptions): Promise<ServeDetails> {
-    const [ externalIP, availableInterfaces ] = await this.selectExternalIP(options);
+    const [externalIP, availableInterfaces] = await this.selectExternalIP(options);
 
     const port = options.port = await findClosestOpenPort(options.port);
 
@@ -200,7 +200,7 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
     if (this.resolvedProgram === this.program) {
       return [...this.buildArchitectCommand(options), ...args];
     } else {
-      const [ , ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: [...args] });
+      const [, ...pkgArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script, scriptArgs: [...args] });
       return pkgArgs;
     }
   }

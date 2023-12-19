@@ -1,4 +1,4 @@
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 
 import { IClient, IConfig, IProject, ISession, ITelemetry, InfoItem, IonicContext } from '../definitions';
@@ -44,7 +44,7 @@ export class Telemetry implements ITelemetry {
 
 async function getLeek({ config, version }: { config: IConfig; version: string; }): Promise<import('leek')> {
   if (!_gaTracker) {
-    const Leek = await import('leek');
+    const Leek = (await import('leek')).default;
     let telemetryToken = config.get('tokens.telemetry');
 
     if (!telemetryToken) {

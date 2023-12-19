@@ -2,8 +2,8 @@ import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { isValidURL, slugify } from '@ionic/cli-framework/utils/string';
 import { mkdir, pathExists, remove, unlink } from '@ionic/utils-fs';
 import { columnar, prettyPath } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
+import chalk from 'chalk';
+import { debug as Debug } from 'debug';
 import * as path from 'path';
 
 import { COLUMNAR_OPTIONS, PROJECT_FILE, ANGULAR_STANDALONE } from '../constants';
@@ -263,16 +263,16 @@ Use the ${input(
 
     const appIconBuffer = data.appIcon
       ? Buffer.from(
-          data.appIcon.replace(/^data:image\/\w+;base64,/, ''),
-          'base64'
-        )
+        data.appIcon.replace(/^data:image\/\w+;base64,/, ''),
+        'base64'
+      )
       : undefined;
 
     const splashBuffer = data.appSplash
       ? Buffer.from(
-          data.appSplash.replace(/^data:image\/\w+;base64,/, ''),
-          'base64'
-        )
+        data.appSplash.replace(/^data:image\/\w+;base64,/, ''),
+        'base64'
+      )
       : undefined;
 
     this.schema = {
@@ -397,8 +397,8 @@ Use the ${input(
     let projectType = isValidURL(inputs[1])
       ? 'custom'
       : options['type']
-      ? String(options['type'])
-      : await this.getProjectType();
+        ? String(options['type'])
+        : await this.getProjectType();
 
     if (options['cordova']) {
       const { checkForUnsupportedProject } = await import(
@@ -435,9 +435,9 @@ Use the ${input(
           this.env.log.nl();
           this.env.log.msg(
             `${strong(`Every great app needs a name! ${emoji('😍', '')}`)}\n` +
-              `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${input(
-                'name'
-              )}, the first argument to ${input('ionic start')}.\n\n`
+            `Please enter the full name of your app. You can change this at any time. To bypass this prompt next time, supply ${input(
+              'name'
+            )}, the first argument to ${input('ionic start')}.\n\n`
           );
         }
 
@@ -459,9 +459,9 @@ Use the ${input(
           `${strong(
             `Let's pick the perfect starter template! ${emoji('💪', '')}`
           )}\n` +
-            `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${input(
-              'template'
-            )}, the second argument to ${input('ionic start')}.\n\n`
+          `Starter templates are ready-to-go Ionic apps that come packed with everything you need to build your app. To bypass this prompt next time, supply ${input(
+            'template'
+          )}, the second argument to ${input('ionic start')}.\n\n`
         );
       }
 
@@ -589,9 +589,9 @@ Use the ${input(
     if (options['v1'] || options['v2']) {
       throw new FatalException(
         `The ${input('--v1')} and ${input('--v2')} flags have been removed.\n` +
-          `Use the ${input('--type')} option. (see ${input(
-            'ionic start --help'
-          )})`
+        `Use the ${input('--type')} option. (see ${input(
+          'ionic start --help'
+        )})`
       );
     }
 
@@ -670,9 +670,9 @@ Use the ${input(
       this.env.log.nl();
       this.env.log.msg(
         `${strong(`Pick a framework! ${emoji('😁', '')}`)}\n\n` +
-          `Please select the JavaScript framework to use for your new app. To bypass this prompt next time, supply a value for the ${input(
-            '--type'
-          )} option.\n\n`
+        `Please select the JavaScript framework to use for your new app. To bypass this prompt next time, supply a value for the ${input(
+          '--type'
+        )} option.\n\n`
       );
     }
 
@@ -734,16 +734,16 @@ Use the ${input(
       if (appflowId) {
         throw new FatalException(
           `Git CLI not found on your PATH.\n` +
-            `Git must be installed to connect this app to Ionic. ${installationDocs}`
+          `Git must be installed to connect this app to Ionic. ${installationDocs}`
         );
       }
 
       if (this.schema.cloned) {
         throw new FatalException(
           `Git CLI not found on your PATH.\n` +
-            `Git must be installed to clone apps with ${input(
-              'ionic start'
-            )}. ${installationDocs}`
+          `Git must be installed to clone apps with ${input(
+            'ionic start'
+          )}. ${installationDocs}`
         );
       }
     }
@@ -1038,9 +1038,8 @@ Use the ${input(
     if (starterTemplate && starterTemplate.type === 'managed') {
       return {
         ...starterTemplate,
-        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${
-          starterTemplate.id
-        }.tar.gz`,
+        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starterTemplate.id
+          }.tar.gz`,
       };
     }
 
@@ -1058,16 +1057,15 @@ Use the ${input(
       return {
         name: starter.name,
         projectType: starter.type,
-        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${
-          starter.id
-        }.tar.gz`,
+        archive: `${STARTER_BASE_URL}/${tag === 'latest' ? '' : `${tag}/`}${starter.id
+          }.tar.gz`,
       };
     } else {
       throw new FatalException(
         `Unable to find starter template for ${input(template)}\n` +
-          `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${strong(
-            'https://github.com/ionic-team/starters'
-          )}`
+        `If this is not a typo, please make sure it is a valid starter template within the starters repo: ${strong(
+          'https://github.com/ionic-team/starters'
+        )}`
       );
     }
   }
@@ -1078,9 +1076,9 @@ Use the ${input(
     if (!['custom', ...projectTypes].includes(type)) {
       throw new FatalException(
         `${input(type)} is not a valid project type.\n` +
-          `Please choose a different ${input('--type')}. Use ${input(
-            'ionic start --list'
-          )} to list all available starter templates.`
+        `Please choose a different ${input('--type')}. Use ${input(
+          'ionic start --list'
+        )} to list all available starter templates.`
       );
     }
   }
@@ -1089,9 +1087,9 @@ Use the ${input(
     if (!isValidProjectId(projectId)) {
       throw new FatalException(
         `${input(projectId)} is not a valid package or directory name.\n` +
-          `Please choose a different ${input(
-            '--project-id'
-          )}. Alphanumeric characters are always safe.`
+        `Please choose a different ${input(
+          '--project-id'
+        )}. Alphanumeric characters are always safe.`
       );
     }
   }
@@ -1162,11 +1160,11 @@ Use the ${input(
       )} within the app directory to see your app in the browser`,
       isCapacitor
         ? `Run ${input(
-            'ionic capacitor add'
-          )} to add a native iOS or Android project using Capacitor`
+          'ionic capacitor add'
+        )} to add a native iOS or Android project using Capacitor`
         : `Run ${input(
-            'ionic cordova platform add'
-          )} to add a native iOS or Android project using Cordova`,
+          'ionic cordova platform add'
+        )} to add a native iOS or Android project using Cordova`,
       `Generate your app icon and splash screens using ${input(
         cordovaResCommand
       )}`,
