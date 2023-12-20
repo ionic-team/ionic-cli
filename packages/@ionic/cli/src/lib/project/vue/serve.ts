@@ -63,7 +63,7 @@ export class VueServeCLI extends ServeCLI<VueServeOptions> {
     }
 
     const strippedLine = stripAnsi(line);
-    const compileMsgs = ['Compiled successfully', 'Compiled with warnings', 'Failed to compile'];
+    const compileMsgs = ['Compiled successfully', 'Compiled with', 'Failed to compile'];
     if (compileMsgs.some(msg => strippedLine.includes(msg))) {
       this.emit('ready');
       return false;
