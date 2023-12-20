@@ -1,7 +1,7 @@
 import { Colors } from '@ionic/cli-framework';
 import { COLORS } from '@ionic/cli/lib/color';
-import * as chalk from 'chalk';
-import * as escapeStringRegexp from 'escape-string-regexp';
+import chalk from 'chalk';
+import escapeStringRegexp from 'escape-string-regexp';
 
 interface CodePair {
   open: string;
@@ -36,7 +36,7 @@ export function convertHTMLEntities(str: string): string {
 function convertAnsiToMd(str: string, styles: readonly CodePair[], md: CodePair): string {
   const start = styles.map(style => style.open).join('');
   const end = [...styles].reverse().map(style => style.close).join('');
-  const re = new RegExp(escapeStringRegexp(start) + '(.*?)' + escapeStringRegexp(end) , 'g');
+  const re = new RegExp(escapeStringRegexp(start) + '(.*?)' + escapeStringRegexp(end), 'g');
 
   return str.replace(re, md.open + '$1' + md.close);
 }

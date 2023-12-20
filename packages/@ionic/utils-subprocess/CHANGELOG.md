@@ -3,6 +3,55 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@3.0.0...@ionic/utils-subprocess@3.0.1) (2023-12-19)
+
+
+### Bug Fixes
+
+* **cli:** resolve vm2 security vulnerability ([#5070](https://github.com/ionic-team/ionic-cli/issues/5070)) ([4050419](https://github.com/ionic-team/ionic-cli/commit/4050419bef70fb92e58b0a83cd4b68b48090e596))
+
+
+
+
+
+# [3.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.14...@ionic/utils-subprocess@3.0.0) (2023-11-08)
+
+
+### Bug Fixes
+
+* use native ES2022 error cause ([#5010](https://github.com/ionic-team/ionic-cli/issues/5010)) ([a97ba2b](https://github.com/ionic-team/ionic-cli/commit/a97ba2bcac4556017ba010692f71fed2bef3f77b))
+
+
+### BREAKING CHANGES
+
+* `message`, `stack`, and `error` properties removed from `BaseError` and `SubprocessError`
+
+
+
+
+
+## [2.1.14](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.13...@ionic/utils-subprocess@2.1.14) (2023-11-08)
+
+
+### Reverts
+
+* use native ES2022 error cause ([#5060](https://github.com/ionic-team/ionic-cli/issues/5060)) ([1e64a1a](https://github.com/ionic-team/ionic-cli/commit/1e64a1ada60545adf8e7c99fbd1f8766cf2416f9))
+
+
+
+
+
+## [2.1.13](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.12...@ionic/utils-subprocess@2.1.13) (2023-11-07)
+
+
+### Bug Fixes
+
+* use native ES2022 error cause ([#5010](https://github.com/ionic-team/ionic-cli/issues/5010)) ([0c4cd0f](https://github.com/ionic-team/ionic-cli/commit/0c4cd0f47e00b43e8c0ce4eef072351a846b566c))
+
+
+
+
+
 ## [2.1.12](https://github.com/ionic-team/ionic-cli/compare/@ionic/utils-subprocess@2.1.11...@ionic/utils-subprocess@2.1.12) (2023-03-29)
 
 **Note:** Version bump only for package @ionic/utils-subprocess

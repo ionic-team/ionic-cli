@@ -13,7 +13,7 @@ export abstract class BaseError extends Error {
   exitCode?: number;
 
   toString(): string {
-      return util.inspect(this);
+    return util.inspect(this);
   }
 
   inspect(): string {

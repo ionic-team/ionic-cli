@@ -4,7 +4,7 @@ import { createProcessEnv, getPathParts } from '@ionic/utils-process';
 import { WritableStreamBuffer } from '@ionic/utils-stream';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
 import { ChildProcess, ForkOptions, SpawnOptions, fork as _fork } from 'child_process';
-import * as crossSpawn from 'cross-spawn';
+import crossSpawn from 'cross-spawn';
 import * as os from 'os';
 import * as pathlib from 'path';
 
@@ -42,7 +42,7 @@ export class SubprocessError extends Error {
   exitCode?: number;
 }
 
-export interface SubprocessOptions extends SpawnOptions {}
+export interface SubprocessOptions extends SpawnOptions { }
 
 export interface SubprocessBashifyOptions {
 

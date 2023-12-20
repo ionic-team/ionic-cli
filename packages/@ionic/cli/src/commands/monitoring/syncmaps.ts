@@ -1,6 +1,6 @@
 import { pathExists, readFile, readdirSafe } from '@ionic/utils-fs';
 import { columnar, prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as path from 'path';
 
 import { APIResponseSuccess, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
@@ -48,7 +48,7 @@ By default, ${input('ionic monitoring syncmaps')} will upload the sourcemap file
     const token = await this.env.session.getUserToken();
     const appflowId = await this.project.requireAppflowId();
 
-    const [ snapshotId ] = inputs;
+    const [snapshotId] = inputs;
     const doBuild = options.build ? true : false;
 
     const cordova = this.project.requireIntegration('cordova');

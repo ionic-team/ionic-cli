@@ -3,6 +3,63 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [6.0.1](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@6.0.0...@ionic/cli-framework@6.0.1) (2023-12-19)
+
+
+### Bug Fixes
+
+* **cli:** resolve vm2 security vulnerability ([#5070](https://github.com/ionic-team/ionic-cli/issues/5070)) ([4050419](https://github.com/ionic-team/ionic-cli/commit/4050419bef70fb92e58b0a83cd4b68b48090e596))
+
+
+
+
+
+# [6.0.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.1.7...@ionic/cli-framework@6.0.0) (2023-11-08)
+
+
+### Bug Fixes
+
+* use native ES2022 error cause ([#5010](https://github.com/ionic-team/ionic-cli/issues/5010)) ([a97ba2b](https://github.com/ionic-team/ionic-cli/commit/a97ba2bcac4556017ba010692f71fed2bef3f77b))
+
+
+### BREAKING CHANGES
+
+* `message`, `stack`, and `error` properties removed from `BaseError` and `SubprocessError`
+
+
+
+
+
+## [5.1.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.1.6...@ionic/cli-framework@5.1.7) (2023-11-08)
+
+
+### Reverts
+
+* use native ES2022 error cause ([#5060](https://github.com/ionic-team/ionic-cli/issues/5060)) ([1e64a1a](https://github.com/ionic-team/ionic-cli/commit/1e64a1ada60545adf8e7c99fbd1f8766cf2416f9))
+
+
+
+
+
+## [5.1.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.1.5...@ionic/cli-framework@5.1.6) (2023-11-07)
+
+**Note:** Version bump only for package @ionic/cli-framework
+
+
+
+
+
+## [5.1.5](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.1.4...@ionic/cli-framework@5.1.5) (2023-11-07)
+
+
+### Bug Fixes
+
+* use native ES2022 error cause ([#5010](https://github.com/ionic-team/ionic-cli/issues/5010)) ([0c4cd0f](https://github.com/ionic-team/ionic-cli/commit/0c4cd0f47e00b43e8c0ce4eef072351a846b566c))
+
+
+
+
+
 ## [5.1.4](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli-framework@5.1.3...@ionic/cli-framework@5.1.4) (2023-03-29)
 
 **Note:** Version bump only for package @ionic/cli-framework

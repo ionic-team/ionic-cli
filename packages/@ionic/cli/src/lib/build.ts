@@ -2,7 +2,7 @@ import { BaseError, MetadataGroup } from '@ionic/cli-framework';
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { createProcessEnv } from '@ionic/utils-process';
 import { ERROR_COMMAND_NOT_FOUND, SubprocessError } from '@ionic/utils-subprocess';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 
 import { BaseBuildOptions, BuildOptions, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, NpmClient, Runner } from '../definitions';
 
@@ -62,7 +62,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
 
   createBaseOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): BaseBuildOptions {
     const separatedArgs = options['--'];
-    const [ platform ] = options['platform'] ? [String(options['platform'])] : inputs;
+    const [platform] = options['platform'] ? [String(options['platform'])] : inputs;
     const engine = this.determineEngineFromCommandLine(options);
     const project = options['project'] ? String(options['project']) : undefined;
     const verbose = !!options['verbose'];
@@ -153,7 +153,7 @@ export abstract class BuildCLI<T extends object> {
 
   private _resolvedProgram?: string;
 
-  constructor(protected readonly e: BuildRunnerDeps) {}
+  constructor(protected readonly e: BuildRunnerDeps) { }
 
   get resolvedProgram() {
     if (this._resolvedProgram) {
@@ -251,7 +251,7 @@ export abstract class BuildCLI<T extends object> {
 
   protected async promptToInstall(): Promise<boolean> {
     const { pkgManagerArgs } = await import('./utils/npm');
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: this.pkg, saveDev: true, saveExact: true });
+    const [manager, ...managerArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: this.pkg, saveDev: true, saveExact: true });
 
     this.e.log.nl();
 
@@ -283,7 +283,7 @@ abstract class PkgManagerBuildCLI extends BuildCLI<BaseBuildOptions> {
 
   protected async buildArgs(options: BaseBuildOptions): Promise<string[]> {
     const { pkgManagerArgs } = await import('./utils/npm');
-    const [ , ...pkgArgs ] = await pkgManagerArgs(this.program, { command: 'run', script: this.script, scriptArgs: [...options['--'] || []] });
+    const [, ...pkgArgs] = await pkgManagerArgs(this.program, { command: 'run', script: this.script, scriptArgs: [...options['--'] || []] });
 
     return pkgArgs;
   }

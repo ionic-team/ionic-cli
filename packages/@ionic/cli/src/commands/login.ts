@@ -1,5 +1,5 @@
 import { combine, validators } from '@ionic/cli-framework';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as readline from 'readline';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../definitions';
@@ -155,7 +155,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
   }
 
   async run(inputs: CommandLineInputs, options: CommandLineOptions): Promise<void> {
-    const [ email, password ] = inputs;
+    const [email, password] = inputs;
 
     if (email && password) {
       await this.logout();
@@ -182,7 +182,7 @@ If you are having issues logging in, please get in touch with our Support[^suppo
         await this.logout();
         await this.env.session.webLogin();
       } else {
-        return ;
+        return;
       }
 
     }

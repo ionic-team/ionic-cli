@@ -3,6 +3,49 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [2.1.73](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.72...cli-scripts@2.1.73) (2023-12-19)
+
+
+### Bug Fixes
+
+* **cli:** resolve vm2 security vulnerability ([#5070](https://github.com/ionic-team/ionic-cli/issues/5070)) ([4050419](https://github.com/ionic-team/ionic-cli/commit/4050419bef70fb92e58b0a83cd4b68b48090e596))
+
+
+
+
+
+## [2.1.72](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.71...cli-scripts@2.1.72) (2023-11-08)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.71](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.70...cli-scripts@2.1.71) (2023-11-08)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.70](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.69...cli-scripts@2.1.70) (2023-11-07)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
+## [2.1.69](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.68...cli-scripts@2.1.69) (2023-11-07)
+
+**Note:** Version bump only for package cli-scripts
+
+
+
+
+
 ## [2.1.68](https://github.com/ionic-team/ionic-cli/compare/cli-scripts@2.1.67...cli-scripts@2.1.68) (2023-05-02)
 
 **Note:** Version bump only for package cli-scripts

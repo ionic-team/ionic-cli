@@ -44,6 +44,7 @@ export class SSHGenerateCommand extends SSHBaseCommand implements CommandPreRun 
           groups: [MetadataGroup.ADVANCED],
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 

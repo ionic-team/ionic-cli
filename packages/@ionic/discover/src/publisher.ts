@@ -1,4 +1,4 @@
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as dgram from 'dgram';
 import * as events from 'events';
 import { Netmask } from 'netmask';
@@ -156,23 +156,23 @@ export function prepareInterfaces(interfaces: NodeJS.Dict<os.NetworkInterfaceInf
   const values = Object.values(interfaces);
   const flatValues = values.reduce((prev, current) => prev?.concat(current ? current : []));
   if (flatValues) {
-   return flatValues
-    .filter((iface: os.NetworkInterfaceInfo) => iface.family === 'IPv4')
-    .map((iface: os.NetworkInterfaceInfo) => {
-      return {
-        address: iface.address,
-        broadcast: computeBroadcastAddress(iface.address, iface.netmask),
-      };
-    })
-    .filter((iface: any) => {
-      if (!set.has(iface.broadcast)) {
-        set.add(iface.broadcast);
+    return flatValues
+      .filter((iface: os.NetworkInterfaceInfo) => iface.family === 'IPv4')
+      .map((iface: os.NetworkInterfaceInfo) => {
+        return {
+          address: iface.address,
+          broadcast: computeBroadcastAddress(iface.address, iface.netmask),
+        };
+      })
+      .filter((iface: any) => {
+        if (!set.has(iface.broadcast)) {
+          set.add(iface.broadcast);
 
-        return true;
-      }
+          return true;
+        }
 
-      return false;
-    });
+        return false;
+      });
   }
 }
 

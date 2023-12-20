@@ -1,6 +1,6 @@
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as net from 'net';
-import * as os from 'os';
+import os from 'os';
 
 const debug = Debug('ionic:utils-network');
 
@@ -105,7 +105,7 @@ export function isPortAvailableForHost(host: string, port: number): Promise<bool
         tester.once('close', () => {
           resolve(true); // found available host/port
         })
-        .close();
+          .close();
       })
       .on('error', (err: any) => {
         reject(err);

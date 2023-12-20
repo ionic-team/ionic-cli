@@ -1,8 +1,8 @@
 import { BaseError, Footnote, validators } from '@ionic/cli-framework';
 import { sleepForever } from '@ionic/utils-process';
 import { columnar } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
+import chalk from 'chalk';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 import * as semver from 'semver';
 
@@ -233,7 +233,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       throw new FatalException(`Cannot run ${input('ionic capacitor run')} outside a project directory.`);
     }
 
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     const doLiveReload = !!options['livereload'];
     const doOpenFlow = (await this.isOldCapacitor()) || options['open'] === true;
@@ -297,7 +297,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       throw new FatalException(`Cannot run ${input('ionic capacitor run')} outside a project directory.`);
     }
 
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     await this.runCapacitorRunHook('capacitor:run:before', inputs, options, { ...this.env, project: this.project });
 
@@ -326,7 +326,7 @@ For Android and iOS, you can setup Remote Debugging on your device with browser 
       throw new FatalException(`Cannot run ${input('ionic capacitor run')} outside a project directory.`);
     }
 
-    const [ platform ] = inputs;
+    const [platform] = inputs;
 
     await this.runCapacitorRunHook('capacitor:run:before', inputs, options, { ...this.env, project: this.project });
     await this.runCapacitor(['run', platform, ...(shouldSync ? [] : ['--no-sync']), '--target', String(options['target'])]);

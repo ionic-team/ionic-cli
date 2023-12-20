@@ -3,6 +3,25 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [3.1.8](https://github.com/ionic-team/ionic-cli/compare/@ionic/discover@3.1.7...@ionic/discover@3.1.8) (2023-12-19)
+
+
+### Bug Fixes
+
+* **cli:** resolve vm2 security vulnerability ([#5070](https://github.com/ionic-team/ionic-cli/issues/5070)) ([4050419](https://github.com/ionic-team/ionic-cli/commit/4050419bef70fb92e58b0a83cd4b68b48090e596))
+
+
+
+
+
+## [3.1.7](https://github.com/ionic-team/ionic-cli/compare/@ionic/discover@3.1.6...@ionic/discover@3.1.7) (2023-11-07)
+
+**Note:** Version bump only for package @ionic/discover
+
+
+
+
+
 ## [3.1.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/discover@3.1.5...@ionic/discover@3.1.6) (2023-03-29)
 
 **Note:** Version bump only for package @ionic/discover

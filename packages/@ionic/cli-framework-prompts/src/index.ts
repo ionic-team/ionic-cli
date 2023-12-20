@@ -1,5 +1,5 @@
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 
 const debug = Debug('ionic:cli-framework-prompts');
 

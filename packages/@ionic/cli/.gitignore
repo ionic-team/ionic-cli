@@ -3,3 +3,4 @@
 !jest.config.js
 !lint-staged.config.js
 *.d.ts
+*.tgz
