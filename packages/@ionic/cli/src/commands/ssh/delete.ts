@@ -1,4 +1,4 @@
-import { validators } from '@ionic/cli-framework';
+import { validators, MetadataGroup } from '@ionic/cli-framework';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input, strong } from '../../lib/color';
@@ -18,6 +18,7 @@ export class SSHDeleteCommand extends SSHBaseCommand implements CommandPreRun {
           validators: [validators.required],
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 

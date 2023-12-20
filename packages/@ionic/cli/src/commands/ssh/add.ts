@@ -1,4 +1,4 @@
-import { validators } from '@ionic/cli-framework';
+import { validators, MetadataGroup } from '@ionic/cli-framework';
 import { pathAccessible, pathExists } from '@ionic/utils-fs';
 import { expandPath, prettyPath } from '@ionic/utils-terminal';
 import * as fs from 'fs';
@@ -33,6 +33,7 @@ export class SSHAddCommand extends SSHBaseCommand implements CommandPreRun {
           type: Boolean,
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 

@@ -1,5 +1,5 @@
 import { columnar } from '@ionic/utils-terminal';
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, IntegrationName } from '../../definitions';
 import { input, strong } from '../../lib/color';

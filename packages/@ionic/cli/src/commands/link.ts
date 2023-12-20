@@ -1,7 +1,7 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { createPromptChoiceSeparator } from '@ionic/cli-framework-prompts';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 
 import { PROJECT_FILE } from '../constants';
 import { App, CommandInstanceInfo, CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun, GithubBranch, GithubRepo } from '../definitions';
@@ -468,7 +468,7 @@ If you are having issues linking, please get in touch with our Support[^support-
   }
 
   formatRepoName(fullName: string) {
-    const [ org, name ] = fullName.split('/');
+    const [org, name] = fullName.split('/');
 
     return `${weak(`${org} /`)} ${name}`;
   }

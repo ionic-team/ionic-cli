@@ -1,7 +1,7 @@
 import { LOGGER_LEVELS } from '@ionic/cli-framework-output';
 import { createPromptModule } from '@ionic/cli-framework-prompts';
 import { TERMINAL_INFO, prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as path from 'path';
 
 import { ERROR_VERSION_TOO_OLD } from '../bootstrap';
@@ -49,13 +49,13 @@ export async function generateIonicEnvironment(ctx: IonicContext, pargv: string[
   const proxyVars = PROXY_ENVIRONMENT_VARIABLES.map((e): [string, string | undefined] => [e, process.env[e]]).filter(([, v]) => !!v);
 
   const getInfo = async () => {
-    const osName = await import('os-name');
+    const osName = (await import('os-name')).default;
     const semver = await import('semver');
     const { getUpdateConfig } = await import('./updates');
 
     const os = osName();
 
-    const [ npm, nativeRun, cordovaRes ] = await Promise.all([
+    const [npm, nativeRun, cordovaRes] = await Promise.all([
       shell.cmdinfo('npm', ['-v']),
       shell.cmdinfo('native-run', ['--version']),
       shell.cmdinfo('cordova-res', ['--version']),

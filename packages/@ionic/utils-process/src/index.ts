@@ -1,9 +1,9 @@
 import { createCaseInsensitiveObject } from '@ionic/utils-object';
 import { TERMINAL_INFO } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as pathlib from 'path';
-import * as onSignalExit from 'signal-exit';
-import * as kill from 'tree-kill';
+import onSignalExit from 'signal-exit';
+import treeKill from 'tree-kill';
 
 const debug = Debug('ionic:utils-process');
 
@@ -11,7 +11,7 @@ export const ERROR_TIMEOUT_REACHED = new Error('TIMEOUT_REACHED');
 
 export function killProcessTree(pid: number, signal: string | number = 'SIGTERM'): Promise<void> {
   return new Promise((resolve, reject) => {
-    kill(pid, signal, err => {
+    treeKill(pid, signal, err => {
       if (err) {
         debug('error while killing process tree for %d: %O', pid, err);
         return reject(err);
@@ -157,7 +157,7 @@ const BEFORE_EXIT_SIGNAL_LISTENERS: BeforeExitSignalListeners = {
   SIGBREAK: beforeExitHandlerWrapper('SIGBREAK'),
 };
 
-for (const [ signal, fn ] of Object.entries(BEFORE_EXIT_SIGNAL_LISTENERS)) {
+for (const [signal, fn] of Object.entries(BEFORE_EXIT_SIGNAL_LISTENERS)) {
   process.on(signal as BeforeExitSignal, fn);
 }
 

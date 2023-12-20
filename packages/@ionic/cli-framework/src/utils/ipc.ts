@@ -1,6 +1,6 @@
 import { fork } from '@ionic/utils-subprocess';
 import { ChildProcess } from 'child_process';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as fs from 'fs';
 
 import { ERROR_IPC_UNKNOWN_PROCEDURE, IPCError } from '../errors';
