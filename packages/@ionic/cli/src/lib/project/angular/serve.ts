@@ -173,8 +173,11 @@ export class AngularServeCLI extends ServeCLI<AngularServeOptions> {
     }
 
     const strippedLine = stripAnsi(line);
-
-    if (strippedLine.includes('Development Server is listening')) {
+    const compileMsgs = [
+      'Development Server is listening',
+      'Watching for file changes'
+    ]
+  if (compileMsgs.some((msg) => strippedLine.includes(msg))) {
       this.emit('ready');
       return false;
     }
