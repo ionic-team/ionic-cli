@@ -3,6 +3,22 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+# [7.2.0](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.6...@ionic/cli@7.2.0) (2024-01-02)
+
+
+### Bug Fixes
+
+* live reload deploys app when warnings are present [#4807](https://github.com/ionic-team/ionic-cli/issues/4807) ([#5043](https://github.com/ionic-team/ionic-cli/issues/5043)) ([ef5706e](https://github.com/ionic-team/ionic-cli/commit/ef5706ed5e7ef347280320a88b5604a279667184))
+
+
+### Features
+
+* **angular:** support angulars vite dev server ([#5064](https://github.com/ionic-team/ionic-cli/issues/5064)) ([8a94434](https://github.com/ionic-team/ionic-cli/commit/8a94434a413c1b60b0e88904064edfe7a98206ab))
+
+
+
+
+
 ## [7.1.6](https://github.com/ionic-team/ionic-cli/compare/@ionic/cli@7.1.5...@ionic/cli@7.1.6) (2023-12-19)
 
 
