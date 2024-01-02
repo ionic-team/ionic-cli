@@ -6,14 +6,12 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
+    "esModuleInterop": true,
     "noUnusedLocals": true,
     "pretty": true,
     "strict": true,
     "target": "ES2021",
     "types": [],
-    "lib": [
-      "ES2021",
-      "ES2022.Error"
-    ]
+    "lib": ["ES2021", "ES2022.Error"]
   }
 }

@@ -1,3 +1,4 @@
+import { MetadataGroup } from '@ionic/cli-framework';
 import { pathExists } from '@ionic/utils-fs';
 import { prettyPath } from '@ionic/utils-terminal';
 
@@ -31,6 +32,7 @@ If you are having issues setting up SSH keys, please get in touch with our Suppo
           url: 'https://ion.link/support-request',
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 

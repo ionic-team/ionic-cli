@@ -1,4 +1,4 @@
-import * as chalk from 'chalk';
+import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
 
@@ -36,7 +36,7 @@ export const ERROR_UNKNOWN_CONTENT_TYPE = 'UNKNOWN_CONTENT_TYPE';
 export const ERROR_UNKNOWN_RESPONSE_FORMAT = 'UNKNOWN_RESPONSE_FORMAT';
 
 export class Client implements IClient {
-  constructor(public config: IConfig) {}
+  constructor(public config: IConfig) { }
 
   async make(method: HttpMethod, path: string, contentType: ContentType = ContentType.JSON): Promise<{ req: SuperAgentRequest; }> {
     const url = path.startsWith('http://') || path.startsWith('https://') ? path : `${this.config.getAPIUrl()}${path}`;

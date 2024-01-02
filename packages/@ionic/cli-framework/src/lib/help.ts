@@ -1,6 +1,6 @@
 import { filter, map } from '@ionic/utils-array';
 import { generateFillSpaceStringList, stringWidth, wordWrap } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 
 import { CommandMetadata, CommandMetadataInput, CommandMetadataOption, Footnote, HydratedCommandMetadata, HydratedNamespaceMetadata, ICommand, INamespace, LinkFootnote, MetadataGroup, NamespaceLocateResult, NamespaceMetadata } from '../definitions';
@@ -223,7 +223,7 @@ export class NamespaceStringHelpFormatter<C extends ICommand<C, N, M, I, O>, N e
 
     const filteredCommands = await filter(commands, async cmd => this.filterCommandCallback(cmd));
 
-    const [ cmdDetails, nsDetails ] = await Promise.all([
+    const [cmdDetails, nsDetails] = await Promise.all([
       this.getListOfCommandDetails(filteredCommands.filter(cmd => cmd.namespace === this.namespace)),
       this.getListOfNamespaceDetails(filteredCommands.filter(cmd => cmd.namespace !== this.namespace)),
     ]);

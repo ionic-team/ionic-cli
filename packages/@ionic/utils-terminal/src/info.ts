@@ -1,4 +1,4 @@
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as os from 'os';
 
 const debug = Debug('ionic:utils-terminal:info');

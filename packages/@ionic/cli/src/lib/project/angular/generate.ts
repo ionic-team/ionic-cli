@@ -1,5 +1,5 @@
 import { unparseArgs, validators } from '@ionic/cli-framework';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 
 import { AngularGenerateOptions, CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../../definitions';
@@ -100,7 +100,7 @@ To test a generator before file modifications are made, use the ${input('--dry-r
 
   createOptionsFromCommandLine(inputs: CommandLineInputs, options: CommandLineOptions): AngularGenerateOptions {
     const [schematic, name] = inputs;
-    const baseOptions = {name, schematic}
+    const baseOptions = { name, schematic }
     const project = options['project'] ? String(options['project']) : 'app';
 
     // TODO: this is a little gross, is there a better way to pass in all the

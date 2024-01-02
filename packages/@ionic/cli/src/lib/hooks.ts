@@ -1,6 +1,6 @@
 import { conform } from '@ionic/utils-array';
 import { prettyPath } from '@ionic/utils-terminal';
-import * as Debug from 'debug';
+import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
 import * as path from 'path';
 
@@ -24,7 +24,7 @@ export abstract class Hook {
     return `ionic:${this.name}`;
   }
 
-  constructor(protected readonly e: HookDeps) {}
+  constructor(protected readonly e: HookDeps) { }
 
   async run(input: HookInput) {
     const { pkgManagerArgs } = await import('./utils/npm');
@@ -35,7 +35,7 @@ export abstract class Hook {
       return; // TODO: will we need hooks outside a project?
     }
 
-    const [ pkg ] = await this.e.project.getPackageJson(undefined, { logErrors: false });
+    const [pkg] = await this.e.project.getPackageJson(undefined, { logErrors: false });
 
     if (!pkg) {
       return;
@@ -47,7 +47,7 @@ export abstract class Hook {
 
     if (pkg.scripts && pkg.scripts[this.script]) {
       debug(`Invoking ${ancillary(this.script)} npm script.`);
-      const [ pkgManager, ...pkgArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
+      const [pkgManager, ...pkgArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'run', script: this.script });
       await this.e.shell.run(pkgManager, pkgArgs, {
         env: ctxEnvironment,
       });

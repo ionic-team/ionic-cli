@@ -1,5 +1,5 @@
 import * as lodash from 'lodash';
-import * as minimist from 'minimist';
+import minimist from 'minimist';
 
 import { CommandLineOptions, CommandMetadataOption, HydratedParseArgsOptions, ParsedArg } from '../definitions';
 
@@ -19,7 +19,7 @@ export { ParsedArgs } from 'minimist';
  */
 export function stripOptions(pargv: readonly string[], { includeSeparated = true }: { includeSeparated?: boolean; }): string[] {
   const r = /^\-/;
-  const [ ownArgs, otherArgs ] = separateArgv(pargv);
+  const [ownArgs, otherArgs] = separateArgv(pargv);
   const filteredArgs = ownArgs.filter(arg => !r.test(arg));
 
   if (!includeSeparated) {
@@ -50,7 +50,7 @@ export function separateArgv(pargv: readonly string[]): [string[], string[]] {
     otherArgs.shift(); // strip separator
   }
 
-  return [ ownArgs, otherArgs ];
+  return [ownArgs, otherArgs];
 }
 
 /**
@@ -166,8 +166,8 @@ export function filterCommandLineOptions<O extends CommandMetadataOption>(option
 
   const pairs = Object.keys(parsedArgs)
     .map((k): [string, O | undefined, ParsedArg | undefined] => [k, mapped.get(k), parsedArgs[k]])
-    .filter(([ k, opt, value ]) => opt && predicate(opt, value))
-    .map(([ k, opt, value ]) => [opt ? opt.name : k, value]);
+    .filter(([k, opt, value]) => opt && predicate(opt, value))
+    .map(([k, opt, value]) => [opt ? opt.name : k, value]);
 
   return { ...initial, ...lodash.fromPairs(pairs) };
 }
@@ -221,7 +221,7 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
   const dashKey = (k: string) => (k.length === 1 ? '-' : '--') + k;
 
   const pushPairs = (...pairs: [string, string | undefined][]) => {
-    for (const [ k, val ] of pairs) {
+    for (const [k, val] of pairs) {
       const key = dashKey(allowCamelCase ? k : k.replace(/[A-Z]/g, '-$&').toLowerCase());
 
       if (useEquals) {
@@ -274,7 +274,7 @@ export function unparseArgs(parsedArgs: minimist.ParsedArgs, { useDoubleQuotes, 
     isKnown(k)
   );
 
-  for (const [ key, val ] of pairedOptions) {
+  for (const [key, val] of pairedOptions) {
     if (val === true) {
       pushPairs([key, undefined]);
     } else if (val === false && !ignoreFalse) {

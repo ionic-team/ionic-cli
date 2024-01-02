@@ -4,11 +4,11 @@ import { PromptModule } from '@ionic/cli-framework-prompts';
 import { str2num } from '@ionic/cli-framework/utils/string';
 import { NetworkInterface, getExternalIPv4Interfaces, isHostConnectable } from '@ionic/utils-network';
 import { createProcessEnv, killProcessTree, onBeforeExit, processExit } from '@ionic/utils-process';
-import * as chalk from 'chalk';
-import * as Debug from 'debug';
+import chalk from 'chalk';
+import { debug as Debug } from 'debug';
 import { EventEmitter } from 'events';
 import * as lodash from 'lodash';
-import * as split2 from 'split2';
+import split2 from 'split2';
 import * as stream from 'stream';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandMetadataOption, IConfig, ILogger, IProject, IShell, IonicEnvironmentFlags, NpmClient, Runner, ServeDetails, ServeOptions } from '../definitions';
@@ -138,7 +138,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     const engine = this.determineEngineFromCommandLine(options);
     const host = options['host'] ? String(options['host']) : DEFAULT_ADDRESS;
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
-    const [ platform ] = options['platform'] ? [String(options['platform'])] : inputs;
+    const [platform] = options['platform'] ? [String(options['platform'])] : inputs;
 
     return {
       '--': separatedArgs ? separatedArgs : [],
@@ -301,7 +301,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       );
     }
 
-    return [ chosenIP, availableInterfaces ];
+    return [chosenIP, availableInterfaces];
   }
 }
 
@@ -416,7 +416,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
       return;
     }
 
-    const [ pkg ] = await this.e.project.getPackageJson(undefined, { logErrors: false });
+    const [pkg] = await this.e.project.getPackageJson(undefined, { logErrors: false });
 
     if (!pkg) {
       return;
@@ -557,7 +557,7 @@ export abstract class ServeCLI<T extends ServeCLIOptions> extends EventEmitter {
 
   protected async promptToInstall(): Promise<boolean> {
     const { pkgManagerArgs } = await import('./utils/npm');
-    const [ manager, ...managerArgs ] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: this.pkg, saveDev: true, saveExact: true });
+    const [manager, ...managerArgs] = await pkgManagerArgs(this.e.config.get('npmClient'), { command: 'install', pkg: this.pkg, saveDev: true, saveExact: true });
 
     this.e.log.nl();
 
@@ -600,7 +600,7 @@ abstract class PkgManagerServeCLI extends ServeCLI<ServeOptions> {
     };
 
     const scriptArgs = [...unparseArgs(args), ...options['--'] || []];
-    const [ , ...pkgArgs ] = await pkgManagerArgs(this.program, { command: 'run', script: this.script, scriptArgs });
+    const [, ...pkgArgs] = await pkgManagerArgs(this.program, { command: 'run', script: this.script, scriptArgs });
 
     return pkgArgs;
   }

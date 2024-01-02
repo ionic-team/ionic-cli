@@ -1,3 +1,4 @@
+import { MetadataGroup } from '@ionic/cli-framework';
 import { columnar } from '@ionic/utils-terminal';
 
 import { COLUMNAR_OPTIONS } from '../../constants';
@@ -19,6 +20,7 @@ export class SSHListCommand extends SSHBaseCommand implements CommandPreRun {
           type: Boolean,
         },
       ],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 
