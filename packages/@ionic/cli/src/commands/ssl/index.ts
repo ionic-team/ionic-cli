@@ -8,7 +8,7 @@ export class SSLNamespace extends Namespace {
     return {
       name: 'ssl',
       summary: 'Commands for managing SSL keys & certificates',
-      groups: [MetadataGroup.EXPERIMENTAL],
+      groups: [MetadataGroup.DEPRECATED],
       description: `
 These commands make it easy to manage SSL certificates for using HTTPS with ${input('ionic serve')}.
       `,

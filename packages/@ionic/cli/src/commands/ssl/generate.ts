@@ -53,6 +53,8 @@ Uses OpenSSL to create a self-signed certificate for ${strong('localhost')} (by 
 After the certificate is generated, you will still need to add it to your system or browser as a trusted certificate.
 
 The default directory for ${input('--key-path')} and ${input('--cert-path')} is ${input('.ionic/ssl/')}.
+
+Deprecated. Developers should generate an SSL certificate locally and then configure it using their project tooling such as Vite or Angular CLI.
       `,
       options: [
         {
@@ -110,7 +112,7 @@ The default directory for ${input('--key-path')} and ${input('--cert-path')} is 
           groups: [MetadataGroup.ADVANCED],
         },
       ],
-      groups: [MetadataGroup.EXPERIMENTAL],
+      groups: [MetadataGroup.DEPRECATED],
     };
   }
 
