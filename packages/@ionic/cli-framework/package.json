@@ -16,6 +16,11 @@
   "bugs": {
     "url": "https://github.com/ionic-team/ionic-cli/issues"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git",
+    "directory": "packages/@ionic/cli-framework"
+  },
   "scripts": {
     "clean": "rimraf index.* definitions.* errors.* guards.* lib utils",
     "lint": "true",
