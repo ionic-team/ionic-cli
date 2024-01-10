@@ -107,6 +107,8 @@ export abstract class Hook {
 
   private generateCTXEnvironment(input: HookInput, path: string[] = []): NodeJS.ProcessEnv {
     let environment: NodeJS.ProcessEnv = {};
+   
+    input = !input ? {} : input;
 
     for (const [key, value] of Object.entries(input)) {
       if (typeof value === 'object') {
