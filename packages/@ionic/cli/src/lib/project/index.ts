@@ -2,7 +2,7 @@ import { BaseConfig, BaseConfigOptions, PackageJson, ParsedArgs } from '@ionic/c
 import { PromptModule } from '@ionic/cli-framework-prompts';
 import { resolveValue } from '@ionic/cli-framework/utils/fn';
 import { ERROR_INVALID_PACKAGE_JSON, compileNodeModulesPaths, isValidPackageName, readPackageJsonFile } from '@ionic/cli-framework/utils/node';
-import { ensureDir, findBaseDirectory, readFile, writeFile, writeJson } from '@ionic/utils-fs';
+import { ensureDir, findBaseDirectory, pathExistsSync, readFile, writeFile, writeJson } from '@ionic/utils-fs';
 import { TTY_WIDTH, prettyPath, wordWrap } from '@ionic/utils-terminal';
 import { debug as Debug } from 'debug';
 import * as lodash from 'lodash';
@@ -12,7 +12,7 @@ import { PROJECT_FILE, PROJECT_TYPES, ANGULAR_STANDALONE } from '../../constants
 import { IClient, IConfig, IIntegration, ILogger, IMultiProjectConfig, IProject, IProjectConfig, ISession, IShell, InfoItem, IntegrationName, IonicContext, IonicEnvironmentFlags, ProjectIntegration, ProjectPersonalizationDetails, ProjectType } from '../../definitions';
 import { isMultiProjectConfig, isProjectConfig } from '../../guards';
 import { ancillary, failure, input, strong } from '../color';
-import { BaseException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
+import { BaseException, DirectoryNotAccessibleException, FatalException, IntegrationNotFoundException, RunnerNotFoundException } from '../errors';
 import { BaseIntegration } from '../integrations';
 import { Color } from '../utils/color';
 import type { Integration as CapacitorIntegration } from '../integrations/capacitor';
@@ -421,7 +421,10 @@ export abstract class Project implements IProject {
     readonly details: ProjectDetailsResult,
     protected readonly e: ProjectDeps
   ) {
-    this.rootDirectory = path.dirname(details.configPath);
+    this.rootDirectory = path.dirname(details.configPath); 
+    if (!pathExistsSync(this.rootDirectory)) {
+      throw new DirectoryNotAccessibleException(`Path ${input(this.rootDirectory)} is not aschessible.`);
+    }
   }
 
   get filePath(): string {
@@ -435,7 +438,13 @@ export abstract class Project implements IProject {
       return this.rootDirectory;
     }
 
-    return path.resolve(this.rootDirectory, root);
+    const resolvedPath = path.resolve(this.rootDirectory, root);
+
+    if (!pathExistsSync(resolvedPath)) {
+      throw new DirectoryNotAccessibleException(`Project root ${input(resolvedPath)} is not accessible.`);
+    }
+
+    return resolvedPath;
   }
 
   get pathPrefix(): string[] {
@@ -721,9 +730,17 @@ export abstract class Project implements IProject {
     const integration = this.config.get('integrations')[name];
 
     if (integration) {
+      let rootDirectory = this.directory;
+      
+      if (integration.root) {
+        rootDirectory = path.resolve(this.rootDirectory, integration.root);
+        if (!pathExistsSync(rootDirectory)) {
+          throw new DirectoryNotAccessibleException(`Integration root ${input(rootDirectory)} is not accessible.`);
+        }
+      }
       return {
         enabled: integration.enabled !== false,
-        root: integration.root === undefined ? this.directory : path.resolve(this.rootDirectory, integration.root),
+        root: rootDirectory,
       };
     }
   }
