@@ -33,8 +33,8 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       '',
       'android',
       'android -l --external',
-      'ios --livereload --external',
-      'ios --livereload-url=http://localhost:8100',
+      'ios --live-reload --external',
+      'ios --live-reload-url=http://localhost:8100',
     ].sort();
 
     let options: CommandMetadataOption[] = [
@@ -65,7 +65,7 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
         default: true,
       },
       // Serve Options
-      ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)).map(o => ({ ...o, hint: weak('(--livereload)') })),
+      ...COMMON_SERVE_COMMAND_OPTIONS.filter(o => !['livereload'].includes(o.name)).map(o => ({ ...o, hint: weak('(--live-reload)') })),
       {
         name: 'livereload',
         summary: 'Spin up dev server to live-reload www files',
@@ -107,10 +107,10 @@ export class RunCommand extends CapacitorCommand implements CommandPreRun {
       summary: 'Run an Ionic project on a connected device',
       description: `
 ${input('ionic capacitor run')} will do the following:
-- Perform ${input('ionic build')} (or run the dev server from ${input('ionic serve')} with the ${input('--livereload')} option)
+- Perform ${input('ionic build')} (or run the dev server from ${input('ionic serve')} with the ${input('--live-reload')} option)
 - Run ${input('capacitor run')} (or open IDE for your native project with the ${input('--open')} option)
 
-When using ${input('--livereload')} with hardware devices, remember that livereload needs an active connection between device and computer. In some scenarios, you may need to host the dev server on an external address using the ${input('--external')} option. See these docs[^livereload-docs] for more information.
+When using ${input('--live-reload')} with hardware devices, remember that livereload needs an active connection between device and computer. In some scenarios, you may need to host the dev server on an external address using the ${input('--external')} option. See these docs[^livereload-docs] for more information.
 
 If you have multiple devices and emulators, you can target a specific one by ID with the ${input('--target')} option. You can list targets with ${input('--list')}.
 
