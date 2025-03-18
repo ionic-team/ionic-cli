@@ -138,6 +138,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
     const engine = this.determineEngineFromCommandLine(options);
     const host = options['host'] ? String(options['host']) : DEFAULT_ADDRESS;
     const port = str2num(options['port'], DEFAULT_SERVER_PORT);
+    const https = options.https;
     const [platform] = options['platform'] ? [String(options['platform'])] : inputs;
 
     return {
@@ -151,6 +152,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       open: !!options['open'],
       platform,
       port,
+      https,
       proxy: typeof options['proxy'] === 'boolean' ? Boolean(options['proxy']) : true,
       project: options['project'] ? String(options['project']) : undefined,
       publicHost: options['public-host'] ? String(options['public-host']) : undefined,
