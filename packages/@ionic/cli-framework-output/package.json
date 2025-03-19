@@ -9,6 +9,11 @@
   "engines": {
     "node": ">=16.0.0"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ionic-team/ionic-cli.git",
+    "directory": "packages/@ionic/cli-framework-output"
+  },
   "files": [
     "dist/",
     "LICENSE",
