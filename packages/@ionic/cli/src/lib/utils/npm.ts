@@ -91,6 +91,9 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
     case 'pnpm':
       vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '', lockFileOnly: '--lockfile-only' };
       break;
+    case 'bun':
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '', lockFileOnly: '' };
+      break;
     default:
       throw new Error(`unknown installer: ${npmClient}`);
   }
@@ -158,7 +161,7 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
   }
 
   if (cmd === 'run' && options.script && options.scriptArgs && options.scriptArgs.length > 0) {
-    if (npmClient === 'npm' || npmClient === 'pnpm') {
+    if (npmClient === 'npm' || npmClient === 'pnpm' || npmClient === 'bun') {
       installerArgs.push('--');
     }
 

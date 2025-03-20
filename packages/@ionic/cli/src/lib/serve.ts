@@ -107,6 +107,7 @@ export abstract class ServeRunner<T extends ServeOptions> implements Runner<T, S
       npm: NpmServeCLI,
       pnpm: PnpmServeCLI,
       yarn: YarnServeCLI,
+      bun: BunServeCLI,
     };
 
     const client = this.e.config.get('npmClient');
@@ -625,4 +626,11 @@ export class YarnServeCLI extends PkgManagerServeCLI {
   readonly pkg = 'yarn';
   readonly program = 'yarn';
   readonly prefix = 'yarn';
+}
+
+export class BunServeCLI extends PkgManagerServeCLI {
+  readonly name = 'Bun';
+  readonly pkg = 'bun';
+  readonly program = 'bun';
+  readonly prefix = 'bun';
 }

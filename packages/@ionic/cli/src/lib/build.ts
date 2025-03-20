@@ -48,6 +48,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
       npm: NpmBuildCLI,
       pnpm: PnpmBuildCLI,
       yarn: YarnBuildCLI,
+      bun: BunBuildCLI,
     };
 
     const client = this.e.config.get('npmClient');
@@ -305,6 +306,12 @@ export class YarnBuildCLI extends PkgManagerBuildCLI {
   readonly name = 'Yarn';
   readonly pkg = 'yarn';
   readonly program = 'yarn';
+}
+
+export class BunBuildCLI extends PkgManagerBuildCLI {
+  readonly name = 'Bun';
+  readonly pkg = 'bun';
+  readonly program = 'bun';
 }
 
 class BuildBeforeHook extends Hook {
