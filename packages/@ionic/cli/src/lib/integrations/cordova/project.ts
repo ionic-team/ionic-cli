@@ -11,8 +11,7 @@ import { FatalException } from '../../errors';
 const debug = Debug('ionic:lib:cordova:project');
 
 const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
-const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
-const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
+const CORDOVA_IOS_PACKAGE_PATH = 'platforms/ios/build';
 
 export async function getPlatforms(projectDir: string): Promise<string[]> {
   const platformsDir = path.resolve(projectDir, 'platforms');
@@ -74,11 +73,12 @@ export async function getPackagePath(root: string, appName: string, platform: st
   if (platform === 'android') {
     return getAndroidPackageFilePath(root, { emulator, release });
   } else if (platform === 'ios') {
+    const configuration = release ? 'Release' : 'Debug';
     if (emulator) {
-      return path.join(CORDOVA_IOS_SIMULATOR_PACKAGE_PATH, `${appName}.app`);
+      return path.join(CORDOVA_IOS_PACKAGE_PATH, `${configuration}-iphonesimulator`, `${appName}.app`);
     }
 
-    return path.join(CORDOVA_IOS_DEVICE_PACKAGE_PATH, `${appName}.ipa`);
+    return path.join(CORDOVA_IOS_PACKAGE_PATH, `${configuration}-iphoneos` , `${appName}.ipa`);
   }
 
   throw new FatalException(`Unknown package path for ${input(appName)} on ${input(platform)}.`);
