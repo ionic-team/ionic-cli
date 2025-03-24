@@ -76,19 +76,30 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
     }
   }
 
+  let installerExec: string = '';
   const installerArgs: string[] = [];
 
   switch (npmClient) {
     case 'npm':
+      installerExec = 'npm';
       vocab = { run: 'run', install: 'i', bareInstall: 'i', uninstall: 'uninstall', dedupe: 'dedupe', rebuild: 'rebuild', global: '-g', save: '--save', saveDev: '-D', saveExact: '-E', nonInteractive: '', lockFileOnly: '--package-lock-only' };
       break;
     case 'yarn':
+      installerExec = 'yarn';
       vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '--non-interactive', lockFileOnly: '' };
       if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
         installerArgs.push('global');
       }
       break;
+    case 'yarn-berry':
+      installerExec = 'yarn';
+      vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'install', global: '', save: '', saveDev: '--dev', saveExact: '--exact', nonInteractive: '', lockFileOnly: '' };
+      if (options.global) { // yarn installs packages globally under the 'global' prefix, instead of having a flag
+        installerArgs.push('global');
+      }
+      break;
     case 'pnpm':
+      installerExec = 'pnpm';
       vocab = { run: 'run', install: 'add', bareInstall: 'install', uninstall: 'remove', dedupe: '', rebuild: 'rebuild', global: '--global', save: '', saveDev: '--save-dev', saveExact: '--save-exact', nonInteractive: '', lockFileOnly: '--lockfile-only' };
       break;
     default:
@@ -171,7 +182,7 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
     installerArgs.push('--json');
   }
 
-  return [npmClient, ...installerArgs];
+  return [installerExec, ...installerArgs];
 }
 
 /**

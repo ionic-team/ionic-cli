@@ -48,6 +48,7 @@ export abstract class BuildRunner<T extends BuildOptions<any>> implements Runner
       npm: NpmBuildCLI,
       pnpm: PnpmBuildCLI,
       yarn: YarnBuildCLI,
+      'yarn-berry': YarnBuildCLI,
     };
 
     const client = this.e.config.get('npmClient');
