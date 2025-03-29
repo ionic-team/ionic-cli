@@ -1,6 +1,7 @@
 import { BaseConfig, BaseConfigOptions, MetadataGroup, ParsedArgs, metadataOptionsToParseArgsOptions, parseArgs } from '@ionic/cli-framework';
 import * as os from 'os';
 import * as path from 'path';
+import * as fs from 'fs';
 
 import { CommandMetadataOption, ConfigFile, CreateRequestOptions, IConfig, OAuthServerConfig } from '../definitions';
 
@@ -53,7 +54,18 @@ export const GLOBAL_OPTIONS: readonly CommandMetadataOption[] = [
 ];
 
 export const CONFIG_FILE = 'config.json';
-export const DEFAULT_CONFIG_DIRECTORY = path.resolve(os.homedir(), '.ionic');
+export const DEFAULT_CONFIG_DIRECTORY = findDefaultConfigDir();
+
+function findDefaultConfigDir() {
+  const fallback = path.resolve(os.homedir(), '.ionic');
+  if (fs.existsSync(fallback)) return fallback;
+
+  if (process.env.XDG_CONFIG_HOME) {
+    return path.resolve(process.env.XDG_CONFIG_HOME, 'ionic');
+  } else {
+    return fallback;
+  }
+}
 
 export class Config extends BaseConfig<ConfigFile> implements IConfig {
   constructor(p: string, options?: BaseConfigOptions) {

@@ -1,9 +1,11 @@
 import { MetadataGroup, validators } from '@ionic/cli-framework';
 import { prettyPath } from '@ionic/utils-terminal';
+import * as path from 'path';
 
 import { PROJECT_FILE } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
+import { DEFAULT_CONFIG_DIRECTORY } from '../../lib/config';
 import { FatalException } from '../../lib/errors';
 
 import { BaseConfigCommand, getConfigValue, setConfigValue } from './base';
@@ -17,7 +19,7 @@ export class ConfigSetCommand extends BaseConfigCommand {
       type: 'global',
       summary: 'Set config values',
       description: `
-This command writes configuration values to the project's ${strong(prettyPath(projectFile))} file. It can also operate on the global CLI configuration (${strong('~/.ionic/config.json')}) using the ${input('--global')} option.
+This command writes configuration values to the project's ${strong(prettyPath(projectFile))} file. It can also operate on the global CLI configuration (${strong(path.join(DEFAULT_CONFIG_DIRECTORY, 'config.json'))}) using the ${input('--global')} option.
 
 For nested properties, separate nest levels with dots. For example, the property name ${input('integrations.cordova')} will look in the ${strong('integrations')} object for the ${strong('cordova')} property.
 

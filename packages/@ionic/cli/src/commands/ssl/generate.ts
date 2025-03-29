@@ -6,6 +6,7 @@ import * as path from 'path';
 
 import { CommandLineInputs, CommandLineOptions, CommandMetadata, CommandPreRun } from '../../definitions';
 import { input, strong } from '../../lib/color';
+import { DEFAULT_CONFIG_DIRECTORY } from '../../lib/config';
 import { FatalException } from '../../lib/errors';
 
 import { SSLBaseCommand } from './base';
@@ -26,19 +27,22 @@ interface OpenSSLConfig {
   commonName: string;
 }
 
-const DEFAULT_KEY_FILE = '.ionic/ssl/key.pem';
-const DEFAULT_CERT_FILE = '.ionic/ssl/cert.pem';
-
 export class SSLGenerateCommand extends SSLBaseCommand implements CommandPreRun {
+  getDefaultSslDirectory() {
+    return this.project ? path.resolve(this.project.directory, '.ionic', 'ssl') :
+      path.resolve(DEFAULT_CONFIG_DIRECTORY, 'ssl');
+  }
+
   getDefaultKeyPath() {
-    return path.resolve(this.project ? this.project.directory : '', DEFAULT_KEY_FILE);
+    return path.resolve(this.getDefaultSslDirectory(), 'key.pem');
   }
 
   getDefaultCertPath() {
-    return path.resolve(this.project ? this.project.directory : '', DEFAULT_CERT_FILE);
+    return path.resolve(this.getDefaultSslDirectory(), 'cert.pem');
   }
 
   async getMetadata(): Promise<CommandMetadata> {
+    const defaultSslDirectory = prettyPath(this.getDefaultSslDirectory())
     const defaultKeyPath = prettyPath(this.getDefaultKeyPath());
     const defaultCertPath = prettyPath(this.getDefaultCertPath());
 
@@ -52,7 +56,7 @@ Uses OpenSSL to create a self-signed certificate for ${strong('localhost')} (by 
 
 After the certificate is generated, you will still need to add it to your system or browser as a trusted certificate.
 
-The default directory for ${input('--key-path')} and ${input('--cert-path')} is ${input('.ionic/ssl/')}.
+The default directory for ${input('--key-path')} and ${input('--cert-path')} is ${input(defaultSslDirectory)}.
 
 Deprecated. Developers should generate an SSL certificate locally and then configure it using their project tooling such as Vite or Angular CLI.
       `,

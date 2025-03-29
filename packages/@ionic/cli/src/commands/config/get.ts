@@ -4,10 +4,12 @@ import { columnar, prettyPath } from '@ionic/utils-terminal';
 import chalk from 'chalk';
 import * as lodash from 'lodash';
 import * as util from 'util';
+import * as path from 'path';
 
 import { COLUMNAR_OPTIONS, PROJECT_FILE } from '../../constants';
 import { CommandLineInputs, CommandLineOptions, CommandMetadata } from '../../definitions';
 import { input, strong, weak } from '../../lib/color';
+import { DEFAULT_CONFIG_DIRECTORY } from '../../lib/config';
 
 import { BaseConfigCommand, ConfigContext, getConfigValue } from './base';
 
@@ -20,7 +22,7 @@ export class ConfigGetCommand extends BaseConfigCommand {
       type: 'global',
       summary: 'Print config values',
       description: `
-This command reads and prints configuration values from the project's ${strong(projectFile)} file. It can also operate on the global CLI configuration (${strong('~/.ionic/config.json')}) using the ${input('--global')} option.
+This command reads and prints configuration values from the project's ${strong(projectFile)} file. It can also operate on the global CLI configuration (${strong(path.join(DEFAULT_CONFIG_DIRECTORY, 'config.json'))}) using the ${input('--global')} option.
 
 For nested properties, separate nest levels with dots. For example, the property name ${input('integrations.cordova')} will look in the ${strong('integrations')} object for the ${strong('cordova')} property.
 

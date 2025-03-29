@@ -1,7 +1,9 @@
 import { prettyPath } from '@ionic/utils-terminal';
+import * as path from 'path';
 
 import { PROJECT_FILE } from '../../constants';
 import { input, strong } from '../../lib/color';
+import { DEFAULT_CONFIG_DIRECTORY } from '../../lib/config';
 import { CommandMap, Namespace } from '../../lib/namespace';
 
 export class ConfigNamespace extends Namespace {
@@ -16,7 +18,7 @@ These commands are used to programmatically read, write, and delete CLI and proj
 
 By default, these commands use your project's ${strong(prettyPath(projectFile))} file.
 
-To use these commands for the global CLI config file (${strong('~/.ionic/config.json')}), use the ${input('--global')} flag.
+To use these commands for the global CLI config file (${strong(path.join(DEFAULT_CONFIG_DIRECTORY, 'config.json'))}), use the ${input('--global')} flag.
       `,
     };
   }
