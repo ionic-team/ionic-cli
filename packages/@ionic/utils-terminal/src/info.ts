@@ -12,10 +12,15 @@ export const CI_ENVIRONMENT_VARIABLES: readonly string[] = ['CI', 'BUILD_ID', 'B
 export const CI_ENVIRONMENT_VARIABLES_DETECTED = CI_ENVIRONMENT_VARIABLES.filter(v => !!process.env[v]);
 
 function getShell(): string {
-  const { shell } = os.userInfo();
+  try {
+    const { shell } = os.userInfo();
 
-  if (shell) {
-    return shell;
+    if (shell) {
+      return shell;
+    }
+  } catch {
+    // userInfo can throw a SystemError exception as described here:
+    //   https://nodejs.org/api/os.html#osuserinfooptions
   }
 
   if (process.env.SHELL) {
