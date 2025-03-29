@@ -94,7 +94,8 @@ export abstract class Hook {
   }
 
   protected async loadHookFn(p: string): Promise<HookFn | undefined> {
-    const module = require(p);
+    const [pkg] = await this.e.project.getPackageJson(undefined, { logErrors: false });
+    const module = pkg.type === 'module' ? await import(p) : require(p);
 
     if (typeof module === 'function') {
       return module;
