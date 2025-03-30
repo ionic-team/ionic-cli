@@ -344,6 +344,16 @@ export interface WalkerOptions {
    * @return `true` to include file path, otherwise it is excluded
    */
   readonly pathFilter?: (p: string) => boolean;
+
+  /**
+   * Follow symlinks during walk.
+   *
+   * Additionally, the `IONIC_UTILS_FS_FOLLOW_SYMLINKS` environment variable can
+   * be used to set this option as `true` or `false`.
+   *
+   * @default false
+   */
+  readonly followSymlinks?: boolean;
 }
 
 export interface Walker extends stream.Readable {
@@ -360,14 +370,18 @@ export class Walker extends stream.Readable {
 
   _read() {
     const p = this.paths.shift();
-    const { pathFilter } = this.options;
+    const { pathFilter, followSymlinks } = this.options;
 
     if (!p) {
       this.push(null);
       return;
     }
 
-    fs.lstat(p, (err, stats) => {
+    const envFollowSymlinks = process.env.IONIC_UTILS_FS_FOLLOW_SYMLINKS &&
+      process.env.IONIC_UTILS_FS_FOLLOW_SYMLINKS === 'true' ||
+      process.env.IONIC_UTILS_FS_FOLLOW_SYMLINKS === '1';
+    const finalPath = (followSymlinks || envFollowSymlinks) ? fs.realpathSync(p) : p;
+    fs.lstat(finalPath, (err, stats) => {
       if (err) {
         this.emit('error', err);
         return;
