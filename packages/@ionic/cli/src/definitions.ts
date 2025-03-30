@@ -481,7 +481,7 @@ export interface ITelemetry {
   sendCommand(command: string, args: string[]): Promise<void>;
 }
 
-export type NpmClient = 'yarn' | 'npm' | 'pnpm';
+export type NpmClient = 'yarn' | 'yarn-berry' | 'npm' | 'pnpm';
 
 export type FeatureId = 'ssl-commands';
 

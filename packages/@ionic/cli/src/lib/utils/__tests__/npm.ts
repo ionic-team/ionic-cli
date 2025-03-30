@@ -159,6 +159,83 @@ describe('@ionic/cli', () => {
 
       });
 
+      describe('yarn-berry', () => {
+
+        jest.resetModules();
+        const { pkgManagerArgs } = require('../npm');
+
+        it('should be pkg install with default args', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'install' });
+          expect(result).toEqual(['yarn', 'install']);
+        });
+
+        it('should be pkg install args for local package', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'install', pkg: 'foo' });
+          expect(result).toEqual(['yarn', 'add', '--exact', 'foo']);
+        });
+
+        it('should be pkg install args for local package install', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'install', pkg: 'foo', saveDev: true });
+          expect(result).toEqual(['yarn', 'add', '--dev', '--exact', 'foo']);
+        });
+
+        it('should be pkg install args for local package uninstall', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'uninstall', pkg: 'foo', saveDev: true });
+          expect(result).toEqual(['yarn', 'remove', '--dev', 'foo']);
+        });
+
+        it('should be pkg install args for global package install', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'install', pkg: 'foo', global: true });
+          expect(result).toEqual(['yarn', 'global', 'add', 'foo']);
+        });
+
+        it('should be pkg install args for global package install with bad options', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'install', pkg: 'foo', global: true, saveDev: true });
+          expect(result).toEqual(['yarn', 'global', 'add', 'foo']);
+        });
+
+        it('should be dedupe args', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'dedupe' });
+          expect(result).toEqual([]); // yarn doesn't support dedupe
+        });
+
+        it('should be rebuild args', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'rebuild' });
+          expect(result).toEqual(['yarn', 'install', '--force']);
+        });
+
+        it('should be run args', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'run' });
+          expect(result).toEqual(['yarn', 'run']);
+        });
+
+        it('should be run args with script', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'run', script: 'test' });
+          expect(result).toEqual(['yarn', 'run', 'test']);
+        });
+
+        it('should be run args with script and script args', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'run', script: 'test', scriptArgs: ['-s'] });
+          expect(result).toEqual(['yarn', 'run', 'test', '-s']);
+        });
+
+        it('should be info args', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'info' });
+          expect(result).toEqual(['yarn', 'info']);
+        });
+
+        it('should be pkg info args', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'info', pkg: '@ionic/cli' });
+          expect(result).toEqual(['yarn', 'info', '@ionic/cli']);
+        });
+
+        it('should be pkg info args with json flag', async () => {
+          const result = await pkgManagerArgs('yarn', { command: 'info', pkg: '@ionic/cli', json: true });
+          expect(result).toEqual(['yarn', 'info', '@ionic/cli', '--json']);
+        });
+
+      });
+
       describe('pnpm', () => {
 
         jest.resetModules();
