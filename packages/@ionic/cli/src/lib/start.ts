@@ -179,7 +179,10 @@ export async function getStarterList(config: IConfig, tag = 'latest'): Promise<S
 }
 
 export function getStarterProjectTypes(): string[] {
-  return lodash.uniq(STARTER_TEMPLATES.map(t => t.projectType));
+   return lodash.uniq([
+    ...STARTER_TEMPLATES.map(t => t.projectType),
+    'angular-standalone'
+  ]);
 }
 
 export interface SupportedFramework {
