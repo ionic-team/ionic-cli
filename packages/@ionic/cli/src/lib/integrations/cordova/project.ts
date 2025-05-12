@@ -10,9 +10,9 @@ import { FatalException } from '../../errors';
 
 const debug = Debug('ionic:lib:cordova:project');
 
-const CORDOVA_ANDROID_PACKAGE_PATH = 'platforms/android/app/build/outputs/apk/';
-const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = 'platforms/ios/build/emulator';
-const CORDOVA_IOS_DEVICE_PACKAGE_PATH = 'platforms/ios/build/device';
+const CORDOVA_ANDROID_PACKAGE_PATH = process.env.CORDOVA_ANDROID_PACKAGE_PATH ?? 'platforms/android/app/build/outputs/apk/';
+const CORDOVA_IOS_SIMULATOR_PACKAGE_PATH = proccess.env.CORDOVA_IOS_SIMULATOR_PACKAGE_PATH ?? 'platforms/ios/build/emulator';
+const CORDOVA_IOS_DEVICE_PACKAGE_PATH = process.env.CORDOVA_IOS_DEVICE_PACKAGE_PATH ?? 'platforms/ios/build/device';
 
 export async function getPlatforms(projectDir: string): Promise<string[]> {
   const platformsDir = path.resolve(projectDir, 'platforms');
