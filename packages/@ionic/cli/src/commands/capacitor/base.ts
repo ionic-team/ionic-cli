@@ -236,8 +236,8 @@ export abstract class CapacitorCommand extends Command {
 
       let serverUrl = options['livereload-url'] ? String(options['livereload-url']) : undefined;
 
+      const details = await runner.run(runnerOpts);
       if (!serverUrl) {
-        const details = await runner.run(runnerOpts);
         serverUrl = `${details.protocol || 'http'}://${details.externalAddress}:${details.port}`;
       }
 
