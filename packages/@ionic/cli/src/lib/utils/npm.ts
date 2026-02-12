@@ -158,7 +158,7 @@ export async function pkgManagerArgs(npmClient: NpmClient, options: PkgManagerOp
   }
 
   if (cmd === 'run' && options.script && options.scriptArgs && options.scriptArgs.length > 0) {
-    if (npmClient === 'npm' || npmClient === 'pnpm') {
+    if (npmClient === 'npm') {
       installerArgs.push('--');
     }
 
