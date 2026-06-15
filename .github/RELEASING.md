@@ -137,11 +137,11 @@ npm run test
 #    TS2322) confirms the netmask@2.0.2 + @types/netmask@2.0.5 pins resolved.
 
 # 4. Non-publishing version smoke test — exercises the Lerna 5 version path
-#    WITHOUT publishing to npm or touching git. `--allow-branch` overrides the
+#    WITHOUT publishing to npm or touching git. --allow-branch "*" overrides the
 #    lerna.json `allowBranch: stable` guard for this one local run.
-npx lerna version --conventional-commits --no-push --no-git-tag-version \
-  --allow-branch "$(git branch --show-current)" --yes
-git checkout -- .   # discard the version/CHANGELOG file writes lerna just made
+#    Single line + quoted "*" so it runs the same in PowerShell, cmd, bash, zsh.
+npx lerna version --conventional-commits --no-push --no-git-tag-version --allow-branch "*" --yes
+git checkout -- packages   # discard the version/CHANGELOG file writes lerna just made
 ```
 
 > **`npm run publish:testing` is NOT a dry run — it publishes to npm.**
