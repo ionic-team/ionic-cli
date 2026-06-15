@@ -24,7 +24,7 @@
   },
   "scripts": {
     "clean": "rimraf dist",
-    "lint": "true",
+    "lint": "exit 0",
     "build": "npm run clean && tsc",
     "watch": "tsc -w --preserveWatchOutput",
     "test": "jest --maxWorkers=4",

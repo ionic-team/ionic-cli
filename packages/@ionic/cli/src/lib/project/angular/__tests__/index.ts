@@ -15,7 +15,9 @@ describe('@ionic/cli', () => {
       });
 
       it('should set directory attribute', async () => {
-        expect(p.directory).toEqual(path.resolve('/path/to/proj'));
+        // `directory` returns the (unresolved) dirname of configPath; compare
+        // against the same so the assertion holds on Windows and POSIX alike.
+        expect(p.directory).toEqual(path.dirname('/path/to/proj/file'));
       });
 
       describe('getSourceDir', () => {
