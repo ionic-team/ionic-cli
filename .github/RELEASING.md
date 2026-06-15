@@ -136,13 +136,26 @@ npm run test
 #    Drift guard: a green build of @ionic/discover (no publisher.ts "broadcast"
 #    TS2322) confirms the netmask@2.0.2 + @types/netmask@2.0.5 pins resolved.
 
-# 4. Safe release dry-run — no tag, no push, no publish
-npm run publish:testing
+# 4. Non-publishing version smoke test — exercises the Lerna 5 version path
+#    WITHOUT publishing to npm or touching git. `--allow-branch` overrides the
+#    lerna.json `allowBranch: stable` guard for this one local run.
+npx lerna version --conventional-commits --no-push --no-git-tag-version \
+  --allow-branch "$(git branch --show-current)" --yes
+git checkout -- .   # discard the version/CHANGELOG file writes lerna just made
 ```
 
-`publish:testing` is the safest smoke test — it exercises the Lerna 5 publish
-path without tagging or pushing. **Run it before the first live v8 cut** to
-confirm the 3 → 5 upgrade behaves (flag/config changes across Lerna 4 and 5).
+> **`npm run publish:testing` is NOT a dry run — it publishes to npm.**
+> `lerna publish` runs an `npm publish` (the `@ionic/*` packages under the
+> `testing` dist-tag); `--no-push`/`--no-git-tag-version` only suppress *git*
+> actions, not the registry publish. It also only runs from `stable` (the
+> `allowBranch` guard). Use step 4 above for a safe local check. Run
+> `publish:testing` only when you actually intend to push a `testing` prerelease
+> to npm, with valid npm credentials.
+
+The step-4 smoke test also reveals the **computed version bump** from the
+branch's conventional commits. Note it will show a `patch`/`minor` bump until
+the branch carries breaking-change commits (`feat!:` / `BREAKING CHANGE:`) —
+those, not `BREAKING.md`, are what make `@ionic/cli` land on `8.0.0` (see §1).
 
 > **Known platform note (pre-existing, unrelated to the release tooling):** on
 > **Windows**, one test in `integrations/cordova` asserts POSIX (`/`) path
