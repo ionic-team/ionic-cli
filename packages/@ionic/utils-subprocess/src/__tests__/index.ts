@@ -312,7 +312,8 @@ describe('@ionic/utils-subprocess', () => {
       expect(result.split('').filter((l: string) => l !== errletter).join('')).toEqual(outinput);
     });
 
-    it('should error with combined output for output()', async done => {
+    it('should error with combined output for output()', async () => {
+      expect.assertions(3);
       const cmd = new Subprocess('cmd', []);
       const mockSpawnStdout = new ReadableStreamBuffer();
       const mockSpawnStderr = new ReadableStreamBuffer();
@@ -343,11 +344,11 @@ describe('@ionic/utils-subprocess', () => {
         expect(e.output.length).toEqual(outinput.length + errinput.length);
         expect(e.output.split('').filter((l: string) => l !== outletter).join('')).toEqual(errinput);
         expect(e.output.split('').filter((l: string) => l !== errletter).join('')).toEqual(outinput);
-        done();
       }
     });
 
-    it('should error with combined output for combinedOutput()', async done => {
+    it('should error with combined output for combinedOutput()', async () => {
+      expect.assertions(3);
       const cmd = new Subprocess('cmd', []);
       const mockSpawnStdout = new ReadableStreamBuffer();
       const mockSpawnStderr = new ReadableStreamBuffer();
@@ -378,7 +379,6 @@ describe('@ionic/utils-subprocess', () => {
         expect(e.output.length).toEqual(outinput.length + errinput.length);
         expect(e.output.split('').filter((l: string) => l !== outletter).join('')).toEqual(errinput);
         expect(e.output.split('').filter((l: string) => l !== errletter).join('')).toEqual(outinput);
-        done();
       }
     });
 

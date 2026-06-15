@@ -16,7 +16,7 @@ describe('@ionic/cli-framework-output', () => {
       };
 
       beforeEach(() => {
-        jest.useFakeTimers();
+        jest.useFakeTimers({ legacyFakeTimers: true });
         task = new Task({ msg: '' });
         handlers = {
           success: jest.fn(),
