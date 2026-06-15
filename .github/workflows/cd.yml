@@ -34,6 +34,10 @@ jobs:
           GIT_COMMITTER_NAME: Ionitron
           GIT_COMMITTER_EMAIL: hi@ionicframework.com
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Required by `lerna version --create-release github` to create the
+          # GitHub Release for each published tag. The built-in token is
+          # sufficient (the workflow already grants `contents: write`).
+          GH_TOKEN: ${{ github.token }}
       - name: Sleep while npm takes its time
         run: sleep 20
       - name: GitHub Container Registry Login
