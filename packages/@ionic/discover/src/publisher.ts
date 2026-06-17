@@ -195,5 +195,7 @@ export function computeBroadcastAddress(address: string, netmask: string): strin
   const ip = address + '/' + netmask;
   const block = new Netmask(ip);
 
-  return block.broadcast;
+  // netmask >= 2.1 types `broadcast` as `string | undefined` (it is absent for
+  // /31 and /32 blocks); fall back to the network address in that case.
+  return block.broadcast ?? block.base;
 }
