@@ -76,7 +76,7 @@ auto-published. Recommended path:
 Use a prerelease on a `next` dist-tag before GA so consumers can test:
 
 ```bash
-# Dry, local prerelease (already defined, never pushes):
+# A real prerelease under the `testing` dist-tag (publishes to npm, no git push):
 npm run publish:testing   # publishes a `testing` prerelease with --no-push
 
 # A real RC under the `next` tag (run from an allowed branch):
