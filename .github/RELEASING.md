@@ -106,8 +106,8 @@ Requirements for `--create-release github` to work in CI:
 
 These steps are **cross-platform** — every command is `npm`/`npx`-based and runs
 identically in PowerShell, `cmd`, bash, and zsh (Windows and macOS). Use
-**Node 18** (the version CI runs — see `cd.yml`/`ci.yml`); newer Node majors can
-trip the bundled jest 26 worker on some platforms.
+**Node 18** to match CI (see `cd.yml`/`ci.yml`); the jest 29 toolchain this
+branch ships also runs green on Node 16 and 24.
 
 > **Order matters.** This is a `lerna bootstrap` monorepo: per-package
 > devDependencies (including `@types/node`) are installed and hoisted by
