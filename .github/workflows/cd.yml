@@ -16,10 +16,18 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
         with:
           fetch-depth: 0
-      - uses: actions/setup-node@v3
+      - name: Guard against unfilled BREAKING.md placeholders
+        # The removal PRs fill in each command's entry. Block a stable publish
+        # if any <TODO placeholder would otherwise ship to users.
+        run: |
+          if grep -n '<TODO' BREAKING.md; then
+            echo "::error file=BREAKING.md::BREAKING.md still contains <TODO placeholders; each removal PR must fill in its entry before publishing."
+            exit 1
+          fi
+      - uses: actions/setup-node@48b55a011bda9f5d6aeb4c2d9c7362e8dae4041e # v6.4.0
         with:
           node-version: 18
           registry-url: https://registry.npmjs.org/
@@ -34,6 +42,10 @@ jobs:
           GIT_COMMITTER_NAME: Ionitron
           GIT_COMMITTER_EMAIL: hi@ionicframework.com
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          # Required by `lerna version --create-release github` to create the
+          # GitHub Release for each published tag. The built-in token is
+          # sufficient (the workflow already grants `contents: write`).
+          GH_TOKEN: ${{ github.token }}
       - name: Sleep while npm takes its time
         run: sleep 20
       - name: GitHub Container Registry Login

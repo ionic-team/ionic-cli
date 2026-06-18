@@ -27,19 +27,19 @@ describe('@ionic/utils-network', () => {
     };
 
     it('should return empty array if no network interfaces', () => {
-      spyOn(osSpy, 'networkInterfaces').and.callFake(() => networkInterfaces1);
+      jest.spyOn(osSpy, 'networkInterfaces').mockImplementation(() => networkInterfaces1 as any);
       const result = getExternalIPv4Interfaces();
       expect(result).toEqual([]);
     });
 
     it('should return empty array if unsuitable network interfaces found', () => {
-      spyOn(osSpy, 'networkInterfaces').and.callFake(() => networkInterfaces2);
+      jest.spyOn(osSpy, 'networkInterfaces').mockImplementation(() => networkInterfaces2 as any);
       const result = getExternalIPv4Interfaces();
       expect(result).toEqual([]);
     });
 
     it('should find the suitable network interface', () => {
-      spyOn(osSpy, 'networkInterfaces').and.callFake(() => networkInterfaces3);
+      jest.spyOn(osSpy, 'networkInterfaces').mockImplementation(() => networkInterfaces3 as any);
       const result = getExternalIPv4Interfaces();
       expect(result.length).toEqual(1);
       expect(result[0].device).toEqual('eth0');

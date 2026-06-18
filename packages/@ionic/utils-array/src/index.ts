@@ -67,11 +67,11 @@ export async function reduce<T, U>(array: T[] | readonly T[], callback: (accumul
     initialValue = array[0];
   }
 
-  let value = initialValue;
+  let value: T | U = initialValue;
 
   for (let i = startingIndex; i < array.length; i++) {
     const v = await callback(value, array[i], i, array);
-    value = v;
+    value = v as T | U;
   }
 
   return value;

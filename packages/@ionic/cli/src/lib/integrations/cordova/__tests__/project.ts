@@ -1,3 +1,5 @@
+import * as path from 'path';
+
 import fsExtraSpy from 'fs-extra';
 import * as fsSafeSpy from '@ionic/utils-fs/dist/safe';
 import * as project from '../project';
@@ -97,7 +99,7 @@ describe('@ionic/cli', () => {
         jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
         const p = project.getAndroidPackageFilePath('/path/to/proj', { release: false });
-        expect(p).resolves.toEqual('platforms/android/app/build/outputs/apk/debug/foo-debug.apk');
+        return expect(p).resolves.toEqual(path.normalize('platforms/android/app/build/outputs/apk/debug/foo-debug.apk'));
       });
 
       it('should get file path from output.json', () => {
@@ -115,7 +117,7 @@ describe('@ionic/cli', () => {
         jest.spyOn(fsExtraSpy, 'readJson').mockImplementation(async () => file);
 
         const p = project.getAndroidPackageFilePath('/path/to/proj', { release: false });
-        expect(p).resolves.toEqual('platforms/android/app/build/outputs/apk/debug/bar-debug.apk');
+        return expect(p).resolves.toEqual(path.normalize('platforms/android/app/build/outputs/apk/debug/bar-debug.apk'));
       });
 
     });

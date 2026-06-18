@@ -170,7 +170,7 @@ describe('@ionic/cli-framework', () => {
         readdirSpy.mockReset();
       });
 
-      it('should emit data once with path for single file', async done => {
+      it('should emit data once with path for single file', done => {
         lstatSpy.mockImplementation((p: string, cb: any) => { cb(null, { isDirectory: () => false }); });
         const dataSpy = jest.fn();
         const walker = new fslib.Walker('root');
@@ -183,7 +183,7 @@ describe('@ionic/cli-framework', () => {
         });
       });
 
-      it('should emit data for each child', async done => {
+      it('should emit data for each child', done => {
         const root = 'root';
         const children = ['a', 'b', 'c'];
         lstatSpy.mockImplementation((p: string, cb: any) => { cb(null, { isDirectory: () => p === root }); });
@@ -203,7 +203,7 @@ describe('@ionic/cli-framework', () => {
         });
       });
 
-      it('should emit data for each child recursively', async done => {
+      it('should emit data for each child recursively', done => {
         const root = 'root'; // directory
         const children = ['foo', 'bar']; // directories
         const fooChildren = ['a', 'b', 'c']; // directories
@@ -231,7 +231,7 @@ describe('@ionic/cli-framework', () => {
         });
       });
 
-      it('should emit data for each child except for filtered paths', async done => {
+      it('should emit data for each child except for filtered paths', done => {
         const root = 'root';
         const children = ['a', 'b', 'c'];
         lstatSpy.mockImplementation((p: string, cb: any) => { cb(null, { isDirectory: () => p === root }); });
