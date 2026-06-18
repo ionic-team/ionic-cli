@@ -17,10 +17,6 @@ Release is **conventional-commit driven and automatic**:
   `stable` branch**.
 - It runs `npm run publish:ci`, defined in [`package.json`](../package.json):
 
-  ```jsonc
-  "publish:ci": "lerna version -m 'chore(release): publish [skip ci]' --exact --conventional-commits --yes --create-release github && lerna exec --no-private --since HEAD~ -- npm publish --provenance"
-  ```
-
   - `lerna version --conventional-commits` computes each package's next version
     **from commit messages**, tags, and pushes the release commit.
   - `--create-release github` makes Lerna create the **GitHub Release** for each
