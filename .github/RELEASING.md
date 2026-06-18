@@ -62,7 +62,7 @@ Because versioning is conventional-commit driven:
 auto-published. Recommended path:
 
 1. Land all removal PRs (with breaking-change commits) onto `major-8.0`.
-2. Merge / rebase `major-8.0` → `develop`.
+2. Normal merge / rebase `major-8.0` → `develop`.
 3. Follow the normal `develop` → `stable` promotion. The push to `stable`
    triggers `cd.yml`, which computes the major bump, tags, publishes to npm, and
    creates the GitHub Releases.
