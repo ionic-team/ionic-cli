@@ -7,6 +7,9 @@
   "homepage": "https://ionicframework.com/",
   "author": "Ionic Team <hi@ionic.io> (https://ionic.io)",
   "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "files": [
     "dist/",
     "LICENSE",

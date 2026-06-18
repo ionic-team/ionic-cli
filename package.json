@@ -1,6 +1,9 @@
 {
   "name": "ionic-cli",
   "private": true,
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "bootstrap": "lerna bootstrap && npm run build",
     "clean": "lerna run clean",

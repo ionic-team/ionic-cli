@@ -25,7 +25,7 @@ Release is **conventional-commit driven and automatic**:
     npm.
 - `lerna.json` pins `"allowBranch": "stable"`, so `lerna version` refuses to run
   from any other branch.
-- After publishing, `cd.yml` builds and pushes a Docker image to GHCR.
+- After publishing, `cd.yml` builds and pushes a Docker image to GHCR (GitHub Container Registry).
 
 > **Key consequence:** the version bump is derived from commit messages, **not**
 > from `BREAKING.md`. `BREAKING.md` is human documentation only. To land
@@ -42,7 +42,7 @@ Because versioning is conventional-commit driven:
 - The command-removal PRs (tracked separately) **must** use breaking-change
   commit syntax so Lerna computes a major bump for the affected package(s):
 
-  ```
+  ```bash
   feat(commands)!: remove deprecated Appflow/Enterprise/Cordova commands
 
   BREAKING CHANGE: The config, cordova, enterprise, git, init, link,
@@ -101,9 +101,10 @@ Requirements for `--create-release github` to work in CI:
 ## 4. Pre-publish validation (always, but especially after the Lerna upgrade)
 
 These steps are **cross-platform** — every command is `npm`/`npx`-based and runs
-identically in PowerShell, `cmd`, bash, and zsh (Windows and macOS). Use
-**Node 18** to match CI (see `cd.yml`/`ci.yml`); the jest 29 toolchain this
-branch ships also runs green on Node 16 and 24.
+identically in PowerShell, `cmd`, bash, and zsh (Windows and macOS). **Node 18+
+is required** — enforced via each package's `engines.node` (`>=18.0.0`). CI runs
+Node 18.x and 20.x (see `cd.yml`/`ci.yml`), and the jest 29 toolchain also runs
+green on Node 24.
 
 > **Order matters.** This is a `lerna bootstrap` monorepo: per-package
 > devDependencies (including `@types/node`) are installed and hoisted by

@@ -2,6 +2,9 @@
   "private": true,
   "name": "cli-scripts",
   "version": "2.1.75",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "bin": {
     "ionic-cli-scripts": "./bin/ionic-cli-scripts"
   },
