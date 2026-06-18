@@ -101,10 +101,12 @@ Requirements for `--create-release github` to work in CI:
 ## 4. Pre-publish validation (always, but especially after the Lerna upgrade)
 
 These steps are **cross-platform** — every command is `npm`/`npx`-based and runs
-identically in PowerShell, `cmd`, bash, and zsh (Windows and macOS). **Node 18+
-is required** — enforced via each package's `engines.node` (`>=18.0.0`). CI runs
-Node 18.x and 20.x (see `cd.yml`/`ci.yml`), and the jest 29 toolchain also runs
-green on Node 24.
+identically in PowerShell, `cmd`, bash, and zsh (Windows and macOS). For the Node
+version, don't rely on a number hardcoded here: the minimum is enforced by
+`engines.node` in each `package.json`, and the versions CI exercises are the
+`node:` matrix in [`ci.yml`](workflows/ci.yml) (the publish job pins its own under
+`node-version` in [`cd.yml`](workflows/cd.yml)). Use a version that satisfies both
+— checking those files keeps this runbook correct as the supported versions change.
 
 > **Order matters.** This is a `lerna bootstrap` monorepo: per-package
 > devDependencies (including `@types/node`) are installed and hoisted by
