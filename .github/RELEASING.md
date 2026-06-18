@@ -131,7 +131,8 @@ npx lerna version --help        # look for: --create-release ... [choices: "gitl
 npm run lint
 npm run test
 #    Drift guard: a green build of @ionic/discover (no publisher.ts "broadcast"
-#    TS2322) confirms the netmask@2.0.2 + @types/netmask@2.0.5 pins resolved.
+#    TS2322) confirms netmask (^2.0.2, currently 2.1.x) resolved with its
+#    bundled types and computeBroadcastAddress handles the nullable broadcast.
 
 # 4. Non-publishing version smoke test — exercises the Lerna 5 version path
 #    WITHOUT publishing to npm or touching git. --allow-branch "*" overrides the
